@@ -1,5 +1,6 @@
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';
+import { validateClaims } from './validate/claims.mjs';
 
 async function readJson(root, rel) {
   const file = path.join(root, rel);
@@ -25,5 +26,7 @@ export async function loadData(root) {
     readJson(root, 'data/quiz.json'),
     readJson(root, 'content/chapters.json'),
   ]);
+  const errs = [...validateClaims(claims)];
+  if (errs.length) throw new Error(`数据校验失败:\n- ${errs.join('\n- ')}`);
   return { claims, exercises, plans, demos, quiz, chapters };
 }

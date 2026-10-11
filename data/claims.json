@@ -1,1 +1,63 @@
-[]
+[
+  {
+    "id": "claim-protein-threshold",
+    "statement": "以增肌为目标时，每日蛋白质摄入约 1.6 g/kg 体重之后，继续加量带来的额外收益很小。",
+    "direction": "支持",
+    "certainty": "高",
+    "sources": [
+      {
+        "authors": "Morton 等",
+        "year": 2018,
+        "title": "A systematic review, meta-analysis and meta-regression of the effect of protein supplementation on resistance training-induced gains in muscle mass and strength in healthy adults",
+        "type": "系统综述",
+        "url": "https://bjsm.bmj.com/content/52/6/376"
+      }
+    ],
+    "population": "健康成年抗阻训练者（49 项 RCT、1863 人），男女均有、以年轻受训者为主；可外推到本教程读者。",
+    "limitations": "多数纳入研究周期 6–12 周；蛋白质摄入靠自我记录，测量误差偏大；高龄、极低能量摄入与减脂期人群的阈值可能更高，外推受限。",
+    "rating_rationale": "多项 RCT 汇总出的剂量—反应曲线一致地在 1.6 g/kg 附近转平，拐点估计在敏感性分析中稳定，故为支持·高。"
+  },
+  {
+    "id": "claim-spot-reduction",
+    "statement": "针对某个部位做训练，能优先消耗该部位的脂肪（局部减脂）。",
+    "direction": "反对",
+    "certainty": "高",
+    "sources": [
+      {
+        "authors": "Ramírez-Campillo 等",
+        "year": 2013,
+        "title": "Regional fat changes induced by localized muscle endurance resistance training",
+        "type": "RCT",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/23222084/"
+      },
+      {
+        "authors": "Vispute 等",
+        "year": 2011,
+        "title": "The effect of abdominal exercise on abdominal fat",
+        "type": "RCT",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/21804427/"
+      }
+    ],
+    "population": "健康年轻成年人（单侧腿部训练组与腹部训练组），未受训或轻度受训；本教程读者可直接外推。",
+    "limitations": "样本量小（各 20–40 人）、干预 6–12 周；影像测量脂肪的精度有限，极端训练量或超长周期未被检验。",
+    "rating_rationale": "存在直接反证而不仅仅是缺证据：同一受试者的训练侧与非训练侧脂肪变化没有差异，多项独立 RCT 结论一致，故为反对·高。"
+  },
+  {
+    "id": "claim-stretch-timing",
+    "statement": "把静态拉伸放在抗阻训练之前，会改变这次训练带来的肌肥大效果。",
+    "direction": "未定",
+    "certainty": "低",
+    "sources": [
+      {
+        "authors": "Behm 等",
+        "year": 2016,
+        "title": "Acute effects of muscle stretching on physical performance, range of motion, and injury incidence in healthy active individuals: a systematic review",
+        "type": "系统综述",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/26642915/"
+      }
+    ],
+    "population": "健康活跃人群，年龄与训练水平跨度大；研究终点以急性表现与活动度为主，不是长期肌肥大。",
+    "limitations": "目前没有足够研究直接比较「训练前拉伸 vs 不拉伸」对长期肌肥大的影响；现有证据只能说明长时间静态拉伸会短暂削弱随后的最大力量输出，由此推断的肥大影响属于间接推论。",
+    "rating_rationale": "证据不足以判断哪边成立——这是没研究清楚，不是已被推翻；由急性力量下降推断肥大受损属机制推论，故为未定·低。"
+  }
+]
