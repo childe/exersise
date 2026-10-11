@@ -1,1 +1,141 @@
-[]
+[
+  {
+    "slug": "novice-3d",
+    "title": "新手 全身 3 天（健身房）",
+    "audience": {
+      "level": "新手",
+      "days_per_week": 3,
+      "equipment": "健身房",
+      "goal": "增肌",
+      "prerequisites": "已读导读「第一次训练前必读」并在空杆下练过失败退出方式"
+    },
+    "week": [
+      {
+        "day": "周一",
+        "type": "力量",
+        "items": [
+          {
+            "exercise": "back-squat-high-bar",
+            "sets": 3,
+            "reps": "5",
+            "rir": 2,
+            "rest": "3–5 分钟"
+          },
+          {
+            "exercise": "goblet-squat",
+            "sets": 2,
+            "reps": "8–10",
+            "rir": 2,
+            "rest": "2 分钟"
+          }
+        ]
+      },
+      {
+        "day": "周二",
+        "type": "休息"
+      },
+      {
+        "day": "周三",
+        "type": "有氧",
+        "cardio": {
+          "mode": "快走或固定单车",
+          "minutes": 25,
+          "intensity": "能完整说出一句话的强度（Zone 2）",
+          "placement": "独立日",
+          "placement_reason": "与力量日分开，避开干扰效应对下肢力量的影响",
+          "chapter_ref": "ch8"
+        }
+      },
+      {
+        "day": "周四",
+        "type": "力量",
+        "items": [
+          {
+            "exercise": "back-squat-high-bar",
+            "sets": 3,
+            "reps": "5",
+            "rir": 2,
+            "rest": "3–5 分钟"
+          }
+        ]
+      },
+      {
+        "day": "周五",
+        "type": "休息"
+      },
+      {
+        "day": "周六",
+        "type": "力量",
+        "items": [
+          {
+            "exercise": "goblet-squat",
+            "sets": 3,
+            "reps": "8–10",
+            "rir": 2,
+            "rest": "2 分钟"
+          }
+        ]
+      },
+      {
+        "day": "周日",
+        "type": "休息"
+      }
+    ],
+    "start_load": "空杆 × 8 次评估动作质量 → 每组加一对最小片，直到这一组做完还剩 2 次（RIR 2）→ 取该重量的 90% 作为第一周工作重量；第一周不追求接近力竭，也不测 1RM。",
+    "start_load_refs": [
+      {
+        "exercise": "back-squat-high-bar",
+        "range": "空杆 20 kg 起，常见首周工作重量 20–35 kg",
+        "source": "区间是常见起点示例，个体差异大，以字段 4 的流程实测为准"
+      },
+      {
+        "exercise": "goblet-squat",
+        "range": "8–12 kg 哑铃起，常见首周 10–16 kg",
+        "source": "区间是常见起点示例，个体差异大，以字段 4 的流程实测为准"
+      }
+    ],
+    "warmup": {
+      "general": "5 分钟渐进有氧把心率与体温抬起来，微微出汗即可",
+      "specific": "空杆 × 10 → 50% × 5 → 70% × 3 → 90% × 1 → 工作重量",
+      "by_type": "单关节与固定器械动作只做 1–2 组轻重量递增，不做完整递增阶梯"
+    },
+    "progression": [
+      {
+        "exercise": "back-squat-high-bar",
+        "increment_kg": "2.5–5",
+        "cap_pct": 5,
+        "trigger": "连续 2 次训练都能在 RIR ≥ 2 的情况下完成 3 组 × 5 次则上调"
+      },
+      {
+        "exercise": "goblet-squat",
+        "increment_kg": "2",
+        "cap_pct": 5,
+        "trigger": "连续 2 次训练都能在 RIR ≥ 2 的情况下完成 3 组 × 10 次则上调"
+      }
+    ],
+    "increment_mismatch": "double progression：先把次数从区间下限爬到上限，再跳到下一档重量并回到区间下限。",
+    "failure_rules": {
+      "single_miss": "保持重量重做一次，不下调",
+      "two_misses": "连续两次同一动作未达标则下调该动作 10%，重新爬坡",
+      "miss_one_session": "缺课 1 次顺延，不补练",
+      "miss_1_2_weeks": "缺课 1–2 周按原重量 ~90% 重启",
+      "miss_over_month": "缺课超过 1 个月，按字段 4 的新手流程重走",
+      "underrecovery": "出现恢复不足信号（睡眠债、静息心率升高、广泛酸胀迟迟不退、连续两次表现下滑）先插入一周 deload（容量减半或强度降 10%），而不是先降重量"
+    },
+    "pain_path": "canon:C1",
+    "substitutions": [
+      {
+        "exercise": "back-squat-high-bar",
+        "alts": [
+          "goblet-squat"
+        ],
+        "scope": "适用场景仅限器械不可用，或该动作不适合其当前水平／体型；不适用于疼痛（见安全口径 C1）"
+      }
+    ],
+    "exit_criteria": {
+      "when": "同一动作连续两次 deload 后仍无法推进，或线性加重已连续 4 周停滞",
+      "next": "novice-3d",
+      "chapter_ref": "ch5"
+    }
+  }
+]

@@ -4,6 +4,7 @@ import { loadData } from './data.mjs';
 import { renderPage } from './render/page.mjs';
 import { renderClaimRegistry } from './render/claims.mjs';
 import { renderExercises } from './render/exercises.mjs';
+import { renderPlans } from './render/plans.mjs';
 
 const defaultRoot = path.resolve(import.meta.dirname, '..');
 
@@ -18,10 +19,12 @@ export async function build(root = defaultRoot) {
     demos: new Map(data.demos.map((d) => [d.id, d])),
     figures: new Map(),
     chapterTitles: new Map(data.chapters.map((c) => [c.id, `第 ${c.num} 章 ${c.title}`])),
+    safetyCanon: data.safetyCanon,
   };
   const html = renderPage(data, {
     css, js,
     exerciseHtml: renderExercises(data.exercises, renderCtx),
+    planHtml: renderPlans(data.plans, renderCtx),
     claimHtml: renderClaimRegistry(data.claims),
   });
   await mkdir(path.join(root, 'dist'), { recursive: true });

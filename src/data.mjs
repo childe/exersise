@@ -2,6 +2,8 @@ import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { validateClaims } from './validate/claims.mjs';
 import { validateExercises, validateCoverage } from './validate/exercises.mjs';
+import { validatePlans } from './validate/plans.mjs';
+import { loadSafetyCanon } from './safety-canon.mjs';
 
 async function readJson(root, rel) {
   const file = path.join(root, rel);
@@ -36,6 +38,13 @@ export async function loadData(root) {
   };
   errs.push(...validateExercises(exercises, ctx));
   if (process.env.SKIP_COVERAGE !== '1') errs.push(...validateCoverage(exercises));
+  const safetyCanon = await loadSafetyCanon(root); // 缺小节直接抛错，构建失败
+  errs.push(...validatePlans(plans, {
+    ...ctx,
+    exercises: new Set(exercises.map((e) => e.slug)),
+    plans: new Set(plans.map((p) => p.slug)),
+    safetyCanon,
+  }));
   if (errs.length) throw new Error(`数据校验失败:\n- ${errs.join('\n- ')}`);
-  return { claims, exercises, plans, demos, quiz, chapters };
+  return { claims, exercises, plans, demos, quiz, chapters, safetyCanon };
 }
