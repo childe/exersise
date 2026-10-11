@@ -1,0 +1,35 @@
+<!--caption: 一周负荷分布示意图，表达趋势而非数值；不是对个体反应的预测。条的高度只表示相对负荷的高低，不代表任何具体的组数或重量。-->
+<svg data-kind="conceptual" viewBox="0 0 640 300" role="img" aria-label="一周七天的训练类型与相对负荷高低示意条带图" xmlns="http://www.w3.org/2000/svg">
+  <g stroke="currentColor" fill="none" stroke-width="1">
+    <path d="M50 250 L610 250" />
+  </g>
+  <g fill="var(--accent)" stroke="none">
+    <rect x="60" y="100" width="56" height="150" />
+    <rect x="140" y="140" width="56" height="110" />
+    <rect x="220" y="200" width="56" height="50" />
+    <rect x="300" y="245" width="56" height="5" />
+    <rect x="380" y="120" width="56" height="130" />
+    <rect x="460" y="205" width="56" height="45" />
+    <rect x="540" y="245" width="56" height="5" />
+  </g>
+  <g fill="currentColor" font-size="13" text-anchor="middle">
+    <text x="88" y="268">力量</text>
+    <text x="168" y="268">力量</text>
+    <text x="248" y="268">有氧</text>
+    <text x="328" y="268">休息</text>
+    <text x="408" y="268">力量</text>
+    <text x="488" y="268">有氧／轻活动</text>
+    <text x="568" y="268">休息</text>
+  </g>
+  <g fill="currentColor" font-size="13" text-anchor="middle">
+    <text x="88" y="92">较高</text>
+    <text x="168" y="132">中等</text>
+    <text x="248" y="192">低</text>
+    <text x="328" y="237">无</text>
+    <text x="408" y="112">较高</text>
+    <text x="488" y="197">低</text>
+    <text x="568" y="237">无</text>
+  </g>
+  <text x="330" y="290" fill="currentColor" text-anchor="middle" font-size="14">一周七天 →（条高＝相对负荷，不是具体数值）</text>
+  <text x="50" y="40" fill="currentColor" font-size="14">高负荷日之间留出恢复日，这是刺激能变成适应的前提</text>
+</svg>

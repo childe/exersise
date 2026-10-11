@@ -1,0 +1,21 @@
+<!--caption: 容量—反应关系示意图，表达趋势而非数值；不是对个体反应的预测。曲线转平的位置因人、因肌群、因恢复条件而异。-->
+<svg data-kind="conceptual" viewBox="0 0 640 300" role="img" aria-label="每周每肌群组数与肥大反应之间先升后平的示意曲线" xmlns="http://www.w3.org/2000/svg">
+  <g stroke="currentColor" fill="none" stroke-width="1">
+    <path d="M60 250 L600 250" />
+    <path d="M60 250 L60 40" />
+    <path d="M595 245 L600 250 L595 255" />
+    <path d="M55 45 L60 40 L65 45" />
+  </g>
+  <path d="M60 250 C 140 150, 200 100, 300 85 C 390 72, 460 80, 540 115"
+        stroke="var(--accent)" fill="none" stroke-width="3" />
+  <g stroke="currentColor" fill="none" stroke-width="1" stroke-dasharray="3 4" opacity="0.7">
+    <path d="M190 250 L190 60" />
+    <path d="M420 250 L420 60" />
+  </g>
+  <text x="300" y="283" fill="currentColor" text-anchor="middle" font-size="15">每周每肌群的组数 →</text>
+  <text x="22" y="150" fill="currentColor" font-size="15" transform="rotate(-90 22 150)" text-anchor="middle">肥大反应 →</text>
+  <text x="80" y="200" fill="currentColor" font-size="14">收益最快区</text>
+  <text x="200" y="55" fill="currentColor" font-size="14">边际递减区</text>
+  <text x="430" y="55" fill="currentColor" font-size="14">恢复能力上限</text>
+  <text x="430" y="150" fill="currentColor" font-size="13">再加量，恢复先垮</text>
+</svg>

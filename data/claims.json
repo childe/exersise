@@ -59,5 +59,30 @@
     "population": "健康活跃人群，年龄与训练水平跨度大；研究终点以急性表现与活动度为主，不是长期肌肥大。",
     "limitations": "目前没有足够研究直接比较「训练前拉伸 vs 不拉伸」对长期肌肥大的影响；现有证据只能说明长时间静态拉伸会短暂削弱随后的最大力量输出，由此推断的肥大影响属于间接推论。",
     "rating_rationale": "证据不足以判断哪边成立——这是没研究清楚，不是已被推翻；由急性力量下降推断肥大受损属机制推论，故为未定·低。"
+  },
+  {
+    "id": "claim-gain-rate",
+    "statement": "增肌期把体重增速控制在每周约 0.25%–0.5% 体重，比更快的增重更能把增加的重量留在瘦体重上。",
+    "direction": "支持",
+    "certainty": "中",
+    "sources": [
+      {
+        "authors": "Garthe 等",
+        "year": 2013,
+        "title": "Effect of nutritional intervention on body composition and performance in elite athletes",
+        "type": "RCT",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/23679146/"
+      },
+      {
+        "authors": "Garthe 等",
+        "year": 2011,
+        "title": "Effect of two different weight-loss rates on body composition and strength and power-related performance in elite athletes",
+        "type": "RCT",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/21558571/"
+      }
+    ],
+    "population": "精英运动员（有多年训练史），样本量各 20–40 人；外推到新手读者时方向可用，具体速率上限可能更宽松。",
+    "limitations": "样本是运动员而非新手；干预 8–12 周，没有长期随访；体成分用 DXA 测量，个体误差约 1–2%；减脂侧与增肌侧的速率结论来自两项独立研究而非同一设计。",
+    "rating_rationale": "有直接比较不同速率的人体 RCT 支持这个方向，但样本窄、研究数量少，速率区间的边界仍可能被修正，故为支持·中。"
   }
 ]
