@@ -1,0 +1,16 @@
+{
+  "name": "fitness-guide",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": { "node": ">=22" },
+  "scripts": {
+    "build": "node src/build.mjs",
+    "test": "node --test tests/",
+    "check": "node --test tests/",
+    "check:links": "node src/validate/links.mjs --external",
+    "check:links:release": "node src/validate/links.mjs --external --release"
+  },
+  "dependencies": {},
+  "devDependencies": {}
+}

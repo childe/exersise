@@ -1,0 +1,13 @@
+[
+  { "num": 0,  "id": "ch0",  "title": "导读",            "file": "ch0.html",  "deps": [] },
+  { "num": 1,  "id": "ch1",  "title": "肌肉为什么会长",  "file": "ch1.html",  "deps": [] },
+  { "num": 2,  "id": "ch2",  "title": "训练变量",        "file": "ch2.html",  "deps": [1] },
+  { "num": 3,  "id": "ch3",  "title": "渐进超负荷与适应", "file": "ch3.html",  "deps": [1, 2] },
+  { "num": 4,  "id": "ch4",  "title": "动作模式与功能解剖", "file": "ch4.html", "deps": [1] },
+  { "num": 5,  "id": "ch5",  "title": "计划构建",        "file": "ch5.html",  "deps": [2, 3, 4] },
+  { "num": 6,  "id": "ch6",  "title": "营养",            "file": "ch6.html",  "deps": [1, 3] },
+  { "num": 7,  "id": "ch7",  "title": "恢复与疲劳",      "file": "ch7.html",  "deps": [3] },
+  { "num": 8,  "id": "ch8",  "title": "有氧与心肺",      "file": "ch8.html",  "deps": [2, 5, 7] },
+  { "num": 9,  "id": "ch9",  "title": "伤病预防与疼痛",  "file": "ch9.html",  "deps": [4, 7] },
+  { "num": 10, "id": "ch10", "title": "指导他人基础",    "file": "ch10.html", "deps": [1,2,3,4,5,6,7,8,9] }
+]

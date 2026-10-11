@@ -1,2 +1,4 @@
 .xdev/
 .worktrees/
+dist/
+node_modules/

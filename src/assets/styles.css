@@ -1,0 +1,10 @@
+:root {
+  color-scheme: light dark;
+  --bg: #fcfcfa;
+  --fg: #1b1b1a;
+  --muted: #5d5d58;
+  --rule: #d9d8d2;
+  --accent: #7a4a1e;
+}
+body { margin: 0; background: var(--bg); color: var(--fg);
+  font: 16px/1.7 system-ui, -apple-system, "PingFang SC", "Noto Sans CJK SC", sans-serif; }
