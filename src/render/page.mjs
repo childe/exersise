@@ -1,6 +1,8 @@
 export function renderPage(data, parts) {
   const { css, js, chapterHtml = '', exerciseHtml = '', planHtml = '',
           claimHtml = '', quizHtml = '' } = parts;
+  const ids = [...`${chapterHtml}${exerciseHtml}${planHtml}${claimHtml}${quizHtml}`
+    .matchAll(/\sid="([^"]+)"/g)].map((m) => m[1]);
   return `<!doctype html>
 <html lang="zh-CN">
 <head>
@@ -18,11 +20,13 @@ export function renderPage(data, parts) {
   </nav>
   <button class="theme-toggle" type="button" aria-label="切换深浅主题">主题</button>
 </header>
+<p class="route-notice" tabindex="-1" hidden role="status"></p>
 <main>
-  <section id="track-learn" class="track" data-track="learn">${chapterHtml}${quizHtml}</section>
+  <section id="track-learn" class="track is-active" data-track="learn">${chapterHtml}${quizHtml}</section>
   <section id="track-ref" class="track" data-track="ref">${exerciseHtml}${planHtml}${claimHtml}</section>
 </main>
-<script>${js}</script>
+<script>window.__IDS__=${JSON.stringify(ids)}</script>
+<script type="module">${js}</script>
 </body>
 </html>
 `;
