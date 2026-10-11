@@ -84,5 +84,181 @@
     "population": "精英运动员（有多年训练史），样本量各 20–40 人；外推到新手读者时方向可用，具体速率上限可能更宽松。",
     "limitations": "样本是运动员而非新手；干预 8–12 周，没有长期随访；体成分用 DXA 测量，个体误差约 1–2%；减脂侧与增肌侧的速率结论来自两项独立研究而非同一设计。",
     "rating_rationale": "有直接比较不同速率的人体 RCT 支持这个方向，但样本窄、研究数量少，速率区间的边界仍可能被修正，故为支持·中。"
+  },
+  {
+    "id": "claim-mechanical-tension",
+    "statement": "机械张力是抗阻训练引起肌肥大的主要驱动因素。",
+    "direction": "支持",
+    "certainty": "中",
+    "sources": [
+      {
+        "authors": "Schoenfeld",
+        "year": 2010,
+        "title": "The mechanisms of muscle hypertrophy and their application to resistance training",
+        "type": "机制",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/20847704/"
+      }
+    ],
+    "population": "以健康成年抗阻训练者的人体与离体实验为主；可外推到本教程读者的训练决策层面。",
+    "limitations": "\"机械张力\"在人体上无法直接测量，只能通过负荷、动作幅度与接近力竭程度间接推断；三类机制（张力、代谢压力、损伤）在真实训练中无法完全拆开，因此\"主要\"是相对权重的判断而不是定量结论。",
+    "rating_rationale": "机制证据一致且与训练实践吻合，但缺少能把三类机制分离开的人体 RCT，所以是支持·中而不是支持·高。"
+  },
+  {
+    "id": "claim-damage-not-required",
+    "statement": "肌肉损伤是肌肥大的必要条件。",
+    "direction": "反对",
+    "certainty": "中",
+    "sources": [
+      {
+        "authors": "Damas 等",
+        "year": 2018,
+        "title": "The development of skeletal muscle hypertrophy through resistance training: the role of muscle damage and muscle protein synthesis",
+        "type": "系统综述",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/29282529/"
+      }
+    ],
+    "population": "健康成年人（多为未受训或轻度受训者）的纵向训练研究；可外推到本教程读者。",
+    "limitations": "损伤标志物（肌酸激酶、肌节紊乱）与真实损伤程度之间不是线性关系；多数研究周期 8–12 周，长期的关系没有被检验。",
+    "rating_rationale": "有直接证据表明随着训练适应，损伤下降而肥大继续发生——这是反证而不是\"没研究\"；但测量损伤本身有方法学局限，故为反对·中。"
+  },
+  {
+    "id": "claim-soreness-not-indicator",
+    "statement": "训练后酸痛的程度可以用来判断这次训练的肥大效果。",
+    "direction": "反对",
+    "certainty": "中",
+    "sources": [
+      {
+        "authors": "Damas 等",
+        "year": 2018,
+        "title": "The development of skeletal muscle hypertrophy through resistance training: the role of muscle damage and muscle protein synthesis",
+        "type": "系统综述",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/29282529/"
+      },
+      {
+        "authors": "Schoenfeld",
+        "year": 2010,
+        "title": "The mechanisms of muscle hypertrophy and their application to resistance training",
+        "type": "机制",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/20847704/"
+      }
+    ],
+    "population": "健康成年抗阻训练者；对新手尤其适用——新手的酸痛在头几周最明显，而这几周的肥大其实很有限。",
+    "limitations": "没有以\"酸痛程度\"为主要暴露因素的大样本 RCT；现有证据是从损伤与肥大的解耦间接得出的。",
+    "rating_rationale": "训练者适应后酸痛显著下降而肥大继续，二者在时间上解耦，是明确的反证；但缺少直接以酸痛分级为自变量的试验，故为反对·中。"
+  },
+  {
+    "id": "claim-volume-dose-response",
+    "statement": "在一定范围内，每周每个肌群的有效组数越多，肌肥大越多（存在剂量—反应关系）。",
+    "direction": "支持",
+    "certainty": "中",
+    "sources": [
+      {
+        "authors": "Schoenfeld、Ogborn 与 Krieger",
+        "year": 2017,
+        "title": "Dose-response relationship between weekly resistance training volume and increases in muscle mass: A systematic review and meta-analysis",
+        "type": "系统综述",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/27433992/"
+      }
+    ],
+    "population": "健康成年人，训练水平跨度大；可外推到本教程读者，但新手在很低的容量下就能有明显反应。",
+    "limitations": "纳入研究多在每周 5–10+ 组的区间，曲线上端（很高容量）的数据稀少；\"有效组数\"的定义在各研究间不统一；多数研究 6–12 周。",
+    "rating_rationale": "多项研究方向一致且有荟萃支持，但上端的拐点位置不确定、个体差异大，故为支持·中。"
+  },
+  {
+    "id": "claim-load-equivalence",
+    "statement": "只要把组做到接近力竭，低负荷高次数与高负荷低次数带来的肌肥大相当。",
+    "direction": "支持",
+    "certainty": "中",
+    "sources": [
+      {
+        "authors": "Schoenfeld 等",
+        "year": 2017,
+        "title": "Strength and Hypertrophy Adaptations Between Low- vs. High-Load Resistance Training: A Systematic Review and Meta-analysis",
+        "type": "系统综述",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/28834797/"
+      },
+      {
+        "authors": "Lasevicius 等",
+        "year": 2018,
+        "title": "Effects of different intensities of resistance training with equated volume load on muscle strength and hypertrophy",
+        "type": "RCT",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/29564973/"
+      }
+    ],
+    "population": "健康成年人，男性样本偏多；可外推到本教程读者。",
+    "limitations": "结论只适用于肥大，不适用于最大力量（最大力量仍偏向高负荷）；\"接近力竭\"在各研究里的控制方式不同；极低负荷（<30% 1RM）的证据较弱。",
+    "rating_rationale": "荟萃分析在肥大终点上结论一致，但对\"接近力竭\"的依赖很强，稍微留太多余力结论就不成立，故为支持·中。"
+  },
+  {
+    "id": "claim-rest-interval",
+    "statement": "以肌肥大为目标时，组间休息 2 分钟以上优于 1 分钟左右的短休息。",
+    "direction": "支持",
+    "certainty": "中",
+    "sources": [
+      {
+        "authors": "Schoenfeld 等",
+        "year": 2016,
+        "title": "Longer Interset Rest Periods Enhance Muscle Strength and Hypertrophy in Resistance-Trained Men",
+        "type": "RCT",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/26605807/"
+      }
+    ],
+    "population": "有训练经验的成年男性，样本量 20 余人；女性与新手的外推有限。",
+    "limitations": "单项 RCT、样本小、周期 8 周；休息时长与总容量在真实训练里互相影响，短休息往往同时意味着后面几组的次数下降。",
+    "rating_rationale": "有直接的人体 RCT 支持这个方向，但只有少数几项研究、样本窄，故为支持·中。"
+  },
+  {
+    "id": "claim-failure-not-required",
+    "statement": "每一组都必须练到力竭才能最大化肌肥大。",
+    "direction": "反对",
+    "certainty": "中",
+    "sources": [
+      {
+        "authors": "Grgic 等",
+        "year": 2022,
+        "title": "Effects of resistance training performed to repetition failure or non-failure on muscular strength and hypertrophy: A systematic review and meta-analysis",
+        "type": "系统综述",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/33497853/"
+      }
+    ],
+    "population": "健康成年人，训练水平跨度大；可外推到本教程读者。",
+    "limitations": "\"非力竭\"组离力竭有多远，各研究控制方式不同（有的靠 RIR 估计，有的靠固定百分比）；疲劳与恢复成本没有被统一测量。",
+    "rating_rationale": "荟萃分析显示留 1–3 次余力与练到力竭的肥大差异很小，是对\"必须力竭\"的直接反证；但各研究对\"接近程度\"的定义不统一，故为反对·中。"
+  },
+  {
+    "id": "claim-frequency",
+    "statement": "在每周总容量相等时，把容量分到每周 ≥2 次训练，比集中在 1 次更有利于肌肥大。",
+    "direction": "支持",
+    "certainty": "中",
+    "sources": [
+      {
+        "authors": "Schoenfeld、Ogborn 与 Krieger",
+        "year": 2016,
+        "title": "Effects of Resistance Training Frequency on Measures of Muscle Hypertrophy: A Systematic Review and Meta-Analysis",
+        "type": "系统综述",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/27102172/"
+      }
+    ],
+    "population": "健康成年人；可外推到本教程读者。",
+    "limitations": "容量在各研究中的\"相等\"程度不一致；频率从 2 次再往上加（3 次以上）是否继续更好，证据不足；多数研究 6–12 周。",
+    "rating_rationale": "荟萃结果方向一致，但效应量不大、且很可能是通过\"更容易完成同样容量\"间接实现的，故为支持·中。"
+  },
+  {
+    "id": "claim-rir-accuracy",
+    "statement": "人对 RIR（还能再做几次）的估计，在离力竭越近时越准；离得远时普遍高估自己剩下的次数。",
+    "direction": "支持",
+    "certainty": "低",
+    "sources": [
+      {
+        "authors": "Zourdos 等",
+        "year": 2021,
+        "title": "Proximity to Failure and Total Repetitions Performed in a Set Influences Accuracy of Intraset Repetitions in Reserve-Based Rating of Perceived Exertion",
+        "type": "观察",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/30747900/"
+      }
+    ],
+    "population": "有训练经验的成年人，样本量小；新手的估计准确性只会更差，这一点是外推而非直接证据。",
+    "limitations": "样本小、动作种类有限（以卧推、深蹲为主）；估计准确性随训练经验变化，没有长期追踪。",
+    "rating_rationale": "只有少数小样本观察研究，结论方向合理但精度未知，故为支持·低——用 RIR 安排训练可以，但别把它当成精确刻度。"
   }
 ]
