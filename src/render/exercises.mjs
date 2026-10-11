@@ -15,8 +15,15 @@ export function renderDemo(demo) {
     .filter(Boolean).map((n) => escapeHtml(n)).join(' ');
   const per = (demo.verification ?? []).filter((v) => v.status !== '符合')
     .map((v) => `${escapeHtml(v.criterion)}（${escapeHtml(v.status)}）`).join('、');
+  // 有些来源把判据讲全了，但页面本身的画面不是这个变式的完整示范；
+  // 这时另挂一条匹配变式的视觉示范，读者两边都拿得到。
+  const visual = demo.visual_url
+    ? `<br><a class="demo-visual" href="${escapeHtml(demo.visual_url)}" rel="noreferrer noopener" target="_blank">`
+      + `视觉示范（${escapeHtml(demo.visual_publisher ?? '')}）</a>`
+    : '';
   return `<p class="demo" data-coverage="${escapeHtml(demo.coverage ?? '')}">`
     + `<a href="${escapeHtml(demo.url)}" rel="noreferrer noopener" target="_blank">${label}</a>`
+    + visual
     + (per ? `<br><span class="demo-gaps">该来源未对上的判据：${per}。</span>` : '')
     + (notes ? `<br><span class="demo-note">${notes}</span>` : '')
     + '</p>';

@@ -55,6 +55,9 @@ export function validateDemos(demos, { exercises }) {
 
       // 来源页面实际展示的器械与变式必须显式登记：靠"没写就是一样"是上一轮
       // 把 TRX 悬吊带滚轮当成杠铃滚轮示范的直接原因。
+      if (d?.visual_url && !/^https:\/\//.test(d.visual_url)) {
+        errs.push(`${at}: visual_url 必须是 https 链接`);
+      }
       if (!d?.shows_equipment) errs.push(`${at}: shows_equipment 必填（来源页面实际展示的器械）`);
       if (!['相同', '不同'].includes(d?.shows_variant)) {
         errs.push(`${at}: shows_variant 必须是 相同/不同（来源页面展示的是不是同一变式）`);
@@ -90,6 +93,24 @@ export function validateDemos(demos, { exercises }) {
     } else if (d.dead === true) {
       errs.push(`重点动作 ${e.slug} 的示范 ${d.id} 已标 dead=true：重点动作不接受只剩失效提示，`
         + `必须更换为可用来源（机构官方／专业示范／自制授权图）后才能发布（§7.2 / 设计 §243）`);
+    } else {
+      // 示范对重点动作是必需件（设计 §7.2：自检判据是补充而非替代），因此下面两种
+      // 成色不合格的来源要**阻断验收**，而不是挂着链接、把差异写进提示里了事：
+      // 1) 一条判据都没对上的「形态参考」——读者点进去看到的是另一件事；
+      // 2) 与本卡判据明确「不符」——读者照着来源做就会把本卡的判据做反。
+      if (d.coverage === '形态参考') {
+        errs.push(`重点动作 ${e.slug} 的示范 ${d.id} 只是「形态参考」（一条自检判据都没覆盖）：`
+          + `重点动作必须有覆盖到判据的示范，请更换来源或补一条匹配动作与变式的视觉示范（§7.2）`);
+      }
+      const conflicts = (d.verification ?? []).filter((v) => v.status === '不符').map((v) => v.criterion);
+      if (conflicts.length) {
+        errs.push(`重点动作 ${e.slug} 的示范 ${d.id} 与判据「${conflicts.join('、')}」不符：`
+          + `重点动作不接受与自检判据冲突的示范（读者照着做会做反），必须换源（§7.2）`);
+      }
+      if (!d.visual_check) {
+        errs.push(`${d.id}: 重点动作的示范必须填 visual_check（实际看过的画面是什么：哪几张图／哪个机位，`
+          + `看到了什么），只读文字说明不算核验视觉示范（§7.2）`);
+      }
     }
   }
   return errs;

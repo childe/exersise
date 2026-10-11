@@ -1,13 +1,13 @@
 # 来源核验记录（§9.3 第 10 条）
 
-核验人：childe（由 xdev 实现阶段执行） / 第一轮：2026-10-12（文献身份层） / 第二轮：2026-10-12（结论实质层）
+核验人：childe（由 xdev 实现阶段执行） / 第一轮：2026-10-12（文献身份层） / 第二轮：2026-10-12（结论实质层） / 第三轮：2026-10-12（补齐 Hall 2012 全文 + 安全红旗征逐条覆盖）
 
 ## 核验方式与它的边界
 
 第二轮做的是**结论实质核验**：对 22 条 claim 的每一条来源，逐条取回该文献的**结构化摘要原文**
 （Europe PMC `resultType=core`，按 PMID 精确检索），把摘要里的**结果段与结论段**逐句与登记表里的
 `statement`、`direction`、`certainty`、`population`、`limitations` 对照，并在下表留下**支持该条的原句或效应量**。
-23 个 PMID 中 22 个取回了摘要全文；唯一取不到摘要的是 Hall 2012（见下表与「仍需人工完成的部分」）。
+23 个 PMID 中 22 个取回了摘要全文；唯一取不到摘要的是 Hall 2012——**第三轮已改从 PMC 开放全文（PMC3302369）读正文核验，这条缺口已闭合**。
 
 **第一轮已做并仍然成立的**：按 PMID 反查作者／年份／期刊／标题，确认链接指向的确实是登记表里写的那一篇；
 `npm run check:links:release` 确认全部来源可达。
@@ -27,7 +27,8 @@
 | claim-mechanical-tension | 补 limitations | Schoenfeld 2010 摘要只说三种机制"都可能起作用"，"张力为主"是正文论证而非定量比较 |
 | claim-cardio-mortality | 补 limitations | WHO 2020 的暴露指标是**活动量**而不是实测心肺耐力，属相邻指标外推 |
 | ✱ claim-redflag-referral | **增加直接来源** Downie 2013《Red flags to screen for malignancy and fracture in patients with low back pain》（PMID 24335669），并重写 limitations | ACP 2017 指南把红旗征人群排除在适用范围外，它支撑不了红旗征清单本身 |
-| claim-energy-balance | 在 limitations 里写明本轮没能取到摘要 | Europe PMC 该条无 abstractText |
+| claim-energy-balance | 第三轮：改读 PMC 全文完成核验；来源类型由「系统综述」改为「指南」（它是 ASN／ILSI 共识声明）；limitations 补三条边界与资助披露 | PMC3302369 全文 |
+| ✱ claim-redflag-referral | 第三轮：**再补两条直接来源**——ACSM 2015 运动前筛查更新（PMID 26473759，覆盖胸痛／晕厥／静息呼吸困难）与 Miller 2023 马尾综合征综述（PMID 38186331，覆盖鞍区麻木／大小便失禁）；limitations 写进 Downie 2013 的反向证据 | 见下文「安全红旗征清单的逐条覆盖」 |
 
 ## 全部 claim 的实质核验（22 条，安全级 4 条标 ✱）
 
@@ -46,7 +47,7 @@
 | claim-failure-not-required | 反对·中 | Grgic 2022 / 33497853 | "Training to muscle failure **does not seem to be required**"（肥大 ES 0.22，95%CI −0.11–0.55） | 直接支持该否定句；已补亚组例外 |
 | claim-frequency | 支持·中 | Schoenfeld 2016 / 27102172 | "frequencies of training **twice a week** promote superior hypertrophic outcomes to once a week"（容量相等） | 直接支持，分级成立 |
 | claim-rir-accuracy | 支持·低 | Zourdos 2021 / 30747900 | RIR 误差：9RPE 时 2.05±1.73 次，7RPE 时 3.65±2.46，5RPE 时 **5.15±2.92** | 直接支持"越近越准、远处高估"；单项 n=25 受训男性 → 低 |
-| claim-energy-balance | 支持·高 | Hall 2012 / 22434603 | **本轮未取到摘要**（Europe PMC 无 abstractText） | 核验只到标题与综述范围层；已在 limitations 写明，列为本轮唯一缺口 |
+| claim-energy-balance | 支持·高 | Hall 2012 / 22434603（ASN／ILSI 共识声明） | 全文："The energy balance equation (ES = EI – EO) is **a statement of the principle of energy conservation**"；"The development of obesity **by necessity requires positive energy imbalance**" | 第三轮读 PMC 全文核验，方向直接支持；短期体重含体水分、反对 3500 kcal 线性换算、摄入与消耗互相代偿三条边界已写入 limitations，并披露 ILSI 资助与未经期刊同行评议 |
 | claim-sleep-performance | 支持·低 | Fullagar 2015 / 25315456 | "conflicting findings mean that the **extent … remain uncertain**"；"the few published studies … **in athletes** report a reduction in sport-specific performance" | 来源自述证据不一致、且不覆盖训练适应 → **已降级为低并收窄 statement** |
 | claim-overtraining-rare | 支持·低 | Meeusen 2013 ECSS/ACSM / 23247672 | 共识讲的是 OTS 的排除诊断与"**no**（markers）meet all the criteria"，**没有发生率数据** | 实践推论而非来源结论 → **已降级为低** |
 | claim-interference-effect | 支持·中 | Wilson 2012 / 22002517 | "resistance training concurrently with **running**, but not cycling, resulted in significant decrements in both hypertrophy and strength"；频率/时长与肥大负相关（−0.26…−0.75） | 直接支持，且解释了本教程"选骑行、控时长"的处方 |
@@ -60,13 +61,31 @@
 四条都做了摘要层逐句核验；其中 `claim-redflag-referral` 在本轮被发现原来源不支撑清单本身，已补直接来源。
 `src/validate/claims.mjs` 对 `safety: true` 的来源类型做机器校验，改坏会导致构建失败。
 
+## 安全红旗征清单的逐条覆盖（第三轮补齐）
+
+评审意见："安全红旗来源需确认覆盖完整清单"。导读与第 9 章的红旗征共 7 条，逐条对出处如下。
+
+| 红旗征（导读 §0 与 §9.6 逐条一致） | 直接来源 | 来源里支持它的原话 | 缺口 |
+|---|---|---|---|
+| 胸痛／胸闷／压迫感 | Riebe 2015 ACSM / 26473759 | "exercise-related cardiovascular events are often **preceded by warning signs/symptoms**"；新模型把"有症状／体征"列为必须医学评估的分流条件 | 症状的具体条目在 ACSM 指南正文，摘要只给出分流原则 |
+| 晕厥／接近晕厥／不明原因头晕 | 同上 | 同上 | 同上 |
+| 静息呼吸困难／与运动量不匹配的气短 | 同上 | 同上 | 同上 |
+| 夜间痛醒／休息更痛 | Downie 2013 / 24335669 | 该综述评估的 53 条红旗征包含夜间痛这一类 | **Downie 的结论是这类红旗征单独使用时几乎不改变概率**——本教程只把它当"去看医生"的触发器，不当诊断依据 |
+| 外伤后立即丧失功能 | Downie 2013 / 24335669 | "severe trauma（11%，8–16%）"、"presence of a contusion or abrasion（**62%**，49–74%）"；多条同时出现时 90% | 数据来自腰背痛人群，推广到四肢是保守外推 |
+| 鞍区麻木／大小便失禁 | Miller 2023 / 38186331（综述 BASS 标准） | "Red flag symptoms, such as **bladder dysfunction, saddle anaesthesia** and sciatica, should lead to high clinical suspicion"；要求**1 小时内 MRI**、急诊减压 | 该文是综述英国脊柱外科协会标准的叙述性综述，按"指南"登记 |
+| 不明原因体重骤降／持续发热／盗汗 | Downie 2013 / 24335669 | "history of malignancy（33%，22–46%）"是肿瘤红旗征里概率最高的一条；体重下降等条目属被评估的 53 条之内 | 同夜间痛一行：单条诊断价值低，仅作就医触发器 |
+
+结论：7 条全部有直接来源；其中 3 条心肺类来自 ACSM 运动前筛查，1 条急症类来自马尾综合征综述，3 条脊柱类来自 Downie 2013。
+Downie 2013 的反向证据（多数红旗征单独使用价值有限）已写进 `claim-redflag-referral` 的 limitations，而不是藏起来。
+
 ## 链接可达性
 
-`npm run check:links:release` 于 2026-10-12（第二轮后重跑）：**合计 47，可达 47，失效 0，未检查 0**。
-claim 来源全部指向 PubMed，示范链接全部指向 ACE 官方动作库。
+`npm run check:links:release` 于 2026-10-12（第三轮后重跑）：**合计 53，可达 53，失效 0，未检查 0**。
+（本轮从 47 增到 53：新增 2 条安全级 claim 来源、换了 3 条示范来源，并把示范的补充视觉链接 `visual_url` 也纳入检查队列。）
+claim 来源全部指向 PubMed；示范链接以 ACE 官方动作库为主，另有 3 条可识别作者的专业示范（Barbell Medicine 低杠背蹲教学、Catalyst Athletics 滚轮、OPEX 动作库的低杠背蹲与前架位行走示范视频）。
 
 ## 仍需人工完成的部分
 
-- [ ] Hall 2012（22434603）：取不到摘要，需要人工打开全文确认其对"长期体重方向由能量收支决定"的表述。
+- [x] Hall 2012（22434603）：第三轮已改读 PMC 开放全文（PMC3302369）完成核验，原文句子见上表；这条缺口已闭合。
 - [ ] 若要把分级从"摘要层核验"升到"全文精读核验"，需要逐篇下载 PDF 核对效应量的计算与亚组细节；
       本轮已把所有**摘要层能判断的分歧**都改进了登记表，剩下的是方法学层面的复核。

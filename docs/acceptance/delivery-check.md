@@ -37,7 +37,7 @@
 
 | 项目 | 命令 | 结果 |
 |---|---|---|
-| 全部测试 | `node --test tests/` | 143 项全部通过（含 9 项真实浏览器集成测试） |
+| 全部测试 | `node --test tests/` | 第三轮：见本文件末尾「第三轮重跑」一节 |
 | 外链发布级检查 | `npm run check:links:release` | 合计 47 条：可达 47、失效 0、未检查 0 |
 | 构建（含覆盖矩阵、内部锚点、安全红线 hard 扫描） | `node src/build.mjs` | 成功；hard 扫描 0 命中；soft 扫描 3 处待复核，已在 `safety-review.md` 逐条判定 |
 | 占位内容清零 | `grep -rn "本章待撰写\|TODO\|TBD\|待补充" content/ dist/index.html` | 无命中 |
@@ -64,6 +64,7 @@
 | 证据筛选的全站效果 | 在登记表里勾「反对」，读学习轨里证据标签的 class 与正文长度 | 通过：不命中的标签降权、命中的高亮，正文一个字没少，安全提示里的标签不降权 | 同上 |
 | 禁用 JS 后两轨完整 | `Emulation.setScriptExecutionDisabled` 后硬刷新，读两轨 computed display | 通过：两轨都不是 `none`，参考库正文完整 | 同上 |
 | 打印 / 导出 PDF | `Emulation.setEmulatedMedia: print` 后读 computed display | 通过：切换器与筛选器 `none`，两轨 `block` | 同上 |
+| **真的导出一次 PDF** | `Page.printToPDF`（A4、含背景）导出 `dist/artifact.pdf`，再核对文件与内容 | 通过：5.6 MB、**132 页**，两轨完整展开；全部 **53 条外部来源链接**在 PDF 里一条不少（`tests/print-pdf.test.mjs`） | 同一份导出 |
 | ≤400px 窄屏 | 设 390×844 视口，比较 `documentElement.scrollWidth` 与 `innerWidth` | — | 通过：无横向溢出 |
 | 深浅主题 | 点主题按钮后刷新，读 `data-theme` | 通过：切换生效且刷新后保持 | 同上 |
 | 发布形态（artifact.html） | 补平台外壳后打开，重跑切轨 + 筛选 + 锚点跳转，并检查没有嵌套 `html/body` | 通过 | 同上 |
@@ -72,5 +73,22 @@
 
 - **真机**：上面"窄屏"是移动视口模拟，不是 iOS / Android 真机。真机特有的问题（触摸目标大小、
   Safari 的 `100vh`、系统字体放大）需要在手机上开一次链接才能确认。
-- **打印机／PDF 导出的实际分页**：验到的是打印媒体下的样式生效，没验具体分页在 A4 上好不好看。
+- **打印机的实际出纸**：PDF 已经真导出并核对过页数与外链脚注（见上表），但没有真打到纸上，
+  也没有人逐页看过 132 页里每一页的分页位置好不好看（例如动作卡是否被切成两页）。
+  这一条要人翻一遍导出的 `dist/artifact.pdf`。
 - **读者是否读得懂**：见 `zero-experience-readthrough.md`，那条必须由人来做。
+
+
+## 第三轮重跑（2026-10-12，第 2 轮评审意见修复后）
+
+| 项目 | 命令 | 结果 |
+|---|---|---|
+| 全部测试 | `node --test tests/` | 见 `.xdev/.../test-results.txt` 的完整输出（含 9 项浏览器测试 + 2 项真实 PDF 导出测试） |
+| 外链发布级检查 | `npm run check:links:release` | **合计 53：可达 53、失效 0、未检查 0**（本轮外链从 47 条增加到 53 条） |
+| 真实 PDF 导出 | `node --test tests/print-pdf.test.mjs` | 通过：132 页、53 条外链齐全 |
+
+### 仍然只能由人完成的两条（本轮没有假装做掉）
+
+1. **手机真机 + 最终发布链接**：本轮验的仍是本地产物与模拟视口。发布链接在真机上的表现
+   （触摸目标、Safari 的 100vh、系统字体放大、长按复制）必须有人拿手机打开一次。
+2. **零经验读者试读**：见 `zero-experience-readthrough.md`。

@@ -9,6 +9,7 @@ const demo = {
   source_type: '机构官方', publisher: 'NSCA', author_credential: '机构官方动作库',
   license: '链接引用，不转载', verified_on: '2026-10-11', verified_by: 'childe',
   shows_equipment: '杠铃', shows_variant: '相同', coverage: '逐条核验',
+  visual_check: '看过该页两张示范照片（侧面机位）：杠位于足中线上方、背部中立。',
   verification: [{ criterion: '杠在足中线正上方', status: '符合', result: '页面写明杠走足中线' },
                  { criterion: '脊柱在中立范围内', status: '符合', result: '页面要求全程背部挺直' }],
   dead: false,
@@ -100,8 +101,10 @@ test('一条判据都没覆盖时只能是「形态参考」，不能冒充示�
     verification: full.verification.map((v) => ({ ...v, status: '未覆盖', result: '页面没写' })),
   };
   assert.ok(validateDemos([none], { exercises: ex2 }).some((e) => e.includes('形态参考')));
-  const ok = { ...none, coverage: '形态参考', gaps_note: '仅作动作形态参考，判据以本卡为准' };
-  assert.deepEqual(validateDemos([ok], { exercises: ex2 }), []);
+  // 形态参考本身是合法成色（非重点动作可以用）；重点动作不接受它，见下面那组阻断测试。
+  const light = [{ ...ex2[0], equipment: '自重' }];
+  const ok = { ...none, shows_equipment: '自重', coverage: '形态参考', gaps_note: '仅作动作形态参考，判据以本卡为准' };
+  assert.deepEqual(validateDemos([ok], { exercises: light }), []);
 });
 
 test('来源页面的器械或变式与本卡不同时，必须显式登记并写明差异', () => {
@@ -149,8 +152,78 @@ test('真实数据：每条示范的成色都与逐条状态自洽，且不存�
   const demos = JSON.parse(await readFile(path.join(root, 'data/demos.json'), 'utf8'));
   const exercises = JSON.parse(await readFile(path.join(root, 'data/exercises.json'), 'utf8'));
   assert.deepEqual(validateDemos(demos, { exercises }), []);
-  // 评审点名的那条：杠铃滚轮不得再指向 TRX 悬吊带版本
+  // 评审点名的那条：杠铃滚轮不得再指向 TRX 悬吊带版本；
+  // 换源后主来源用的器械与本卡不同，必须写明差异，且另挂一条杠铃画面。
   const rollout = demos.find((d) => d.id === 'demo-barbell-rollout');
-  assert.equal(rollout.shows_equipment, '杠铃');
   assert.doesNotMatch(rollout.url, /trx/i);
+  assert.ok(rollout.substitute_note, '器械与本卡不同必须写明');
+  assert.match(rollout.visual_url, /^https:\/\//);
+});
+
+// ——— 重点动作的示范阻断条件（第 2 轮评审第 3 条）———
+// 之前的实现只要求"来源存在且没失效"，于是重点动作可以挂着一条
+// 「一条判据也没对上的形态参考」或「与本卡判据明确不符」的链接照样发布，
+// 差异只写在提示里。示范是重点动作的必需件（设计 §7.2），所以这两种情况必须阻断。
+test('重点动作的示范只是形态参考时阻断验收，而不是只写一句差异提示', () => {
+  const shape = {
+    ...full, coverage: '形态参考', gaps_note: '两条判据都没覆盖，以本卡为准',
+    verification: full.verification.map((v) => ({ ...v, status: '未覆盖', result: '页面没写' })),
+  };
+  const errs = validateDemos([shape], { exercises: ex2 });
+  assert.ok(errs.some((e) => e.includes('形态参考') && e.includes('重点动作')),
+    '重点动作不接受零覆盖的形态参考');
+  // 非重点动作（自重）仍然允许形态参考
+  const light = [{ ...ex2[0], equipment: '自重' }];
+  assert.deepEqual(validateDemos([{ ...shape, shows_equipment: '自重' }], { exercises: light }), []);
+});
+
+test('重点动作的示范与本卡判据存在「不符」时阻断验收', () => {
+  const conflict = {
+    ...full, coverage: '部分覆盖', gaps_note: '回程发起方式以本卡为准',
+    verification: [full.verification[0],
+      { ...full.verification[1], status: '不符', result: '来源要求用手臂把杠拉回，与本卡相反' }],
+  };
+  const errs = validateDemos([conflict], { exercises: ex2 });
+  assert.ok(errs.some((e) => e.includes('不符') && e.includes('重点动作')),
+    '重点动作的示范不得与自检判据冲突：读者照着做就会做反');
+});
+
+test('重点动作必须记录实际看过的画面（visual_check），光读文字说明不算核验示范', () => {
+  const { visual_check, ...noVisual } = full;
+  const errs = validateDemos([noVisual], { exercises: ex2 });
+  assert.ok(errs.some((e) => e.includes('visual_check')));
+  // 补充视觉来源（正文覆盖判据、另给一条匹配变式的视频）时，链接必须是 https
+  const badVisual = { ...full, visual_url: 'http://example.com/v' };
+  assert.ok(validateDemos([badVisual], { exercises: ex2 }).some((e) => e.includes('visual_url')));
+});
+
+test('真实数据：每个重点动作的示范都不是形态参考、不含「不符」，且都记了看过的画面', async () => {
+  const { readFile } = await import('node:fs/promises');
+  const path = (await import('node:path')).default;
+  const root = path.resolve(import.meta.dirname, '..');
+  const demos = JSON.parse(await readFile(path.join(root, 'data/demos.json'), 'utf8'));
+  const exercises = JSON.parse(await readFile(path.join(root, 'data/exercises.json'), 'utf8'));
+  const key = exercises.filter((e) => ['杠铃', '哑铃'].includes(e.equipment));
+  assert.ok(key.length >= 20);
+  for (const e of key) {
+    const d = demos.find((x) => x.id === e.demo_id);
+    assert.ok(d, `${e.slug} 缺示范`);
+    assert.notEqual(d.coverage, '形态参考', `${e.slug} 的示范只是形态参考`);
+    assert.ok(!d.verification.some((v) => v.status === '不符'), `${e.slug} 的示范与判据冲突`);
+    assert.ok(d.visual_check && d.visual_check.length > 10, `${e.slug} 没记录看过的画面`);
+  }
+});
+
+test('补充视觉示范链接会出现在页面上，并进入外链可达性检查', async () => {
+  const { renderDemo } = await import('../src/render/exercises.mjs');
+  const { collectExternalUrls } = await import('../src/validate/links.mjs');
+  const html = renderDemo({
+    publisher: 'Barbell Medicine', url: 'https://x/', verified_on: '2026-10-12',
+    coverage: '逐条核验', verification: [],
+    visual_url: 'https://www.youtube.com/watch?v=abc', visual_publisher: 'OPEX Fitness',
+  });
+  assert.match(html, /youtube\.com\/watch\?v=abc/);
+  assert.match(html, /OPEX Fitness/);
+  const urls = collectExternalUrls([], [{ url: 'https://a/', visual_url: 'https://b/', dead: false }]);
+  assert.deepEqual(urls, ['https://a/', 'https://b/']);
 });

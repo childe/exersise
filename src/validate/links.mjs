@@ -16,6 +16,17 @@ export function validateInternalLinks(html) {
   return errs;
 }
 
+/**
+ * 发布检查要覆盖页面上**每一条**可点击外链：claim 来源、未降级的示范链接，
+ * 以及示范的补充视觉链接（visual_url）。漏掉哪一类，哪一类就会悄悄死在页面上。
+ */
+export function collectExternalUrls(claims, demos) {
+  return [
+    ...claims.flatMap((c) => c.sources.map((s) => s.url)),
+    ...demos.filter((d) => d.dead !== true).flatMap((d) => [d.url, d.visual_url]),
+  ].filter(Boolean);
+}
+
 export async function checkExternalUrls(urls, { timeoutMs = 10000 } = {}) {
   return Promise.all([...new Set(urls)].map(async (url) => {
     const ctrl = new AbortController();
@@ -71,8 +82,7 @@ if (process.argv[1]?.endsWith('links.mjs') && process.argv.includes('--external'
   const demos = JSON.parse(await readFile(path.join(root, 'data/demos.json'), 'utf8'));
   // 已标 dead=true 的示范是"已处理"的：不再抓取、不再因它失败，但会显式列出来
   const degraded = demos.filter((d) => d.dead === true);
-  const urls = [...claims.flatMap((c) => c.sources.map((s) => s.url)),
-                ...demos.filter((d) => d.dead !== true).map((d) => d.url).filter(Boolean)];
+  const urls = collectExternalUrls(claims, demos);
   const results = await checkExternalUrls(urls);
   for (const r of results) console.log(`${r.status.padEnd(9)} ${r.url}  ${r.detail}`);
   for (const d of degraded) console.log(`degraded  ${d.id}  已降级为文字+判据+失效提示：${d.dead_note ?? '（缺 dead_note）'}`);
