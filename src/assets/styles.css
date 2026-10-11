@@ -1,16 +1,86 @@
 :root {
   color-scheme: light dark;
-  --bg: #fcfcfa;
-  --fg: #1b1b1a;
-  --muted: #5d5d58;
-  --rule: #d9d8d2;
-  --accent: #7a4a1e;
+  --bg: #fcfcfa; --surface: #fff; --fg: #1b1b1a; --muted: #5d5d58;
+  --rule: #d9d8d2; --accent: #7a4a1e; --warn-bg: #fdf1e7; --danger: #a2301c;
 }
-body { margin: 0; background: var(--bg); color: var(--fg);
-  font: 16px/1.7 system-ui, -apple-system, "PingFang SC", "Noto Sans CJK SC", sans-serif; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #15161a; --surface: #1d1f24; --fg: #e8e6e1; --muted: #a3a099;
+    --rule: #33363d; --accent: #e0a46a; --warn-bg: #2a2119; --danger: #e0725c;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #15161a; --surface: #1d1f24; --fg: #e8e6e1; --muted: #a3a099;
+  --rule: #33363d; --accent: #e0a46a; --warn-bg: #2a2119; --danger: #e0725c;
+}
+
+body {
+  margin: 0; background: var(--bg); color: var(--fg);
+  font: 16px/1.7 system-ui, -apple-system, "PingFang SC", "Noto Sans CJK SC", sans-serif;
+}
+main { max-width: 68rem; margin: 0 auto; padding: 16px; }
+img, svg { max-width: 100%; }
+.table-wrap, table { display: block; overflow-x: auto; max-width: 100%; }
+table { border-collapse: collapse; }
+th, td { border: 1px solid var(--rule); padding: 6px 10px; text-align: left; vertical-align: top; }
+a { color: var(--accent); }
+
+.site-head {
+  display: flex; gap: 12px; align-items: center; flex-wrap: wrap;
+  padding: 12px 16px; border-bottom: 1px solid var(--rule); background: var(--surface);
+}
+.site-head h1 { font-size: 1.1rem; margin: 0; margin-right: auto; }
+.track-switch button, .theme-toggle, .filters button {
+  font: inherit; padding: 4px 10px; border: 1px solid var(--rule);
+  background: var(--bg); color: var(--fg); border-radius: 999px; cursor: pointer;
+}
+.track-switch button[aria-selected="true"], .filters button[aria-pressed="true"] {
+  background: var(--accent); color: var(--bg); border-color: var(--accent);
+}
+.route-notice { margin: 0; padding: 12px 16px; background: var(--warn-bg); color: var(--fg); }
+
+.claim-tag {
+  font-size: 0.8em; padding: 1px 6px; border: 1px solid var(--rule);
+  border-radius: 999px; text-decoration: none; white-space: nowrap;
+}
+.claim-tag[data-direction="反对"] { border-color: var(--danger); color: var(--danger); }
+
+.toc { border: 1px solid var(--rule); padding: 8px 16px; border-radius: 8px; background: var(--surface); }
+.chapter, .ex-card, .plan-card, .claim-entry, .quiz-item {
+  border: 1px solid var(--rule); border-radius: 8px; padding: 16px;
+  margin: 16px 0; background: var(--surface);
+}
+.ex-grid { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr)); }
+.ex-card .en { color: var(--muted); font-weight: normal; font-size: 0.85em; }
+.ex-card .meta, .ex-card .muscles { color: var(--muted); }
+.safety, .pain-path { background: var(--warn-bg); padding: 8px 12px; border-radius: 6px; }
+.pain-path { border-left: 4px solid var(--danger); }
+.red-flags, .first-session { border: 2px solid var(--danger); border-radius: 8px; padding: 12px 16px; }
+.filters { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 12px 0; }
+.filters fieldset { border: 1px solid var(--rule); border-radius: 8px; padding: 4px 8px; }
+.filters legend { color: var(--muted); font-size: 0.85em; }
+.result-count { color: var(--muted); font-size: 0.85em; width: 100%; margin: 0; }
+.empty-state { background: var(--warn-bg); padding: 8px 12px; border-radius: 6px; width: 100%; }
+figure.concept { margin: 16px 0; }
+figure.concept figcaption { color: var(--muted); font-size: 0.88em; }
 
 /* 无 JS 与打印时两轨都展开；只有脚本跑起来后才隐藏非活动轨。
-   全文件中不得存在任何无条件的 .track { display: none } */
+   全文件中不得存在任何无条件隐藏 .track 的规则。 */
 .track { display: block; }
 .js-on .track:not(.is-active) { display: none; }
-.route-notice { margin: 0; padding: 12px 16px; background: var(--warn-bg, #fdf1e7); }
+
+@media (max-width: 400px) {
+  main { padding: 12px; }
+  .ex-grid { grid-template-columns: 1fr; }
+  .site-head { flex-wrap: wrap; }
+}
+
+@media print {
+  .track-switch, .filters, .toc, .theme-toggle, .route-notice { display: none !important; }
+  .track { display: block !important; }
+  [hidden] { display: revert !important; }
+  details > summary { display: none; }
+  details > *:not(summary) { display: block !important; }
+  a[href^="http"]::after { content: "（" attr(href) "）"; font-size: 0.85em; word-break: break-all; }
+  .chapter, .ex-card, .plan-card { break-inside: avoid-page; }
+}
