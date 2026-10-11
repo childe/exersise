@@ -6,6 +6,7 @@ import { renderClaimRegistry } from './render/claims.mjs';
 import { renderExercises } from './render/exercises.mjs';
 import { renderPlans } from './render/plans.mjs';
 import { loadChapters, renderChapters } from './render/chapters.mjs';
+import { renderQuiz } from './render/quiz.mjs';
 import { validateChapters, validateChapterList } from './validate/chapters.mjs';
 import { validateInternalLinks } from './validate/links.mjs';
 import { loadFigures, validateFigures } from './validate/figures.mjs';
@@ -39,6 +40,7 @@ export async function build(root = defaultRoot) {
     exerciseHtml: renderExercises(data.exercises, renderCtx),
     planHtml: renderPlans(data.plans, renderCtx),
     claimHtml: renderClaimRegistry(data.claims),
+    quizHtml: renderQuiz(data.quiz, renderCtx),
   });
   const linkErrs = validateInternalLinks(html);
   if (linkErrs.length) throw new Error(`内部锚点校验失败:\n- ${linkErrs.join('\n- ')}`);
