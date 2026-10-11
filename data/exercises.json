@@ -60,7 +60,7 @@
       "cautions": "训练中出现疼痛：当场停止该动作，当次不用其他动作替代着练同一部位，按第 9 章的判断原则决定继续观察还是就医。"
     },
     "home_alts": [
-      "goblet-squat"
+      "bodyweight-squat"
     ],
     "difficulty": "入门",
     "safety": {
@@ -138,7 +138,7 @@
       "cautions": "训练中出现疼痛：当场停止该动作，当次不用其他动作替代着练同一部位，按第 9 章的判断原则决定继续观察还是就医。"
     },
     "home_alts": [
-      "back-squat-high-bar"
+      "bodyweight-squat"
     ],
     "difficulty": "入门",
     "safety": {
@@ -217,7 +217,7 @@
       "cautions": "训练中出现疼痛：当场停止该动作，当次不用其他动作替代着练同一部位，按第 9 章的判断原则决定继续观察还是就医。"
     },
     "home_alts": [
-      "goblet-squat"
+      "bodyweight-squat"
     ],
     "difficulty": "进阶",
     "safety": {
@@ -295,7 +295,7 @@
       "cautions": "训练中出现疼痛：当场停止该动作，当次不用其他动作替代着练同一部位，按第 9 章的判断原则决定继续观察还是就医。"
     },
     "home_alts": [
-      "goblet-squat"
+      "bodyweight-squat"
     ],
     "difficulty": "进阶",
     "safety": {
@@ -372,7 +372,7 @@
       "cautions": "训练中出现疼痛：当场停止该动作，当次不用其他动作替代着练同一部位，按第 9 章的判断原则决定继续观察还是就医。"
     },
     "home_alts": [
-      "goblet-squat"
+      "bodyweight-squat"
     ],
     "difficulty": "进阶",
     "safety": {
@@ -451,7 +451,7 @@
       "cautions": "训练中出现疼痛：当场停止该动作，当次不用其他动作替代着练同一部位，按第 9 章的判断原则决定继续观察还是就医。"
     },
     "home_alts": [
-      "db-romanian-deadlift"
+      "band-good-morning"
     ],
     "difficulty": "进阶",
     "safety": {
@@ -530,7 +530,7 @@
       "cautions": "训练中出现疼痛：当场停止该动作，当次不用其他动作替代着练同一部位，按第 9 章的判断原则决定继续观察还是就医。"
     },
     "home_alts": [
-      "db-romanian-deadlift"
+      "band-good-morning"
     ],
     "difficulty": "进阶",
     "safety": {
@@ -608,7 +608,7 @@
       "cautions": "训练中出现疼痛：当场停止该动作，当次不用其他动作替代着练同一部位，按第 9 章的判断原则决定继续观察还是就医。"
     },
     "home_alts": [
-      "db-hip-thrust"
+      "glute-bridge-bodyweight"
     ],
     "difficulty": "入门",
     "safety": {
@@ -685,7 +685,7 @@
       "cautions": "训练中出现疼痛：当场停止该动作，当次不用其他动作替代着练同一部位，按第 9 章的判断原则决定继续观察还是就医。"
     },
     "home_alts": [
-      "db-hip-thrust"
+      "glute-bridge-bodyweight"
     ],
     "difficulty": "入门",
     "safety": {
@@ -763,7 +763,7 @@
       "cautions": "训练中出现疼痛：当场停止该动作，当次不用其他动作替代着练同一部位，按第 9 章的判断原则决定继续观察还是就医。"
     },
     "home_alts": [
-      "db-bench-press"
+      "push-up"
     ],
     "difficulty": "进阶",
     "safety": {
@@ -843,7 +843,7 @@
       "cautions": "训练中出现疼痛：当场停止该动作，当次不用其他动作替代着练同一部位，按第 9 章的判断原则决定继续观察还是就医。"
     },
     "home_alts": [
-      "db-shoulder-press"
+      "band-overhead-press"
     ],
     "difficulty": "进阶",
     "safety": {
@@ -922,7 +922,7 @@
       "cautions": "训练中出现疼痛：当场停止该动作，当次不用其他动作替代着练同一部位，按第 9 章的判断原则决定继续观察还是就医。"
     },
     "home_alts": [
-      "db-bench-press"
+      "push-up"
     ],
     "difficulty": "进阶",
     "safety": {
@@ -930,7 +930,7 @@
       "collars": "两侧卡扣必须上紧，无例外。",
       "setup": "握距与肩同宽；比平板卧推减重量起步。",
       "solo_ok": false,
-      "solo_alt": "db-bench-press",
+      "solo_alt": "cable-pushdown",
       "bailout": "做不动就把杠落到保护杆上，人从杠下侧移出来，不做滚杠卸载。"
     },
     "demo_id": "demo-close-grip-bench-press",
@@ -1000,7 +1000,7 @@
       "cautions": "训练中出现疼痛：当场停止该动作，当次不用其他动作替代着练同一部位，按第 9 章的判断原则决定继续观察还是就医。"
     },
     "home_alts": [
-      "db-bench-press"
+      "push-up"
     ],
     "difficulty": "入门",
     "safety": {
@@ -1079,7 +1079,7 @@
       "cautions": "训练中出现疼痛：当场停止该动作，当次不用其他动作替代着练同一部位，按第 9 章的判断原则决定继续观察还是就医。"
     },
     "home_alts": [
-      "db-bench-press"
+      "push-up"
     ],
     "difficulty": "入门",
     "safety": {
@@ -1157,7 +1157,7 @@
       "cautions": "训练中出现疼痛：当场停止该动作，当次不用其他动作替代着练同一部位，按第 9 章的判断原则决定继续观察还是就医。"
     },
     "home_alts": [
-      "db-shoulder-press"
+      "band-overhead-press"
     ],
     "difficulty": "入门",
     "safety": {
@@ -1234,7 +1234,7 @@
       "cautions": "训练中出现疼痛：当场停止该动作，当次不用其他动作替代着练同一部位，按第 9 章的判断原则决定继续观察还是就医。"
     },
     "home_alts": [
-      "db-shoulder-press"
+      "band-overhead-press"
     ],
     "difficulty": "入门",
     "safety": {
@@ -1313,7 +1313,7 @@
       "cautions": "训练中出现疼痛：当场停止该动作，当次不用其他动作替代着练同一部位，按第 9 章的判断原则决定继续观察还是就医。"
     },
     "home_alts": [
-      "db-one-arm-row"
+      "band-row"
     ],
     "difficulty": "进阶",
     "safety": {
@@ -1390,7 +1390,7 @@
       "cautions": "训练中出现疼痛：当场停止该动作，当次不用其他动作替代着练同一部位，按第 9 章的判断原则决定继续观察还是就医。"
     },
     "home_alts": [
-      "db-one-arm-row"
+      "band-row"
     ],
     "difficulty": "入门",
     "safety": {
@@ -1467,7 +1467,7 @@
       "cautions": "训练中出现疼痛：当场停止该动作，当次不用其他动作替代着练同一部位，按第 9 章的判断原则决定继续观察还是就医。"
     },
     "home_alts": [
-      "db-one-arm-row"
+      "band-row"
     ],
     "difficulty": "入门",
     "safety": {
@@ -1543,7 +1543,7 @@
       "cautions": "训练中出现疼痛：当场停止该动作，当次不用其他动作替代着练同一部位，按第 9 章的判断原则决定继续观察还是就医。"
     },
     "home_alts": [
-      "db-one-arm-row"
+      "band-row"
     ],
     "difficulty": "入门",
     "safety": {
@@ -1619,7 +1619,7 @@
       "cautions": "训练中出现疼痛：当场停止该动作，当次不用其他动作替代着练同一部位，按第 9 章的判断原则决定继续观察还是就医。"
     },
     "home_alts": [
-      "db-one-arm-row"
+      "band-row"
     ],
     "difficulty": "入门",
     "safety": {
@@ -1698,7 +1698,7 @@
       "cautions": "训练中出现疼痛：当场停止该动作，当次不用其他动作替代着练同一部位，按第 9 章的判断原则决定继续观察还是就医。"
     },
     "home_alts": [
-      "db-farmer-carry"
+      "loaded-carry-household"
     ],
     "difficulty": "进阶",
     "safety": {
@@ -1776,7 +1776,7 @@
       "cautions": "训练中出现疼痛：当场停止该动作，当次不用其他动作替代着练同一部位，按第 9 章的判断原则决定继续观察还是就医。"
     },
     "home_alts": [
-      "db-farmer-carry"
+      "loaded-carry-household"
     ],
     "difficulty": "入门",
     "safety": {
@@ -1854,7 +1854,7 @@
       "cautions": "训练中出现疼痛：当场停止该动作，当次不用其他动作替代着练同一部位，按第 9 章的判断原则决定继续观察还是就医。"
     },
     "home_alts": [
-      "db-farmer-carry"
+      "loaded-carry-household"
     ],
     "difficulty": "入门",
     "safety": {
@@ -1931,7 +1931,7 @@
       "cautions": "训练中出现疼痛：当场停止该动作，当次不用其他动作替代着练同一部位，按第 9 章的判断原则决定继续观察还是就医。"
     },
     "home_alts": [
-      "db-dead-bug"
+      "plank"
     ],
     "difficulty": "进阶",
     "safety": {
@@ -2007,7 +2007,7 @@
       "cautions": "训练中出现疼痛：当场停止该动作，当次不用其他动作替代着练同一部位，按第 9 章的判断原则决定继续观察还是就医。"
     },
     "home_alts": [
-      "db-dead-bug"
+      "plank"
     ],
     "difficulty": "入门",
     "safety": {
@@ -2019,6 +2019,2240 @@
       "bailout": "撑不住就把手脚收回起始位，再把哑铃放到体侧地面。"
     },
     "demo_id": "demo-db-dead-bug",
+    "chapter_refs": [
+      "ch4"
+    ],
+    "claim_refs": []
+  },
+  {
+    "slug": "leg-press",
+    "name_zh": "坐姿腿举",
+    "name_en": "Seated Leg Press",
+    "pattern": "蹲",
+    "laterality": "双侧",
+    "muscles": {
+      "prime": [
+        "股四头",
+        "臀"
+      ],
+      "synergist": [
+        "腘绳"
+      ],
+      "stabilizer": [
+        "核心"
+      ]
+    },
+    "equipment": "固定器械",
+    "cues": [
+      {
+        "phase": "设置",
+        "text": "调好座椅距离：双脚平放踏板、与髋同宽，起始时膝约 90 度，腰与臀贴住靠背。"
+      },
+      {
+        "phase": "发力",
+        "text": "推到膝接近伸直但不锁死，再有控制地回到起始角度；腰全程不离开靠背。"
+      },
+      {
+        "phase": "收尾",
+        "text": "做完先把安全锁扣回位，确认承重后再把脚放下。"
+      }
+    ],
+    "mistakes": [
+      {
+        "error": "下放过深导致骨盆后翻、腰离开靠背",
+        "consequence": "腰段在负重下被迫屈曲，是腿举最主要的风险。"
+      },
+      {
+        "error": "膝锁死后在顶点\"歇一下\"",
+        "consequence": "关节承受冲击性负荷，而目标肌群的张力反而中断。"
+      }
+    ],
+    "self_checks": [
+      {
+        "criterion": "腰与臀全程贴住靠背",
+        "how": "从侧面拍视频，看最低点腰与靠背之间有没有出现空隙。",
+        "cannot": "看不出骨盆实际转了多少；衣物与靠背形状会掩盖。"
+      },
+      {
+        "criterion": "双脚压力均衡，两膝同步",
+        "how": "从正面拍，看两膝在推起过程是否同高、是否内扣。",
+        "cannot": "判断不了左右腿力量差多少；要量化得做单腿版本。"
+      }
+    ],
+    "audience": {
+      "suitable": "想在有靠背支撑下练下肢、或当天不适合做自由重量蹲的读者。",
+      "cautions": "训练中出现疼痛：当场停止该动作，当次不用其他动作替代着练同一部位，按第 9 章的判断原则决定继续观察还是就医。"
+    },
+    "home_alts": [
+      "bodyweight-squat"
+    ],
+    "difficulty": "入门",
+    "safety": {
+      "rack": "使用前确认安全锁扣可用、配重销插到底。",
+      "collars": "本动作不使用杠铃，不涉及卡扣。",
+      "setup": "座椅距离以起始膝约 90 度为准；踏板上脚的位置与髋同宽。",
+      "solo_ok": true,
+      "solo_alt": null,
+      "bailout": "推不动就把安全锁扣回位承重，再把腿收回；不要在最低位反复挣扎。"
+    },
+    "demo_id": null,
+    "chapter_refs": [
+      "ch4"
+    ],
+    "claim_refs": []
+  },
+  {
+    "slug": "seated-leg-extension",
+    "name_zh": "坐姿腿屈伸",
+    "name_en": "Seated Leg Extension",
+    "pattern": "蹲",
+    "laterality": "双侧",
+    "muscles": {
+      "prime": [
+        "股四头"
+      ],
+      "synergist": [
+        "核心"
+      ],
+      "stabilizer": [
+        "臀"
+      ]
+    },
+    "equipment": "固定器械",
+    "cues": [
+      {
+        "phase": "设置",
+        "text": "调座椅让膝关节轴与器械转轴对齐，腿垫压在踝关节上方而不是脚背。"
+      },
+      {
+        "phase": "发力",
+        "text": "伸膝到接近伸直，顶点略停，再有控制地放回；不甩腿。"
+      },
+      {
+        "phase": "收尾",
+        "text": "做完把腿放回起始角度再起身。"
+      }
+    ],
+    "mistakes": [
+      {
+        "error": "靠躯干后仰把腿甩上去",
+        "consequence": "刺激被借力分走，膝关节承受冲击。"
+      },
+      {
+        "error": "腿垫压在脚背上",
+        "consequence": "力矩点改变，踝与膝的受力都不对。"
+      }
+    ],
+    "self_checks": [
+      {
+        "criterion": "膝轴与器械转轴对齐",
+        "how": "坐好后从侧面看膝的旋转中心与转轴是否在一条线上。",
+        "cannot": "肉眼对位只能做到大致准确；判断不了关节内部的受力。"
+      },
+      {
+        "criterion": "放回时有控制、不是自由落体",
+        "how": "从侧面拍视频，比较上升与下降两段的时间。",
+        "cannot": "看不出股四头各头的分担比例。"
+      }
+    ],
+    "audience": {
+      "suitable": "想单独补股四头、或大重量蹲类动作之外补量的读者。",
+      "cautions": "训练中出现疼痛：当场停止该动作，当次不用其他动作替代着练同一部位，按第 9 章的判断原则决定继续观察还是就医。"
+    },
+    "home_alts": [
+      "bodyweight-squat"
+    ],
+    "difficulty": "入门",
+    "safety": {
+      "rack": "配重销插到底；座椅与腿垫调好后再坐上去。",
+      "collars": "本动作不使用杠铃，不涉及卡扣。",
+      "setup": "靠背调到腰贴实；腿垫位于踝上方。",
+      "solo_ok": true,
+      "solo_alt": null,
+      "bailout": "伸不动就让腿垫有控制地回到起始角度，不要突然松力。"
+    },
+    "demo_id": null,
+    "chapter_refs": [
+      "ch4"
+    ],
+    "claim_refs": []
+  },
+  {
+    "slug": "bodyweight-squat",
+    "name_zh": "自重深蹲",
+    "name_en": "Bodyweight Squat",
+    "pattern": "蹲",
+    "laterality": "双侧",
+    "muscles": {
+      "prime": [
+        "股四头",
+        "臀"
+      ],
+      "synergist": [
+        "腘绳"
+      ],
+      "stabilizer": [
+        "核心"
+      ]
+    },
+    "equipment": "自重",
+    "cues": [
+      {
+        "phase": "设置",
+        "text": "两脚与肩同宽、脚尖略外展，双手可前举保持平衡，整个脚掌踩实。"
+      },
+      {
+        "phase": "发力",
+        "text": "髋与膝同步下沉到自己能保持背中立的最低位，膝与脚尖同向。"
+      },
+      {
+        "phase": "收尾",
+        "text": "站直回到起点，不在顶端锁死膝关节。"
+      }
+    ],
+    "mistakes": [
+      {
+        "error": "脚跟离地",
+        "consequence": "重心前移到前脚掌，膝前压力上升、稳定性下降。"
+      },
+      {
+        "error": "下蹲到底时腰明显卷起来",
+        "consequence": "腰段在最低位被动屈曲，长期反复会累积不适。"
+      }
+    ],
+    "self_checks": [
+      {
+        "criterion": "整个脚掌全程踩实",
+        "how": "正前方拍视频，看最低位脚跟是否离地。",
+        "cannot": "看不出足部内部受力；鞋底过软会误判。"
+      },
+      {
+        "criterion": "下蹲幅度以背能保持中立为界",
+        "how": "正侧面拍，找到腰段曲度开始明显变化的那一帧。",
+        "cannot": "体表看不到脊柱实际位置；幅度上限还受热身与站距影响，不是固定值。"
+      }
+    ],
+    "audience": {
+      "suitable": "所有人；也是学习蹲的动作模式与在家训练的起点。",
+      "cautions": "训练中出现疼痛：当场停止该动作，当次不用其他动作替代着练同一部位，按第 9 章的判断原则决定继续观察还是就医。"
+    },
+    "home_alts": [
+      "goblet-squat"
+    ],
+    "difficulty": "入门",
+    "safety": {
+      "rack": "不需要任何支撑；身后留出一步空间。",
+      "collars": "本动作不使用杠铃，不涉及卡扣。",
+      "setup": "站在平整地面上，两脚与肩同宽。",
+      "solo_ok": true,
+      "solo_alt": null,
+      "bailout": "起不来就把手撑在大腿上或坐到身后的椅子上，再站起来。"
+    },
+    "demo_id": null,
+    "chapter_refs": [
+      "ch4"
+    ],
+    "claim_refs": []
+  },
+  {
+    "slug": "seated-calf-raise",
+    "name_zh": "坐姿提踵",
+    "name_en": "Seated Calf Raise",
+    "pattern": "蹲",
+    "laterality": "双侧",
+    "muscles": {
+      "prime": [
+        "小腿"
+      ],
+      "synergist": [
+        "股四头"
+      ],
+      "stabilizer": [
+        "核心"
+      ]
+    },
+    "equipment": "固定器械",
+    "cues": [
+      {
+        "phase": "设置",
+        "text": "坐好，前脚掌踩在踏板边缘，膝垫压在大腿下段靠近膝的位置。"
+      },
+      {
+        "phase": "发力",
+        "text": "脚跟尽量下沉到被拉开，再推到最高；全程慢，不弹。"
+      },
+      {
+        "phase": "收尾",
+        "text": "做完把安全杆挂回去再把腿抽出来。"
+      }
+    ],
+    "mistakes": [
+      {
+        "error": "靠弹震完成次数",
+        "consequence": "跟腱承受冲击，而小腿肌的张力时间很短。"
+      },
+      {
+        "error": "幅度只做一半",
+        "consequence": "小腿在被拉长位置的刺激被省掉。"
+      }
+    ],
+    "self_checks": [
+      {
+        "criterion": "每次都做到完整的下沉与顶起",
+        "how": "从侧面拍视频，看脚跟的最低与最高位置是否每次一致。",
+        "cannot": "看不出比目鱼肌与腓肠肌各自分担了多少。"
+      },
+      {
+        "criterion": "膝垫位置在大腿下段而不是压在膝盖骨上",
+        "how": "坐好后用手确认垫子压的位置（不在负重下移动腿）。",
+        "cannot": "判断不了软组织的受压程度；明显不适就要调整。"
+      }
+    ],
+    "audience": {
+      "suitable": "想补小腿、尤其是坐姿版本针对比目鱼肌的读者。",
+      "cautions": "训练中出现疼痛：当场停止该动作，当次不用其他动作替代着练同一部位，按第 9 章的判断原则决定继续观察还是就医。"
+    },
+    "home_alts": [
+      "standing-calf-raise-bodyweight"
+    ],
+    "difficulty": "入门",
+    "safety": {
+      "rack": "确认安全杆与配重销到位。",
+      "collars": "本动作不使用杠铃，不涉及卡扣。",
+      "setup": "前脚掌踩在踏板边缘约一半；膝垫调到大腿下段。",
+      "solo_ok": true,
+      "solo_alt": null,
+      "bailout": "做不动就让脚跟有控制地落回最低位，把安全杆挂回去。"
+    },
+    "demo_id": null,
+    "chapter_refs": [
+      "ch4"
+    ],
+    "claim_refs": []
+  },
+  {
+    "slug": "standing-calf-raise-bodyweight",
+    "name_zh": "自重站姿提踵",
+    "name_en": "Standing Bodyweight Calf Raise",
+    "pattern": "蹲",
+    "laterality": "双侧",
+    "muscles": {
+      "prime": [
+        "小腿"
+      ],
+      "synergist": [
+        "股四头"
+      ],
+      "stabilizer": [
+        "核心"
+      ]
+    },
+    "equipment": "自重",
+    "cues": [
+      {
+        "phase": "设置",
+        "text": "站在平地或台阶边缘，手扶墙或门框保持平衡（手只负责平衡，不承重）。"
+      },
+      {
+        "phase": "发力",
+        "text": "脚跟缓慢抬到最高，顶点停一下，再缓慢落到最低。"
+      },
+      {
+        "phase": "收尾",
+        "text": "结束时双脚平放站稳再松手。"
+      }
+    ],
+    "mistakes": [
+      {
+        "error": "用手臂把身体往上拉",
+        "consequence": "腿的负荷被手分走，刺激下降。"
+      },
+      {
+        "error": "快速弹跳式完成",
+        "consequence": "跟腱受冲击，训练效果反而变差。"
+      }
+    ],
+    "self_checks": [
+      {
+        "criterion": "顶点与最低点每次一致",
+        "how": "正侧面拍视频，看脚跟轨迹的上下端是否稳定。",
+        "cannot": "看不出两侧小腿的力量差；要比较得做单腿版。"
+      },
+      {
+        "criterion": "手只扶不拉",
+        "how": "观察扶墙的手是否有明显发力（手臂肌肉绷紧、关节角度变化）。",
+        "cannot": "轻微借力很难察觉，这条只能判断明显的拉拽。"
+      }
+    ],
+    "audience": {
+      "suitable": "在家练小腿、或作为坐姿提踵的替代。",
+      "cautions": "训练中出现疼痛：当场停止该动作，当次不用其他动作替代着练同一部位，按第 9 章的判断原则决定继续观察还是就医。"
+    },
+    "home_alts": [
+      "seated-calf-raise"
+    ],
+    "difficulty": "入门",
+    "safety": {
+      "rack": "不需要任何支撑设备；扶墙或门框即可。",
+      "collars": "本动作不使用杠铃，不涉及卡扣。",
+      "setup": "平整地面或稳固台阶；赤脚或平底鞋。",
+      "solo_ok": true,
+      "solo_alt": null,
+      "bailout": "撑不住就双脚落地站稳，扶住墙，不要在台阶边缘硬撑。"
+    },
+    "demo_id": null,
+    "chapter_refs": [
+      "ch4"
+    ],
+    "claim_refs": []
+  },
+  {
+    "slug": "back-extension",
+    "name_zh": "罗马椅背伸",
+    "name_en": "Back Extension",
+    "pattern": "髋铰链",
+    "laterality": "双侧",
+    "muscles": {
+      "prime": [
+        "下背",
+        "臀"
+      ],
+      "synergist": [
+        "腘绳"
+      ],
+      "stabilizer": [
+        "核心"
+      ]
+    },
+    "equipment": "固定器械",
+    "cues": [
+      {
+        "phase": "设置",
+        "text": "调好髋垫：髋骨上缘略高于垫子前缘，脚踝卡稳，双手交叉抱胸。"
+      },
+      {
+        "phase": "发力",
+        "text": "屈髋下放到腘绳被拉开，背保持中立；再用髋把躯干带回到与腿成一条线。"
+      },
+      {
+        "phase": "收尾",
+        "text": "结束位不过伸，回到起始位后再下器械。"
+      }
+    ],
+    "mistakes": [
+      {
+        "error": "顶点过度后仰",
+        "consequence": "腰段过伸，刺激从臀与腘绳转到腰。"
+      },
+      {
+        "error": "用腰卷起来而不是屈髋",
+        "consequence": "目标从髋铰链变成脊柱屈伸，背的负担上升。"
+      }
+    ],
+    "self_checks": [
+      {
+        "criterion": "动作由髋发起，背的曲度不明显变化",
+        "how": "正侧面拍视频，看下放时是髋先折还是腰先弯。",
+        "cannot": "体表看不到脊柱实际位置；也判断不了这个幅度对你是否有害。"
+      },
+      {
+        "criterion": "顶点时躯干与腿成一条线，不超过",
+        "how": "侧面视频暂停在顶点看躯干角度。",
+        "cannot": "只能判断明显的过伸；轻微差异无法分辨。"
+      }
+    ],
+    "audience": {
+      "suitable": "想补下背与臀的耐力、腰无急性症状的读者。",
+      "cautions": "训练中出现疼痛：当场停止该动作，当次不用其他动作替代着练同一部位，按第 9 章的判断原则决定继续观察还是就医。"
+    },
+    "home_alts": [
+      "glute-bridge-bodyweight"
+    ],
+    "difficulty": "入门",
+    "safety": {
+      "rack": "确认髋垫与踝卡扣锁死后再上。",
+      "collars": "本动作不使用杠铃，不涉及卡扣。",
+      "setup": "髋垫前缘略低于髋骨上缘，保证髋能自由折叠。",
+      "solo_ok": true,
+      "solo_alt": null,
+      "bailout": "起不来就用手撑住垫子或地面，把身体推回水平位再下来。"
+    },
+    "demo_id": null,
+    "chapter_refs": [
+      "ch4"
+    ],
+    "claim_refs": []
+  },
+  {
+    "slug": "lying-leg-curl",
+    "name_zh": "俯卧腿弯举",
+    "name_en": "Lying Leg Curl",
+    "pattern": "髋铰链",
+    "laterality": "双侧",
+    "muscles": {
+      "prime": [
+        "腘绳"
+      ],
+      "synergist": [
+        "小腿"
+      ],
+      "stabilizer": [
+        "核心"
+      ]
+    },
+    "equipment": "固定器械",
+    "cues": [
+      {
+        "phase": "设置",
+        "text": "俯卧，膝关节轴与器械转轴对齐，腿垫压在跟腱上方而不是脚跟。"
+      },
+      {
+        "phase": "发力",
+        "text": "屈膝把腿垫带到最高，髋不离开垫子；再有控制地放回。"
+      },
+      {
+        "phase": "收尾",
+        "text": "结束时把腿放回起始角度再起身。"
+      }
+    ],
+    "mistakes": [
+      {
+        "error": "用抬髋把腿垫甩上去",
+        "consequence": "腘绳的收缩幅度变小，腰段反而受力。"
+      },
+      {
+        "error": "放回时失控",
+        "consequence": "离心段被省掉，而这一段正是腘绳最需要的刺激。"
+      }
+    ],
+    "self_checks": [
+      {
+        "criterion": "髋全程贴住垫子",
+        "how": "从侧面拍视频，看屈膝到顶点时髋有没有抬起。",
+        "cannot": "看不出腘绳三块肌肉的分担；也判断不了左右差异。"
+      },
+      {
+        "criterion": "放回有控制、下降比上升慢",
+        "how": "侧面视频比较上升与下降两段时间。",
+        "cannot": "时间比例不能判断\"该用多重\"。"
+      }
+    ],
+    "audience": {
+      "suitable": "想补腘绳、尤其是髋铰链类动作之外再加一个屈膝角度的读者。",
+      "cautions": "训练中出现疼痛：当场停止该动作，当次不用其他动作替代着练同一部位，按第 9 章的判断原则决定继续观察还是就医。"
+    },
+    "home_alts": [
+      "glute-bridge-bodyweight"
+    ],
+    "difficulty": "入门",
+    "safety": {
+      "rack": "配重销插到底；腿垫位置调好再趴上去。",
+      "collars": "本动作不使用杠铃，不涉及卡扣。",
+      "setup": "膝轴与转轴对齐；腿垫在跟腱上方。",
+      "solo_ok": true,
+      "solo_alt": null,
+      "bailout": "做不动就让腿垫有控制地回到起始位，不突然松力。"
+    },
+    "demo_id": null,
+    "chapter_refs": [
+      "ch4"
+    ],
+    "claim_refs": []
+  },
+  {
+    "slug": "glute-bridge-bodyweight",
+    "name_zh": "自重臀桥",
+    "name_en": "Bodyweight Glute Bridge",
+    "pattern": "髋铰链",
+    "laterality": "双侧",
+    "muscles": {
+      "prime": [
+        "臀"
+      ],
+      "synergist": [
+        "腘绳",
+        "核心"
+      ],
+      "stabilizer": [
+        "下背"
+      ]
+    },
+    "equipment": "自重",
+    "cues": [
+      {
+        "phase": "设置",
+        "text": "仰卧屈膝，两脚与髋同宽踩实地面，脚跟离臀约一掌。"
+      },
+      {
+        "phase": "发力",
+        "text": "收住肋骨，用髋把身体顶到躯干与大腿接近一条线，不用腰去拱。"
+      },
+      {
+        "phase": "收尾",
+        "text": "有控制地落回地面，不砸。"
+      }
+    ],
+    "mistakes": [
+      {
+        "error": "顶点用腰拱起来",
+        "consequence": "腰段过伸而臀的参与下降。"
+      },
+      {
+        "error": "脚踩得太远",
+        "consequence": "变成腘绳主导甚至抽筋。"
+      }
+    ],
+    "self_checks": [
+      {
+        "criterion": "顶点时躯干与大腿接近一条线",
+        "how": "正侧面拍视频，看顶点处腰是否明显拱起。",
+        "cannot": "看不出臀肌实际发力比例；没有\"感觉\"不等于没练到。"
+      },
+      {
+        "criterion": "两膝全程同宽、不内扣",
+        "how": "正前方拍，看顶点处两膝的距离。",
+        "cannot": "判断不了髋外展肌的力量，只能看明显内扣。"
+      }
+    ],
+    "audience": {
+      "suitable": "所有人；也是在家练髋铰链与臀的起点。",
+      "cautions": "训练中出现疼痛：当场停止该动作，当次不用其他动作替代着练同一部位，按第 9 章的判断原则决定继续观察还是就医。"
+    },
+    "home_alts": [
+      "db-hip-thrust"
+    ],
+    "difficulty": "入门",
+    "safety": {
+      "rack": "不需要任何支撑。",
+      "collars": "本动作不使用杠铃，不涉及卡扣。",
+      "setup": "地面铺垫子；两脚与髋同宽。",
+      "solo_ok": true,
+      "solo_alt": null,
+      "bailout": "顶不动就把髋落回地面休息，不在半程硬撑。"
+    },
+    "demo_id": null,
+    "chapter_refs": [
+      "ch4"
+    ],
+    "claim_refs": []
+  },
+  {
+    "slug": "band-good-morning",
+    "name_zh": "弹力带早安式",
+    "name_en": "Band Good Morning",
+    "pattern": "髋铰链",
+    "laterality": "双侧",
+    "muscles": {
+      "prime": [
+        "腘绳",
+        "臀"
+      ],
+      "synergist": [
+        "下背"
+      ],
+      "stabilizer": [
+        "核心"
+      ]
+    },
+    "equipment": "弹力带",
+    "cues": [
+      {
+        "phase": "设置",
+        "text": "弹力带一端踩在两脚下，另一端绕过后颈与肩（垫住），站直，膝微屈。"
+      },
+      {
+        "phase": "发力",
+        "text": "髋往后推、躯干前倾到腘绳被拉开，背保持中立；再把髋推回站直。"
+      },
+      {
+        "phase": "收尾",
+        "text": "结束时先屈髋降低身体，把带子从肩上取下。"
+      }
+    ],
+    "mistakes": [
+      {
+        "error": "用弯腰代替屈髋",
+        "consequence": "腰段承受张力而腘绳几乎没被拉长。"
+      },
+      {
+        "error": "带子阻力过大导致站不直",
+        "consequence": "动作幅度被压缩，还容易失去平衡。"
+      }
+    ],
+    "self_checks": [
+      {
+        "criterion": "下放时髋明显后移",
+        "how": "正侧面拍视频，看髋的水平位移是否先于躯干前倾。",
+        "cannot": "看不出带子阻力的实际大小；带子的阻力随拉长变化，和固定重量不同。"
+      },
+      {
+        "criterion": "背全程中立",
+        "how": "侧面视频找腰段曲度开始明显变化的那一帧。",
+        "cannot": "体表看不到脊柱实际位置；也判断不了这个幅度对你是否有害。"
+      }
+    ],
+    "audience": {
+      "suitable": "在家练髋铰链、还没有哑铃的读者。",
+      "cautions": "训练中出现疼痛：当场停止该动作，当次不用其他动作替代着练同一部位，按第 9 章的判断原则决定继续观察还是就医。"
+    },
+    "home_alts": [
+      "db-romanian-deadlift"
+    ],
+    "difficulty": "入门",
+    "safety": {
+      "rack": "不需要任何支撑；确认带子没有破损、踩点稳固。",
+      "collars": "本动作不使用杠铃，不涉及卡扣。",
+      "setup": "带子踩稳在脚掌下，肩上垫一块毛巾避免勒颈。",
+      "solo_ok": true,
+      "solo_alt": null,
+      "bailout": "撑不住就屈髋屈膝把身体降低、让带子松下来，再把带子取下。"
+    },
+    "demo_id": null,
+    "chapter_refs": [
+      "ch4"
+    ],
+    "claim_refs": []
+  },
+  {
+    "slug": "machine-chest-press",
+    "name_zh": "坐姿推胸",
+    "name_en": "Machine Chest Press",
+    "pattern": "推",
+    "laterality": "双侧",
+    "muscles": {
+      "prime": [
+        "胸"
+      ],
+      "synergist": [
+        "前束",
+        "肱三头"
+      ],
+      "stabilizer": [
+        "上背"
+      ]
+    },
+    "equipment": "固定器械",
+    "cues": [
+      {
+        "phase": "设置",
+        "text": "调座椅高度让握把大致在胸骨中段，背与头贴住靠背，双脚踩实。"
+      },
+      {
+        "phase": "发力",
+        "text": "推到手臂接近伸直但不锁死，再有控制地回到握把接近胸侧的位置。"
+      },
+      {
+        "phase": "收尾",
+        "text": "做完让配重慢慢落回，不砸片。"
+      }
+    ],
+    "mistakes": [
+      {
+        "error": "座椅过高或过低",
+        "consequence": "推的方向与胸肌纤维不匹配，肩前侧负担上升。"
+      },
+      {
+        "error": "回放时让配重砸到底",
+        "consequence": "张力中断，而且关节承受冲击。"
+      }
+    ],
+    "self_checks": [
+      {
+        "criterion": "握把起始位置大致在胸骨中段",
+        "how": "坐好后不加载，用眼睛比对握把与胸骨的高度。",
+        "cannot": "不同肩宽臂长的最佳高度不同；这条只能排除明显偏差。"
+      },
+      {
+        "criterion": "回放到底时配重片不接触底部",
+        "how": "侧面看配重片，最低点应留出一点间隙。",
+        "cannot": "判断不了胸肌的实际张力；只能确认张力没有被完全卸掉。"
+      }
+    ],
+    "audience": {
+      "suitable": "刚开始练推、或当天没有保护者又想练水平推的读者。",
+      "cautions": "训练中出现疼痛：当场停止该动作，当次不用其他动作替代着练同一部位，按第 9 章的判断原则决定继续观察还是就医。"
+    },
+    "home_alts": [
+      "push-up"
+    ],
+    "difficulty": "入门",
+    "safety": {
+      "rack": "配重销插到底；座椅锁扣确认锁死。",
+      "collars": "本动作不使用杠铃，不涉及卡扣。",
+      "setup": "座椅高度让握把在胸骨中段；靠背贴实。",
+      "solo_ok": true,
+      "solo_alt": null,
+      "bailout": "推不动就松力让握把有控制地回到起始位，配重落回；器械本身不会把人压住。"
+    },
+    "demo_id": null,
+    "chapter_refs": [
+      "ch4",
+      "ch5"
+    ],
+    "claim_refs": []
+  },
+  {
+    "slug": "machine-shoulder-press",
+    "name_zh": "坐姿器械推举",
+    "name_en": "Machine Shoulder Press",
+    "pattern": "推",
+    "laterality": "双侧",
+    "muscles": {
+      "prime": [
+        "前束"
+      ],
+      "synergist": [
+        "中束",
+        "肱三头"
+      ],
+      "stabilizer": [
+        "核心"
+      ]
+    },
+    "equipment": "固定器械",
+    "cues": [
+      {
+        "phase": "设置",
+        "text": "调座椅让握把大致在肩的高度，背贴靠背，双脚踩实。"
+      },
+      {
+        "phase": "发力",
+        "text": "推到手臂接近伸直但不锁死，再有控制地回到起始位。"
+      },
+      {
+        "phase": "收尾",
+        "text": "结束时让配重慢慢落回。"
+      }
+    ],
+    "mistakes": [
+      {
+        "error": "座椅太低、起始位过深",
+        "consequence": "肩前侧在被拉长的位置承受更大负荷。"
+      },
+      {
+        "error": "靠腰后仰借力",
+        "consequence": "动作变成上斜推，目标肌群改变。"
+      }
+    ],
+    "self_checks": [
+      {
+        "criterion": "起始时握把大致在肩高",
+        "how": "坐好后不加载地比对握把与肩的高度。",
+        "cannot": "最佳起始高度因肩活动度而异；只能排除明显偏差。"
+      },
+      {
+        "criterion": "腰与靠背之间不出现明显空隙",
+        "how": "侧面拍视频看推到顶点时腰的位置。",
+        "cannot": "靠背会掩盖部分代偿，这条只能判断明显后仰。"
+      }
+    ],
+    "audience": {
+      "suitable": "想练垂直推又希望有靠背支撑的读者。",
+      "cautions": "训练中出现疼痛：当场停止该动作，当次不用其他动作替代着练同一部位，按第 9 章的判断原则决定继续观察还是就医。"
+    },
+    "home_alts": [
+      "band-overhead-press"
+    ],
+    "difficulty": "入门",
+    "safety": {
+      "rack": "配重销插到底；座椅锁死。",
+      "collars": "本动作不使用杠铃，不涉及卡扣。",
+      "setup": "座椅调到握把在肩高；靠背接近垂直。",
+      "solo_ok": true,
+      "solo_alt": null,
+      "bailout": "推不动就松力让握把回到起始位，配重落回。"
+    },
+    "demo_id": null,
+    "chapter_refs": [
+      "ch4"
+    ],
+    "claim_refs": []
+  },
+  {
+    "slug": "cable-pushdown",
+    "name_zh": "绳索下压",
+    "name_en": "Cable Triceps Pushdown",
+    "pattern": "推",
+    "laterality": "双侧",
+    "muscles": {
+      "prime": [
+        "肱三头"
+      ],
+      "synergist": [
+        "胸"
+      ],
+      "stabilizer": [
+        "核心"
+      ]
+    },
+    "equipment": "固定器械",
+    "cues": [
+      {
+        "phase": "设置",
+        "text": "滑轮调到高位，站姿略前倾，上臂贴住躯干两侧并全程保持。"
+      },
+      {
+        "phase": "发力",
+        "text": "只伸肘把握把压到大腿前，顶点略停；再有控制地回到肘约 90 度。"
+      },
+      {
+        "phase": "收尾",
+        "text": "结束时让握把慢慢回到高位，不松手甩回去。"
+      }
+    ],
+    "mistakes": [
+      {
+        "error": "用躯干起伏往下压",
+        "consequence": "刺激被身体重量分走，三头的张力下降。"
+      },
+      {
+        "error": "上臂前后移动",
+        "consequence": "动作变成下拉，肩与背接管一部分工作。"
+      }
+    ],
+    "self_checks": [
+      {
+        "criterion": "上臂全程贴住躯干不移动",
+        "how": "正侧面拍视频，看肘的位置有没有前后移动。",
+        "cannot": "判断不了三头三个头的分担比例。"
+      },
+      {
+        "criterion": "回放时控制住，不被配重拉回去",
+        "how": "侧面视频比较下压与回放两段的时间。",
+        "cannot": "只能判断明显的失控。"
+      }
+    ],
+    "audience": {
+      "suitable": "想补肱三头、用小增量推进的读者。",
+      "cautions": "训练中出现疼痛：当场停止该动作，当次不用其他动作替代着练同一部位，按第 9 章的判断原则决定继续观察还是就医。"
+    },
+    "home_alts": [
+      "push-up"
+    ],
+    "difficulty": "入门",
+    "safety": {
+      "rack": "确认滑轮销与握把扣环连接牢固。",
+      "collars": "本动作不使用杠铃，不涉及卡扣。",
+      "setup": "滑轮高位；站位离器械半步，躯干略前倾。",
+      "solo_ok": true,
+      "solo_alt": null,
+      "bailout": "压不动就有控制地松力让握把回到高位，不要突然放手。"
+    },
+    "demo_id": null,
+    "chapter_refs": [
+      "ch4"
+    ],
+    "claim_refs": []
+  },
+  {
+    "slug": "cable-lateral-raise",
+    "name_zh": "绳索单臂侧平举",
+    "name_en": "Cable Lateral Raise",
+    "pattern": "推",
+    "laterality": "单侧",
+    "muscles": {
+      "prime": [
+        "中束"
+      ],
+      "synergist": [
+        "前束"
+      ],
+      "stabilizer": [
+        "核心"
+      ]
+    },
+    "equipment": "固定器械",
+    "cues": [
+      {
+        "phase": "设置",
+        "text": "滑轮调到最低，侧身站在器械旁，远侧手握住握把放在身前，肘微屈。"
+      },
+      {
+        "phase": "发力",
+        "text": "肩带动上臂往外抬到约与地面平行；不耸肩、不甩。"
+      },
+      {
+        "phase": "收尾",
+        "text": "有控制地降回起点，做完换边。"
+      }
+    ],
+    "mistakes": [
+      {
+        "error": "用躯干侧倾把手臂甩起来",
+        "consequence": "目标肌群的张力被借力替代。"
+      },
+      {
+        "error": "抬到远高于肩",
+        "consequence": "斜方接管，肩峰下空间减小。"
+      }
+    ],
+    "self_checks": [
+      {
+        "criterion": "顶点时上臂约与地面平行",
+        "how": "正前方拍视频，暂停在顶点看上臂高度。",
+        "cannot": "判断不了中束实际分担了多少。"
+      },
+      {
+        "criterion": "躯干不随动作左右晃",
+        "how": "正前方拍，看肩线是否保持水平。",
+        "cannot": "轻微的稳定性调整不等于代偿。"
+      }
+    ],
+    "audience": {
+      "suitable": "想用恒定张力练肩中束的读者；绳索在底部也有张力，与哑铃不同。",
+      "cautions": "训练中出现疼痛：当场停止该动作，当次不用其他动作替代着练同一部位，按第 9 章的判断原则决定继续观察还是就医。"
+    },
+    "home_alts": [
+      "band-overhead-press"
+    ],
+    "difficulty": "入门",
+    "safety": {
+      "rack": "确认滑轮销与扣环牢固。",
+      "collars": "本动作不使用杠铃，不涉及卡扣。",
+      "setup": "滑轮最低位；站位离器械约一步，确保全程不碰到立柱。",
+      "solo_ok": true,
+      "solo_alt": null,
+      "bailout": "抬不动就有控制地把手臂降回体侧，让配重落回。"
+    },
+    "demo_id": null,
+    "chapter_refs": [
+      "ch4"
+    ],
+    "claim_refs": []
+  },
+  {
+    "slug": "push-up",
+    "name_zh": "俯卧撑",
+    "name_en": "Push-Up",
+    "pattern": "推",
+    "laterality": "双侧",
+    "muscles": {
+      "prime": [
+        "胸"
+      ],
+      "synergist": [
+        "前束",
+        "肱三头"
+      ],
+      "stabilizer": [
+        "核心",
+        "臀"
+      ]
+    },
+    "equipment": "自重",
+    "cues": [
+      {
+        "phase": "设置",
+        "text": "双手略比肩宽撑地，手指朝前；从头到脚跟成一条线，肋骨收住、臀夹住。"
+      },
+      {
+        "phase": "发力",
+        "text": "下放到胸离地一拳左右，肘与躯干约成 45 度；推起时保持身体一条线。"
+      },
+      {
+        "phase": "收尾",
+        "text": "结束时先把膝落地，再起身。"
+      }
+    ],
+    "mistakes": [
+      {
+        "error": "腰塌下去、髋先掉",
+        "consequence": "腰段过伸，动作变成腰的被动拉伸而不是推。"
+      },
+      {
+        "error": "只做上半程",
+        "consequence": "胸在被拉长位置的刺激被省掉。"
+      }
+    ],
+    "self_checks": [
+      {
+        "criterion": "从头到脚跟全程一条线",
+        "how": "正侧面拍视频，看最低点髋是否明显下沉或翘起。",
+        "cannot": "体表看不出腰段实际受力；衣服宽松时更难判断。"
+      },
+      {
+        "criterion": "下放深度每次一致",
+        "how": "侧面视频看每次最低点胸离地的距离。",
+        "cannot": "判断不了你的肩活动度是否允许更深；更深不一定更好。"
+      }
+    ],
+    "audience": {
+      "suitable": "所有人；也是在家练水平推与杠铃卧推没有保护条件时的替代。",
+      "cautions": "训练中出现疼痛：当场停止该动作，当次不用其他动作替代着练同一部位，按第 9 章的判断原则决定继续观察还是就医。"
+    },
+    "home_alts": [
+      "knee-push-up"
+    ],
+    "difficulty": "入门",
+    "safety": {
+      "rack": "不需要任何支撑；地面平整即可。",
+      "collars": "本动作不使用杠铃，不涉及卡扣。",
+      "setup": "手掌在肩的正下方略外；脚与髋同宽。",
+      "solo_ok": true,
+      "solo_alt": null,
+      "bailout": "推不起来就把膝或整个身体落到地面，再从侧面起身。"
+    },
+    "demo_id": null,
+    "chapter_refs": [
+      "ch4",
+      "ch5"
+    ],
+    "claim_refs": []
+  },
+  {
+    "slug": "knee-push-up",
+    "name_zh": "跪姿俯卧撑",
+    "name_en": "Bent-Knee Push-Up",
+    "pattern": "推",
+    "laterality": "双侧",
+    "muscles": {
+      "prime": [
+        "胸"
+      ],
+      "synergist": [
+        "前束",
+        "肱三头"
+      ],
+      "stabilizer": [
+        "核心"
+      ]
+    },
+    "equipment": "自重",
+    "cues": [
+      {
+        "phase": "设置",
+        "text": "双膝跪地（垫软垫），双手略比肩宽撑地；从头到膝成一条线。"
+      },
+      {
+        "phase": "发力",
+        "text": "下放到胸接近地面，肘与躯干约 45 度；推起时保持一条线。"
+      },
+      {
+        "phase": "收尾",
+        "text": "结束时坐回脚跟再起身。"
+      }
+    ],
+    "mistakes": [
+      {
+        "error": "髋先折、变成只有上半身起伏",
+        "consequence": "核心不参与，动作强度与标准俯卧撑脱节。"
+      },
+      {
+        "error": "手撑得过前",
+        "consequence": "肩前侧负担上升且发力效率下降。"
+      }
+    ],
+    "self_checks": [
+      {
+        "criterion": "从头到膝全程一条线",
+        "how": "正侧面拍视频，看最低点髋有没有折起来。",
+        "cannot": "看不出核心实际参与程度；只能判断明显的折髋。"
+      },
+      {
+        "criterion": "手掌位置在肩正下方略外",
+        "how": "从上方拍一帧，看手与肩的相对位置。",
+        "cannot": "最佳手位因臂长而异，这条只能排除明显偏差。"
+      }
+    ],
+    "audience": {
+      "suitable": "还做不了完整俯卧撑、或需要更低强度补量的读者。",
+      "cautions": "训练中出现疼痛：当场停止该动作，当次不用其他动作替代着练同一部位，按第 9 章的判断原则决定继续观察还是就医。"
+    },
+    "home_alts": [
+      "push-up"
+    ],
+    "difficulty": "入门",
+    "safety": {
+      "rack": "不需要任何支撑；膝下垫软垫。",
+      "collars": "本动作不使用杠铃，不涉及卡扣。",
+      "setup": "平整地面；膝与髋同宽。",
+      "solo_ok": true,
+      "solo_alt": null,
+      "bailout": "推不起来就整个身体落到地面，再坐回脚跟起身。"
+    },
+    "demo_id": null,
+    "chapter_refs": [
+      "ch4"
+    ],
+    "claim_refs": []
+  },
+  {
+    "slug": "band-overhead-press",
+    "name_zh": "弹力带推举",
+    "name_en": "Band Overhead Press",
+    "pattern": "推",
+    "laterality": "双侧",
+    "muscles": {
+      "prime": [
+        "前束"
+      ],
+      "synergist": [
+        "中束",
+        "肱三头"
+      ],
+      "stabilizer": [
+        "核心"
+      ]
+    },
+    "equipment": "弹力带",
+    "cues": [
+      {
+        "phase": "设置",
+        "text": "两脚踩住弹力带中段，双手握住两端举到肩高，手腕中立，肋骨收住。"
+      },
+      {
+        "phase": "发力",
+        "text": "沿接近垂直的路线推到头顶上方，肘接近伸直；不靠腰后仰。"
+      },
+      {
+        "phase": "收尾",
+        "text": "有控制地降回肩高；结束时先屈髋降低身体，再把带子从脚下取出。"
+      }
+    ],
+    "mistakes": [
+      {
+        "error": "用腰后仰把带子\"顶\"上去",
+        "consequence": "腰段过伸，肩的刺激下降。"
+      },
+      {
+        "error": "带子踩得不稳",
+        "consequence": "一端滑脱会直接弹到身体，这是弹力带最常见的意外。"
+      }
+    ],
+    "self_checks": [
+      {
+        "criterion": "顶点时手在肩的正上方",
+        "how": "正侧面拍视频，暂停在顶点看手与肩的相对位置。",
+        "cannot": "判断不了带子的实际阻力；带子阻力随拉长增加，与固定重量不同。"
+      },
+      {
+        "criterion": "全程肋骨不外翻、腰不额外后仰",
+        "how": "侧面视频对比起始与顶点的腰段曲度。",
+        "cannot": "只能判断明显的后仰。"
+      }
+    ],
+    "audience": {
+      "suitable": "在家练垂直推、还没有哑铃的读者。",
+      "cautions": "训练中出现疼痛：当场停止该动作，当次不用其他动作替代着练同一部位，按第 9 章的判断原则决定继续观察还是就医。"
+    },
+    "home_alts": [
+      "db-shoulder-press"
+    ],
+    "difficulty": "入门",
+    "safety": {
+      "rack": "不需要任何支撑；每次使用前检查带子有无裂口。",
+      "collars": "本动作不使用杠铃，不涉及卡扣。",
+      "setup": "两脚踩稳带子中段并确认不会滑脱；带子阻力从轻档起步。",
+      "solo_ok": true,
+      "solo_alt": null,
+      "bailout": "推不动就有控制地把手降回肩高、再屈髋让带子松开，不要突然松手。"
+    },
+    "demo_id": null,
+    "chapter_refs": [
+      "ch4"
+    ],
+    "claim_refs": []
+  },
+  {
+    "slug": "lat-pulldown",
+    "name_zh": "坐姿高位下拉",
+    "name_en": "Lat Pulldown",
+    "pattern": "拉",
+    "laterality": "双侧",
+    "muscles": {
+      "prime": [
+        "上背"
+      ],
+      "synergist": [
+        "肱二头",
+        "后束"
+      ],
+      "stabilizer": [
+        "核心"
+      ]
+    },
+    "equipment": "固定器械",
+    "cues": [
+      {
+        "phase": "设置",
+        "text": "调好腿垫把大腿压住，双手略比肩宽握横杆，坐直后躯干略后倾并固定这个角度。"
+      },
+      {
+        "phase": "发力",
+        "text": "肘往下往后走，把横杆拉到锁骨前；肩胛先下沉再后收，不耸肩。"
+      },
+      {
+        "phase": "收尾",
+        "text": "有控制地放回到手臂伸直、肩被轻微拉起为止，不让配重砸底。"
+      }
+    ],
+    "mistakes": [
+      {
+        "error": "用躯干前后大幅摆动把杆拉下来",
+        "consequence": "刺激被借力分走，腰段还要承担摆动的负荷。"
+      },
+      {
+        "error": "拉到颈后",
+        "consequence": "肩外旋到极限位置承受负荷，收益并不更高。"
+      }
+    ],
+    "self_checks": [
+      {
+        "criterion": "躯干角度在一组内保持稳定",
+        "how": "正侧面拍视频，比较第一次与最后一次的躯干角度。",
+        "cannot": "看不出背阔与手臂各出了多少力。"
+      },
+      {
+        "criterion": "横杆拉到锁骨前而不是颈后",
+        "how": "正面拍一帧看终点位置。",
+        "cannot": "只能判断轨迹，判断不了你的肩活动度是否适合更大幅度。"
+      }
+    ],
+    "audience": {
+      "suitable": "还做不了引体向上、想练垂直拉的读者。",
+      "cautions": "训练中出现疼痛：当场停止该动作，当次不用其他动作替代着练同一部位，按第 9 章的判断原则决定继续观察还是就医。"
+    },
+    "home_alts": [
+      "band-row"
+    ],
+    "difficulty": "入门",
+    "safety": {
+      "rack": "腿垫调到能压住大腿；配重销插到底。",
+      "collars": "本动作不使用杠铃，不涉及卡扣。",
+      "setup": "腿垫高度以站起时需要轻微发力为准；握距略比肩宽。",
+      "solo_ok": true,
+      "solo_alt": null,
+      "bailout": "拉不动就有控制地让横杆回到最高位，配重落回，再把腿从垫下抽出。"
+    },
+    "demo_id": null,
+    "chapter_refs": [
+      "ch4",
+      "ch5"
+    ],
+    "claim_refs": []
+  },
+  {
+    "slug": "seated-cable-row",
+    "name_zh": "坐姿划船",
+    "name_en": "Seated Cable Row",
+    "pattern": "拉",
+    "laterality": "双侧",
+    "muscles": {
+      "prime": [
+        "上背"
+      ],
+      "synergist": [
+        "肱二头",
+        "后束"
+      ],
+      "stabilizer": [
+        "核心",
+        "下背"
+      ]
+    },
+    "equipment": "固定器械",
+    "cues": [
+      {
+        "phase": "设置",
+        "text": "坐好，双脚蹬住踏板，膝微屈，躯干接近垂直，背中立。"
+      },
+      {
+        "phase": "发力",
+        "text": "肘往后走把握把拉到肋下，肩胛后收；躯干不前后大幅摆。"
+      },
+      {
+        "phase": "收尾",
+        "text": "有控制地放回到手臂伸直、肩被轻微前拉为止。"
+      }
+    ],
+    "mistakes": [
+      {
+        "error": "用躯干前后摆动代替拉",
+        "consequence": "背的张力时间被偷走，腰还要承担摆动负荷。"
+      },
+      {
+        "error": "耸肩",
+        "consequence": "上斜方接管，背阔与中背的收缩下降。"
+      }
+    ],
+    "self_checks": [
+      {
+        "criterion": "躯干角度在一组内保持稳定",
+        "how": "正侧面拍视频，对比首尾两次的躯干角度。",
+        "cannot": "看不出各肌群分担比例。"
+      },
+      {
+        "criterion": "放回时背保持中立、不被拉成圆背",
+        "how": "侧面视频看伸臂到底那一帧的腰胸段曲度。",
+        "cannot": "体表看不到脊柱实际位置；也判断不了这个幅度是否有害。"
+      }
+    ],
+    "audience": {
+      "suitable": "想练水平拉又希望腰的负担比俯身划船小的读者。",
+      "cautions": "训练中出现疼痛：当场停止该动作，当次不用其他动作替代着练同一部位，按第 9 章的判断原则决定继续观察还是就医。"
+    },
+    "home_alts": [
+      "band-row"
+    ],
+    "difficulty": "入门",
+    "safety": {
+      "rack": "配重销插到底；踏板与座椅确认稳固。",
+      "collars": "本动作不使用杠铃，不涉及卡扣。",
+      "setup": "脚蹬实踏板，膝微屈；握把选与肩同宽的把手。",
+      "solo_ok": true,
+      "solo_alt": null,
+      "bailout": "拉不动就有控制地让握把回到起始位，让配重落回，再松手。"
+    },
+    "demo_id": null,
+    "chapter_refs": [
+      "ch4"
+    ],
+    "claim_refs": []
+  },
+  {
+    "slug": "cable-face-pull",
+    "name_zh": "绳索面拉",
+    "name_en": "Cable Face Pull",
+    "pattern": "拉",
+    "laterality": "双侧",
+    "muscles": {
+      "prime": [
+        "后束"
+      ],
+      "synergist": [
+        "上背"
+      ],
+      "stabilizer": [
+        "核心"
+      ]
+    },
+    "equipment": "固定器械",
+    "cues": [
+      {
+        "phase": "设置",
+        "text": "滑轮调到接近面部高度，双手对握绳索两端，退后到绳索有张力，站稳。"
+      },
+      {
+        "phase": "发力",
+        "text": "把绳索拉向面部两侧，肘高于手，肩胛后收；不耸肩。"
+      },
+      {
+        "phase": "收尾",
+        "text": "有控制地放回到手臂伸直，不让配重砸底。"
+      }
+    ],
+    "mistakes": [
+      {
+        "error": "用躯干后仰拉",
+        "consequence": "后束的刺激被整体借力替代。"
+      },
+      {
+        "error": "肘低于手、变成划船",
+        "consequence": "目标从后束转到背阔。"
+      }
+    ],
+    "self_checks": [
+      {
+        "criterion": "终点时肘高于手、绳索在面部两侧",
+        "how": "正前方拍视频，暂停在终点看肘与手的高度关系。",
+        "cannot": "判断不了后束与中斜方的分担比例。"
+      },
+      {
+        "criterion": "躯干不随动作后仰",
+        "how": "正侧面拍，比较起止两帧的躯干角度。",
+        "cannot": "只能判断明显后仰。"
+      }
+    ],
+    "audience": {
+      "suitable": "推类动作做得多、想补后束与上背平衡的读者。",
+      "cautions": "训练中出现疼痛：当场停止该动作，当次不用其他动作替代着练同一部位，按第 9 章的判断原则决定继续观察还是就医。"
+    },
+    "home_alts": [
+      "band-row"
+    ],
+    "difficulty": "入门",
+    "safety": {
+      "rack": "确认滑轮销与绳索扣环牢固。",
+      "collars": "本动作不使用杠铃，不涉及卡扣。",
+      "setup": "滑轮接近面部高度；站位退到绳索在起始位已有张力。",
+      "solo_ok": true,
+      "solo_alt": null,
+      "bailout": "拉不动就有控制地让绳索回到起始位，配重落回。"
+    },
+    "demo_id": null,
+    "chapter_refs": [
+      "ch4"
+    ],
+    "claim_refs": []
+  },
+  {
+    "slug": "cable-curl",
+    "name_zh": "绳索弯举",
+    "name_en": "Cable Biceps Curl",
+    "pattern": "拉",
+    "laterality": "双侧",
+    "muscles": {
+      "prime": [
+        "肱二头"
+      ],
+      "synergist": [
+        "上背"
+      ],
+      "stabilizer": [
+        "核心"
+      ]
+    },
+    "equipment": "固定器械",
+    "cues": [
+      {
+        "phase": "设置",
+        "text": "滑轮调到最低，站姿握住直杆或绳索，上臂贴住躯干两侧。"
+      },
+      {
+        "phase": "发力",
+        "text": "只屈肘把握把举到胸前，上臂不前移、躯干不后仰。"
+      },
+      {
+        "phase": "收尾",
+        "text": "有控制地放回到手臂接近伸直，不让配重砸底。"
+      }
+    ],
+    "mistakes": [
+      {
+        "error": "躯干后仰借力",
+        "consequence": "刺激被借力替代，腰还要额外受力。"
+      },
+      {
+        "error": "上臂前移",
+        "consequence": "前束接管一部分工作。"
+      }
+    ],
+    "self_checks": [
+      {
+        "criterion": "上臂全程贴住躯干不前移",
+        "how": "正侧面拍视频看肘的水平位置。",
+        "cannot": "判断不了二头实际收缩了多少。"
+      },
+      {
+        "criterion": "放回时控制住不被拉回",
+        "how": "侧面视频比较上升与下降的时间。",
+        "cannot": "只能判断明显的失控。"
+      }
+    ],
+    "audience": {
+      "suitable": "想用恒定张力练二头的读者。",
+      "cautions": "训练中出现疼痛：当场停止该动作，当次不用其他动作替代着练同一部位，按第 9 章的判断原则决定继续观察还是就医。"
+    },
+    "home_alts": [
+      "band-row"
+    ],
+    "difficulty": "入门",
+    "safety": {
+      "rack": "确认滑轮销与扣环牢固。",
+      "collars": "本动作不使用杠铃，不涉及卡扣。",
+      "setup": "滑轮最低位；站位离器械约半步。",
+      "solo_ok": true,
+      "solo_alt": null,
+      "bailout": "举不动就有控制地让握把回到起始位，配重落回。"
+    },
+    "demo_id": null,
+    "chapter_refs": [
+      "ch4"
+    ],
+    "claim_refs": []
+  },
+  {
+    "slug": "pull-up",
+    "name_zh": "引体向上",
+    "name_en": "Pull-Up",
+    "pattern": "拉",
+    "laterality": "双侧",
+    "muscles": {
+      "prime": [
+        "上背"
+      ],
+      "synergist": [
+        "肱二头",
+        "后束"
+      ],
+      "stabilizer": [
+        "核心"
+      ]
+    },
+    "equipment": "自重",
+    "cues": [
+      {
+        "phase": "设置",
+        "text": "双手略比肩宽正握单杠，悬垂时肩不完全松脱、肋骨收住。"
+      },
+      {
+        "phase": "发力",
+        "text": "肩胛先下沉，再用肘带着身体往上，直到下巴过杠；不晃腿借力。"
+      },
+      {
+        "phase": "收尾",
+        "text": "有控制地降回到手臂接近伸直；结束时双脚落地站稳再松手。"
+      }
+    ],
+    "mistakes": [
+      {
+        "error": "靠摆腿荡上去",
+        "consequence": "刺激被动量替代，落下时肩还要承受冲击。"
+      },
+      {
+        "error": "从完全松脱的悬垂猛拉",
+        "consequence": "肩在最松的位置承受突然负荷。"
+      }
+    ],
+    "self_checks": [
+      {
+        "criterion": "上升过程身体不前后摆",
+        "how": "正侧面拍视频，看髋的水平位移。",
+        "cannot": "看不出背阔与手臂的分担比例。"
+      },
+      {
+        "criterion": "每次都回到手臂接近伸直的同一位置",
+        "how": "侧面视频比较每次最低点。",
+        "cannot": "判断不了你的肩是否适合完全放松的悬垂。"
+      }
+    ],
+    "audience": {
+      "suitable": "已能做 10 次以上标准俯卧撑、想练垂直拉的读者；做不动可先用 lat-pulldown 积累。",
+      "cautions": "训练中出现疼痛：当场停止该动作，当次不用其他动作替代着练同一部位，按第 9 章的判断原则决定继续观察还是就医。"
+    },
+    "home_alts": [
+      "inverted-row"
+    ],
+    "difficulty": "进阶",
+    "safety": {
+      "rack": "单杠必须固定牢靠；杠下方留出站立空间，不在杠下放器材。",
+      "collars": "本动作不使用杠铃，不涉及卡扣。",
+      "setup": "握距略比肩宽；起始时先把肩胛下沉再发力。",
+      "solo_ok": true,
+      "solo_alt": null,
+      "bailout": "拉不上去就有控制地降回悬垂，再把脚落地；不要在半程挣扎到突然松手。"
+    },
+    "demo_id": null,
+    "chapter_refs": [
+      "ch4",
+      "ch5"
+    ],
+    "claim_refs": []
+  },
+  {
+    "slug": "inverted-row",
+    "name_zh": "反向划船",
+    "name_en": "Inverted Row",
+    "pattern": "拉",
+    "laterality": "双侧",
+    "muscles": {
+      "prime": [
+        "上背"
+      ],
+      "synergist": [
+        "肱二头",
+        "后束"
+      ],
+      "stabilizer": [
+        "核心",
+        "臀"
+      ]
+    },
+    "equipment": "自重",
+    "cues": [
+      {
+        "phase": "设置",
+        "text": "在稳固的横杆或桌沿下方仰卧，双手略比肩宽握住，身体从头到脚跟成一条线。"
+      },
+      {
+        "phase": "发力",
+        "text": "肘往后下方拉，把胸带向横杆；肩胛后收，髋不下沉。"
+      },
+      {
+        "phase": "收尾",
+        "text": "有控制地降回到手臂接近伸直；结束时坐起来。"
+      }
+    ],
+    "mistakes": [
+      {
+        "error": "髋下沉",
+        "consequence": "核心不参与，动作变成只有手臂在拉。"
+      },
+      {
+        "error": "只做上半程",
+        "consequence": "背在被拉长位置的刺激被省掉。"
+      }
+    ],
+    "self_checks": [
+      {
+        "criterion": "从头到脚跟全程一条线",
+        "how": "正侧面拍视频，看最高点髋有没有下沉。",
+        "cannot": "看不出核心实际参与多少；只能判断明显下沉。"
+      },
+      {
+        "criterion": "胸能碰到或接近横杆",
+        "how": "侧面视频看最高点胸与杆的距离。",
+        "cannot": "不同身高与杆高下的距离不同，这条只能判断明显的半程。"
+      }
+    ],
+    "audience": {
+      "suitable": "在家或没有下拉器械时练水平拉的入门选择；难度靠身体角度调节。",
+      "cautions": "训练中出现疼痛：当场停止该动作，当次不用其他动作替代着练同一部位，按第 9 章的判断原则决定继续观察还是就医。"
+    },
+    "home_alts": [
+      "band-row"
+    ],
+    "difficulty": "入门",
+    "safety": {
+      "rack": "横杆或桌沿必须稳固，能承受全身重量；先用小角度试压再做。",
+      "collars": "本动作不使用杠铃，不涉及卡扣。",
+      "setup": "脚越往前、身体越水平，难度越大；从身体较直立的角度起步。",
+      "solo_ok": true,
+      "solo_alt": null,
+      "bailout": "拉不动就把臀坐到地面，再松手。"
+    },
+    "demo_id": null,
+    "chapter_refs": [
+      "ch4"
+    ],
+    "claim_refs": []
+  },
+  {
+    "slug": "band-row",
+    "name_zh": "弹力带划船",
+    "name_en": "Band Row",
+    "pattern": "拉",
+    "laterality": "双侧",
+    "muscles": {
+      "prime": [
+        "上背"
+      ],
+      "synergist": [
+        "肱二头",
+        "后束"
+      ],
+      "stabilizer": [
+        "核心"
+      ]
+    },
+    "equipment": "弹力带",
+    "cues": [
+      {
+        "phase": "设置",
+        "text": "坐姿或站姿，弹力带绕过稳固的固定点（或脚掌），双手握住两端，起始时带子已有张力。"
+      },
+      {
+        "phase": "发力",
+        "text": "肘往后走把手拉到肋下，肩胛后收，不耸肩。"
+      },
+      {
+        "phase": "收尾",
+        "text": "有控制地放回到手臂伸直；结束时先松张力再取下带子。"
+      }
+    ],
+    "mistakes": [
+      {
+        "error": "用躯干后仰代替拉",
+        "consequence": "背的张力被借力替代。"
+      },
+      {
+        "error": "固定点不牢",
+        "consequence": "带子脱扣会直接弹回身体，这是弹力带最常见的伤害方式。"
+      }
+    ],
+    "self_checks": [
+      {
+        "criterion": "躯干角度在一组内保持稳定",
+        "how": "正侧面拍视频比较首尾两次。",
+        "cannot": "判断不了带子的实际阻力曲线。"
+      },
+      {
+        "criterion": "肩不耸起来",
+        "how": "正面拍，看拉到终点时肩与耳的距离有没有变小。",
+        "cannot": "只能判断明显耸肩。"
+      }
+    ],
+    "audience": {
+      "suitable": "在家练水平拉的起点；阻力靠换带子或改变站位调节。",
+      "cautions": "训练中出现疼痛：当场停止该动作，当次不用其他动作替代着练同一部位，按第 9 章的判断原则决定继续观察还是就医。"
+    },
+    "home_alts": [
+      "inverted-row"
+    ],
+    "difficulty": "入门",
+    "safety": {
+      "rack": "不需要任何支撑；固定点必须稳固，每次使用前检查带子有无裂口。",
+      "collars": "本动作不使用杠铃，不涉及卡扣。",
+      "setup": "带子绕在稳固的固定点上；起始位就要有张力。",
+      "solo_ok": true,
+      "solo_alt": null,
+      "bailout": "拉不动就有控制地让手回到起始位，再松开张力，不要突然放手。"
+    },
+    "demo_id": null,
+    "chapter_refs": [
+      "ch4"
+    ],
+    "claim_refs": []
+  },
+  {
+    "slug": "sled-push",
+    "name_zh": "推雪橇",
+    "name_en": "Sled Push",
+    "pattern": "搬运",
+    "laterality": "双侧",
+    "muscles": {
+      "prime": [
+        "股四头",
+        "臀"
+      ],
+      "synergist": [
+        "小腿",
+        "核心"
+      ],
+      "stabilizer": [
+        "上背"
+      ]
+    },
+    "equipment": "固定器械",
+    "cues": [
+      {
+        "phase": "设置",
+        "text": "双手握住推把，手臂伸直，躯干前倾成一条斜线，肋骨收住。"
+      },
+      {
+        "phase": "发力",
+        "text": "用连续的小步推进，脚掌蹬地；全程保持躯干角度，不左右扭。"
+      },
+      {
+        "phase": "收尾",
+        "text": "到达终点先停稳再松手，不边走边放。"
+      }
+    ],
+    "mistakes": [
+      {
+        "error": "弓背推",
+        "consequence": "腰段在前倾位置承受额外负荷。"
+      },
+      {
+        "error": "步子迈太大",
+        "consequence": "每一步都要重新启动，效率低且容易失去平衡。"
+      }
+    ],
+    "self_checks": [
+      {
+        "criterion": "躯干保持一条斜线不弓背",
+        "how": "从侧面拍视频，看推进过程中腰胸段曲度。",
+        "cannot": "体表看不到脊柱实际位置；负荷大时更难判断。"
+      },
+      {
+        "criterion": "推进路线是直线",
+        "how": "从正后方拍，看雪橇是否走偏。",
+        "cannot": "走偏也可能是场地或雪橇本身的问题，不一定是技术。"
+      }
+    ],
+    "audience": {
+      "suitable": "已有一定训练基础、想加入低冲击的全身负重推进的读者。",
+      "cautions": "训练中出现疼痛：当场停止该动作，当次不用其他动作替代着练同一部位，按第 9 章的判断原则决定继续观察还是就医。"
+    },
+    "home_alts": [
+      "loaded-carry-household"
+    ],
+    "difficulty": "进阶",
+    "safety": {
+      "rack": "确认场地无人无杂物；配重片在雪橇上锁稳。",
+      "collars": "本动作不使用杠铃，不涉及卡扣。",
+      "setup": "推把高度按场地器材可选范围调整；负重从能连续推完全程的重量起步。",
+      "solo_ok": true,
+      "solo_alt": null,
+      "bailout": "推不动就停下站直、松手退后一步，不要在前倾姿势下继续硬顶。"
+    },
+    "demo_id": null,
+    "chapter_refs": [
+      "ch4"
+    ],
+    "claim_refs": []
+  },
+  {
+    "slug": "loaded-carry-household",
+    "name_zh": "家庭负重行走",
+    "name_en": "Household Loaded Carry",
+    "pattern": "搬运",
+    "laterality": "双侧",
+    "muscles": {
+      "prime": [
+        "核心"
+      ],
+      "synergist": [
+        "上背",
+        "小腿"
+      ],
+      "stabilizer": [
+        "臀",
+        "股四头"
+      ]
+    },
+    "equipment": "自重",
+    "cues": [
+      {
+        "phase": "设置",
+        "text": "双手各提一件家里能提稳的重物（如一桶水、一袋米），肩往后下方收住，肋骨收住。"
+      },
+      {
+        "phase": "发力",
+        "text": "小步直线行走，不耸肩、不左右摇；呼吸保持顺畅。"
+      },
+      {
+        "phase": "收尾",
+        "text": "走完屈髋把重物放到地面，不直接松手砸地。"
+      }
+    ],
+    "mistakes": [
+      {
+        "error": "提的东西握不稳",
+        "consequence": "注意力全在抓握上，躯干稳定的训练目标落空，掉落还会砸脚。"
+      },
+      {
+        "error": "躯干左右摇摆",
+        "consequence": "抗摇摆的训练目标失效。"
+      }
+    ],
+    "self_checks": [
+      {
+        "criterion": "肩保持下沉后收，不耸起来",
+        "how": "正前方拍视频，看走到后半程肩有没有抬高。",
+        "cannot": "看不出握力与核心谁先到极限；多数人是握力先掉。"
+      },
+      {
+        "criterion": "行走是直线、躯干不左右摇",
+        "how": "从正后方拍，看髋与肩的左右位移。",
+        "cannot": "轻微摆动属正常，这条只能判断明显摇摆。"
+      }
+    ],
+    "audience": {
+      "suitable": "在家练搬运模式的起点，不需要任何训练装备。",
+      "cautions": "训练中出现疼痛：当场停止该动作，当次不用其他动作替代着练同一部位，按第 9 章的判断原则决定继续观察还是就医。"
+    },
+    "home_alts": [
+      "db-farmer-carry"
+    ],
+    "difficulty": "入门",
+    "safety": {
+      "rack": "不需要任何支撑；路线上清空杂物，穿包住脚的鞋。",
+      "collars": "本动作不使用杠铃，不涉及卡扣。",
+      "setup": "两件重物重量尽量接近；重量从能走完全程不耸肩的程度起步。",
+      "solo_ok": true,
+      "solo_alt": null,
+      "bailout": "提不住就停下、屈髋把重物放到地面，不要边走边松手。"
+    },
+    "demo_id": null,
+    "chapter_refs": [
+      "ch4"
+    ],
+    "claim_refs": []
+  },
+  {
+    "slug": "cable-pallof-press",
+    "name_zh": "绳索帕洛夫推",
+    "name_en": "Cable Pallof Press",
+    "pattern": "核心抗阻",
+    "laterality": "双侧",
+    "muscles": {
+      "prime": [
+        "核心"
+      ],
+      "synergist": [
+        "前束",
+        "臀"
+      ],
+      "stabilizer": [
+        "上背"
+      ]
+    },
+    "equipment": "固定器械",
+    "cues": [
+      {
+        "phase": "设置",
+        "text": "滑轮调到胸高，侧身站立，双手在胸前合握握把，退到带有张力，两脚与肩同宽。"
+      },
+      {
+        "phase": "发力",
+        "text": "把握把沿水平方向推直到手臂伸直，抵抗住把躯干转过去的力；保持 2–3 次呼吸再收回。"
+      },
+      {
+        "phase": "收尾",
+        "text": "做完换边；结束时让配重有控制地落回。"
+      }
+    ],
+    "mistakes": [
+      {
+        "error": "躯干被拉着转过去",
+        "consequence": "抗旋转的训练目标直接落空。"
+      },
+      {
+        "error": "憋气完成",
+        "consequence": "躯干靠屏气撑住，核心的稳定能力并没有练到。"
+      }
+    ],
+    "self_checks": [
+      {
+        "criterion": "推出去时肩线与髋线仍朝向正前方",
+        "how": "从正面拍视频，看推到最远时躯干有没有转。",
+        "cannot": "看不出深层核心肌的实际工作；只能判断明显旋转。"
+      },
+      {
+        "criterion": "全程能正常说话或呼吸",
+        "how": "自己数呼吸；做不到就减重量。",
+        "cannot": "呼吸顺畅不代表强度够，这条只排除憋气代偿。"
+      }
+    ],
+    "audience": {
+      "suitable": "所有人；是最直接的抗旋转训练入口。",
+      "cautions": "训练中出现疼痛：当场停止该动作，当次不用其他动作替代着练同一部位，按第 9 章的判断原则决定继续观察还是就医。"
+    },
+    "home_alts": [
+      "band-pallof-press"
+    ],
+    "difficulty": "入门",
+    "safety": {
+      "rack": "确认滑轮销与扣环牢固。",
+      "collars": "本动作不使用杠铃，不涉及卡扣。",
+      "setup": "滑轮调到胸高；站位退到起始已有张力。",
+      "solo_ok": true,
+      "solo_alt": null,
+      "bailout": "撑不住就把手收回胸前、顺着张力转身面向器械，让配重落回。"
+    },
+    "demo_id": null,
+    "chapter_refs": [
+      "ch4"
+    ],
+    "claim_refs": []
+  },
+  {
+    "slug": "plank",
+    "name_zh": "平板支撑",
+    "name_en": "Front Plank",
+    "pattern": "核心抗阻",
+    "laterality": "双侧",
+    "muscles": {
+      "prime": [
+        "核心"
+      ],
+      "synergist": [
+        "前束",
+        "臀"
+      ],
+      "stabilizer": [
+        "上背"
+      ]
+    },
+    "equipment": "自重",
+    "cues": [
+      {
+        "phase": "设置",
+        "text": "小臂与脚尖撑地，肘在肩的正下方；从头到脚跟成一条线，肋骨收住、臀夹住。"
+      },
+      {
+        "phase": "发力",
+        "text": "保持这条线并正常呼吸，撑到姿势开始变形就结束，而不是撑到时间到。"
+      },
+      {
+        "phase": "收尾",
+        "text": "结束时先把膝落地再起身。"
+      }
+    ],
+    "mistakes": [
+      {
+        "error": "腰塌下去",
+        "consequence": "腰段过伸，核心反而不工作。"
+      },
+      {
+        "error": "臀抬得很高",
+        "consequence": "变成休息姿势，强度大幅下降。"
+      }
+    ],
+    "self_checks": [
+      {
+        "criterion": "从头到脚跟一条线",
+        "how": "正侧面拍视频，看腰有没有塌、臀有没有翘。",
+        "cannot": "看不出各层核心肌的实际参与；外形对不代表用力方式对。"
+      },
+      {
+        "criterion": "全程能正常呼吸",
+        "how": "自己数呼吸或出声说话。",
+        "cannot": "呼吸顺畅不代表强度足够。"
+      }
+    ],
+    "audience": {
+      "suitable": "所有人；也是判断\"该不该上更难的核心动作\"的基准。",
+      "cautions": "训练中出现疼痛：当场停止该动作，当次不用其他动作替代着练同一部位，按第 9 章的判断原则决定继续观察还是就医。"
+    },
+    "home_alts": [
+      "band-pallof-press"
+    ],
+    "difficulty": "入门",
+    "safety": {
+      "rack": "不需要任何支撑；地面铺垫子。",
+      "collars": "本动作不使用杠铃，不涉及卡扣。",
+      "setup": "肘在肩正下方；两脚与髋同宽。",
+      "solo_ok": true,
+      "solo_alt": null,
+      "bailout": "撑不住就把膝落地再整个人趴下，不要让腰先塌着继续撑。"
+    },
+    "demo_id": null,
+    "chapter_refs": [
+      "ch4"
+    ],
+    "claim_refs": []
+  },
+  {
+    "slug": "band-pallof-press",
+    "name_zh": "弹力带帕洛夫推",
+    "name_en": "Band Pallof Press",
+    "pattern": "核心抗阻",
+    "laterality": "双侧",
+    "muscles": {
+      "prime": [
+        "核心"
+      ],
+      "synergist": [
+        "前束",
+        "臀"
+      ],
+      "stabilizer": [
+        "上背"
+      ]
+    },
+    "equipment": "弹力带",
+    "cues": [
+      {
+        "phase": "设置",
+        "text": "弹力带固定在胸高的稳固点上，侧身站立，双手在胸前合握带子两端，退到有张力。"
+      },
+      {
+        "phase": "发力",
+        "text": "沿水平方向把手推直，抵抗住把躯干转过去的力；保持 2–3 次呼吸再收回。"
+      },
+      {
+        "phase": "收尾",
+        "text": "做完换边；结束时先松张力再取下带子。"
+      }
+    ],
+    "mistakes": [
+      {
+        "error": "固定点不牢",
+        "consequence": "带子脱扣会直接弹回身体。"
+      },
+      {
+        "error": "靠侧倾躲掉旋转力",
+        "consequence": "抗旋转变成侧屈，训练目标落空。"
+      }
+    ],
+    "self_checks": [
+      {
+        "criterion": "推出去时肩线与髋线仍朝向正前方",
+        "how": "从正面拍视频，看最远处躯干有没有转。",
+        "cannot": "只能判断明显旋转，看不出深层核心的工作。"
+      },
+      {
+        "criterion": "躯干不向任一侧倾斜",
+        "how": "正面拍看肩线是否水平。",
+        "cannot": "轻微调整属正常。"
+      }
+    ],
+    "audience": {
+      "suitable": "在家练抗旋转的读者。",
+      "cautions": "训练中出现疼痛：当场停止该动作，当次不用其他动作替代着练同一部位，按第 9 章的判断原则决定继续观察还是就医。"
+    },
+    "home_alts": [
+      "plank"
+    ],
+    "difficulty": "入门",
+    "safety": {
+      "rack": "不需要任何支撑；固定点必须牢固，使用前检查带子有无裂口。",
+      "collars": "本动作不使用杠铃，不涉及卡扣。",
+      "setup": "固定点在胸高；站位退到起始已有张力，阻力从轻档起步。",
+      "solo_ok": true,
+      "solo_alt": null,
+      "bailout": "撑不住就把手收回胸前并转身面向固定点，让张力松掉。"
+    },
+    "demo_id": null,
+    "chapter_refs": [
+      "ch4"
+    ],
+    "claim_refs": []
+  },
+  {
+    "slug": "ab-wheel-rollout",
+    "name_zh": "健腹轮前滚",
+    "name_en": "Ab Wheel Rollout",
+    "pattern": "核心抗阻",
+    "laterality": "双侧",
+    "muscles": {
+      "prime": [
+        "核心"
+      ],
+      "synergist": [
+        "上背",
+        "臀"
+      ],
+      "stabilizer": [
+        "肱三头"
+      ]
+    },
+    "equipment": "自重",
+    "cues": [
+      {
+        "phase": "设置",
+        "text": "跪姿（垫膝），双手握住健腹轮把手在肩的正下方，肋骨收住、腰不塌。"
+      },
+      {
+        "phase": "发力",
+        "text": "轮子向前滚到\"腰还能保持中立\"的最远处，再用核心把身体拉回。"
+      },
+      {
+        "phase": "收尾",
+        "text": "结束时先把髋坐回脚跟，再松手。"
+      }
+    ],
+    "mistakes": [
+      {
+        "error": "滚出去时腰塌下去",
+        "consequence": "腰段在最长力臂处承受拉伸负荷，这是本动作唯一需要警惕的风险点。"
+      },
+      {
+        "error": "用肩把轮子拉回来",
+        "consequence": "核心参与下降，动作退化成直臂下压。"
+      }
+    ],
+    "self_checks": [
+      {
+        "criterion": "最远处腰段没有明显塌陷",
+        "how": "正侧面拍视频，找到腰开始塌的那一帧，那就是你当次的幅度上限。",
+        "cannot": "体表看不到脊柱实际位置；也判断不了这个幅度对你是否有害。"
+      },
+      {
+        "criterion": "回程由躯干发起而不是手臂",
+        "how": "侧面视频看回程中髋与肩的移动顺序。",
+        "cannot": "只能判断明显的手臂主导。"
+      }
+    ],
+    "audience": {
+      "suitable": "已能稳定完成平板支撑 60 秒以上的读者。",
+      "cautions": "训练中出现疼痛：当场停止该动作，当次不用其他动作替代着练同一部位，按第 9 章的判断原则决定继续观察还是就医。"
+    },
+    "home_alts": [
+      "plank"
+    ],
+    "difficulty": "进阶",
+    "safety": {
+      "rack": "不需要任何支撑；前方留出一个身位的空间。",
+      "collars": "本动作不使用杠铃，不涉及卡扣。",
+      "setup": "膝下垫软垫；从小幅度起步，逐步增加滚出距离。",
+      "solo_ok": true,
+      "solo_alt": null,
+      "bailout": "回不来就直接趴到地面，再从侧面起身；不要在腰塌的姿势里硬撑。"
+    },
+    "demo_id": null,
     "chapter_refs": [
       "ch4"
     ],

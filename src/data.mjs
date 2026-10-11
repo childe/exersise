@@ -38,7 +38,7 @@ export async function loadData(root) {
     exercises: new Set(exercises.map((e) => e.slug)),
   };
   errs.push(...validateExercises(exercises, ctx));
-  if (process.env.SKIP_COVERAGE !== '1') errs.push(...validateCoverage(exercises));
+  errs.push(...validateCoverage(exercises));
   errs.push(...validateDemos(demos, { exercises }));
   const safetyCanon = await loadSafetyCanon(root); // 缺小节直接抛错，构建失败
   errs.push(...validatePlans(plans, {
