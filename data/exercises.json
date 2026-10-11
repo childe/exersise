@@ -154,5 +154,1874 @@
       "ch4"
     ],
     "claim_refs": []
+  },
+  {
+    "slug": "back-squat-low-bar",
+    "name_zh": "低杠背蹲",
+    "name_en": "Low-Bar Back Squat",
+    "pattern": "蹲",
+    "laterality": "双侧",
+    "muscles": {
+      "prime": [
+        "股四头",
+        "臀"
+      ],
+      "synergist": [
+        "腘绳",
+        "下背"
+      ],
+      "stabilizer": [
+        "核心",
+        "上背"
+      ]
+    },
+    "equipment": "杠铃",
+    "cues": [
+      {
+        "phase": "设置",
+        "text": "杠放在肩胛冈下方、后三角挤出的平台上，比高杠低一掌；双手握距比高杠窄一些，肘往后下方压住杠。"
+      },
+      {
+        "phase": "发力",
+        "text": "下蹲时髋先往后坐，躯干比高杠更前倾，杠仍走足中线铅垂线；髋与膝到位的时间要一致。"
+      },
+      {
+        "phase": "收尾",
+        "text": "站直后原路退回挂钩，两侧挂稳再松手，不在负重下转身。"
+      }
+    ],
+    "mistakes": [
+      {
+        "error": "把低杠当高杠蹲，躯干立得太直",
+        "consequence": "杠会往脚尖方向跑，为了平衡只能把重心前移，膝前压力上升且更容易前扑。"
+      },
+      {
+        "error": "肘往下掉、不主动压杠",
+        "consequence": "杠在背上往下滑，上背失去支撑平台，是脱手与甩腰的常见起点。"
+      }
+    ],
+    "self_checks": [
+      {
+        "criterion": "杠全程位于足中线正上方",
+        "how": "正侧面（镜头与杠同高、与身体垂直）拍视频，暂停在底部，从杠垂直向下划，应落在足弓中段附近。",
+        "cannot": "镜头角度偏一点这条就会误判；单帧也看不出全程轨迹，要逐帧看下降与上升两段。"
+      },
+      {
+        "criterion": "躯干前倾角在下降与上升两段保持一致",
+        "how": "侧面视频里对比「刚开始下蹲」与「刚离开底部」两帧的躯干角度，差异明显就是髋先走。",
+        "cannot": "看不出各关节实际承受的力矩；也判断不了这个前倾角对你的腰是否安全。"
+      }
+    ],
+    "audience": {
+      "suitable": "已经能稳定完成高杠背蹲、想在同一动作里推更大重量的读者。",
+      "cautions": "训练中出现疼痛：当场停止该动作，当次不用其他动作替代着练同一部位，按第 9 章的判断原则决定继续观察还是就医。"
+    },
+    "home_alts": [
+      "goblet-squat"
+    ],
+    "difficulty": "进阶",
+    "safety": {
+      "rack": "保护杆高度用空杆实测：蹲到最低位，保护杆比最低位的杠低 2–3 cm，确认力竭时坐得上去。",
+      "collars": "两侧卡扣必须上紧，无例外。",
+      "setup": "挂钩略低于站立肩高；低杠位比高杠低一掌，先用空杆找到不硌骨头的位置再加重。",
+      "solo_ok": true,
+      "solo_alt": null,
+      "bailout": "做不动就把杠往保护杆上坐：继续下蹲让杠落到保护杆，人从杠下钻出来，不硬撑也不甩腰抢救。"
+    },
+    "demo_id": "demo-back-squat-low-bar",
+    "chapter_refs": [
+      "ch4",
+      "ch5"
+    ],
+    "claim_refs": []
+  },
+  {
+    "slug": "db-front-squat",
+    "name_zh": "哑铃前蹲",
+    "name_en": "Dumbbell Front Squat",
+    "pattern": "蹲",
+    "laterality": "双侧",
+    "muscles": {
+      "prime": [
+        "股四头",
+        "臀"
+      ],
+      "synergist": [
+        "上背"
+      ],
+      "stabilizer": [
+        "核心"
+      ]
+    },
+    "equipment": "哑铃",
+    "cues": [
+      {
+        "phase": "设置",
+        "text": "两只哑铃竖起来架在肩前，肘抬到与地面接近平行，哑铃靠住肩与锁骨之间。"
+      },
+      {
+        "phase": "发力",
+        "text": "下蹲时躯干尽量直立，肘不许掉；膝与脚尖同向，全脚掌踩实。"
+      },
+      {
+        "phase": "收尾",
+        "text": "站直后先把肘放下，再把哑铃顺着身体落到大腿、放回架上，不从肩上直接甩下来。"
+      }
+    ],
+    "mistakes": [
+      {
+        "error": "肘下掉，哑铃往前滚",
+        "consequence": "重心前移，躯干被迫前倾，上背先累而腿没练到。"
+      },
+      {
+        "error": "为了架住哑铃而耸肩锁死呼吸",
+        "consequence": "躯干僵硬、呼吸节奏乱，组内很快掉次数。"
+      }
+    ],
+    "self_checks": [
+      {
+        "criterion": "躯干接近直立，哑铃始终靠在肩上",
+        "how": "正侧面拍视频，看底部位置哑铃有没有离开肩、肘有没有掉下来。",
+        "cannot": "判断不了你的胸椎与肩的活动度上限；架不住常常是活动度问题，不是用力不够。"
+      },
+      {
+        "criterion": "膝与脚尖方向一致，不主动内扣",
+        "how": "正前方拍，看底部位置膝盖是否偏到脚的内侧。",
+        "cannot": "轻微的膝内移不等于错误，视频判断不了它对你是否有害。"
+      }
+    ],
+    "audience": {
+      "suitable": "想练直立躯干下的蹲、但没有杠铃或还不适合杠铃前蹲的读者。",
+      "cautions": "训练中出现疼痛：当场停止该动作，当次不用其他动作替代着练同一部位，按第 9 章的判断原则决定继续观察还是就医。"
+    },
+    "home_alts": [
+      "goblet-squat"
+    ],
+    "difficulty": "进阶",
+    "safety": {
+      "rack": "不需要保护架；确认身前身后 1 米内没人。",
+      "collars": "哑铃不涉及卡扣；用可调哑铃时，每组开始前确认锁扣已扣死。",
+      "setup": "哑铃选能轻松架住的重量起步，架不住就降重量，不靠耸肩硬扛。",
+      "solo_ok": true,
+      "solo_alt": null,
+      "bailout": "做不动就把肘放下、哑铃顺腿落到地面，人往后撤一步。"
+    },
+    "demo_id": "demo-db-front-squat",
+    "chapter_refs": [
+      "ch4"
+    ],
+    "claim_refs": []
+  },
+  {
+    "slug": "db-bulgarian-split-squat",
+    "name_zh": "哑铃保加利亚分腿蹲",
+    "name_en": "Dumbbell Bulgarian Split Squat",
+    "pattern": "蹲",
+    "laterality": "单侧",
+    "muscles": {
+      "prime": [
+        "股四头",
+        "臀"
+      ],
+      "synergist": [
+        "腘绳"
+      ],
+      "stabilizer": [
+        "核心"
+      ]
+    },
+    "equipment": "哑铃",
+    "cues": [
+      {
+        "phase": "设置",
+        "text": "后脚脚背搭在身后的凳上，前脚往前踏到下蹲时小腿接近垂直的距离，双手各持一只哑铃自然垂在体侧。"
+      },
+      {
+        "phase": "发力",
+        "text": "垂直下沉，后侧髋被拉开，前脚全脚掌踩实；躯干可略前倾但不来回晃。"
+      },
+      {
+        "phase": "收尾",
+        "text": "做完一侧先把哑铃放下，再换腿，不单脚站着换手。"
+      }
+    ],
+    "mistakes": [
+      {
+        "error": "前脚踏得太近",
+        "consequence": "下蹲时膝盖远超脚尖，膝前压力集中且后侧髋几乎没被拉开。"
+      },
+      {
+        "error": "靠后腿蹬凳子发力",
+        "consequence": "训练刺激跑到后腿，前腿的量被稀释，还容易失去平衡。"
+      }
+    ],
+    "self_checks": [
+      {
+        "criterion": "前侧小腿在底部接近垂直，膝盖不过度前移",
+        "how": "正侧面拍视频，暂停在最低位看小腿角度。",
+        "cannot": "不同腿长的人角度本来就不同；视频判断不了你的踝活动度是不是限制因素。"
+      },
+      {
+        "criterion": "骨盆与肩在全程朝向正前方，不随动作转动",
+        "how": "正前方拍，看髋与肩有没有左右转。",
+        "cannot": "看不出深层稳定肌是怎么工作的；轻微晃动不等于有问题。"
+      }
+    ],
+    "audience": {
+      "suitable": "已能完成双侧蹲、想补单侧力量与平衡的读者。",
+      "cautions": "训练中出现疼痛：当场停止该动作，当次不用其他动作替代着练同一部位，按第 9 章的判断原则决定继续观察还是就医。"
+    },
+    "home_alts": [
+      "goblet-squat"
+    ],
+    "difficulty": "进阶",
+    "safety": {
+      "rack": "不需要保护架；凳子要稳，确认不会滑动。",
+      "collars": "哑铃不涉及卡扣；用可调哑铃时，每组开始前确认锁扣已扣死。",
+      "setup": "凳高约到小腿中段；先徒手找距离，再拿哑铃。",
+      "solo_ok": true,
+      "solo_alt": null,
+      "bailout": "失去平衡就松手让哑铃落到体侧地面，前脚往前踏一步站稳，不要扭着身体去救。"
+    },
+    "demo_id": "demo-db-bulgarian-split-squat",
+    "chapter_refs": [
+      "ch4"
+    ],
+    "claim_refs": []
+  },
+  {
+    "slug": "conventional-deadlift",
+    "name_zh": "常规硬拉",
+    "name_en": "Conventional Deadlift",
+    "pattern": "髋铰链",
+    "laterality": "双侧",
+    "muscles": {
+      "prime": [
+        "臀",
+        "腘绳"
+      ],
+      "synergist": [
+        "下背",
+        "上背",
+        "股四头"
+      ],
+      "stabilizer": [
+        "核心"
+      ]
+    },
+    "equipment": "杠铃",
+    "cues": [
+      {
+        "phase": "设置",
+        "text": "脚踩在杠下方约杠正对足中线的位置，屈髋屈膝握杠，肩在杠的略前方，背拉成中立并绷住。"
+      },
+      {
+        "phase": "发力",
+        "text": "先把地面蹬开，杠贴着腿往上走，髋与肩同步抬；杠过膝后髋推到站直，不后仰。"
+      },
+      {
+        "phase": "收尾",
+        "text": "放下时先屈髋再屈膝，杠仍贴腿；每次落地都算一次完整下放，不借反弹。"
+      }
+    ],
+    "mistakes": [
+      {
+        "error": "起始就把髋抬得很高、背先圆",
+        "consequence": "腰段力矩骤增，这是硬拉最典型也最贵的错误。"
+      },
+      {
+        "error": "杠离开腿往前飘",
+        "consequence": "力臂变长，同样重量腰的负担大幅上升，还容易被拉得前扑。"
+      }
+    ],
+    "self_checks": [
+      {
+        "criterion": "杠全程贴着腿，不前飘",
+        "how": "正侧面拍视频，看杠与大腿／小腿之间有没有空隙。",
+        "cannot": "看不出你用了多少背、多少腿；也判断不了贴腿时的皮肤摩擦是否正常。"
+      },
+      {
+        "criterion": "背在起杠瞬间就是中立的，不在拉起过程中才\"找正\"",
+        "how": "侧面视频对比\"手握住杠\"与\"杠刚离地\"两帧的腰胸段曲度。",
+        "cannot": "体表看不到脊柱实际位置，衣物与肌肉会掩盖；视频也判断不了这个幅度对你是否有害。"
+      }
+    ],
+    "audience": {
+      "suitable": "已经读过导读「第一次训练前必读」、能先用空杆练完整下放流程的读者。",
+      "cautions": "训练中出现疼痛：当场停止该动作，当次不用其他动作替代着练同一部位，按第 9 章的判断原则决定继续观察还是就医。"
+    },
+    "home_alts": [
+      "db-romanian-deadlift"
+    ],
+    "difficulty": "进阶",
+    "safety": {
+      "rack": "硬拉不需要保护杆，但需要空出落杆区域：杠两侧 1 米内不站人、地面不放杂物。",
+      "collars": "两侧卡扣必须上紧，无例外。",
+      "setup": "用标准片把杠抬到常规高度；片不够高时用垫块补，而不是加大弯腰幅度。",
+      "solo_ok": true,
+      "solo_alt": null,
+      "bailout": "做不动就直接把杠放回地面，不抢救、不做\"甩上去再说\"；放下时仍先屈髋再屈膝。"
+    },
+    "demo_id": "demo-conventional-deadlift",
+    "chapter_refs": [
+      "ch4",
+      "ch5"
+    ],
+    "claim_refs": []
+  },
+  {
+    "slug": "romanian-deadlift",
+    "name_zh": "杠铃罗马尼亚硬拉",
+    "name_en": "Barbell Romanian Deadlift",
+    "pattern": "髋铰链",
+    "laterality": "双侧",
+    "muscles": {
+      "prime": [
+        "腘绳",
+        "臀"
+      ],
+      "synergist": [
+        "下背"
+      ],
+      "stabilizer": [
+        "核心",
+        "上背"
+      ]
+    },
+    "equipment": "杠铃",
+    "cues": [
+      {
+        "phase": "设置",
+        "text": "从站立位开始（从架上取杠，不从地面拉起），双手正握，杠贴大腿前侧，膝微屈并在全程保持这个角度。"
+      },
+      {
+        "phase": "发力",
+        "text": "髋往后推、杠贴腿下行，直到腘绳被明显拉开或背快要失去中立为止，不追求碰地。"
+      },
+      {
+        "phase": "收尾",
+        "text": "髋推回站直即结束，不后仰、不耸肩。"
+      }
+    ],
+    "mistakes": [
+      {
+        "error": "用屈膝代替屈髋",
+        "consequence": "变成半程硬拉，腘绳几乎没被拉长，训练目标跑掉。"
+      },
+      {
+        "error": "下放时追求更低而让背变圆",
+        "consequence": "腰段在最长力臂处失去支撑，是本动作最常见的受伤路径。"
+      }
+    ],
+    "self_checks": [
+      {
+        "criterion": "下放到底时膝角与起始基本一致",
+        "how": "正侧面拍视频，对比起始帧与最低帧的膝角。",
+        "cannot": "判断不了你的腘绳柔韧上限；角度一致不代表幅度就该到那里。"
+      },
+      {
+        "criterion": "背在整个下放过程保持中立，没有突然塌陷",
+        "how": "侧面视频逐帧看腰胸段曲度，出现明显变化的那一帧就是你当次的幅度上限。",
+        "cannot": "体表看不到脊柱实际位置；视频也判断不了这个幅度对你是否有害。"
+      }
+    ],
+    "audience": {
+      "suitable": "想针对性练髋铰链与腘绳、且已能完成常规硬拉下放流程的读者。",
+      "cautions": "训练中出现疼痛：当场停止该动作，当次不用其他动作替代着练同一部位，按第 9 章的判断原则决定继续观察还是就医。"
+    },
+    "home_alts": [
+      "db-romanian-deadlift"
+    ],
+    "difficulty": "进阶",
+    "safety": {
+      "rack": "从深蹲架或挂钩上取杠，挂钩高度约在大腿上段，避免每组从地面拉起。",
+      "collars": "两侧卡扣必须上紧，无例外。",
+      "setup": "取杠后退一步站稳；两脚与髋同宽。",
+      "solo_ok": true,
+      "solo_alt": null,
+      "bailout": "做不动就把杠顺腿放回地面或放回挂钩，不在弯腰姿势下硬撑。"
+    },
+    "demo_id": "demo-romanian-deadlift",
+    "chapter_refs": [
+      "ch4",
+      "ch5"
+    ],
+    "claim_refs": []
+  },
+  {
+    "slug": "db-romanian-deadlift",
+    "name_zh": "哑铃罗马尼亚硬拉",
+    "name_en": "Dumbbell Romanian Deadlift",
+    "pattern": "髋铰链",
+    "laterality": "双侧",
+    "muscles": {
+      "prime": [
+        "腘绳",
+        "臀"
+      ],
+      "synergist": [
+        "下背"
+      ],
+      "stabilizer": [
+        "核心"
+      ]
+    },
+    "equipment": "哑铃",
+    "cues": [
+      {
+        "phase": "设置",
+        "text": "双手各持一只哑铃放在大腿前，膝微屈并保持这个角度，肩往后收住。"
+      },
+      {
+        "phase": "发力",
+        "text": "髋往后推，哑铃贴着腿下行到腘绳被明显拉开为止；背保持中立。"
+      },
+      {
+        "phase": "收尾",
+        "text": "髋推回站直，哑铃回到大腿前；结束时屈髋把哑铃放到地面。"
+      }
+    ],
+    "mistakes": [
+      {
+        "error": "哑铃离开腿往前荡",
+        "consequence": "力臂变长，腰的负担上升而腘绳的拉长反而变少。"
+      },
+      {
+        "error": "用腰把身体\"卷\"起来",
+        "consequence": "髋铰链变成脊柱屈伸，训练目标与受力都偏掉。"
+      }
+    ],
+    "self_checks": [
+      {
+        "criterion": "哑铃全程贴着腿移动",
+        "how": "正侧面拍视频，看哑铃与腿之间有没有空隙。",
+        "cannot": "判断不了你每侧的发力是否均衡；要看左右差异得另拍正面。"
+      },
+      {
+        "criterion": "下放幅度以\"背还能保持中立\"为界",
+        "how": "侧面视频里找出腰胸段曲度开始明显变化的那一帧。",
+        "cannot": "体表看不到脊柱实际位置；视频也判断不了这个幅度对你是否有害。"
+      }
+    ],
+    "audience": {
+      "suitable": "家里或只有哑铃时练髋铰链的读者，也适合在杠铃版之前先建立动作模式。",
+      "cautions": "训练中出现疼痛：当场停止该动作，当次不用其他动作替代着练同一部位，按第 9 章的判断原则决定继续观察还是就医。"
+    },
+    "home_alts": [
+      "db-hip-thrust"
+    ],
+    "difficulty": "入门",
+    "safety": {
+      "rack": "不需要保护架；确认脚前方有放下哑铃的空间。",
+      "collars": "哑铃不涉及卡扣；用可调哑铃时，每组开始前确认锁扣已扣死。",
+      "setup": "两脚与髋同宽；重量从能全程控制住的档位起步。",
+      "solo_ok": true,
+      "solo_alt": null,
+      "bailout": "做不动就屈髋把哑铃放到脚前地面，人站直，不弯着腰硬提。"
+    },
+    "demo_id": "demo-db-romanian-deadlift",
+    "chapter_refs": [
+      "ch4"
+    ],
+    "claim_refs": []
+  },
+  {
+    "slug": "db-hip-thrust",
+    "name_zh": "哑铃臀推",
+    "name_en": "Dumbbell Hip Thrust",
+    "pattern": "髋铰链",
+    "laterality": "双侧",
+    "muscles": {
+      "prime": [
+        "臀"
+      ],
+      "synergist": [
+        "腘绳",
+        "股四头"
+      ],
+      "stabilizer": [
+        "核心"
+      ]
+    },
+    "equipment": "哑铃",
+    "cues": [
+      {
+        "phase": "设置",
+        "text": "上背靠在稳固的凳边，脚踩实地面约与肩同宽，哑铃横放在髋部（垫一块软垫）。"
+      },
+      {
+        "phase": "发力",
+        "text": "收紧核心、下巴微收，用髋把身体顶到躯干与大腿接近一条线，不靠腰去拱。"
+      },
+      {
+        "phase": "收尾",
+        "text": "有控制地降回起点，髋不砸地；结束时先把哑铃挪到一侧再起身。"
+      }
+    ],
+    "mistakes": [
+      {
+        "error": "顶到最高点时用腰代偿拱起来",
+        "consequence": "腰段过伸、臀的参与反而减少。"
+      },
+      {
+        "error": "脚踩得太远",
+        "consequence": "变成腘绳主导甚至抽筋，臀的张力下降。"
+      }
+    ],
+    "self_checks": [
+      {
+        "criterion": "顶点时躯干与大腿接近一条线，肋骨不外翻",
+        "how": "正侧面拍视频，看顶点处腰是否明显拱起。",
+        "cannot": "看不出臀肌实际的发力比例；没有\"感觉到\"不代表没练到。"
+      },
+      {
+        "criterion": "双脚压力均衡，膝不左右摇摆",
+        "how": "正前方拍，看顶点处两膝是否同宽。",
+        "cannot": "判断不了左右髋的力量差异，要测差异得做单侧版本。"
+      }
+    ],
+    "audience": {
+      "suitable": "想集中练臀、或蹲类动作膝踝受限的读者。",
+      "cautions": "训练中出现疼痛：当场停止该动作，当次不用其他动作替代着练同一部位，按第 9 章的判断原则决定继续观察还是就医。"
+    },
+    "home_alts": [
+      "db-hip-thrust"
+    ],
+    "difficulty": "入门",
+    "safety": {
+      "rack": "不需要保护架；凳子必须贴墙或压稳，不会被顶跑。",
+      "collars": "哑铃不涉及卡扣；用可调哑铃时，每组开始前确认锁扣已扣死。",
+      "setup": "凳高约到肩胛下缘；髋部务必垫软垫，避免骨头被硌。",
+      "solo_ok": true,
+      "solo_alt": null,
+      "bailout": "做不动就把髋降到地面、双手把哑铃推到身侧地面，再从凳边侧身起来。"
+    },
+    "demo_id": "demo-db-hip-thrust",
+    "chapter_refs": [
+      "ch4"
+    ],
+    "claim_refs": []
+  },
+  {
+    "slug": "barbell-bench-press",
+    "name_zh": "杠铃平板卧推",
+    "name_en": "Barbell Bench Press",
+    "pattern": "推",
+    "laterality": "双侧",
+    "muscles": {
+      "prime": [
+        "胸"
+      ],
+      "synergist": [
+        "前束",
+        "肱三头"
+      ],
+      "stabilizer": [
+        "上背",
+        "核心"
+      ]
+    },
+    "equipment": "杠铃",
+    "cues": [
+      {
+        "phase": "设置",
+        "text": "躺下后先把肩胛收紧压进凳面，双脚踩实地面；握距让下放到底时前臂接近垂直。"
+      },
+      {
+        "phase": "发力",
+        "text": "杠从肩正上方出发，下放到胸骨下段，肘不外展到与躯干成直角；推起时杠回到肩正上方。"
+      },
+      {
+        "phase": "收尾",
+        "text": "完成后先确认杠在挂钩内，再松手；不在胸上方换手或调整握距。"
+      }
+    ],
+    "mistakes": [
+      {
+        "error": "肘完全外展成一条直线",
+        "consequence": "肩前侧压力明显上升，是卧推最常见的肩痛来源。"
+      },
+      {
+        "error": "下放时肩胛放松、胸塌下去",
+        "consequence": "失去稳定支撑，推起路径不稳且力量下降。"
+      }
+    ],
+    "self_checks": [
+      {
+        "criterion": "下放到底时前臂接近垂直于地面",
+        "how": "从脚侧或正侧面拍视频，暂停在最低点看前臂角度。",
+        "cannot": "判断不了你的最佳握距；握距还受肩活动度与臂长影响。"
+      },
+      {
+        "criterion": "肩胛全程保持收紧，不随推起而前伸",
+        "how": "侧面视频里看肩有没有在推到顶时往前耸。",
+        "cannot": "体表看不出肩胛实际位置；穿宽松衣服时更容易误判。"
+      }
+    ],
+    "audience": {
+      "suitable": "有保护杆或有合格保护者、且已练过落杆退出方式的读者。",
+      "cautions": "训练中出现疼痛：当场停止该动作，当次不用其他动作替代着练同一部位，按第 9 章的判断原则决定继续观察还是就医。"
+    },
+    "home_alts": [
+      "db-bench-press"
+    ],
+    "difficulty": "进阶",
+    "safety": {
+      "rack": "保护杆高度用空杆实测：确认力竭时杠能落在保护杆上而不压胸。**没有保护杆也没有保护者，就不做本动作**，改做 db-bench-press。",
+      "collars": "两侧卡扣必须上紧，无例外。",
+      "setup": "挂钩高度以躺下后手臂微屈就能取杠为准；眼睛在杠的正下方略后。",
+      "solo_ok": false,
+      "solo_alt": "db-bench-press",
+      "bailout": "做不动就把杠落到保护杆上，人从杠下侧移出来；不做滚杠卸载，也不靠挣扎把杠推回挂钩。"
+    },
+    "demo_id": "demo-barbell-bench-press",
+    "chapter_refs": [
+      "ch4",
+      "ch5"
+    ],
+    "claim_refs": []
+  },
+  {
+    "slug": "overhead-press",
+    "name_zh": "杠铃站姿推举",
+    "name_en": "Standing Barbell Overhead Press",
+    "pattern": "推",
+    "laterality": "双侧",
+    "muscles": {
+      "prime": [
+        "前束"
+      ],
+      "synergist": [
+        "中束",
+        "肱三头",
+        "上背"
+      ],
+      "stabilizer": [
+        "核心",
+        "臀"
+      ]
+    },
+    "equipment": "杠铃",
+    "cues": [
+      {
+        "phase": "设置",
+        "text": "杠从锁骨前出发，握距略比肩宽，手腕保持中立不后折；肋骨收住、臀夹紧，别把腰顶出去。"
+      },
+      {
+        "phase": "发力",
+        "text": "推起时头略后让路，杠走接近垂直的路线；过头后头回到杠下方，肘锁直。"
+      },
+      {
+        "phase": "收尾",
+        "text": "下放回锁骨前再开始下一次；结束时原路放回挂钩。"
+      }
+    ],
+    "mistakes": [
+      {
+        "error": "用腰后仰把杠\"顶\"上去",
+        "consequence": "腰段过伸，重量从肩转移到腰，是站姿推举最常见的代偿。"
+      },
+      {
+        "error": "杠绕过头往前推",
+        "consequence": "力臂变长，肩前侧负担上升且很难锁定。"
+      }
+    ],
+    "self_checks": [
+      {
+        "criterion": "顶点时杠在足中线与肩的正上方",
+        "how": "正侧面拍视频，暂停在锁定帧，从杠垂直下划看落点。",
+        "cannot": "判断不了你的肩活动度是否足以让杠到位；到不了位不一定是技术问题。"
+      },
+      {
+        "criterion": "全程肋骨不外翻、腰不额外后仰",
+        "how": "侧面视频对比起始与顶点的腰段曲度。",
+        "cannot": "看不出核心的实际发力；没有明显后仰不代表完全没用腰。"
+      }
+    ],
+    "audience": {
+      "suitable": "肩无急性症状、能在空杆下保持躯干不后仰的读者。",
+      "cautions": "训练中出现疼痛：当场停止该动作，当次不用其他动作替代着练同一部位，按第 9 章的判断原则决定继续观察还是就医。"
+    },
+    "home_alts": [
+      "db-shoulder-press"
+    ],
+    "difficulty": "进阶",
+    "safety": {
+      "rack": "从挂钩取杠，挂钩高度约在锁骨处；站姿推举没有保护杆可用，重量要留余地。",
+      "collars": "两侧卡扣必须上紧，无例外。",
+      "setup": "站距与髋同宽；取杠后退一步站稳再开始。",
+      "solo_ok": true,
+      "solo_alt": null,
+      "bailout": "推不上去就有控制地把杠降回锁骨前，再放回挂钩；不要往身后甩，也不要直接松手。"
+    },
+    "demo_id": "demo-overhead-press",
+    "chapter_refs": [
+      "ch4",
+      "ch5"
+    ],
+    "claim_refs": []
+  },
+  {
+    "slug": "close-grip-bench-press",
+    "name_zh": "窄握卧推",
+    "name_en": "Close-Grip Bench Press",
+    "pattern": "推",
+    "laterality": "双侧",
+    "muscles": {
+      "prime": [
+        "肱三头"
+      ],
+      "synergist": [
+        "胸",
+        "前束"
+      ],
+      "stabilizer": [
+        "上背",
+        "核心"
+      ]
+    },
+    "equipment": "杠铃",
+    "cues": [
+      {
+        "phase": "设置",
+        "text": "握距约与肩同宽（不是并拢），肩胛收紧压凳，双脚踩实。"
+      },
+      {
+        "phase": "发力",
+        "text": "下放时肘贴着躯干走，杠落到胸骨下段；推起时沿同一路线回到肩正上方。"
+      },
+      {
+        "phase": "收尾",
+        "text": "完成后确认杠挂稳再松手。"
+      }
+    ],
+    "mistakes": [
+      {
+        "error": "握得过窄",
+        "consequence": "手腕被迫后折，腕与肘的压力上升而三头并没有更多收益。"
+      },
+      {
+        "error": "肘外展",
+        "consequence": "动作退化成普通卧推，失去练三头的意图。"
+      }
+    ],
+    "self_checks": [
+      {
+        "criterion": "肘在下放过程贴近躯干而不是外展",
+        "how": "从脚侧拍视频，看上臂与躯干的夹角是否明显小于平板卧推。",
+        "cannot": "判断不了三头与胸各自分担了多少；主观感觉并不可靠。"
+      },
+      {
+        "criterion": "手腕保持中立，不后折",
+        "how": "侧面近距离拍一帧，看前臂与手背是否接近一条直线。",
+        "cannot": "看不出腕关节内部的受力；不痛不代表姿势就对。"
+      }
+    ],
+    "audience": {
+      "suitable": "想补肱三头、且卧推基本动作已稳定的读者。",
+      "cautions": "训练中出现疼痛：当场停止该动作，当次不用其他动作替代着练同一部位，按第 9 章的判断原则决定继续观察还是就医。"
+    },
+    "home_alts": [
+      "db-bench-press"
+    ],
+    "difficulty": "进阶",
+    "safety": {
+      "rack": "保护杆高度用空杆实测，确认力竭时杠落在保护杆上而不压胸；无保护杆且无保护者时不做，改做 cable-pushdown。",
+      "collars": "两侧卡扣必须上紧，无例外。",
+      "setup": "握距与肩同宽；比平板卧推减重量起步。",
+      "solo_ok": false,
+      "solo_alt": "db-bench-press",
+      "bailout": "做不动就把杠落到保护杆上，人从杠下侧移出来，不做滚杠卸载。"
+    },
+    "demo_id": "demo-close-grip-bench-press",
+    "chapter_refs": [
+      "ch4"
+    ],
+    "claim_refs": []
+  },
+  {
+    "slug": "db-bench-press",
+    "name_zh": "哑铃平板卧推",
+    "name_en": "Dumbbell Bench Press",
+    "pattern": "推",
+    "laterality": "双侧",
+    "muscles": {
+      "prime": [
+        "胸"
+      ],
+      "synergist": [
+        "前束",
+        "肱三头"
+      ],
+      "stabilizer": [
+        "上背",
+        "核心"
+      ]
+    },
+    "equipment": "哑铃",
+    "cues": [
+      {
+        "phase": "设置",
+        "text": "坐在凳尾把哑铃架在大腿上，顺势躺下的同时用腿把哑铃送到胸前，肩胛收紧压凳。"
+      },
+      {
+        "phase": "发力",
+        "text": "下放到胸侧、前臂接近垂直；推起时两只哑铃靠近但不相撞。"
+      },
+      {
+        "phase": "收尾",
+        "text": "做完先把哑铃收回胸前，再屈髋坐起来放回架上，不在躺着时直接往两侧扔。"
+      }
+    ],
+    "mistakes": [
+      {
+        "error": "下放过深追求\"拉伸感\"",
+        "consequence": "肩前侧在最不利角度承受额外负荷。"
+      },
+      {
+        "error": "两手不同步",
+        "consequence": "躯干被带着转，稳定性下降且左右差异被放大。"
+      }
+    ],
+    "self_checks": [
+      {
+        "criterion": "下放到底时前臂接近垂直",
+        "how": "从脚侧拍视频，暂停在最低点看两侧前臂角度。",
+        "cannot": "判断不了你的最佳下放深度；深度受肩活动度与胸廓形状影响。"
+      },
+      {
+        "criterion": "两侧哑铃高度同步",
+        "how": "正上方或脚侧拍，看最低点与顶点两只哑铃是否齐平。",
+        "cannot": "看不出左右力量差多少；要量化得分别做单侧动作。"
+      }
+    ],
+    "audience": {
+      "suitable": "没有保护杆或独自训练、想练水平推的读者——这是杠铃卧推的标准替代。",
+      "cautions": "训练中出现疼痛：当场停止该动作，当次不用其他动作替代着练同一部位，按第 9 章的判断原则决定继续观察还是就医。"
+    },
+    "home_alts": [
+      "db-bench-press"
+    ],
+    "difficulty": "入门",
+    "safety": {
+      "rack": "不需要保护架；哑铃可以随时往身体两侧放下，这正是它适合独练的原因。",
+      "collars": "哑铃不涉及卡扣；用可调哑铃时，每组开始前确认锁扣已扣死。",
+      "setup": "凳面稳固；重量以能独立完成\"起始送到胸前\"这一步为准。",
+      "solo_ok": true,
+      "solo_alt": null,
+      "bailout": "推不上来就把哑铃往身体两侧有控制地放到地面，人侧身起来；不要往头顶方向丢。"
+    },
+    "demo_id": "demo-db-bench-press",
+    "chapter_refs": [
+      "ch4",
+      "ch5"
+    ],
+    "claim_refs": []
+  },
+  {
+    "slug": "db-incline-bench-press",
+    "name_zh": "哑铃上斜卧推",
+    "name_en": "Dumbbell Incline Bench Press",
+    "pattern": "推",
+    "laterality": "双侧",
+    "muscles": {
+      "prime": [
+        "胸"
+      ],
+      "synergist": [
+        "前束",
+        "肱三头"
+      ],
+      "stabilizer": [
+        "上背",
+        "核心"
+      ]
+    },
+    "equipment": "哑铃",
+    "cues": [
+      {
+        "phase": "设置",
+        "text": "凳面调到约 30 度，坐下把哑铃架在大腿上，顺势躺下并把哑铃送到胸前上方。"
+      },
+      {
+        "phase": "发力",
+        "text": "下放到锁骨下方的胸上段、前臂接近垂直；推起时沿同一路线回去。"
+      },
+      {
+        "phase": "收尾",
+        "text": "结束时把哑铃收回胸前，屈髋坐起再放下。"
+      }
+    ],
+    "mistakes": [
+      {
+        "error": "凳面角度调得太陡",
+        "consequence": "动作变成肩推，胸上段的刺激反而减少。"
+      },
+      {
+        "error": "下放到腹部方向",
+        "consequence": "路径与凳面角度不匹配，肩前侧受力增加。"
+      }
+    ],
+    "self_checks": [
+      {
+        "criterion": "下放位置在胸上段而不是腹侧",
+        "how": "正侧面拍视频，看最低点哑铃与身体的相对位置。",
+        "cannot": "判断不了胸上段实际被刺激了多少；酸胀位置不是可靠依据。"
+      },
+      {
+        "criterion": "两侧哑铃同步，躯干不左右转",
+        "how": "从脚侧拍，看两只哑铃是否齐平、肩有没有一前一后。",
+        "cannot": "看不出左右力量差；要量化得分别做单侧。"
+      }
+    ],
+    "audience": {
+      "suitable": "想补胸上段、且平板哑铃卧推已稳定的读者。",
+      "cautions": "训练中出现疼痛：当场停止该动作，当次不用其他动作替代着练同一部位，按第 9 章的判断原则决定继续观察还是就医。"
+    },
+    "home_alts": [
+      "db-bench-press"
+    ],
+    "difficulty": "入门",
+    "safety": {
+      "rack": "不需要保护架；可随时把哑铃放到体侧。",
+      "collars": "哑铃不涉及卡扣；用可调哑铃时，每组开始前确认锁扣已扣死。",
+      "setup": "凳面约 30 度，背与臀贴紧凳面；重量比平板减一档起步。",
+      "solo_ok": true,
+      "solo_alt": null,
+      "bailout": "推不上来就把哑铃往体侧有控制地放下，人侧身起来。"
+    },
+    "demo_id": "demo-db-incline-bench-press",
+    "chapter_refs": [
+      "ch4"
+    ],
+    "claim_refs": []
+  },
+  {
+    "slug": "db-shoulder-press",
+    "name_zh": "哑铃坐姿推举",
+    "name_en": "Dumbbell Seated Shoulder Press",
+    "pattern": "推",
+    "laterality": "双侧",
+    "muscles": {
+      "prime": [
+        "前束"
+      ],
+      "synergist": [
+        "中束",
+        "肱三头"
+      ],
+      "stabilizer": [
+        "核心",
+        "上背"
+      ]
+    },
+    "equipment": "哑铃",
+    "cues": [
+      {
+        "phase": "设置",
+        "text": "坐在有靠背的凳上，用腿把哑铃顶到肩的高度，手腕保持中立，前臂垂直。"
+      },
+      {
+        "phase": "发力",
+        "text": "沿略呈弧线的路线推到头顶上方，肘接近锁直但不猛然顶死；下放回到肩高。"
+      },
+      {
+        "phase": "收尾",
+        "text": "结束时把哑铃落回大腿，再放到地面。"
+      }
+    ],
+    "mistakes": [
+      {
+        "error": "靠背角度太仰、变成上斜推",
+        "consequence": "刺激从肩转到胸上段，与训练意图不符。"
+      },
+      {
+        "error": "下放过低并在底部弹一下",
+        "consequence": "肩前侧在被拉长的位置承受冲击负荷。"
+      }
+    ],
+    "self_checks": [
+      {
+        "criterion": "底部时前臂接近垂直、肘不低于肩太多",
+        "how": "正前方拍视频，暂停在最低帧看前臂与肘的位置。",
+        "cannot": "判断不了你的肩活动度上限；到不了的高度不一定该硬推。"
+      },
+      {
+        "criterion": "全程腰不额外后仰",
+        "how": "正侧面拍，看腰与靠背之间的空隙在推起时有没有明显变大。",
+        "cannot": "看不出核心发力；靠背会掩盖一部分代偿。"
+      }
+    ],
+    "audience": {
+      "suitable": "想练垂直推、或暂时不适合杠铃站姿推举的读者。",
+      "cautions": "训练中出现疼痛：当场停止该动作，当次不用其他动作替代着练同一部位，按第 9 章的判断原则决定继续观察还是就医。"
+    },
+    "home_alts": [
+      "db-shoulder-press"
+    ],
+    "difficulty": "入门",
+    "safety": {
+      "rack": "不需要保护架；但要确认身后没人。",
+      "collars": "哑铃不涉及卡扣；用可调哑铃时，每组开始前确认锁扣已扣死。",
+      "setup": "靠背调到接近垂直（略仰 5–10 度）；重量以能用腿送到肩高为准。",
+      "solo_ok": true,
+      "solo_alt": null,
+      "bailout": "推不上去就把哑铃有控制地降回肩、再落到大腿和地面，不要往身后甩。"
+    },
+    "demo_id": "demo-db-shoulder-press",
+    "chapter_refs": [
+      "ch4"
+    ],
+    "claim_refs": []
+  },
+  {
+    "slug": "db-lateral-raise",
+    "name_zh": "哑铃侧平举",
+    "name_en": "Dumbbell Lateral Raise",
+    "pattern": "推",
+    "laterality": "双侧",
+    "muscles": {
+      "prime": [
+        "中束"
+      ],
+      "synergist": [
+        "前束",
+        "上背"
+      ],
+      "stabilizer": [
+        "核心"
+      ]
+    },
+    "equipment": "哑铃",
+    "cues": [
+      {
+        "phase": "设置",
+        "text": "站直，双手各持一只哑铃放在体侧，肘微屈并在全程保持这个角度。"
+      },
+      {
+        "phase": "发力",
+        "text": "肩带动上臂向外抬到约与地面平行，手背朝上；不耸肩、不甩。"
+      },
+      {
+        "phase": "收尾",
+        "text": "有控制地降回体侧，到底不借反弹。"
+      }
+    ],
+    "mistakes": [
+      {
+        "error": "用躯干前后摆动把哑铃甩起来",
+        "consequence": "目标肌群的张力时间被偷走，重量再大也不算练到。"
+      },
+      {
+        "error": "抬到远高于肩",
+        "consequence": "斜方肌接管，肩峰下空间减小。"
+      }
+    ],
+    "self_checks": [
+      {
+        "criterion": "顶点时上臂约与地面平行，不耸肩",
+        "how": "正前方拍视频，暂停在顶点看上臂高度与肩的位置。",
+        "cannot": "判断不了三角肌中束实际分担了多少；体感不可靠。"
+      },
+      {
+        "criterion": "躯干全程不前后晃",
+        "how": "正侧面拍，看肩的水平位置有没有来回移动。",
+        "cannot": "看不出细微的借力；极轻微的晃动不等于错误。"
+      }
+    ],
+    "audience": {
+      "suitable": "想补肩中束、希望用小重量高质量完成的读者。",
+      "cautions": "训练中出现疼痛：当场停止该动作，当次不用其他动作替代着练同一部位，按第 9 章的判断原则决定继续观察还是就医。"
+    },
+    "home_alts": [
+      "db-shoulder-press"
+    ],
+    "difficulty": "入门",
+    "safety": {
+      "rack": "不需要保护架。",
+      "collars": "哑铃不涉及卡扣；用可调哑铃时，每组开始前确认锁扣已扣死。",
+      "setup": "重量选到能\"不甩就抬起来\"的档位；这个动作的最小增量往往就是一对最轻的哑铃。",
+      "solo_ok": true,
+      "solo_alt": null,
+      "bailout": "抬不动就把哑铃放回体侧并放到地面，不借躯干甩完剩下的次数。"
+    },
+    "demo_id": "demo-db-lateral-raise",
+    "chapter_refs": [
+      "ch4"
+    ],
+    "claim_refs": []
+  },
+  {
+    "slug": "barbell-row",
+    "name_zh": "杠铃俯身划船",
+    "name_en": "Barbell Bent-Over Row",
+    "pattern": "拉",
+    "laterality": "双侧",
+    "muscles": {
+      "prime": [
+        "上背"
+      ],
+      "synergist": [
+        "肱二头",
+        "后束",
+        "下背"
+      ],
+      "stabilizer": [
+        "核心",
+        "腘绳"
+      ]
+    },
+    "equipment": "杠铃",
+    "cues": [
+      {
+        "phase": "设置",
+        "text": "屈髋到躯干约与地面成 15–45 度，膝微屈，背拉成中立；双手正握，握距略比肩宽。"
+      },
+      {
+        "phase": "发力",
+        "text": "肘往后下方走，把杠拉向肚脐与肋下之间；肩胛后收，不耸肩。"
+      },
+      {
+        "phase": "收尾",
+        "text": "有控制地放回，手臂伸直但背不塌；每组结束把杠放回地面或挂钩。"
+      }
+    ],
+    "mistakes": [
+      {
+        "error": "用躯干起伏把杠\"荡\"上来",
+        "consequence": "变成半程硬拉，背阔的张力时间大幅减少。"
+      },
+      {
+        "error": "躯干越做越直",
+        "consequence": "力臂变短、重量看着上去了，实际刺激却在下降。"
+      }
+    ],
+    "self_checks": [
+      {
+        "criterion": "躯干角度在一组内保持稳定",
+        "how": "正侧面拍视频，对比第一次与最后一次的躯干角度。",
+        "cannot": "看不出各肌群分担比例；躯干稳也可能是重量太轻。"
+      },
+      {
+        "criterion": "背在全程保持中立，不随拉起而塌陷",
+        "how": "侧面视频逐帧看腰胸段曲度。",
+        "cannot": "体表看不到脊柱实际位置；视频也判断不了这个幅度对你是否有害。"
+      }
+    ],
+    "audience": {
+      "suitable": "腰无急性症状、已能完成罗马尼亚硬拉并保持背中立的读者。",
+      "cautions": "训练中出现疼痛：当场停止该动作，当次不用其他动作替代着练同一部位，按第 9 章的判断原则决定继续观察还是就医。"
+    },
+    "home_alts": [
+      "db-one-arm-row"
+    ],
+    "difficulty": "进阶",
+    "safety": {
+      "rack": "不需要保护杆；但要确认脚前有放杆空间。",
+      "collars": "两侧卡扣必须上紧，无例外。",
+      "setup": "从地面或挂钩取杠；重量以能保持躯干角度为上限。",
+      "solo_ok": true,
+      "solo_alt": null,
+      "bailout": "拉不动就把杠顺着腿放回地面，不在俯身姿势下硬撑或扭腰。"
+    },
+    "demo_id": "demo-barbell-row",
+    "chapter_refs": [
+      "ch4",
+      "ch5"
+    ],
+    "claim_refs": []
+  },
+  {
+    "slug": "barbell-curl",
+    "name_zh": "杠铃弯举",
+    "name_en": "Barbell Curl",
+    "pattern": "拉",
+    "laterality": "双侧",
+    "muscles": {
+      "prime": [
+        "肱二头"
+      ],
+      "synergist": [
+        "上背"
+      ],
+      "stabilizer": [
+        "核心"
+      ]
+    },
+    "equipment": "杠铃",
+    "cues": [
+      {
+        "phase": "设置",
+        "text": "站直，双手与肩同宽正握杠，上臂贴住躯干两侧。"
+      },
+      {
+        "phase": "发力",
+        "text": "只屈肘把杠举到胸前，上臂不前移、躯干不后仰。"
+      },
+      {
+        "phase": "收尾",
+        "text": "有控制地放回到手臂接近伸直，不在底部甩起下一次。"
+      }
+    ],
+    "mistakes": [
+      {
+        "error": "用腰后仰把杠甩上来",
+        "consequence": "刺激从二头转到腰，重量变成假的。"
+      },
+      {
+        "error": "上臂往前抬",
+        "consequence": "前束接管一部分工作，二头的张力下降。"
+      }
+    ],
+    "self_checks": [
+      {
+        "criterion": "上臂全程贴住躯干不前移",
+        "how": "正侧面拍视频，看肘的水平位置有没有往前跑。",
+        "cannot": "判断不了二头实际收缩了多少；手臂酸不等于练到位。"
+      },
+      {
+        "criterion": "躯干不随举起而后仰",
+        "how": "侧面视频对比起始与顶点的躯干角度。",
+        "cannot": "轻微的躯干稳定性调整不等于代偿。"
+      }
+    ],
+    "audience": {
+      "suitable": "想补肱二头、单关节动作用得起小增量的读者。",
+      "cautions": "训练中出现疼痛：当场停止该动作，当次不用其他动作替代着练同一部位，按第 9 章的判断原则决定继续观察还是就医。"
+    },
+    "home_alts": [
+      "db-one-arm-row"
+    ],
+    "difficulty": "入门",
+    "safety": {
+      "rack": "不需要保护杆。",
+      "collars": "两侧卡扣必须上紧，无例外。",
+      "setup": "从挂钩或地面取杠；重量用最小片调整。",
+      "solo_ok": true,
+      "solo_alt": null,
+      "bailout": "举不动就把杠顺着大腿放回地面或挂钩，不甩腰完成剩余次数。"
+    },
+    "demo_id": "demo-barbell-curl",
+    "chapter_refs": [
+      "ch4"
+    ],
+    "claim_refs": []
+  },
+  {
+    "slug": "db-one-arm-row",
+    "name_zh": "哑铃单臂划船",
+    "name_en": "Dumbbell Single-Arm Row",
+    "pattern": "拉",
+    "laterality": "单侧",
+    "muscles": {
+      "prime": [
+        "上背"
+      ],
+      "synergist": [
+        "肱二头",
+        "后束"
+      ],
+      "stabilizer": [
+        "核心"
+      ]
+    },
+    "equipment": "哑铃",
+    "cues": [
+      {
+        "phase": "设置",
+        "text": "同侧手与同侧膝撑在凳上，另一脚踩地，躯干接近与地面平行，背中立。"
+      },
+      {
+        "phase": "发力",
+        "text": "肘沿躯干往后上方走，把哑铃拉到髋侧；肩胛后收，不转躯干。"
+      },
+      {
+        "phase": "收尾",
+        "text": "有控制地放回到手臂伸直；做完一侧把哑铃放到地面再换边。"
+      }
+    ],
+    "mistakes": [
+      {
+        "error": "用躯干旋转把哑铃带上来",
+        "consequence": "刺激被旋转分走，还给腰增加扭转负荷。"
+      },
+      {
+        "error": "拉到肩膀位置而不是髋侧",
+        "consequence": "肩前侧参与增加，背阔的收缩幅度变小。"
+      }
+    ],
+    "self_checks": [
+      {
+        "criterion": "躯干在整组中不旋转",
+        "how": "从头顶或正后方拍视频，看两侧肩是否保持同高。",
+        "cannot": "看不出背阔与手臂各出了多少力；有拉到的\"感觉\"并不可靠。"
+      },
+      {
+        "criterion": "哑铃落点在髋侧而不是肩侧",
+        "how": "正侧面拍，暂停在顶点看哑铃位置。",
+        "cannot": "不同臂长与躯干角度的落点略有差异，这条只能判断明显偏差。"
+      }
+    ],
+    "audience": {
+      "suitable": "想补单侧背部力量、或没有杠铃的读者。",
+      "cautions": "训练中出现疼痛：当场停止该动作，当次不用其他动作替代着练同一部位，按第 9 章的判断原则决定继续观察还是就医。"
+    },
+    "home_alts": [
+      "db-one-arm-row"
+    ],
+    "difficulty": "入门",
+    "safety": {
+      "rack": "不需要保护架；凳子要稳。",
+      "collars": "哑铃不涉及卡扣；用可调哑铃时，每组开始前确认锁扣已扣死。",
+      "setup": "支撑手与支撑膝在凳上形成稳定三角；重量以不靠转体就能拉起为准。",
+      "solo_ok": true,
+      "solo_alt": null,
+      "bailout": "拉不动就把哑铃放回地面，人直立起来，不扭着腰硬拉。"
+    },
+    "demo_id": "demo-db-one-arm-row",
+    "chapter_refs": [
+      "ch4"
+    ],
+    "claim_refs": []
+  },
+  {
+    "slug": "db-reverse-fly",
+    "name_zh": "哑铃俯身反向飞鸟",
+    "name_en": "Dumbbell Reverse Fly",
+    "pattern": "拉",
+    "laterality": "双侧",
+    "muscles": {
+      "prime": [
+        "后束"
+      ],
+      "synergist": [
+        "上背"
+      ],
+      "stabilizer": [
+        "核心"
+      ]
+    },
+    "equipment": "哑铃",
+    "cues": [
+      {
+        "phase": "设置",
+        "text": "屈髋俯身或趴在上斜凳上，双手各持一只轻哑铃垂在身下，肘微屈并保持这个角度。"
+      },
+      {
+        "phase": "发力",
+        "text": "用肩带动上臂往两侧抬，到上臂约与躯干成一条线；不耸肩、不甩。"
+      },
+      {
+        "phase": "收尾",
+        "text": "有控制地放回；结束时把哑铃放到地面再起身。"
+      }
+    ],
+    "mistakes": [
+      {
+        "error": "重量过大改用躯干起伏发力",
+        "consequence": "后束几乎不参与，动作退化成不完整的划船。"
+      },
+      {
+        "error": "耸肩",
+        "consequence": "上斜方接管，后束刺激下降。"
+      }
+    ],
+    "self_checks": [
+      {
+        "criterion": "顶点时上臂约与躯干在一条线上，不超过",
+        "how": "正后方拍视频，暂停在顶点看上臂高度。",
+        "cannot": "判断不了后束实际分担了多少；小肌群的体感尤其不可靠。"
+      },
+      {
+        "criterion": "肘角在全程保持不变",
+        "how": "侧面视频对比起始与顶点的肘角。",
+        "cannot": "极小的角度变化看不出来，这条只能判断明显的\"用手臂推\"。"
+      }
+    ],
+    "audience": {
+      "suitable": "想补后束与上背、平衡推类动作量的读者。",
+      "cautions": "训练中出现疼痛：当场停止该动作，当次不用其他动作替代着练同一部位，按第 9 章的判断原则决定继续观察还是就医。"
+    },
+    "home_alts": [
+      "db-one-arm-row"
+    ],
+    "difficulty": "入门",
+    "safety": {
+      "rack": "不需要保护架。",
+      "collars": "哑铃不涉及卡扣；用可调哑铃时，每组开始前确认锁扣已扣死。",
+      "setup": "俯身版把躯干稳住，或直接用上斜凳支撑胸口；重量取最轻档起步。",
+      "solo_ok": true,
+      "solo_alt": null,
+      "bailout": "抬不动就把哑铃放到地面，不靠躯干甩完剩余次数。"
+    },
+    "demo_id": "demo-db-reverse-fly",
+    "chapter_refs": [
+      "ch4"
+    ],
+    "claim_refs": []
+  },
+  {
+    "slug": "db-curl",
+    "name_zh": "哑铃弯举",
+    "name_en": "Dumbbell Curl",
+    "pattern": "拉",
+    "laterality": "双侧",
+    "muscles": {
+      "prime": [
+        "肱二头"
+      ],
+      "synergist": [
+        "上背"
+      ],
+      "stabilizer": [
+        "核心"
+      ]
+    },
+    "equipment": "哑铃",
+    "cues": [
+      {
+        "phase": "设置",
+        "text": "坐姿或站姿，双手各持一只哑铃垂在体侧，上臂贴住躯干。"
+      },
+      {
+        "phase": "发力",
+        "text": "只屈肘把哑铃举到肩前，可同时也可交替；上臂不前移。"
+      },
+      {
+        "phase": "收尾",
+        "text": "有控制地放回到手臂接近伸直，不借反弹。"
+      }
+    ],
+    "mistakes": [
+      {
+        "error": "用躯干摆动起铃",
+        "consequence": "刺激被借力分走，还给腰增加负担。"
+      },
+      {
+        "error": "只做上半程",
+        "consequence": "肱二头在被拉长位置的张力时间被省掉。"
+      }
+    ],
+    "self_checks": [
+      {
+        "criterion": "上臂贴住躯干不前移",
+        "how": "正侧面拍视频，看肘的水平位置。",
+        "cannot": "判断不了左右两侧的发力差异；要比较得交替做并逐侧看。"
+      },
+      {
+        "criterion": "放回时手臂接近完全伸直",
+        "how": "侧面视频看最低帧的肘角。",
+        "cannot": "关节活动度因人而异；这条只能判断明显的半程。"
+      }
+    ],
+    "audience": {
+      "suitable": "想补肱二头、希望左右分别受力的读者。",
+      "cautions": "训练中出现疼痛：当场停止该动作，当次不用其他动作替代着练同一部位，按第 9 章的判断原则决定继续观察还是就医。"
+    },
+    "home_alts": [
+      "db-one-arm-row"
+    ],
+    "difficulty": "入门",
+    "safety": {
+      "rack": "不需要保护架。",
+      "collars": "哑铃不涉及卡扣；用可调哑铃时，每组开始前确认锁扣已扣死。",
+      "setup": "坐姿有靠背更容易避免甩动；重量以能完成完整下放为准。",
+      "solo_ok": true,
+      "solo_alt": null,
+      "bailout": "举不动就把哑铃放回体侧并放到地面，不甩躯干补次数。"
+    },
+    "demo_id": "demo-db-curl",
+    "chapter_refs": [
+      "ch4"
+    ],
+    "claim_refs": []
+  },
+  {
+    "slug": "barbell-front-rack-carry",
+    "name_zh": "杠铃前架位行走",
+    "name_en": "Barbell Front-Rack Carry",
+    "pattern": "搬运",
+    "laterality": "双侧",
+    "muscles": {
+      "prime": [
+        "核心"
+      ],
+      "synergist": [
+        "上背",
+        "前束",
+        "股四头"
+      ],
+      "stabilizer": [
+        "臀",
+        "小腿"
+      ]
+    },
+    "equipment": "杠铃",
+    "cues": [
+      {
+        "phase": "设置",
+        "text": "从挂钩上把杠架到锁骨前，肘抬起形成稳定平台，肋骨收住。"
+      },
+      {
+        "phase": "发力",
+        "text": "小步直线行走，呼吸不憋死；全程躯干不左右摇、不后仰。"
+      },
+      {
+        "phase": "收尾",
+        "text": "走完回到挂钩放杠；放不回去就先原地把杠降到胸前再放到地面（若是包胶片）。"
+      }
+    ],
+    "mistakes": [
+      {
+        "error": "肘往下掉",
+        "consequence": "杠往前滚、压住气管，必须立即停止并放杠。"
+      },
+      {
+        "error": "靠后仰把杠\"坐\"在身上",
+        "consequence": "腰段过伸，核心反而不工作。"
+      }
+    ],
+    "self_checks": [
+      {
+        "criterion": "全程肘保持抬起、杠不下滑",
+        "how": "正侧面拍视频，看走到后半程肘有没有掉下来。",
+        "cannot": "判断不了你的胸椎与肩活动度是否足够；架不住常常是活动度问题。"
+      },
+      {
+        "criterion": "行走路线是直线，躯干不左右摇摆",
+        "how": "从正后方拍，看肩与髋有没有左右晃。",
+        "cannot": "看不出深层稳定肌怎么工作；轻微摆动是正常的。"
+      }
+    ],
+    "audience": {
+      "suitable": "已能稳定完成前架位持杠、想练抗屈躯干稳定的读者。",
+      "cautions": "训练中出现疼痛：当场停止该动作，当次不用其他动作替代着练同一部位，按第 9 章的判断原则决定继续观察还是就医。"
+    },
+    "home_alts": [
+      "db-farmer-carry"
+    ],
+    "difficulty": "进阶",
+    "safety": {
+      "rack": "从挂钩取杠与放杠；行走路线上不得有杂物与人。",
+      "collars": "两侧卡扣必须上紧，无例外。",
+      "setup": "挂钩约在锁骨高度；首次用空杆走完全程，确认能呼吸顺畅。",
+      "solo_ok": true,
+      "solo_alt": null,
+      "bailout": "撑不住就原地停下、肘放下让杠顺着躯干落到胸前并把杠推离身体前方落地（确认脚不在落点），人往后撤一步。"
+    },
+    "demo_id": "demo-barbell-front-rack-carry",
+    "chapter_refs": [
+      "ch4"
+    ],
+    "claim_refs": []
+  },
+  {
+    "slug": "db-farmer-carry",
+    "name_zh": "哑铃农夫行走",
+    "name_en": "Dumbbell Farmer Carry",
+    "pattern": "搬运",
+    "laterality": "双侧",
+    "muscles": {
+      "prime": [
+        "核心"
+      ],
+      "synergist": [
+        "上背",
+        "小腿"
+      ],
+      "stabilizer": [
+        "臀",
+        "股四头"
+      ]
+    },
+    "equipment": "哑铃",
+    "cues": [
+      {
+        "phase": "设置",
+        "text": "双手各持一只哑铃垂在体侧，肩往后下方收住，肋骨收住。"
+      },
+      {
+        "phase": "发力",
+        "text": "小步直线行走，哑铃不碰腿也不往外甩；呼吸保持顺畅。"
+      },
+      {
+        "phase": "收尾",
+        "text": "走完屈髋把哑铃放到地面，不直接松手砸地。"
+      }
+    ],
+    "mistakes": [
+      {
+        "error": "耸肩把重量\"挂\"在斜方上",
+        "consequence": "上斜方过度紧张，核心反而没练到。"
+      },
+      {
+        "error": "大步快走",
+        "consequence": "躯干左右摇摆加大，训练目标变成走路而不是抗摇摆。"
+      }
+    ],
+    "self_checks": [
+      {
+        "criterion": "肩保持下沉后收，不耸起来",
+        "how": "正前方拍视频，看走到后半程肩有没有抬高。",
+        "cannot": "看不出握力与核心各自的极限；先掉的往往是握力。"
+      },
+      {
+        "criterion": "行走是直线，躯干不左右摇",
+        "how": "从正后方拍，看髋与肩的左右位移。",
+        "cannot": "轻微摆动属于正常；这条只能判断明显的摇摆。"
+      }
+    ],
+    "audience": {
+      "suitable": "几乎所有人都适用的核心与握力入门动作。",
+      "cautions": "训练中出现疼痛：当场停止该动作，当次不用其他动作替代着练同一部位，按第 9 章的判断原则决定继续观察还是就医。"
+    },
+    "home_alts": [
+      "db-farmer-carry"
+    ],
+    "difficulty": "入门",
+    "safety": {
+      "rack": "不需要保护架；路线上不得有杂物。",
+      "collars": "哑铃不涉及卡扣；用可调哑铃时，每组开始前确认锁扣已扣死。",
+      "setup": "重量从能走完全程不耸肩的档位起步。",
+      "solo_ok": true,
+      "solo_alt": null,
+      "bailout": "撑不住就停下、屈髋把哑铃放到体侧地面，不要边走边松手。"
+    },
+    "demo_id": "demo-db-farmer-carry",
+    "chapter_refs": [
+      "ch4"
+    ],
+    "claim_refs": []
+  },
+  {
+    "slug": "db-suitcase-carry",
+    "name_zh": "哑铃手提箱行走",
+    "name_en": "Dumbbell Suitcase Carry",
+    "pattern": "搬运",
+    "laterality": "单侧",
+    "muscles": {
+      "prime": [
+        "核心"
+      ],
+      "synergist": [
+        "上背",
+        "臀"
+      ],
+      "stabilizer": [
+        "小腿",
+        "股四头"
+      ]
+    },
+    "equipment": "哑铃",
+    "cues": [
+      {
+        "phase": "设置",
+        "text": "单手持一只哑铃垂在体侧，另一手自然下垂；肩平、髋平。"
+      },
+      {
+        "phase": "发力",
+        "text": "小步直线行走，躯干不向持铃侧倾也不向另一侧过度代偿。"
+      },
+      {
+        "phase": "收尾",
+        "text": "走完换边做同样距离；结束时屈髋把哑铃放到地面。"
+      }
+    ],
+    "mistakes": [
+      {
+        "error": "身体向持铃侧倾",
+        "consequence": "抗侧屈的训练目标直接落空。"
+      },
+      {
+        "error": "两侧距离不等",
+        "consequence": "左右差异被固化，单侧动作的意义丢失。"
+      }
+    ],
+    "self_checks": [
+      {
+        "criterion": "两侧肩在同一高度，躯干不侧倾",
+        "how": "正后方拍视频，看肩线是否水平。",
+        "cannot": "看不出两侧核心力量差多少；只能判断明显侧倾。"
+      },
+      {
+        "criterion": "两侧行走距离或时间一致",
+        "how": "记录两侧的步数或秒数并比较。",
+        "cannot": "距离一致不代表难度一致；差异大时要怀疑单侧力量不足。"
+      }
+    ],
+    "audience": {
+      "suitable": "想练抗侧屈、或发现自己单侧稳定性较差的读者。",
+      "cautions": "训练中出现疼痛：当场停止该动作，当次不用其他动作替代着练同一部位，按第 9 章的判断原则决定继续观察还是就医。"
+    },
+    "home_alts": [
+      "db-farmer-carry"
+    ],
+    "difficulty": "入门",
+    "safety": {
+      "rack": "不需要保护架。",
+      "collars": "哑铃不涉及卡扣；用可调哑铃时，每组开始前确认锁扣已扣死。",
+      "setup": "重量比双侧农夫行走轻一档起步。",
+      "solo_ok": true,
+      "solo_alt": null,
+      "bailout": "撑不住就停下屈髋把哑铃放到地面，不要边走边甩。"
+    },
+    "demo_id": "demo-db-suitcase-carry",
+    "chapter_refs": [
+      "ch4"
+    ],
+    "claim_refs": []
+  },
+  {
+    "slug": "barbell-rollout",
+    "name_zh": "杠铃前滚轮",
+    "name_en": "Barbell Rollout",
+    "pattern": "核心抗阻",
+    "laterality": "双侧",
+    "muscles": {
+      "prime": [
+        "核心"
+      ],
+      "synergist": [
+        "上背",
+        "臀"
+      ],
+      "stabilizer": [
+        "肱三头"
+      ]
+    },
+    "equipment": "杠铃",
+    "cues": [
+      {
+        "phase": "设置",
+        "text": "跪姿（垫膝），双手与肩同宽握住装了圆片的杠，肋骨收住、腰不塌。"
+      },
+      {
+        "phase": "发力",
+        "text": "杠向前滚到\"腰还能保持中立\"的最远处，不追求贴地；再用核心把身体拉回。"
+      },
+      {
+        "phase": "收尾",
+        "text": "结束时先把髋坐回脚跟，再松手。"
+      }
+    ],
+    "mistakes": [
+      {
+        "error": "滚出去时腰塌下去",
+        "consequence": "腰段在最长力臂处承受拉伸负荷，是本动作唯一需要警惕的风险点。"
+      },
+      {
+        "error": "用肩把杠拉回来",
+        "consequence": "核心参与下降，动作退化成直臂下压。"
+      }
+    ],
+    "self_checks": [
+      {
+        "criterion": "最远处腰段没有明显塌陷",
+        "how": "正侧面拍视频，找到腰开始塌的那一帧，那就是你当次的幅度上限。",
+        "cannot": "体表看不到脊柱实际位置；视频也判断不了这个幅度对你是否有害。"
+      },
+      {
+        "criterion": "回来的过程由躯干发起而不是手臂",
+        "how": "侧面视频看回程中髋与肩的移动顺序。",
+        "cannot": "看不出各肌群实际的发力顺序，只能判断明显的手臂主导。"
+      }
+    ],
+    "audience": {
+      "suitable": "已能稳定完成平板支撑 60 秒以上、想加大核心抗伸展难度的读者。",
+      "cautions": "训练中出现疼痛：当场停止该动作，当次不用其他动作替代着练同一部位，按第 9 章的判断原则决定继续观察还是就医。"
+    },
+    "home_alts": [
+      "db-dead-bug"
+    ],
+    "difficulty": "进阶",
+    "safety": {
+      "rack": "不需要保护杆；前方留出一个身位的空间。",
+      "collars": "两侧卡扣必须上紧，无例外。",
+      "setup": "用小直径圆片（滚动半径小、幅度更可控）；膝下垫垫子。",
+      "solo_ok": true,
+      "solo_alt": null,
+      "bailout": "回不来就直接趴下去让身体落到地面，再从侧面起身；不要在腰塌的姿势里硬撑。"
+    },
+    "demo_id": "demo-barbell-rollout",
+    "chapter_refs": [
+      "ch4"
+    ],
+    "claim_refs": []
+  },
+  {
+    "slug": "db-dead-bug",
+    "name_zh": "哑铃死虫",
+    "name_en": "Dumbbell Dead Bug",
+    "pattern": "核心抗阻",
+    "laterality": "双侧",
+    "muscles": {
+      "prime": [
+        "核心"
+      ],
+      "synergist": [
+        "前束"
+      ],
+      "stabilizer": [
+        "臀"
+      ]
+    },
+    "equipment": "哑铃",
+    "cues": [
+      {
+        "phase": "设置",
+        "text": "仰卧，双手各持一只轻哑铃举到肩正上方，髋与膝各屈 90 度，腰贴地。"
+      },
+      {
+        "phase": "发力",
+        "text": "对侧手脚同时缓慢伸出，腰始终贴着地面；伸到腰快要离地就停住。"
+      },
+      {
+        "phase": "收尾",
+        "text": "收回换另一侧；结束时先把哑铃放到胸前再放到体侧地面。"
+      }
+    ],
+    "mistakes": [
+      {
+        "error": "伸腿时腰拱离地面",
+        "consequence": "抗伸展的训练目标失效，腰段反而被拉紧。"
+      },
+      {
+        "error": "做得过快",
+        "consequence": "靠惯性完成，核心的张力时间被省掉。"
+      }
+    ],
+    "self_checks": [
+      {
+        "criterion": "全程腰贴住地面",
+        "how": "把一只手背垫在腰下，手背被压住的感觉应当全程不消失（这是徒手自检，不在负重手上做任何改动）。",
+        "cannot": "判断不了腹横肌等深层肌的实际工作；只能判断明显的腰拱起。"
+      },
+      {
+        "criterion": "伸展幅度以腰不离地为界",
+        "how": "正侧面拍视频，找到腰开始离地的那一帧。",
+        "cannot": "不同柔韧度的人幅度不同；这条判断不了\"该不该再加难度\"。"
+      }
+    ],
+    "audience": {
+      "suitable": "刚开始练核心、或腰在大重量动作后需要低风险核心训练的读者。",
+      "cautions": "训练中出现疼痛：当场停止该动作，当次不用其他动作替代着练同一部位，按第 9 章的判断原则决定继续观察还是就医。"
+    },
+    "home_alts": [
+      "db-dead-bug"
+    ],
+    "difficulty": "入门",
+    "safety": {
+      "rack": "不需要保护架。",
+      "collars": "哑铃不涉及卡扣；用可调哑铃时，每组开始前确认锁扣已扣死。",
+      "setup": "哑铃取最轻档（这个动作的难点不是重量）；地面铺垫子。",
+      "solo_ok": true,
+      "solo_alt": null,
+      "bailout": "撑不住就把手脚收回起始位，再把哑铃放到体侧地面。"
+    },
+    "demo_id": "demo-db-dead-bug",
+    "chapter_refs": [
+      "ch4"
+    ],
+    "claim_refs": []
   }
 ]
