@@ -77,7 +77,7 @@ docs/acceptance/                # 人工验收记录（§9.3 第 10–13 条）+
 ### Task 1: 项目骨架与构建管道
 
 **Files:**
-- Create: `package.json`, `src/build.mjs`, `src/data.mjs`, `src/render/page.mjs`, `src/assets/styles.css`, `src/assets/app.js`, `content/chapters.json`, `docs/safety-canon.md`, `docs/acceptance/delivery-check.md`, `.gitignore`（追加 `dist/`）
+- Create: `package.json`, `src/build.mjs`, `src/data.mjs`, `src/render/page.mjs`, `src/assets/styles.css`, `src/assets/app.js`, `src/safety-canon.mjs`, `content/chapters.json`, `docs/safety-canon.md`, `docs/acceptance/delivery-check.md`, `.gitignore`（追加 `dist/`）
 - Test: `tests/build.test.mjs`
 
 **Interfaces:**
@@ -142,6 +142,48 @@ git config user.name "vlj刘佳(IT)"
 
 后续引用约定（写进各任务时照此执行）：动作卡 `audience.cautions` 用 C1 原句的短版；模板 `pain_path` 用 C1 全句；`substitutions[].scope` 的"不适用于疼痛"由 C1 导出；导读「第一次训练前必读」逐条照抄 C3/C4/C5；第 9 章把 C1/C2 作为结论复述并给出依据。
 
+**同时建 `src/safety-canon.mjs`——让口径可被程序校验**（这是本轮 review 第 1 条要求的"受控口径"机制）：
+
+```js
+// src/safety-canon.mjs —— docs/safety-canon.md 的机器可读镜像，是校验侧的唯一事实源
+import { readFile } from 'node:fs/promises';
+import path from 'node:path';
+
+const norm = (s) => s.replace(/\*\*/g, '').replace(/\s+/g, ' ').trim();   // 展示用：保留词间单空格
+const key  = (s) => s.replace(/\*\*/g, '').replace(/\s+/g, '');            // 比对用：空白全剔，避免"第 9 章"/"第9章"之类误判
+
+/** 解析 docs/safety-canon.md，返回 { C1: '…', C2: '…', C3: '…', C4: '…', C5: '…' } */
+export async function loadSafetyCanon(root) {
+  const md = await readFile(path.join(root, 'docs/safety-canon.md'), 'utf8');
+  const map = {};
+  // 注意：JS 没有 \Z，末尾用 $(?![\s\S]) 断言真正的字符串结尾，否则最后一条（C5）会漏解析
+  for (const m of md.matchAll(/^##[ \t]*(C[1-5])[^\n]*\n([\s\S]*?)(?=^##[ \t]|$(?![\s\S]))/gm)) {
+    map[m[1]] = norm(m[2]);
+  }
+  for (const k of ['C1', 'C2', 'C3', 'C4', 'C5']) {
+    if (!map[k]) throw new Error(`docs/safety-canon.md 缺少 ${k} 小节`);
+  }
+  return map;
+}
+
+/** 校验一段文本是不是对某条口径的合法引用：允许 `canon:C1` 形式，或与原句逐字一致（忽略加粗与空白） */
+export function isCanonRef(text, canon, id) {
+  if (typeof text !== 'string' || !text.trim()) return false;
+  if (text.trim() === `canon:${id}`) return true;
+  return key(text) === key(canon[id]);
+}
+
+/** 渲染期把 `canon:Cx` 展开为原句；非引用形式原样返回 */
+export function expandCanon(text, canon) {
+  const m = /^canon:(C[1-5])$/.exec(String(text).trim());
+  return m ? canon[m[1]] : text;
+}
+```
+
+**为什么不用正则判"疼痛路径里有没有 deload"**：C1 原句本身就包含"疼痛不走 deload、不走减量、不走换同模式动作"，任何关键词正则都会把正确答案误判为违规（已用 Node 实测）。受控字段的正确做法是**比对受控取值**，不是扫自由文本。自由文本语境一律交给 Task 18 Step 7 的人工安全复核。
+
+`src/safety-canon.mjs` 加入 Task 1 的 Create 清单与 `git add` 行。
+
 - [ ] **Step 2: 写失败测试**
 
 `tests/build.test.mjs`：
@@ -152,6 +194,7 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { build } from '../src/build.mjs';
+import { loadSafetyCanon, isCanonRef, expandCanon } from '../src/safety-canon.mjs';
 
 const root = path.resolve(import.meta.dirname, '..');
 
@@ -173,7 +216,22 @@ test('package.json 零依赖', async () => {
   assert.deepEqual(pkg.devDependencies ?? {}, {});
   assert.equal(pkg.type, 'module');
 });
+
+test('安全口径可被解析成受控取值', async () => {
+  const canon = await loadSafetyCanon(root);
+  for (const k of ['C1', 'C2', 'C3', 'C4', 'C5']) assert.ok(canon[k], `${k} 必须解析出来`);
+  assert.match(canon.C1, /当场停止该动作/);
+  assert.match(canon.C3, /两侧卡扣必须上紧/);
+  // 引用校验：原句与 canon:C1 都算合法引用，改写不算
+  assert.ok(isCanonRef(canon.C1, canon, 'C1'));
+  assert.ok(isCanonRef('canon:C1', canon, 'C1'));
+  assert.ok(!isCanonRef('出现疼痛就 deload 一周', canon, 'C1'));
+  assert.ok(!isCanonRef('canon:C3', canon, 'C1'));
+  assert.equal(expandCanon('canon:C1', canon), canon.C1);
+});
 ```
+
+> 这条测试把 `docs/safety-canon.md` 和校验侧绑死：改 md 的小节标题或删掉某条，Task 1 的测试立刻红。
 
 - [ ] **Step 3: 运行测试确认失败**
 
@@ -361,6 +419,7 @@ Expected: PASS（2 项）
 cd "$(git rev-parse --show-toplevel)"
 printf 'dist/\nnode_modules/\n' >> .gitignore
 git add package.json src content data tests docs/safety-canon.md docs/acceptance .gitignore
+# （src/safety-canon.mjs 已包含在 src 内）
 git commit -m "feat: 构建管道骨架、安全口径单一事实源与发布能力预检"
 ```
 
@@ -954,9 +1013,9 @@ git commit -m "feat: 动作卡 13 字段校验、覆盖矩阵与渲染"
 - Test: `tests/plans.test.mjs`
 
 **Interfaces:**
-- Consumes: Task 3 的 `PATTERNS`、动作 slug 集合
+- Consumes: Task 3 的 `PATTERNS`、动作 slug 集合、**Task 1 Step 1c 的 `src/safety-canon.mjs`（`loadSafetyCanon` / `isCanonRef` / `expandCanon`）**
 - Produces:
-  - `export function validatePlans(plans, { exercises, chapters }): string[]`
+  - `export function validatePlans(plans, { exercises, chapters, plans, safetyCanon }): string[]`——`safetyCanon` 必传，缺失时字段 9 直接报错，不静默放行
   - `export function renderPlans(plans, ctx): string`
   - 模板数据契约：
 
@@ -983,7 +1042,7 @@ git commit -m "feat: 动作卡 13 字段校验、覆盖矩阵与渲染"
                    miss_one_session: '顺延，不补练', miss_1_2_weeks: '按原重量 ~90% 重启',
                    miss_over_month: '按字段 4 的新手流程重走',
                    underrecovery: '出现恢复不足信号先插入一周 deload（容量减半或强度降 10%），而不是先降重量' }, // 字段 8
-  pain_path: '训练中出现疼痛当场停止该动作，当次不用其他动作替代着练同一部位；…按第 9 章判断原则就医，不用 deload 或减量绕过', // 字段 9
+  pain_path: 'canon:C1',  // 字段 9：受控引用，渲染时由 expandCanon() 展开为 safety-canon 的 C1 全句；写 C1 全句原文也合法
   substitutions: [{ exercise: 'back-squat-high-bar', alts: ['goblet-squat'],
                     scope: '器械不可用或该动作不适合其水平/体型；不适用于疼痛' }], // 字段 10
   exit_criteria: { when: '同一动作连续两次 deload 后仍无法推进，或线性加重已连续 4 周停滞',
@@ -1001,11 +1060,14 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { validatePlans } from '../src/validate/plans.mjs';
+import { loadSafetyCanon } from '../src/safety-canon.mjs';
 
 const root = path.resolve(import.meta.dirname, '..');
+const canon = await loadSafetyCanon(root);
 const ctx = { exercises: new Set(['back-squat-high-bar', 'goblet-squat']),
               plans: new Set(['novice-3d', 'upper-lower-4d']),
-              chapters: new Set(['ch5', 'ch8', 'ch9']) };
+              chapters: new Set(['ch5', 'ch8', 'ch9']),
+              safetyCanon: canon };
 
 const plan = JSON.parse(await readFile(path.join(root, 'tests/fixtures/plan-novice-3d.json'), 'utf8'));
 
@@ -1040,9 +1102,27 @@ test('进阶规则必须具体到数字且有比例上限', () => {
   assert.ok(errs.some((e) => e.includes('trigger')));
 });
 
-test('疼痛路径不得出现 deload/减量/换动作 作为处理方案', () => {
+test('pain_path 自撰处理方案被拒', () => {
   const bad = { ...plan, pain_path: '出现疼痛就 deload 一周，或换一个同模式动作接着练' };
   assert.ok(validatePlans([bad], ctx).some((e) => e.includes('pain_path')));
+});
+
+// 回归：C1 原句含"疼痛不走 deload"，旧的关键词正则会把正确答案误拒
+test('pain_path 写 C1 全句必须通过', () => {
+  const ok = { ...plan, pain_path: canon.C1 };
+  assert.deepEqual(validatePlans([ok], ctx).filter((e) => e.includes('pain_path')), []);
+});
+
+test('pain_path 写 canon:C1 必须通过', () => {
+  const ok = { ...plan, pain_path: 'canon:C1' };
+  assert.deepEqual(validatePlans([ok], ctx).filter((e) => e.includes('pain_path')), []);
+});
+
+test('pain_path 引用不存在/错误的口径条目被拒', () => {
+  for (const v of ['canon:C9', 'canon:C3', 'canon:']) {
+    assert.ok(validatePlans([{ ...plan, pain_path: v }], ctx).some((e) => e.includes('pain_path')),
+              `${v} 应被拒`);
+  }
 });
 
 test('替代映射必须写明不适用于疼痛，且替代项同模式', () => {
@@ -1064,6 +1144,7 @@ test('仓库内 data/plans.json 始终合法', async () => {
     exercises: new Set(exercises.map((e) => e.slug)),
     plans: new Set(plans.map((p) => p.slug)),
     chapters: new Set(chapters.map((c) => c.id)),
+    safetyCanon: canon,
   });
   assert.deepEqual(errs, []);
 });
@@ -1083,7 +1164,9 @@ Expected: FAIL — `Cannot find module '../src/validate/plans.mjs'`
 ```js
 const NUM_RANGE_RE = /\d/;
 const VAGUE_RE = /感觉|觉得|差不多|适当|酌情/;
-const PAIN_BYPASS_RE = /(疼痛|痛).{0,20}(deload|减量|降重|换(一个)?(同模式)?动作|继续练)|((deload|减量|换动作).{0,20}(疼痛|痛))/;
+import { isCanonRef } from '../safety-canon.mjs';
+// 字段 9 不做自由文本关键词扫描：C1 原句本身含"疼痛不走 deload"，任何关键词正则都会误拒正确答案。
+// 取而代之，pain_path 必须是对受控口径 C1 的合法引用（`canon:C1` 或 C1 全句逐字一致）。
 
 export function validatePlans(plans, ctx) {
   const errs = [];
@@ -1148,8 +1231,10 @@ export function validatePlans(plans, ctx) {
     }
     if (/疼痛|痛/.test(JSON.stringify(fr))) errs.push(`${at}: 字段8 只处理疲劳，不得出现疼痛处理（疼痛走字段 9）`);
     if (!p?.pain_path) errs.push(`${at}: 字段9 pain_path 必填`);
-    else if (PAIN_BYPASS_RE.test(p.pain_path)) errs.push(`${at}: 字段9 pain_path 不得用 deload／减量／换动作作为疼痛处理方案`);
-    else if (!/停止/.test(p.pain_path)) errs.push(`${at}: 字段9 pain_path 必须明确"当场停止该动作"`);
+    else if (!ctx?.safetyCanon) errs.push(`${at}: 字段9 pain_path 无法校验——调用方必须传入 ctx.safetyCanon（loadSafetyCanon 的结果）`);
+    else if (!isCanonRef(p.pain_path, ctx.safetyCanon, 'C1')) {
+      errs.push(`${at}: 字段9 pain_path 必须照抄安全口径 C1 全句或写 'canon:C1'，不得自撰疼痛处理方案`);
+    }
     const subs = p?.substitutions ?? [];
     if (!subs.length) errs.push(`${at}: 字段10 substitutions 必填`);
     subs.forEach((s, j) => {
@@ -1183,11 +1268,13 @@ export function validatePlans(plans, ctx) {
 
 ```js
 import { validatePlans } from './validate/plans.mjs';
+import { loadSafetyCanon } from './safety-canon.mjs';
+  const safetyCanon = await loadSafetyCanon(root);   // 加载失败（缺小节）直接抛错，构建失败
   errs.push(...validatePlans(plans, { ...ctx, exercises: new Set(exercises.map((e) => e.slug)),
-                                      plans: new Set(plans.map((p) => p.slug)) }));
+                                      plans: new Set(plans.map((p) => p.slug)), safetyCanon }));
 ```
 
-`build.mjs` 中给 `renderPage` 增加 `planHtml: renderPlans(data.plans, renderCtx)`。
+`build.mjs` 中给 `renderPage` 增加 `planHtml: renderPlans(data.plans, renderCtx)`；`renderCtx` 带上 `safetyCanon`，`renderPlans` 输出字段 9 时走 `expandCanon(p.pain_path, ctx.safetyCanon)`，所以页面上永远是 C1 原句，五套模板逐字一致。
 
 - [ ] **Step 7: 把 fixture 作为第一套真实模板写入 data/plans.json**
 
@@ -2513,7 +2600,7 @@ git commit -m "content: 动作库补齐覆盖矩阵与肌群兜底，移除覆�
 - Consumes: Task 4 的 `validatePlans`、Task 11/12 的动作 slug、**Task 1 Step 1c 的 `docs/safety-canon.md`**
 - Produces: `novice-3d`、`upper-lower-4d`、`ppl-6d`、`home-3d`、`cut-maintain-3d` 五个锚点
 
-> **字段 9 `pain_path` 一律照抄 safety-canon C1 全句**；字段 10 的 `scope` 末尾统一写「不适用于疼痛（见安全口径 C1）」；字段 8 只写疲劳，不出现「疼痛」二字。五套模板的这三处措辞必须完全一致。
+> **字段 9 `pain_path` 一律写 `canon:C1`（或照抄 C1 全句），由 `validatePlans` 比对受控口径、渲染期 `expandCanon` 展开**；字段 10 的 `scope` 末尾统一写「不适用于疼痛（见安全口径 C1）」；字段 8 只写疲劳，不出现「疼痛」二字。五套模板的这三处措辞必须完全一致。
 
 - [ ] **Step 1: 追加闸门测试**
 
@@ -2571,7 +2658,7 @@ Expected: FAIL — 只有 `novice-3d`
 | `home-3d` | 与力量同日之后 | 加次数 → 加难度变式 → 加弹力带阻力 | 以变式难度替代重量增量 | 弹力带最大阻力下仍 RIR ≥ 3 → 转健身房模板 |
 | `cut-maintain-3d` | 每周 2–3 次，明确"不是靠有氧造赤字的唯一手段" | **维持为主，不追求加重** | 不适用，保持重量 | 减脂期结束 → 回 `novice-3d`/`upper-lower-4d` |
 
-字段 4 的 `start_load_refs` 对每套的主要动作给区间并注明"区间是常见起点示例，个体差异大，以流程实测为准"。字段 9 的 `pain_path` 五套写法必须一致口径：当场停止该动作 + 当次不用替代动作继续练同一部位 + 红旗征或持续关节痛就医 + 诱因纠正后按字段 4 重新起步。
+字段 4 的 `start_load_refs` 对每套的主要动作给区间并注明"区间是常见起点示例，个体差异大，以流程实测为准"。字段 9 的 `pain_path` 五套一律写 `canon:C1`——口径由 `docs/safety-canon.md` 单点控制，渲染期展开，不在模板里各写一遍。
 
 - [ ] **Step 4: 运行测试与构建**
 
@@ -3100,6 +3187,8 @@ test('禁令句不误报', () => {
 test('合规文本不误报', () => {
   assert.deepEqual(scanSafetyReview('<p>两侧卡扣必须上紧，无例外。出现疼痛先停止该动作，按第 9 章判断是否就医。</p>'), []);
   assert.deepEqual(scanSafetyReview('<p>恢复不足时先插入一周 deload，而不是先降重量。</p>'), []);
+  // 渲染后的 safety-canon C1 原句本身含"疼痛不走 deload"，soft 层不得把它当成建议
+  assert.deepEqual(scanSafetyReview('<p>疼痛不走 deload、不走减量、不走换同模式动作。</p>'), []);
 });
 
 test('最终产物通过 hard 层全站扫描', async () => {
@@ -3123,7 +3212,7 @@ Expected: FAIL — 模块不存在
 
 ```js
 // 否定／引用／纠错语境：命中点所在句子里出现这些词时，不计为"建议这么做"
-const NEGATION_RE = /(禁止|严禁|不得|不要|不可|不应|不能|绝不|切勿|无例外|反例|错误(示范|做法|说法)|常见误区|有人说|不是|并非)/;
+const NEGATION_RE = /(禁止|严禁|不得|不要|不可|不应|不能|绝不|切勿|无例外|反例|错误(示范|做法|说法)|常见误区|有人说|不是|并非|不含|不包含|不涉及|不走|未(使用|采用|包含))/;
 
 // 取命中点所在的整句（以 。！？；\n 和 HTML 标签边界切分）用于否定判定
 function sentenceAround(text, index) {
