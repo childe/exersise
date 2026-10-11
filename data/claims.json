@@ -260,5 +260,171 @@
     "population": "有训练经验的成年人，样本量小；新手的估计准确性只会更差，这一点是外推而非直接证据。",
     "limitations": "样本小、动作种类有限（以卧推、深蹲为主）；估计准确性随训练经验变化，没有长期追踪。",
     "rating_rationale": "只有少数小样本观察研究，结论方向合理但精度未知，故为支持·低——用 RIR 安排训练可以，但别把它当成精确刻度。"
+  },
+  {
+    "id": "claim-energy-balance",
+    "statement": "体重的长期变化方向由能量收支决定：持续盈余才会增重，持续亏空才会减重。",
+    "direction": "支持",
+    "certainty": "高",
+    "sources": [
+      {
+        "authors": "Hall 等",
+        "year": 2012,
+        "title": "Energy balance and its components: implications for body weight regulation",
+        "type": "系统综述",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/22434603/"
+      }
+    ],
+    "population": "健康成年人，跨年龄与体重范围；可直接外推到本教程读者。",
+    "limitations": "\"摄入\"与\"消耗\"在真实生活里都很难精确测量，自我记录普遍低估摄入；能量消耗本身会随体重与摄入变化而变化，所以收支不是一个静态的算术题。",
+    "rating_rationale": "这是经代谢舱研究反复验证的能量守恒结论，方向与量级都稳定，故为支持·高；不确定的是\"怎么测\"，不是\"成不成立\"。"
+  },
+  {
+    "id": "claim-sleep-performance",
+    "statement": "睡眠不足会削弱运动表现与训练适应。",
+    "direction": "支持",
+    "certainty": "中",
+    "sources": [
+      {
+        "authors": "Fullagar 等",
+        "year": 2015,
+        "title": "Sleep and athletic performance: the effects of sleep loss on exercise performance, and physiological and cognitive responses to exercise",
+        "type": "系统综述",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/25315456/"
+      }
+    ],
+    "population": "运动员与健康成年人；对本教程读者可外推，但多数研究用的是急性睡眠剥夺而不是长期轻度睡眠债。",
+    "limitations": "急性剥夺实验的强度远大于真实生活里的\"少睡一小时\"；长期轻度睡眠不足对肌肥大的直接证据较少，多为表现与激素的间接指标。",
+    "rating_rationale": "方向一致且机制清楚，但从急性剥夺外推到日常睡眠债属于外推，故为支持·中。"
+  },
+  {
+    "id": "claim-overtraining-rare",
+    "statement": "业余训练者最常见的问题是\"训练不足 + 恢复不足\"，而不是医学意义上的过度训练综合征。",
+    "direction": "支持",
+    "certainty": "中",
+    "sources": [
+      {
+        "authors": "Meeusen 等（ECSS/ACSM 联合共识）",
+        "year": 2013,
+        "title": "Prevention, diagnosis, and treatment of the overtraining syndrome: joint consensus statement of the European College of Sport Science and the American College of Sports Medicine",
+        "type": "指南",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/23247672/"
+      }
+    ],
+    "population": "运动员为主；对业余训练者而言，诊断门槛与发生率的外推是推论而非直接数据。",
+    "limitations": "过度训练综合征没有特异性的实验室诊断标准，只能排除性诊断；其发生率在非运动员人群中缺少可靠统计。",
+    "rating_rationale": "共识文件明确指出该综合征的诊断需要排除其他原因且需长期表现下降，据此可推出业余场景下它被过度归因；但缺少人群发生率数据，故为支持·中。"
+  },
+  {
+    "id": "claim-interference-effect",
+    "statement": "在同一周期里同时练有氧与力量，会削弱力量与肌肥大的增长（干扰效应）。",
+    "direction": "支持",
+    "certainty": "中",
+    "sources": [
+      {
+        "authors": "Wilson 等",
+        "year": 2012,
+        "title": "Concurrent training: a meta-analysis examining interference of aerobic and resistance exercises",
+        "type": "系统综述",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/22002517/"
+      }
+    ],
+    "population": "健康成年人，以年轻男性为主；可外推到本教程读者。",
+    "limitations": "干扰的量级随有氧的模式（跑步 > 骑行）、时长与频率上升；在本教程推荐的量（每周 2–3 次、每次 20–30 分钟低强度）下，荟萃数据显示的干扰很小，甚至难以与噪声区分。",
+    "rating_rationale": "荟萃分析支持\"干扰存在且随有氧量增加\"，但在低剂量区间的效应很小、研究间异质性大，故为支持·中——这条结论的实际用法是安排位置与剂量，而不是不做有氧。"
+  },
+  {
+    "id": "claim-cardio-mortality",
+    "statement": "心肺耐力水平越高，全因死亡风险越低；这一价值独立于增肌目标。",
+    "direction": "支持",
+    "certainty": "高",
+    "sources": [
+      {
+        "authors": "Bull 等（WHO 2020 指南工作组）",
+        "year": 2020,
+        "title": "World Health Organization 2020 guidelines on physical activity and sedentary behaviour",
+        "type": "指南",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/33239350/"
+      }
+    ],
+    "population": "全球成年人群（指南综合了大规模队列证据）；可直接外推到本教程读者。",
+    "limitations": "主要证据是观察性队列，存在反向因果与残余混杂的可能（病人更少运动）；但剂量—反应关系稳定且在多个独立队列中重复。",
+    "rating_rationale": "大规模队列结果一致、剂量—反应清楚，并被 WHO 指南采纳，故为支持·高。"
+  },
+  {
+    "id": "claim-redflag-referral",
+    "safety": true,
+    "statement": "出现红旗征（如外伤后立即丧失功能、鞍区麻木或大小便失禁、夜间痛醒、不明原因体重骤降）时，应当停止训练并就医，而不是自行调整训练继续。",
+    "direction": "支持",
+    "certainty": "高",
+    "sources": [
+      {
+        "authors": "Qaseem 等（美国内科医师学会临床实践指南）",
+        "year": 2017,
+        "title": "Noninvasive Treatments for Acute, Subacute, and Chronic Low Back Pain: A Clinical Practice Guideline From the American College of Physicians",
+        "type": "指南",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/28192789/"
+      }
+    ],
+    "population": "成年腰背痛患者；红旗征的筛查逻辑在其他部位同样适用，本教程按更保守的方向使用。",
+    "limitations": "红旗征的单项特异性不高，存在假阳性（因此\"去看医生\"而不是\"确诊了\"）；指南针对腰背痛，推广到肩膝属于保守外推。",
+    "rating_rationale": "主流临床指南一致要求先排除红旗征再谈保守治疗，且漏诊代价不可逆，故为支持·高；这条按 §4.3 的安全来源门槛登记。"
+  },
+  {
+    "id": "claim-strength-training-injury-prevention",
+    "safety": true,
+    "statement": "规律的力量训练能降低运动损伤的发生率。",
+    "direction": "支持",
+    "certainty": "中",
+    "sources": [
+      {
+        "authors": "Lauersen 等",
+        "year": 2014,
+        "title": "The effectiveness of exercise interventions to prevent sports injuries: a systematic review and meta-analysis of randomised controlled trials",
+        "type": "系统综述",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/24100287/"
+      }
+    ],
+    "population": "运动人群（含青少年与成年运动员）；对一般健身人群属于外推，方向可用。",
+    "limitations": "纳入研究以运动队为背景，干预往往是一整套神经肌肉训练而不是单纯力量训练；随访期多在一个赛季以内。",
+    "rating_rationale": "多项 RCT 的荟萃结果方向一致且效应量可观，但人群与干预形式与一般健身者不完全相同，故为支持·中。"
+  },
+  {
+    "id": "claim-stretching-not-injury-prevention",
+    "safety": true,
+    "statement": "训练前做静态拉伸能预防运动损伤。",
+    "direction": "反对",
+    "certainty": "中",
+    "sources": [
+      {
+        "authors": "Lauersen 等",
+        "year": 2014,
+        "title": "The effectiveness of exercise interventions to prevent sports injuries: a systematic review and meta-analysis of randomised controlled trials",
+        "type": "系统综述",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/24100287/"
+      }
+    ],
+    "population": "运动人群；可外推到一般健身者的热身决策。",
+    "limitations": "\"拉伸\"在各研究里的时长与方式差异大；本条说的是\"预防损伤\"这一终点，不涉及拉伸对活动度的作用（那是另一回事且证据更正面）。",
+    "rating_rationale": "荟萃分析中拉伸组与对照组的损伤率没有显著差异——这是反证而不是没研究；但纳入研究数量有限，故为反对·中。"
+  },
+  {
+    "id": "claim-load-spike-injury",
+    "safety": true,
+    "statement": "训练负荷在短时间内大幅跳升，与随后的损伤风险上升相关。",
+    "direction": "支持",
+    "certainty": "中",
+    "sources": [
+      {
+        "authors": "Gabbett",
+        "year": 2016,
+        "title": "The training-injury prevention paradox: should athletes be training smarter and harder?",
+        "type": "系统综述",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/26758673/"
+      }
+    ],
+    "population": "团队项目运动员；对健身人群属于外推，但与\"渐进超负荷要有上限\"的实践一致。",
+    "limitations": "主要是观察性数据，负荷的量化方式（急慢性负荷比）后来受到方法学批评，阈值不应被当作精确数字使用；因果方向无法由观察数据确立。",
+    "rating_rationale": "方向在多个队列中重复出现且机制合理，但量化方法有争议、证据等级是观察性的，故为支持·中——用法是\"别一次跳太多\"，不是去算某个比值。"
   }
 ]
