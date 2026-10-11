@@ -1,6 +1,7 @@
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { validateClaims } from './validate/claims.mjs';
+import { validateExercises, validateCoverage } from './validate/exercises.mjs';
 
 async function readJson(root, rel) {
   const file = path.join(root, rel);
@@ -27,6 +28,14 @@ export async function loadData(root) {
     readJson(root, 'content/chapters.json'),
   ]);
   const errs = [...validateClaims(claims)];
+  const ctx = {
+    claims: new Set(claims.map((c) => c.id)),
+    demos: new Set(demos.map((d) => d.id)),
+    chapters: new Set(chapters.map((c) => c.id)),
+    exercises: new Set(exercises.map((e) => e.slug)),
+  };
+  errs.push(...validateExercises(exercises, ctx));
+  if (process.env.SKIP_COVERAGE !== '1') errs.push(...validateCoverage(exercises));
   if (errs.length) throw new Error(`数据校验失败:\n- ${errs.join('\n- ')}`);
   return { claims, exercises, plans, demos, quiz, chapters };
 }

@@ -3,6 +3,7 @@ import path from 'node:path';
 import { loadData } from './data.mjs';
 import { renderPage } from './render/page.mjs';
 import { renderClaimRegistry } from './render/claims.mjs';
+import { renderExercises } from './render/exercises.mjs';
 
 const defaultRoot = path.resolve(import.meta.dirname, '..');
 
@@ -10,7 +11,19 @@ export async function build(root = defaultRoot) {
   const data = await loadData(root);
   const css = await readFile(path.join(root, 'src/assets/styles.css'), 'utf8');
   const js = await readFile(path.join(root, 'src/assets/app.js'), 'utf8');
-  const html = renderPage(data, { css, js, claimHtml: renderClaimRegistry(data.claims) });
+  const renderCtx = {
+    claims: new Map(data.claims.map((c) => [c.id, c])),
+    exercises: new Map(data.exercises.map((e) => [e.slug, e])),
+    plans: new Map(data.plans.map((p) => [p.slug, p])),
+    demos: new Map(data.demos.map((d) => [d.id, d])),
+    figures: new Map(),
+    chapterTitles: new Map(data.chapters.map((c) => [c.id, `第 ${c.num} 章 ${c.title}`])),
+  };
+  const html = renderPage(data, {
+    css, js,
+    exerciseHtml: renderExercises(data.exercises, renderCtx),
+    claimHtml: renderClaimRegistry(data.claims),
+  });
   await mkdir(path.join(root, 'dist'), { recursive: true });
   await writeFile(path.join(root, 'dist/index.html'), html, 'utf8');
   return html;
