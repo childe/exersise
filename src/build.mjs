@@ -5,6 +5,8 @@ import { renderPage } from './render/page.mjs';
 import { renderClaimRegistry } from './render/claims.mjs';
 import { renderExercises } from './render/exercises.mjs';
 import { renderPlans } from './render/plans.mjs';
+import { loadChapters, renderChapters } from './render/chapters.mjs';
+import { validateChapters, validateChapterList } from './validate/chapters.mjs';
 
 const defaultRoot = path.resolve(import.meta.dirname, '..');
 
@@ -12,6 +14,9 @@ export async function build(root = defaultRoot) {
   const data = await loadData(root);
   const css = await readFile(path.join(root, 'src/assets/styles.css'), 'utf8');
   const js = await readFile(path.join(root, 'src/assets/app.js'), 'utf8');
+  const loaded = await loadChapters(root, data.chapters);
+  const chapterErrs = [...validateChapterList(data.chapters), ...validateChapters(loaded)];
+  if (chapterErrs.length) throw new Error(`章节校验失败:\n- ${chapterErrs.join('\n- ')}`);
   const renderCtx = {
     claims: new Map(data.claims.map((c) => [c.id, c])),
     exercises: new Map(data.exercises.map((e) => [e.slug, e])),
@@ -23,6 +28,7 @@ export async function build(root = defaultRoot) {
   };
   const html = renderPage(data, {
     css, js,
+    chapterHtml: renderChapters(loaded, renderCtx),
     exerciseHtml: renderExercises(data.exercises, renderCtx),
     planHtml: renderPlans(data.plans, renderCtx),
     claimHtml: renderClaimRegistry(data.claims),
