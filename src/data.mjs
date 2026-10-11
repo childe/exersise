@@ -3,6 +3,7 @@ import path from 'node:path';
 import { validateClaims } from './validate/claims.mjs';
 import { validateExercises, validateCoverage } from './validate/exercises.mjs';
 import { validatePlans } from './validate/plans.mjs';
+import { validateDemos } from './validate/demos.mjs';
 import { loadSafetyCanon } from './safety-canon.mjs';
 
 async function readJson(root, rel) {
@@ -38,6 +39,7 @@ export async function loadData(root) {
   };
   errs.push(...validateExercises(exercises, ctx));
   if (process.env.SKIP_COVERAGE !== '1') errs.push(...validateCoverage(exercises));
+  errs.push(...validateDemos(demos, { exercises }));
   const safetyCanon = await loadSafetyCanon(root); // 缺小节直接抛错，构建失败
   errs.push(...validatePlans(plans, {
     ...ctx,

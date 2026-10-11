@@ -1,1 +1,34 @@
-[]
+[
+  {
+    "id": "demo-back-squat-high-bar",
+    "exercise_id": "back-squat-high-bar",
+    "url": "https://www.acefitness.org/resources/everyone/exercise-library/11/back-squat/",
+    "source_type": "机构官方",
+    "publisher": "ACE（American Council on Exercise）",
+    "author_credential": "机构官方动作库（ACE Exercise Library）",
+    "license": "链接引用，不转载",
+    "verified_on": "2026-10-11",
+    "verified_by": "childe（核验方式：打开页面，逐条比对页面的分步执行文字与本卡自检判据；未逐帧核验视频）",
+    "verification": [
+      { "criterion": "杠全程位于足中线正上方", "result": "未覆盖——页面步骤只写了「坐髋下蹲、背部挺直、髋低于膝」，没有描述杠与足中线的关系；这一条以本卡的文字要点与自检方法为准。" },
+      { "criterion": "脊柱保持在中立范围内，不出现明显的、突然的曲度变化", "result": "符合——页面明确要求「抬胸、肩胛收紧，全程保持背部挺直」，与本判据一致。" }
+    ],
+    "dead": false
+  },
+  {
+    "id": "demo-goblet-squat",
+    "exercise_id": "goblet-squat",
+    "url": "https://www.acefitness.org/resources/everyone/exercise-library/362/goblet-squat/",
+    "source_type": "机构官方",
+    "publisher": "ACE（American Council on Exercise）",
+    "author_credential": "机构官方动作库（ACE Exercise Library）",
+    "license": "链接引用，不转载",
+    "verified_on": "2026-10-11",
+    "verified_by": "childe（核验方式：打开页面，逐条比对页面的分步执行文字与本卡自检判据；未逐帧核验视频）",
+    "verification": [
+      { "criterion": "躯干接近直立，哑铃全程贴着胸前", "result": "符合——页面要求双手捧住哑铃抵在胸前、躯干保持直立下蹲，与本判据一致。" },
+      { "criterion": "整个脚掌全程踩实地面", "result": "未覆盖——页面未单独提脚掌压力分布；这一条以本卡的文字要点与自检方法为准。" }
+    ],
+    "dead": false
+  }
+]

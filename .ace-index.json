@@ -1,0 +1,1682 @@
+{
+ "1": {
+  "h1": "Exercise Library: Workouts & Fitness Guides | ACE",
+  "canon": "https://www.acefitness.org/resources/everyone/exercise-library/"
+ },
+ "2": {
+  "h1": "Exercise Library: Workouts & Fitness Guides | ACE",
+  "canon": "https://www.acefitness.org/resources/everyone/exercise-library/"
+ },
+ "3": {
+  "h1": "Triceps Pressdown",
+  "canon": "/resources/everyone/exercise-library/3/triceps-pressdown/"
+ },
+ "4": {
+  "h1": "Exercise Library: Workouts & Fitness Guides | ACE",
+  "canon": "https://www.acefitness.org/resources/everyone/exercise-library/"
+ },
+ "5": {
+  "h1": "Chest Press",
+  "canon": "/resources/everyone/exercise-library/5/chest-press/"
+ },
+ "6": {
+  "h1": "Deadlift",
+  "canon": "/resources/everyone/exercise-library/6/deadlift/"
+ },
+ "7": {
+  "h1": "Supine Pelvic Tilts",
+  "canon": "/resources/everyone/exercise-library/7/supine-pelvic-tilts/"
+ },
+ "8": {
+  "h1": "Forward Lunge",
+  "canon": "/resources/everyone/exercise-library/8/forward-lunge/"
+ },
+ "9": {
+  "h1": "Supermans",
+  "canon": "/resources/everyone/exercise-library/9/supermans/"
+ },
+ "10": {
+  "h1": "Hammer Curl",
+  "canon": "/resources/everyone/exercise-library/10/hammer-curl/"
+ },
+ "11": {
+  "h1": "Back Squat",
+  "canon": "/resources/everyone/exercise-library/11/back-squat/"
+ },
+ "12": {
+  "h1": "Bent-over Row",
+  "canon": "/resources/everyone/exercise-library/12/bent-over-row/"
+ },
+ "13": {
+  "h1": "Bent Knee Push-up",
+  "canon": "/resources/everyone/exercise-library/13/bent-knee-push-up/"
+ },
+ "14": {
+  "h1": "Bird-dog",
+  "canon": "/resources/everyone/exercise-library/14/bird-dog/"
+ },
+ "15": {
+  "h1": "Cat-Cow",
+  "canon": "/resources/everyone/exercise-library/15/cat-cow/"
+ },
+ "16": {
+  "h1": "Cobra Exercise",
+  "canon": "/resources/everyone/exercise-library/16/cobra/"
+ },
+ "17": {
+  "h1": "Exercise Library: Workouts & Fitness Guides | ACE",
+  "canon": "https://www.acefitness.org/resources/everyone/exercise-library/"
+ },
+ "18": {
+  "h1": "Downward-facing Dog",
+  "canon": "/resources/everyone/exercise-library/18/downward-facing-dog/"
+ },
+ "19": {
+  "h1": "Chest Press",
+  "canon": "/resources/everyone/exercise-library/19/chest-press/"
+ },
+ "20": {
+  "h1": "Exercise Library: Workouts & Fitness Guides | ACE",
+  "canon": "https://www.acefitness.org/resources/everyone/exercise-library/"
+ },
+ "21": {
+  "h1": "Lying Chest Fly",
+  "canon": "/resources/everyone/exercise-library/21/lying-chest-fly/"
+ },
+ "22": {
+  "h1": "Front Squat",
+  "canon": "/resources/everyone/exercise-library/22/front-squat/"
+ },
+ "23": {
+  "h1": "Ankle Flexion",
+  "canon": "/resources/everyone/exercise-library/23/ankle-flexion/"
+ },
+ "24": {
+  "h1": "Push Press",
+  "canon": "/resources/everyone/exercise-library/24/push-press/"
+ },
+ "25": {
+  "h1": "Incline Chest Press",
+  "canon": "/resources/everyone/exercise-library/25/incline-chest-press/"
+ },
+ "26": {
+  "h1": "Lateral Raise",
+  "canon": "/resources/everyone/exercise-library/26/lateral-raise/"
+ },
+ "27": {
+  "h1": "Exercise Library: Workouts & Fitness Guides | ACE",
+  "canon": "https://www.acefitness.org/resources/everyone/exercise-library/"
+ },
+ "28": {
+  "h1": "Step-up",
+  "canon": "/resources/everyone/exercise-library/28/step-up/"
+ },
+ "29": {
+  "h1": "Wrist Curl - Extension",
+  "canon": "/resources/everyone/exercise-library/29/wrist-curl-extension/"
+ },
+ "30": {
+  "h1": "Wrist Curl - Flexion",
+  "canon": "/resources/everyone/exercise-library/30/wrist-curl-flexion/"
+ },
+ "31": {
+  "h1": "Wrist Supination & Pronation Exercises",
+  "canon": "/resources/everyone/exercise-library/31/wrist-supination-and-pronation/"
+ },
+ "32": {
+  "h1": "Front Plank",
+  "canon": "/resources/everyone/exercise-library/32/front-plank/"
+ },
+ "33": {
+  "h1": "Hip Hinge",
+  "canon": "/resources/everyone/exercise-library/33/hip-hinge/"
+ },
+ "34": {
+  "h1": "Incline Reverse Fly",
+  "canon": "/resources/everyone/exercise-library/34/incline-reverse-fly/"
+ },
+ "35": {
+  "h1": "Kneeling Lat Pulldown",
+  "canon": "/resources/everyone/exercise-library/35/kneeling-lat-pulldown/"
+ },
+ "36": {
+  "h1": "Lying Barbell Triceps Extensions",
+  "canon": "/resources/everyone/exercise-library/36/lying-barbell-triceps-extensions/"
+ },
+ "37": {
+  "h1": "Lying Pullovers",
+  "canon": "/resources/everyone/exercise-library/37/lying-pullovers/"
+ },
+ "38": {
+  "h1": "Side Lying Hip Abduction",
+  "canon": "/resources/everyone/exercise-library/38/side-lying-hip-abduction/"
+ },
+ "39": {
+  "h1": "Side Lying Hip Adduction",
+  "canon": "/resources/everyone/exercise-library/39/side-lying-hip-adduction/"
+ },
+ "40": {
+  "h1": "Medicine Ball Push-ups",
+  "canon": "/resources/everyone/exercise-library/40/medicine-ball-push-ups/"
+ },
+ "41": {
+  "h1": "Push-up",
+  "canon": "/resources/everyone/exercise-library/41/push-up/"
+ },
+ "42": {
+  "h1": "Push-up with Single-leg Raise",
+  "canon": "/resources/everyone/exercise-library/42/push-up-with-single-leg-raise/"
+ },
+ "43": {
+  "h1": "Seated Shoulder Press",
+  "canon": "/resources/everyone/exercise-library/43/seated-shoulder-press/"
+ },
+ "44": {
+  "h1": "Seated Biceps Curl",
+  "canon": "/resources/everyone/exercise-library/44/seated-biceps-curl/"
+ },
+ "45": {
+  "h1": "Seated Overhead Press",
+  "canon": "/resources/everyone/exercise-library/45/seated-overhead-press/"
+ },
+ "46": {
+  "h1": "Seated High Back Row",
+  "canon": "/resources/everyone/exercise-library/46/seated-high-back-row/"
+ },
+ "47": {
+  "h1": "Seated Medicine Ball Trunk Rotations",
+  "canon": "/resources/everyone/exercise-library/47/seated-medicine-ball-trunk-rotations/"
+ },
+ "48": {
+  "h1": "Seated Row",
+  "canon": "/resources/everyone/exercise-library/48/seated-row/"
+ },
+ "49": {
+  "h1": "Glute Bridge Exercise",
+  "canon": "/resources/everyone/exercise-library/49/glute-bridge/"
+ },
+ "50": {
+  "h1": "Side Lunge",
+  "canon": "/resources/everyone/exercise-library/50/side-lunge/"
+ },
+ "51": {
+  "h1": "Calf Raises",
+  "canon": "/resources/everyone/exercise-library/51/calf-raises/"
+ },
+ "52": {
+  "h1": "Crunch",
+  "canon": "/resources/everyone/exercise-library/52/crunch/"
+ },
+ "53": {
+  "h1": "Contralateral Limb Raises",
+  "canon": "/resources/everyone/exercise-library/53/contralateral-limb-raises/"
+ },
+ "54": {
+  "h1": "Front Raise",
+  "canon": "/resources/everyone/exercise-library/54/front-raise/"
+ },
+ "55": {
+  "h1": "Triceps Kickback",
+  "canon": "/resources/everyone/exercise-library/55/triceps-kickback/"
+ },
+ "56": {
+  "h1": "Exercise Library: Workouts & Fitness Guides | ACE",
+  "canon": "https://www.acefitness.org/resources/everyone/exercise-library/"
+ },
+ "57": {
+  "h1": "Exercise Library: Workouts & Fitness Guides | ACE",
+  "canon": "https://www.acefitness.org/resources/everyone/exercise-library/"
+ },
+ "58": {
+  "h1": "Exercise Library: Workouts & Fitness Guides | ACE",
+  "canon": "https://www.acefitness.org/resources/everyone/exercise-library/"
+ },
+ "59": {
+  "h1": "Stability Ball Hamstring Curl",
+  "canon": "/resources/everyone/exercise-library/59/stability-ball-hamstring-curl/"
+ },
+ "60": {
+  "h1": "Stability Ball Knee Tucks",
+  "canon": "/resources/everyone/exercise-library/60/stability-ball-knee-tucks/"
+ },
+ "61": {
+  "h1": "Stability Ball Pikes",
+  "canon": "/resources/everyone/exercise-library/61/stability-ball-pikes/"
+ },
+ "62": {
+  "h1": "Stability Ball Prone Walkout",
+  "canon": "/resources/everyone/exercise-library/62/stability-ball-prone-walkout/"
+ },
+ "63": {
+  "h1": "Stability Ball Push-Up",
+  "canon": "/resources/everyone/exercise-library/63/stability-ball-push-up/"
+ },
+ "64": {
+  "h1": "Stability Ball Reverse Extensions",
+  "canon": "/resources/everyone/exercise-library/64/stability-ball-reverse-extensions/"
+ },
+ "65": {
+  "h1": "Russian Twist",
+  "canon": "/resources/everyone/exercise-library/65/russian-twist/"
+ },
+ "66": {
+  "h1": "Glute Bridge",
+  "canon": "/resources/everyone/exercise-library/66/glute-bridge/"
+ },
+ "67": {
+  "h1": "Stability Ball Shoulder Stabilization",
+  "canon": "/resources/everyone/exercise-library/67/stability-ball-shoulder-stabilization/"
+ },
+ "68": {
+  "h1": "Stability Ball Sit-ups / Crunches",
+  "canon": "/resources/everyone/exercise-library/68/stability-ball-sit-ups-crunches/"
+ },
+ "69": {
+  "h1": "Stability Ball Wall Squats",
+  "canon": "/resources/everyone/exercise-library/69/stability-ball-wall-squats/"
+ },
+ "70": {
+  "h1": "Bicep Curl",
+  "canon": "/resources/everyone/exercise-library/70/bicep-curl/"
+ },
+ "71": {
+  "h1": "Standing Shoulder Press",
+  "canon": "/resources/everyone/exercise-library/71/standing-shoulder-press/"
+ },
+ "72": {
+  "h1": "Shrug",
+  "canon": "/resources/everyone/exercise-library/72/shrug/"
+ },
+ "73": {
+  "h1": "Standing Calf Raises - Wall",
+  "canon": "/resources/everyone/exercise-library/73/standing-calf-raises-wall/"
+ },
+ "74": {
+  "h1": "Triceps Extension",
+  "canon": "/resources/everyone/exercise-library/74/triceps-extension/"
+ },
+ "75": {
+  "h1": "Standing Shrug",
+  "canon": "/resources/everyone/exercise-library/75/standing-shrug/"
+ },
+ "76": {
+  "h1": "Reverse Ab Crunch",
+  "canon": "/resources/everyone/exercise-library/76/reverse-crunch/"
+ },
+ "77": {
+  "h1": "TRX &reg; Atomic Push-up",
+  "canon": "/resources/everyone/exercise-library/77/trx-reg-atomic-push-up/"
+ },
+ "78": {
+  "h1": "TRX &reg; Biceps Curl",
+  "canon": "/resources/everyone/exercise-library/78/trx-reg-biceps-curl/"
+ },
+ "79": {
+  "h1": "TRX &reg; Front Rollout",
+  "canon": "/resources/everyone/exercise-library/79/trx-reg-front-rollout/"
+ },
+ "80": {
+  "h1": "TRX &reg; Overhead Triceps Extension",
+  "canon": "/resources/everyone/exercise-library/80/trx-reg-overhead-triceps-extension/"
+ },
+ "81": {
+  "h1": "TRX &reg; Side-straddle Golf Swings",
+  "canon": "/resources/everyone/exercise-library/81/trx-reg-side-straddle-golf-swings/"
+ },
+ "82": {
+  "h1": "TRX &reg; Assisted Cross-over Lunge with Arm Raise",
+  "canon": "/resources/everyone/exercise-library/82/trx-reg-assisted-cross-over-lunge-with-arm-raise/"
+ },
+ "83": {
+  "h1": "TRX &reg; Assisted Side Lunge with Arm Raise",
+  "canon": "/resources/everyone/exercise-library/83/trx-reg-assisted-side-lunge-with-arm-raise/"
+ },
+ "84": {
+  "h1": "TRX &reg; Back Row",
+  "canon": "/resources/everyone/exercise-library/84/trx-reg-back-row/"
+ },
+ "85": {
+  "h1": "TRX &reg; Chest Press",
+  "canon": "/resources/everyone/exercise-library/85/trx-reg-chest-press/"
+ },
+ "86": {
+  "h1": "TRX &reg; Hamstrings Curl",
+  "canon": "/resources/everyone/exercise-library/86/trx-reg-hamstrings-curl/"
+ },
+ "87": {
+  "h1": "TRX &reg; Suspended Knee Tucks",
+  "canon": "/resources/everyone/exercise-library/87/trx-reg-suspended-knee-tucks/"
+ },
+ "88": {
+  "h1": "TRX &reg; Suspended Pike",
+  "canon": "/resources/everyone/exercise-library/88/trx-reg-suspended-pike/"
+ },
+ "89": {
+  "h1": "TRX &reg; Suspended Push-up",
+  "canon": "/resources/everyone/exercise-library/89/trx-reg-suspended-push-up/"
+ },
+ "90": {
+  "h1": "TRX &reg; Hip Press",
+  "canon": "/resources/everyone/exercise-library/90/trx-reg-hip-press/"
+ },
+ "91": {
+  "h1": "TRX &reg; Single-arm Chest Press",
+  "canon": "/resources/everyone/exercise-library/91/trx-reg-single-arm-chest-press/"
+ },
+ "92": {
+  "h1": "TRX &reg; Single-arm Row",
+  "canon": "/resources/everyone/exercise-library/92/trx-reg-single-arm-row/"
+ },
+ "93": {
+  "h1": "TRX &reg; Suspended Lunge",
+  "canon": "/resources/everyone/exercise-library/93/trx-reg-suspended-lunge/"
+ },
+ "94": {
+  "h1": "Forward Lunge",
+  "canon": "/resources/everyone/exercise-library/94/forward-lunge/"
+ },
+ "95": {
+  "h1": "Forward Lunge with Arm Drivers",
+  "canon": "/resources/everyone/exercise-library/95/forward-lunge-with-arm-drivers/"
+ },
+ "96": {
+  "h1": "Glute Activation Lunges",
+  "canon": "/resources/everyone/exercise-library/96/glute-activation-lunges/"
+ },
+ "97": {
+  "h1": "Half-kneeling Hay Baler",
+  "canon": "/resources/everyone/exercise-library/97/half-kneeling-hay-baler/"
+ },
+ "98": {
+  "h1": "Exercise Library: Workouts & Fitness Guides | ACE",
+  "canon": "https://www.acefitness.org/resources/everyone/exercise-library/"
+ },
+ "99": {
+  "h1": "Side Plank (Modified)",
+  "canon": "/resources/everyone/exercise-library/99/side-plank-modified/"
+ },
+ "100": {
+  "h1": "Side Plank - modified",
+  "canon": "/resources/everyone/exercise-library/100/side-plank-modified/"
+ },
+ "101": {
+  "h1": "Side Plank with Straight Leg",
+  "canon": "/resources/everyone/exercise-library/101/side-plank-with-straight-leg/"
+ },
+ "102": {
+  "h1": "Standing Trunk Rotation",
+  "canon": "/resources/everyone/exercise-library/102/standing-trunk-rotation/"
+ },
+ "103": {
+  "h1": "Exercise Library: Workouts & Fitness Guides | ACE",
+  "canon": "https://www.acefitness.org/resources/everyone/exercise-library/"
+ },
+ "104": {
+  "h1": "Standing Hip Adduction",
+  "canon": "/resources/everyone/exercise-library/104/standing-hip-adduction/"
+ },
+ "105": {
+  "h1": "Standing Hay Baler",
+  "canon": "/resources/everyone/exercise-library/105/standing-hay-baler/"
+ },
+ "106": {
+  "h1": "Standing Trunk Rotation",
+  "canon": "/resources/everyone/exercise-library/106/standing-trunk-rotation/"
+ },
+ "107": {
+  "h1": "Standing Single-leg Cable Rotation",
+  "canon": "/resources/everyone/exercise-library/107/standing-single-leg-cable-rotation/"
+ },
+ "108": {
+  "h1": "Standing Wood Chop",
+  "canon": "/resources/everyone/exercise-library/108/standing-wood-chop/"
+ },
+ "109": {
+  "h1": "Dirty Dog",
+  "canon": "/resources/everyone/exercise-library/109/dirty-dog/"
+ },
+ "110": {
+  "h1": "Hip Rotations (Push-up Position)",
+  "canon": "/resources/everyone/exercise-library/110/hip-rotations-push-up-position/"
+ },
+ "111": {
+  "h1": "Forward Stepping over Cones",
+  "canon": "/resources/everyone/exercise-library/111/forward-stepping-over-cones/"
+ },
+ "112": {
+  "h1": "Single Leg Stand",
+  "canon": "/resources/everyone/exercise-library/112/single-leg-stand/"
+ },
+ "113": {
+  "h1": "Exercise Library: Workouts & Fitness Guides | ACE",
+  "canon": "https://www.acefitness.org/resources/everyone/exercise-library/"
+ },
+ "114": {
+  "h1": "Single-leg Stand with Reaches",
+  "canon": "/resources/everyone/exercise-library/114/single-leg-stand-with-reaches/"
+ },
+ "115": {
+  "h1": "Box Jumps",
+  "canon": "/resources/everyone/exercise-library/115/box-jumps/"
+ },
+ "116": {
+  "h1": "Squat Jumps",
+  "canon": "/resources/everyone/exercise-library/116/squat-jumps/"
+ },
+ "117": {
+  "h1": "BOSU&reg; Squat Jumps",
+  "canon": "/resources/everyone/exercise-library/117/bosu-sup-reg-sup-squat-jumps/"
+ },
+ "118": {
+  "h1": "Forward Cone Jumps",
+  "canon": "/resources/everyone/exercise-library/118/forward-cone-jumps/"
+ },
+ "119": {
+  "h1": "BOSU&reg; Lateral Jumps",
+  "canon": "/resources/everyone/exercise-library/119/bosu-sup-reg-sup-lateral-jumps/"
+ },
+ "120": {
+  "h1": "Lateral Cone Jumps",
+  "canon": "/resources/everyone/exercise-library/120/lateral-cone-jumps/"
+ },
+ "121": {
+  "h1": "Supine Hollowing with Lower Extremity Movements",
+  "canon": "/resources/everyone/exercise-library/121/supine-hollowing-with-lower-extremity-movements/"
+ },
+ "122": {
+  "h1": "Supine Rotator Cuff",
+  "canon": "/resources/everyone/exercise-library/122/supine-rotator-cuff/"
+ },
+ "123": {
+  "h1": "Supine Shoulder Flexion",
+  "canon": "/resources/everyone/exercise-library/123/supine-shoulder-flexion/"
+ },
+ "124": {
+  "h1": "Supine Snow Angel (Wipers) Exercise",
+  "canon": "/resources/everyone/exercise-library/124/supine-snow-angel-wipers-exercise/"
+ },
+ "125": {
+  "h1": "Power Clean",
+  "canon": "/resources/everyone/exercise-library/125/power-clean/"
+ },
+ "126": {
+  "h1": "Single-arm Row",
+  "canon": "/resources/everyone/exercise-library/126/single-arm-row/"
+ },
+ "127": {
+  "h1": "Single-arm, Single-leg Romanian Dead Lift",
+  "canon": "/resources/everyone/exercise-library/127/single-arm-single-leg-romanian-dead-lift/"
+ },
+ "128": {
+  "h1": "Kneeling Reverse Fly",
+  "canon": "/resources/everyone/exercise-library/128/kneeling-reverse-fly/"
+ },
+ "129": {
+  "h1": "Sumo Rotational Squats",
+  "canon": "/resources/everyone/exercise-library/129/sumo-rotational-squats/"
+ },
+ "130": {
+  "h1": "Exercise Library: Workouts & Fitness Guides | ACE",
+  "canon": "https://www.acefitness.org/resources/everyone/exercise-library/"
+ },
+ "131": {
+  "h1": "Prone (Lying) Hamstrings Curl",
+  "canon": "/resources/everyone/exercise-library/131/prone-lying-hamstrings-curl/"
+ },
+ "132": {
+  "h1": "Standing Hamstrings Curl",
+  "canon": "/resources/everyone/exercise-library/132/standing-hamstrings-curl/"
+ },
+ "133": {
+  "h1": "Standing Leg Extension",
+  "canon": "/resources/everyone/exercise-library/133/standing-leg-extension/"
+ },
+ "134": {
+  "h1": "Single-arm Medicine Ball Push-up",
+  "canon": "/resources/everyone/exercise-library/134/single-arm-medicine-ball-push-up/"
+ },
+ "135": {
+  "h1": "Bodyweight Squat",
+  "canon": "/resources/everyone/exercise-library/135/bodyweight-squat/"
+ },
+ "136": {
+  "h1": "Single Leg Squat",
+  "canon": "/resources/everyone/exercise-library/136/single-leg-squat/"
+ },
+ "137": {
+  "h1": "Standing Lunge Stretch",
+  "canon": "/resources/everyone/exercise-library/137/standing-lunge-stretch/"
+ },
+ "138": {
+  "h1": "Exercise Library: Workouts & Fitness Guides | ACE",
+  "canon": "https://www.acefitness.org/resources/everyone/exercise-library/"
+ },
+ "139": {
+  "h1": "Walking Lunges with Twists",
+  "canon": "/resources/everyone/exercise-library/139/walking-lunges-with-twists/"
+ },
+ "140": {
+  "h1": "Lunge with Elbow Instep",
+  "canon": "/resources/everyone/exercise-library/140/lunge-with-elbow-instep/"
+ },
+ "141": {
+  "h1": "Kneeling Lat Stretch (w/bench)",
+  "canon": "/resources/everyone/exercise-library/141/kneeling-lat-stretch-w-bench/"
+ },
+ "142": {
+  "h1": "Kneeling Hip-flexor Stretch",
+  "canon": "/resources/everyone/exercise-library/142/kneeling-hip-flexor-stretch/"
+ },
+ "143": {
+  "h1": "Lunge with Overhead Press",
+  "canon": "/resources/everyone/exercise-library/143/lunge-with-overhead-press/"
+ },
+ "144": {
+  "h1": "Inverted Flyers",
+  "canon": "/resources/everyone/exercise-library/144/inverted-flyers/"
+ },
+ "145": {
+  "h1": "Glute Bridge Single Leg Progression",
+  "canon": "/resources/everyone/exercise-library/145/glute-bridge-single-leg-progression/"
+ },
+ "146": {
+  "h1": "Supine Hip Flexor Stretch",
+  "canon": "/resources/everyone/exercise-library/146/supine-hip-flexor-stretch/"
+ },
+ "147": {
+  "h1": "Supine Dead Bug",
+  "canon": "/resources/everyone/exercise-library/147/supine-dead-bug/"
+ },
+ "148": {
+  "h1": "Supine 90-90 Hip Rotator Stretch",
+  "canon": "/resources/everyone/exercise-library/148/supine-90-90-hip-rotator-stretch/"
+ },
+ "149": {
+  "h1": "Side Lying Quadriceps Stretch",
+  "canon": "/resources/everyone/exercise-library/149/side-lying-quadriceps-stretch/"
+ },
+ "150": {
+  "h1": "Bear Crawl Exercise",
+  "canon": "/resources/everyone/exercise-library/150/bear-crawl/"
+ },
+ "151": {
+  "h1": "Exercise Library: Workouts & Fitness Guides | ACE",
+  "canon": "https://www.acefitness.org/resources/everyone/exercise-library/"
+ },
+ "152": {
+  "h1": "Standing Dorsi-Flexion (Calf Stretch)",
+  "canon": "/resources/everyone/exercise-library/152/standing-dorsi-flexion-calf-stretch/"
+ },
+ "153": {
+  "h1": "Lying Hamstrings Curl",
+  "canon": "/resources/everyone/exercise-library/153/lying-hamstrings-curl/"
+ },
+ "154": {
+  "h1": "Seated Leg Press Exercise",
+  "canon": "/resources/everyone/exercise-library/154/seated-leg-press/"
+ },
+ "155": {
+  "h1": "Standing Hip Abduction",
+  "canon": "/resources/everyone/exercise-library/155/standing-hip-abduction/"
+ },
+ "156": {
+  "h1": "Exercise Library: Workouts & Fitness Guides | ACE",
+  "canon": "https://www.acefitness.org/resources/everyone/exercise-library/"
+ },
+ "157": {
+  "h1": "Exercise Library: Workouts & Fitness Guides | ACE",
+  "canon": "https://www.acefitness.org/resources/everyone/exercise-library/"
+ },
+ "158": {
+  "h1": "Seated Lat Pulldown",
+  "canon": "/resources/everyone/exercise-library/158/seated-lat-pulldown/"
+ },
+ "159": {
+  "h1": "Exercise Library: Workouts & Fitness Guides | ACE",
+  "canon": "https://www.acefitness.org/resources/everyone/exercise-library/"
+ },
+ "160": {
+  "h1": "Standing Chest Fly",
+  "canon": "/resources/everyone/exercise-library/160/standing-chest-fly/"
+ },
+ "161": {
+  "h1": "Standing Decline Cable Flyes",
+  "canon": "/resources/everyone/exercise-library/161/standing-decline-cable-flyes/"
+ },
+ "162": {
+  "h1": "Exercise Library: Workouts & Fitness Guides | ACE",
+  "canon": "https://www.acefitness.org/resources/everyone/exercise-library/"
+ },
+ "163": {
+  "h1": "Standing Incline Cable Flyes",
+  "canon": "/resources/everyone/exercise-library/163/standing-incline-cable-flyes/"
+ },
+ "164": {
+  "h1": "Exercise Library: Workouts & Fitness Guides | ACE",
+  "canon": "https://www.acefitness.org/resources/everyone/exercise-library/"
+ },
+ "165": {
+  "h1": "Seated Cable Press",
+  "canon": "/resources/everyone/exercise-library/165/seated-cable-press/"
+ },
+ "166": {
+  "h1": "Seated Decline Cable Press",
+  "canon": "/resources/everyone/exercise-library/166/seated-decline-cable-press/"
+ },
+ "167": {
+  "h1": "Seated Incline Cable Press",
+  "canon": "/resources/everyone/exercise-library/167/seated-incline-cable-press/"
+ },
+ "168": {
+  "h1": "Seated Row",
+  "canon": "/resources/everyone/exercise-library/168/seated-row/"
+ },
+ "169": {
+  "h1": "Seated High Back Rows",
+  "canon": "/resources/everyone/exercise-library/169/seated-high-back-rows/"
+ },
+ "170": {
+  "h1": "Agility Ladder: Lateral Shuffle",
+  "canon": "/resources/everyone/exercise-library/170/agility-ladder-lateral-shuffle/"
+ },
+ "171": {
+  "h1": "T Drill",
+  "canon": "/resources/everyone/exercise-library/171/t-drill/"
+ },
+ "172": {
+  "h1": "Multidirectional Ladder Drill",
+  "canon": "/resources/everyone/exercise-library/172/multidirectional-ladder-drill/"
+ },
+ "173": {
+  "h1": "Exercise Library: Workouts & Fitness Guides | ACE",
+  "canon": "https://www.acefitness.org/resources/everyone/exercise-library/"
+ },
+ "174": {
+  "h1": "Overhead Triceps Stretch",
+  "canon": "/resources/everyone/exercise-library/174/overhead-triceps-stretch/"
+ },
+ "175": {
+  "h1": "Forward Linear Ladder Drill",
+  "canon": "/resources/everyone/exercise-library/175/forward-linear-ladder-drill/"
+ },
+ "176": {
+  "h1": "Jump and Reach",
+  "canon": "/resources/everyone/exercise-library/176/jump-and-reach/"
+ },
+ "177": {
+  "h1": "Forward Linear Jumps",
+  "canon": "/resources/everyone/exercise-library/177/forward-linear-jumps/"
+ },
+ "178": {
+  "h1": "Overhead Medicine Ball Throws",
+  "canon": "/resources/everyone/exercise-library/178/overhead-medicine-ball-throws/"
+ },
+ "179": {
+  "h1": "Exercise Library: Workouts & Fitness Guides | ACE",
+  "canon": "https://www.acefitness.org/resources/everyone/exercise-library/"
+ },
+ "180": {
+  "h1": "Tuck Jump",
+  "canon": "/resources/everyone/exercise-library/180/tuck-jump/"
+ },
+ "181": {
+  "h1": "Lateral Shuffles",
+  "canon": "/resources/everyone/exercise-library/181/lateral-shuffles/"
+ },
+ "182": {
+  "h1": "Overhead Slams",
+  "canon": "/resources/everyone/exercise-library/182/overhead-slams/"
+ },
+ "183": {
+  "h1": "Seated Leg Extension",
+  "canon": "/resources/everyone/exercise-library/183/seated-leg-extension/"
+ },
+ "184": {
+  "h1": "Seated Biceps Curl",
+  "canon": "/resources/everyone/exercise-library/184/seated-biceps-curl/"
+ },
+ "185": {
+  "h1": "Triceps Pushdowns",
+  "canon": "/resources/everyone/exercise-library/185/triceps-pushdowns/"
+ },
+ "186": {
+  "h1": "Seated Shoulder Press",
+  "canon": "/resources/everyone/exercise-library/186/seated-shoulder-press/"
+ },
+ "187": {
+  "h1": "Seated Machine Close-Grip Shoulder Press",
+  "canon": "/resources/everyone/exercise-library/187/seated-machine-close-grip-shoulder-press/"
+ },
+ "188": {
+  "h1": "Seated Chest Press",
+  "canon": "/resources/everyone/exercise-library/188/seated-chest-press/"
+ },
+ "189": {
+  "h1": "Seated Close-Grip Chest Press",
+  "canon": "/resources/everyone/exercise-library/189/seated-close-grip-chest-press/"
+ },
+ "190": {
+  "h1": "Chin-ups",
+  "canon": "/resources/everyone/exercise-library/190/chin-ups/"
+ },
+ "191": {
+  "h1": "Pull-ups",
+  "canon": "/resources/everyone/exercise-library/191/pull-ups/"
+ },
+ "192": {
+  "h1": "Thomas Stretch",
+  "canon": "/resources/everyone/exercise-library/192/thomas-stretch/"
+ },
+ "193": {
+  "h1": "Exercise Library: Workouts & Fitness Guides | ACE",
+  "canon": "https://www.acefitness.org/resources/everyone/exercise-library/"
+ },
+ "194": {
+  "h1": "Exercise Library: Workouts & Fitness Guides | ACE",
+  "canon": "https://www.acefitness.org/resources/everyone/exercise-library/"
+ },
+ "195": {
+  "h1": "Kneeling TA Stretch",
+  "canon": "/resources/everyone/exercise-library/195/kneeling-ta-stretch/"
+ },
+ "196": {
+  "h1": "Exercise Library: Workouts & Fitness Guides | ACE",
+  "canon": "https://www.acefitness.org/resources/everyone/exercise-library/"
+ },
+ "197": {
+  "h1": "Exercise Library: Workouts & Fitness Guides | ACE",
+  "canon": "https://www.acefitness.org/resources/everyone/exercise-library/"
+ },
+ "198": {
+  "h1": "90 Lat Stretch",
+  "canon": "/resources/everyone/exercise-library/198/90-lat-stretch/"
+ },
+ "199": {
+  "h1": "Standing Shoulder Extension",
+  "canon": "/resources/everyone/exercise-library/199/standing-shoulder-extension/"
+ },
+ "200": {
+  "h1": "Exercise Library: Workouts & Fitness Guides | ACE",
+  "canon": "https://www.acefitness.org/resources/everyone/exercise-library/"
+ },
+ "201": {
+  "h1": "Standing Gate Openers (Frankensteins)",
+  "canon": "/resources/everyone/exercise-library/201/standing-gate-openers-frankensteins/"
+ },
+ "202": {
+  "h1": "Lateral Neck Flexion",
+  "canon": "/resources/everyone/exercise-library/202/lateral-neck-flexion/"
+ },
+ "203": {
+  "h1": "Exercise Library: Workouts & Fitness Guides | ACE",
+  "canon": "https://www.acefitness.org/resources/everyone/exercise-library/"
+ },
+ "204": {
+  "h1": "Neck Flexion and Extension",
+  "canon": "/resources/everyone/exercise-library/204/neck-flexion-and-extension/"
+ },
+ "205": {
+  "h1": "Shoulder Packing",
+  "canon": "/resources/everyone/exercise-library/205/shoulder-packing/"
+ },
+ "206": {
+  "h1": "Lateral Over Unders",
+  "canon": "/resources/everyone/exercise-library/206/lateral-over-unders/"
+ },
+ "207": {
+  "h1": "Hexagon Drill",
+  "canon": "/resources/everyone/exercise-library/207/hexagon-drill/"
+ },
+ "208": {
+  "h1": "Seated Bent-Knee Biceps Stretch",
+  "canon": "/resources/everyone/exercise-library/208/seated-bent-knee-biceps-stretch/"
+ },
+ "209": {
+  "h1": "Standing Chest Stretch",
+  "canon": "/resources/everyone/exercise-library/209/standing-chest-stretch/"
+ },
+ "210": {
+  "h1": "Seated Straddle Stretch",
+  "canon": "/resources/everyone/exercise-library/210/seated-straddle-stretch/"
+ },
+ "211": {
+  "h1": "Step Stretch",
+  "canon": "/resources/everyone/exercise-library/211/step-stretch/"
+ },
+ "212": {
+  "h1": "Seated Side-Straddle Stretch",
+  "canon": "/resources/everyone/exercise-library/212/seated-side-straddle-stretch/"
+ },
+ "213": {
+  "h1": "Seated Toe Touches",
+  "canon": "/resources/everyone/exercise-library/213/seated-toe-touches/"
+ },
+ "214": {
+  "h1": "Seated Calf Stretch",
+  "canon": "/resources/everyone/exercise-library/214/seated-calf-stretch/"
+ },
+ "215": {
+  "h1": "Seated Straddle with Side Reaches",
+  "canon": "/resources/everyone/exercise-library/215/seated-straddle-with-side-reaches/"
+ },
+ "216": {
+  "h1": "Seated Butterfly Stretch",
+  "canon": "/resources/everyone/exercise-library/216/seated-butterfly-stretch/"
+ },
+ "217": {
+  "h1": "Exercise Library: Workouts & Fitness Guides | ACE",
+  "canon": "https://www.acefitness.org/resources/everyone/exercise-library/"
+ },
+ "218": {
+  "h1": "Reverse Slam",
+  "canon": "/resources/everyone/exercise-library/218/reverse-slam/"
+ },
+ "219": {
+  "h1": "Spinal Twist with a Push-Pull Movement",
+  "canon": "/resources/everyone/exercise-library/219/spinal-twist-with-a-push-pull-movement/"
+ },
+ "220": {
+  "h1": "Exercise Library: Workouts & Fitness Guides | ACE",
+  "canon": "https://www.acefitness.org/resources/everyone/exercise-library/"
+ },
+ "221": {
+  "h1": "Forward Hurdle Run",
+  "canon": "/resources/everyone/exercise-library/221/forward-hurdle-run/"
+ },
+ "222": {
+  "h1": "Squat Jump",
+  "canon": "/resources/everyone/exercise-library/222/squat-jump/"
+ },
+ "223": {
+  "h1": "Side-lying Arm Rolls",
+  "canon": "/resources/everyone/exercise-library/223/side-lying-arm-rolls/"
+ },
+ "224": {
+  "h1": "Standing Ankle Mobilization",
+  "canon": "/resources/everyone/exercise-library/224/standing-ankle-mobilization/"
+ },
+ "225": {
+  "h1": "Standing Triangle Straddle Bends",
+  "canon": "/resources/everyone/exercise-library/225/standing-triangle-straddle-bends/"
+ },
+ "226": {
+  "h1": "Lateral Hurdle Run",
+  "canon": "/resources/everyone/exercise-library/226/lateral-hurdle-run/"
+ },
+ "227": {
+  "h1": "Childs Pose",
+  "canon": "/resources/everyone/exercise-library/227/childs-pose/"
+ },
+ "228": {
+  "h1": "Warrior I",
+  "canon": "/resources/everyone/exercise-library/228/warrior-i/"
+ },
+ "229": {
+  "h1": "Supine Spinal Twist with Rib Grab and Progressions",
+  "canon": "/resources/everyone/exercise-library/229/supine-spinal-twist-with-rib-grab-and-progressions/"
+ },
+ "230": {
+  "h1": "Single Leg Push-off",
+  "canon": "/resources/everyone/exercise-library/230/single-leg-push-off/"
+ },
+ "231": {
+  "h1": "Leg Crossover Stretch",
+  "canon": "/resources/everyone/exercise-library/231/leg-crossover-stretch/"
+ },
+ "232": {
+  "h1": "Supine IT Band Stretch",
+  "canon": "/resources/everyone/exercise-library/232/supine-it-band-stretch/"
+ },
+ "233": {
+  "h1": "Exercise Library: Workouts & Fitness Guides | ACE",
+  "canon": "https://www.acefitness.org/resources/everyone/exercise-library/"
+ },
+ "234": {
+  "h1": "Cycled Split-Squat Jump",
+  "canon": "/resources/everyone/exercise-library/234/cycled-split-squat-jump/"
+ },
+ "235": {
+  "h1": "Supine Hamstrings Stretch",
+  "canon": "/resources/everyone/exercise-library/235/supine-hamstrings-stretch/"
+ },
+ "236": {
+  "h1": "Barbell Jammers",
+  "canon": "/resources/everyone/exercise-library/236/barbell-jammers/"
+ },
+ "237": {
+  "h1": "Shoulder Stability-Mobility Series - I, Y, T, W Formations",
+  "canon": "/resources/everyone/exercise-library/237/shoulder-stability-mobility-series-i-y-t-w-formations/"
+ },
+ "238": {
+  "h1": "Supine Reverse Marches",
+  "canon": "/resources/everyone/exercise-library/238/supine-reverse-marches/"
+ },
+ "239": {
+  "h1": "Exercise Library: Workouts & Fitness Guides | ACE",
+  "canon": "https://www.acefitness.org/resources/everyone/exercise-library/"
+ },
+ "240": {
+  "h1": "Exercise Library: Workouts & Fitness Guides | ACE",
+  "canon": "https://www.acefitness.org/resources/everyone/exercise-library/"
+ },
+ "241": {
+  "h1": "Supine Bicycle Crunches",
+  "canon": "/resources/everyone/exercise-library/241/supine-bicycle-crunches/"
+ },
+ "242": {
+  "h1": "V-ups",
+  "canon": "/resources/everyone/exercise-library/242/v-ups/"
+ },
+ "243": {
+  "h1": "Vertical Toe Touches",
+  "canon": "/resources/everyone/exercise-library/243/vertical-toe-touches/"
+ },
+ "244": {
+  "h1": "Upward Facing Dog",
+  "canon": "/resources/everyone/exercise-library/244/upward-facing-dog/"
+ },
+ "245": {
+  "h1": "Exercise Library: Workouts & Fitness Guides | ACE",
+  "canon": "https://www.acefitness.org/resources/everyone/exercise-library/"
+ },
+ "246": {
+  "h1": "Alternate Leg Push-off",
+  "canon": "/resources/everyone/exercise-library/246/alternate-leg-push-off/"
+ },
+ "247": {
+  "h1": "Spider Walks",
+  "canon": "/resources/everyone/exercise-library/247/spider-walks/"
+ },
+ "248": {
+  "h1": "Exercise Library: Workouts & Fitness Guides | ACE",
+  "canon": "https://www.acefitness.org/resources/everyone/exercise-library/"
+ },
+ "249": {
+  "h1": "Prone Scapular (Shoulder) Stabilization Series - I, Y, T, W, O Formation",
+  "canon": "/resources/everyone/exercise-library/249/prone-scapular-shoulder-stabilization-series-i-y-t-w-o-formation/"
+ },
+ "250": {
+  "h1": "Sprinter Pulls",
+  "canon": "/resources/everyone/exercise-library/250/sprinter-pulls/"
+ },
+ "251": {
+  "h1": "Exercise Library: Workouts & Fitness Guides | ACE",
+  "canon": "https://www.acefitness.org/resources/everyone/exercise-library/"
+ },
+ "252": {
+  "h1": "Exercise Library: Workouts & Fitness Guides | ACE",
+  "canon": "https://www.acefitness.org/resources/everyone/exercise-library/"
+ },
+ "253": {
+  "h1": "Exercise Library: Workouts & Fitness Guides | ACE",
+  "canon": "https://www.acefitness.org/resources/everyone/exercise-library/"
+ },
+ "254": {
+  "h1": "Inchworms",
+  "canon": "/resources/everyone/exercise-library/254/inchworms/"
+ },
+ "255": {
+  "h1": "Exercise Library: Workouts & Fitness Guides | ACE",
+  "canon": "https://www.acefitness.org/resources/everyone/exercise-library/"
+ },
+ "256": {
+  "h1": "Exercise Library: Workouts & Fitness Guides | ACE",
+  "canon": "https://www.acefitness.org/resources/everyone/exercise-library/"
+ },
+ "257": {
+  "h1": "Plank with Knee Drag",
+  "canon": "/resources/everyone/exercise-library/257/plank-with-knee-drag/"
+ },
+ "258": {
+  "h1": "Mountain Climbers",
+  "canon": "/resources/everyone/exercise-library/258/mountain-climbers/"
+ },
+ "259": {
+  "h1": "CKC Parascapular Exercises",
+  "canon": "/resources/everyone/exercise-library/259/ckc-parascapular-exercises/"
+ },
+ "260": {
+  "h1": "Exercise Library: Workouts & Fitness Guides | ACE",
+  "canon": "https://www.acefitness.org/resources/everyone/exercise-library/"
+ },
+ "261": {
+  "h1": "Exercise Library: Workouts & Fitness Guides | ACE",
+  "canon": "https://www.acefitness.org/resources/everyone/exercise-library/"
+ },
+ "262": {
+  "h1": "Exercise Library: Workouts & Fitness Guides | ACE",
+  "canon": "https://www.acefitness.org/resources/everyone/exercise-library/"
+ },
+ "263": {
+  "h1": "V Sit Partner Rotations",
+  "canon": "/resources/everyone/exercise-library/263/v-sit-partner-rotations/"
+ },
+ "264": {
+  "h1": "Medicine Ball Lunge to Chest Pass",
+  "canon": "/resources/everyone/exercise-library/264/medicine-ball-lunge-to-chest-pass/"
+ },
+ "265": {
+  "h1": "Partner Assisted Bodyweight Squats",
+  "canon": "/resources/everyone/exercise-library/265/partner-assisted-bodyweight-squats/"
+ },
+ "266": {
+  "h1": "Exercise Library: Workouts & Fitness Guides | ACE",
+  "canon": "https://www.acefitness.org/resources/everyone/exercise-library/"
+ },
+ "267": {
+  "h1": "Partner Standing Row with Resistance Tubing",
+  "canon": "/resources/everyone/exercise-library/267/partner-standing-row-with-resistance-tubing/"
+ },
+ "268": {
+  "h1": "Exercise Library: Workouts & Fitness Guides | ACE",
+  "canon": "https://www.acefitness.org/resources/everyone/exercise-library/"
+ },
+ "269": {
+  "h1": "Partner Tricep Extension",
+  "canon": "/resources/everyone/exercise-library/269/partner-tricep-extension/"
+ },
+ "270": {
+  "h1": "Quadruped Bent-knee Hip Extensions",
+  "canon": "/resources/everyone/exercise-library/270/quadruped-bent-knee-hip-extensions/"
+ },
+ "271": {
+  "h1": "Exercise Library: Workouts & Fitness Guides | ACE",
+  "canon": "https://www.acefitness.org/resources/everyone/exercise-library/"
+ },
+ "272": {
+  "h1": "Lateral Zig Zags",
+  "canon": "/resources/everyone/exercise-library/272/lateral-zig-zags/"
+ },
+ "273": {
+  "h1": "Modified Hurdler's Stretch",
+  "canon": "/resources/everyone/exercise-library/273/modified-hurdler-s-stretch/"
+ },
+ "274": {
+  "h1": "Exercise Library: Workouts & Fitness Guides | ACE",
+  "canon": "https://www.acefitness.org/resources/everyone/exercise-library/"
+ },
+ "275": {
+  "h1": "Exercise Library: Workouts & Fitness Guides | ACE",
+  "canon": "https://www.acefitness.org/resources/everyone/exercise-library/"
+ },
+ "276": {
+  "h1": "Exercise Library: Workouts & Fitness Guides | ACE",
+  "canon": "https://www.acefitness.org/resources/everyone/exercise-library/"
+ },
+ "277": {
+  "h1": "Exercise Library: Workouts & Fitness Guides | ACE",
+  "canon": "https://www.acefitness.org/resources/everyone/exercise-library/"
+ },
+ "278": {
+  "h1": "Exercise Library: Workouts & Fitness Guides | ACE",
+  "canon": "https://www.acefitness.org/resources/everyone/exercise-library/"
+ },
+ "279": {
+  "h1": "Exercise Library: Workouts & Fitness Guides | ACE",
+  "canon": "https://www.acefitness.org/resources/everyone/exercise-library/"
+ },
+ "280": {
+  "h1": "Exercise Library: Workouts & Fitness Guides | ACE",
+  "canon": "https://www.acefitness.org/resources/everyone/exercise-library/"
+ },
+ "281": {
+  "h1": "Exercise Library: Workouts & Fitness Guides | ACE",
+  "canon": "https://www.acefitness.org/resources/everyone/exercise-library/"
+ },
+ "282": {
+  "h1": "Exercise Library: Workouts & Fitness Guides | ACE",
+  "canon": "https://www.acefitness.org/resources/everyone/exercise-library/"
+ },
+ "283": {
+  "h1": "Exercise Library: Workouts & Fitness Guides | ACE",
+  "canon": "https://www.acefitness.org/resources/everyone/exercise-library/"
+ },
+ "284": {
+  "h1": "Exercise Library: Workouts & Fitness Guides | ACE",
+  "canon": "https://www.acefitness.org/resources/everyone/exercise-library/"
+ },
+ "285": {
+  "h1": "Exercise Library: Workouts & Fitness Guides | ACE",
+  "canon": "https://www.acefitness.org/resources/everyone/exercise-library/"
+ },
+ "286": {
+  "h1": "Power Push Down",
+  "canon": "/resources/everyone/exercise-library/286/power-push-down/"
+ },
+ "287": {
+  "h1": "Rotational Slam",
+  "canon": "/resources/everyone/exercise-library/287/rotational-slam/"
+ },
+ "288": {
+  "h1": "Squat",
+  "canon": "/resources/everyone/exercise-library/288/squat/"
+ },
+ "289": {
+  "h1": "High-low Partner See-saw",
+  "canon": "/resources/everyone/exercise-library/289/high-low-partner-see-saw/"
+ },
+ "290": {
+  "h1": "Walking Abduction",
+  "canon": "/resources/everyone/exercise-library/290/walking-abduction/"
+ },
+ "291": {
+  "h1": "Seated Crunch",
+  "canon": "/resources/everyone/exercise-library/291/seated-crunch/"
+ },
+ "292": {
+  "h1": "Tricep Extension",
+  "canon": "/resources/everyone/exercise-library/292/tricep-extension/"
+ },
+ "293": {
+  "h1": "Glute Press",
+  "canon": "/resources/everyone/exercise-library/293/glute-press/"
+ },
+ "294": {
+  "h1": "Calf Raise",
+  "canon": "/resources/everyone/exercise-library/294/calf-raise/"
+ },
+ "295": {
+  "h1": "Lateral Shoulder Raise",
+  "canon": "/resources/everyone/exercise-library/295/lateral-shoulder-raise/"
+ },
+ "296": {
+  "h1": "Supine Shoulder Roll",
+  "canon": "/resources/everyone/exercise-library/296/supine-shoulder-roll/"
+ },
+ "297": {
+  "h1": "Supine Suitcase Pass",
+  "canon": "/resources/everyone/exercise-library/297/supine-suitcase-pass/"
+ },
+ "298": {
+  "h1": "Prone Runner",
+  "canon": "/resources/everyone/exercise-library/298/prone-runner/"
+ },
+ "299": {
+  "h1": "Kneeling ABC's",
+  "canon": "/resources/everyone/exercise-library/299/kneeling-abc-s/"
+ },
+ "300": {
+  "h1": "Prone ABC's",
+  "canon": "/resources/everyone/exercise-library/300/prone-abc-s/"
+ },
+ "301": {
+  "h1": "Single Leg Hamstring Curl",
+  "canon": "/resources/everyone/exercise-library/301/single-leg-hamstring-curl/"
+ },
+ "302": {
+  "h1": "Exercise Library: Workouts & Fitness Guides | ACE",
+  "canon": "https://www.acefitness.org/resources/everyone/exercise-library/"
+ },
+ "303": {
+  "h1": "Side Plank",
+  "canon": "/resources/everyone/exercise-library/303/side-plank/"
+ },
+ "304": {
+  "h1": "Decline Plank",
+  "canon": "/resources/everyone/exercise-library/304/decline-plank/"
+ },
+ "305": {
+  "h1": "V-twist",
+  "canon": "/resources/everyone/exercise-library/305/v-twist/"
+ },
+ "306": {
+  "h1": "Burpee",
+  "canon": "/resources/everyone/exercise-library/306/burpee/"
+ },
+ "307": {
+  "h1": "Toe Taps",
+  "canon": "/resources/everyone/exercise-library/307/toe-taps/"
+ },
+ "308": {
+  "h1": "Pistol Squat Workout",
+  "canon": "/resources/everyone/exercise-library/308/pistol-squat/"
+ },
+ "309": {
+  "h1": "Roll Out",
+  "canon": "/resources/everyone/exercise-library/309/roll-out/"
+ },
+ "310": {
+  "h1": "Reverse Bicep Curl",
+  "canon": "/resources/everyone/exercise-library/310/reverse-bicep-curl/"
+ },
+ "311": {
+  "h1": "Close-grip Bench Press",
+  "canon": "/resources/everyone/exercise-library/311/close-grip-bench-press/"
+ },
+ "312": {
+  "h1": "Hang Clean",
+  "canon": "/resources/everyone/exercise-library/312/hang-clean/"
+ },
+ "313": {
+  "h1": "Push Jerk",
+  "canon": "/resources/everyone/exercise-library/313/push-jerk/"
+ },
+ "314": {
+  "h1": "Snatch",
+  "canon": "/resources/everyone/exercise-library/314/snatch/"
+ },
+ "315": {
+  "h1": "Front Squat to Overhead Press",
+  "canon": "/resources/everyone/exercise-library/315/front-squat-to-overhead-press/"
+ },
+ "316": {
+  "h1": "Exercise Library: Workouts & Fitness Guides | ACE",
+  "canon": "https://www.acefitness.org/resources/everyone/exercise-library/"
+ },
+ "317": {
+  "h1": "Romanian Deadlift",
+  "canon": "/resources/everyone/exercise-library/317/romanian-deadlift/"
+ },
+ "318": {
+  "h1": "Hip Bridge",
+  "canon": "/resources/everyone/exercise-library/318/hip-bridge/"
+ },
+ "319": {
+  "h1": "Reverse Lunge",
+  "canon": "/resources/everyone/exercise-library/319/reverse-lunge/"
+ },
+ "320": {
+  "h1": "Plank-ups",
+  "canon": "/resources/everyone/exercise-library/320/plank-ups/"
+ },
+ "321": {
+  "h1": "Single Arm Plank",
+  "canon": "/resources/everyone/exercise-library/321/single-arm-plank/"
+ },
+ "322": {
+  "h1": "Standing Bicep Curl",
+  "canon": "/resources/everyone/exercise-library/322/standing-bicep-curl/"
+ },
+ "323": {
+  "h1": "Exercise Library: Workouts & Fitness Guides | ACE",
+  "canon": "https://www.acefitness.org/resources/everyone/exercise-library/"
+ },
+ "324": {
+  "h1": "Exercise Library: Workouts & Fitness Guides | ACE",
+  "canon": "https://www.acefitness.org/resources/everyone/exercise-library/"
+ },
+ "325": {
+  "h1": "Single Arm, Single Leg Plank",
+  "canon": "/resources/everyone/exercise-library/325/single-arm-single-leg-plank/"
+ },
+ "326": {
+  "h1": "Exercise Library: Workouts & Fitness Guides | ACE",
+  "canon": "https://www.acefitness.org/resources/everyone/exercise-library/"
+ },
+ "327": {
+  "h1": "Push-up with Staggered Hands",
+  "canon": "/resources/everyone/exercise-library/327/push-up-with-staggered-hands/"
+ },
+ "328": {
+  "h1": "Lateral Crawls",
+  "canon": "/resources/everyone/exercise-library/328/lateral-crawls/"
+ },
+ "329": {
+  "h1": "Single-leg Romanian Deadlift",
+  "canon": "/resources/everyone/exercise-library/329/single-leg-romanian-deadlift/"
+ },
+ "330": {
+  "h1": "High Plank T-spine Rotation",
+  "canon": "/resources/everyone/exercise-library/330/high-plank-t-spine-rotation/"
+ },
+ "331": {
+  "h1": "Standing Crunch",
+  "canon": "/resources/everyone/exercise-library/331/standing-crunch/"
+ },
+ "332": {
+  "h1": "Standing Anti-rotation Press",
+  "canon": "/resources/everyone/exercise-library/332/standing-anti-rotation-press/"
+ },
+ "333": {
+  "h1": "Tricep Pressdown Exercise",
+  "canon": "/resources/everyone/exercise-library/333/tricep-pressdown/"
+ },
+ "334": {
+  "h1": "Straight Arm Pressdown",
+  "canon": "/resources/everyone/exercise-library/334/straight-arm-pressdown/"
+ },
+ "335": {
+  "h1": "Standing Row",
+  "canon": "/resources/everyone/exercise-library/335/standing-row/"
+ },
+ "336": {
+  "h1": "High Row",
+  "canon": "/resources/everyone/exercise-library/336/high-row/"
+ },
+ "337": {
+  "h1": "Single Arm Row",
+  "canon": "/resources/everyone/exercise-library/337/single-arm-row/"
+ },
+ "338": {
+  "h1": "Single-arm Chest Press",
+  "canon": "/resources/everyone/exercise-library/338/single-arm-chest-press/"
+ },
+ "339": {
+  "h1": "Single-arm Rotational Press",
+  "canon": "/resources/everyone/exercise-library/339/single-arm-rotational-press/"
+ },
+ "340": {
+  "h1": "Kneeling Wood Chop",
+  "canon": "/resources/everyone/exercise-library/340/kneeling-wood-chop/"
+ },
+ "341": {
+  "h1": "Kneeling Hay Baler",
+  "canon": "/resources/everyone/exercise-library/341/kneeling-hay-baler/"
+ },
+ "342": {
+  "h1": "Pull to Press",
+  "canon": "/resources/everyone/exercise-library/342/pull-to-press/"
+ },
+ "343": {
+  "h1": "Side Plank Row",
+  "canon": "/resources/everyone/exercise-library/343/side-plank-row/"
+ },
+ "344": {
+  "h1": "Squat to Row",
+  "canon": "/resources/everyone/exercise-library/344/squat-to-row/"
+ },
+ "345": {
+  "h1": "Lunge to Single Arm Row",
+  "canon": "/resources/everyone/exercise-library/345/lunge-to-single-arm-row/"
+ },
+ "346": {
+  "h1": "Transverse Lunge to Single Arm Row",
+  "canon": "/resources/everyone/exercise-library/346/transverse-lunge-to-single-arm-row/"
+ },
+ "347": {
+  "h1": "Lateral Lunge Wood Chop",
+  "canon": "/resources/everyone/exercise-library/347/lateral-lunge-wood-chop/"
+ },
+ "348": {
+  "h1": "Anti-rotation Reverse Lunge",
+  "canon": "/resources/everyone/exercise-library/348/anti-rotation-reverse-lunge/"
+ },
+ "349": {
+  "h1": "Standing Rotational Chop",
+  "canon": "/resources/everyone/exercise-library/349/standing-rotational-chop/"
+ },
+ "350": {
+  "h1": "Single Leg Romanian Dead Lift",
+  "canon": "/resources/everyone/exercise-library/350/single-leg-romanian-dead-lift/"
+ },
+ "351": {
+  "h1": "Rotator Cuff Internal Rotation",
+  "canon": "/resources/everyone/exercise-library/351/rotator-cuff-internal-rotation/"
+ },
+ "352": {
+  "h1": "Rotator Cuff External Rotation",
+  "canon": "/resources/everyone/exercise-library/352/rotator-cuff-external-rotation/"
+ },
+ "353": {
+  "h1": "Reverse Fly",
+  "canon": "/resources/everyone/exercise-library/353/reverse-fly/"
+ },
+ "354": {
+  "h1": "Single-arm Lateral Raise",
+  "canon": "/resources/everyone/exercise-library/354/single-arm-lateral-raise/"
+ },
+ "355": {
+  "h1": "Renegade Row",
+  "canon": "/resources/everyone/exercise-library/355/renegade-row/"
+ },
+ "356": {
+  "h1": "Offset Single-arm Chest Press",
+  "canon": "/resources/everyone/exercise-library/356/offset-single-arm-chest-press/"
+ },
+ "357": {
+  "h1": "Squat to Overhead Press",
+  "canon": "/resources/everyone/exercise-library/357/squat-to-overhead-press/"
+ },
+ "358": {
+  "h1": "Suitcase Carry",
+  "canon": "/resources/everyone/exercise-library/358/suitcase-carry/"
+ },
+ "359": {
+  "h1": "Farmer's Carry",
+  "canon": "/resources/everyone/exercise-library/359/farmer-s-carry/"
+ },
+ "360": {
+  "h1": "Reverse Lunge with Rotation",
+  "canon": "/resources/everyone/exercise-library/360/reverse-lunge-with-rotation/"
+ },
+ "361": {
+  "h1": "Squat to Overhead Raise",
+  "canon": "/resources/everyone/exercise-library/361/squat-to-overhead-raise/"
+ },
+ "362": {
+  "h1": "Goblet Squat",
+  "canon": "/resources/everyone/exercise-library/362/goblet-squat/"
+ },
+ "363": {
+  "h1": "Lunge",
+  "canon": "/resources/everyone/exercise-library/363/lunge/"
+ },
+ "364": {
+  "h1": "Lateral Lunge",
+  "canon": "/resources/everyone/exercise-library/364/lateral-lunge/"
+ },
+ "365": {
+  "h1": "Transverse Lunge",
+  "canon": "/resources/everyone/exercise-library/365/transverse-lunge/"
+ },
+ "366": {
+  "h1": "Bulgarian Split Squat",
+  "canon": "/resources/everyone/exercise-library/366/bulgarian-split-squat/"
+ },
+ "367": {
+  "h1": "Elevated Glute Bridge",
+  "canon": "/resources/everyone/exercise-library/367/elevated-glute-bridge/"
+ },
+ "368": {
+  "h1": "Rotational Overhead Press",
+  "canon": "/resources/everyone/exercise-library/368/rotational-overhead-press/"
+ },
+ "369": {
+  "h1": "Rotational Uppercut",
+  "canon": "/resources/everyone/exercise-library/369/rotational-uppercut/"
+ },
+ "370": {
+  "h1": "V-raise",
+  "canon": "/resources/everyone/exercise-library/370/v-raise/"
+ },
+ "371": {
+  "h1": "Diagonal Raise",
+  "canon": "/resources/everyone/exercise-library/371/diagonal-raise/"
+ },
+ "372": {
+  "h1": "Exercise Library: Workouts & Fitness Guides | ACE",
+  "canon": "https://www.acefitness.org/resources/everyone/exercise-library/"
+ },
+ "373": {
+  "h1": "Exercise Library: Workouts & Fitness Guides | ACE",
+  "canon": "https://www.acefitness.org/resources/everyone/exercise-library/"
+ },
+ "374": {
+  "h1": "Simultaneous Waves",
+  "canon": "/resources/everyone/exercise-library/374/simultaneous-waves/"
+ },
+ "375": {
+  "h1": "Simultaneous Wave with Reverse Lunges",
+  "canon": "/resources/everyone/exercise-library/375/simultaneous-wave-with-reverse-lunges/"
+ },
+ "376": {
+  "h1": "Asynchronous Waves",
+  "canon": "/resources/everyone/exercise-library/376/asynchronous-waves/"
+ },
+ "377": {
+  "h1": "Lateral Waves",
+  "canon": "/resources/everyone/exercise-library/377/lateral-waves/"
+ },
+ "378": {
+  "h1": "Double Rotation Waves",
+  "canon": "/resources/everyone/exercise-library/378/double-rotation-waves/"
+ },
+ "379": {
+  "h1": "Exercise Library: Workouts & Fitness Guides | ACE",
+  "canon": "https://www.acefitness.org/resources/everyone/exercise-library/"
+ },
+ "380": {
+  "h1": "Pull-over Crunch",
+  "canon": "/resources/everyone/exercise-library/380/pull-over-crunch/"
+ },
+ "381": {
+  "h1": "Half Turkish Get-up",
+  "canon": "/resources/everyone/exercise-library/381/half-turkish-get-up/"
+ },
+ "382": {
+  "h1": "Figure Eight",
+  "canon": "/resources/everyone/exercise-library/382/figure-eight/"
+ },
+ "383": {
+  "h1": "Clean and Press",
+  "canon": "/resources/everyone/exercise-library/383/clean-and-press/"
+ },
+ "384": {
+  "h1": "Double Push-press",
+  "canon": "/resources/everyone/exercise-library/384/double-push-press/"
+ },
+ "385": {
+  "h1": "Push-jerk",
+  "canon": "/resources/everyone/exercise-library/385/push-jerk/"
+ },
+ "386": {
+  "h1": "High Windmill",
+  "canon": "/resources/everyone/exercise-library/386/high-windmill/"
+ },
+ "387": {
+  "h1": "Low Windmill",
+  "canon": "/resources/everyone/exercise-library/387/low-windmill/"
+ },
+ "388": {
+  "h1": "Turkish Get-up",
+  "canon": "/resources/everyone/exercise-library/388/turkish-get-up/"
+ },
+ "389": {
+  "h1": "Suitcase Carry",
+  "canon": "/resources/everyone/exercise-library/389/suitcase-carry/"
+ },
+ "390": {
+  "h1": "Waiter's Carry",
+  "canon": "/resources/everyone/exercise-library/390/waiter-s-carry/"
+ },
+ "391": {
+  "h1": "Swing",
+  "canon": "/resources/everyone/exercise-library/391/swing/"
+ },
+ "392": {
+  "h1": "Single Arm Swing",
+  "canon": "/resources/everyone/exercise-library/392/single-arm-swing/"
+ },
+ "393": {
+  "h1": "Single Arm Overhead Squat",
+  "canon": "/resources/everyone/exercise-library/393/single-arm-overhead-squat/"
+ },
+ "394": {
+  "h1": "Halo",
+  "canon": "/resources/everyone/exercise-library/394/halo/"
+ },
+ "395": {
+  "h1": "Single Arm Overhead Press",
+  "canon": "/resources/everyone/exercise-library/395/single-arm-overhead-press/"
+ },
+ "396": {
+  "h1": "Bottom-up Press",
+  "canon": "/resources/everyone/exercise-library/396/bottom-up-press/"
+ },
+ "397": {
+  "h1": "Exercise Library: Workouts & Fitness Guides | ACE",
+  "canon": "https://www.acefitness.org/resources/everyone/exercise-library/"
+ },
+ "398": {
+  "h1": "Exercise Library: Workouts & Fitness Guides | ACE",
+  "canon": "https://www.acefitness.org/resources/everyone/exercise-library/"
+ },
+ "399": {
+  "h1": "Exercise Library: Workouts & Fitness Guides | ACE",
+  "canon": "https://www.acefitness.org/resources/everyone/exercise-library/"
+ },
+ "400": {
+  "h1": "Exercise Library: Workouts & Fitness Guides | ACE",
+  "canon": "https://www.acefitness.org/resources/everyone/exercise-library/"
+ },
+ "401": {
+  "h1": "Exercise Library: Workouts & Fitness Guides | ACE",
+  "canon": "https://www.acefitness.org/resources/everyone/exercise-library/"
+ },
+ "402": {
+  "h1": "Exercise Library: Workouts & Fitness Guides | ACE",
+  "canon": "https://www.acefitness.org/resources/everyone/exercise-library/"
+ },
+ "403": {
+  "h1": "Exercise Library: Workouts & Fitness Guides | ACE",
+  "canon": "https://www.acefitness.org/resources/everyone/exercise-library/"
+ },
+ "404": {
+  "h1": "Exercise Library: Workouts & Fitness Guides | ACE",
+  "canon": "https://www.acefitness.org/resources/everyone/exercise-library/"
+ },
+ "405": {
+  "h1": "Exercise Library: Workouts & Fitness Guides | ACE",
+  "canon": "https://www.acefitness.org/resources/everyone/exercise-library/"
+ },
+ "406": {
+  "h1": "Exercise Library: Workouts & Fitness Guides | ACE",
+  "canon": "https://www.acefitness.org/resources/everyone/exercise-library/"
+ },
+ "407": {
+  "h1": "Exercise Library: Workouts & Fitness Guides | ACE",
+  "canon": "https://www.acefitness.org/resources/everyone/exercise-library/"
+ },
+ "408": {
+  "h1": "Exercise Library: Workouts & Fitness Guides | ACE",
+  "canon": "https://www.acefitness.org/resources/everyone/exercise-library/"
+ },
+ "409": {
+  "h1": "Exercise Library: Workouts & Fitness Guides | ACE",
+  "canon": "https://www.acefitness.org/resources/everyone/exercise-library/"
+ },
+ "410": {
+  "h1": "Exercise Library: Workouts & Fitness Guides | ACE",
+  "canon": "https://www.acefitness.org/resources/everyone/exercise-library/"
+ },
+ "411": {
+  "h1": "Exercise Library: Workouts & Fitness Guides | ACE",
+  "canon": "https://www.acefitness.org/resources/everyone/exercise-library/"
+ },
+ "412": {
+  "h1": "Exercise Library: Workouts & Fitness Guides | ACE",
+  "canon": "https://www.acefitness.org/resources/everyone/exercise-library/"
+ },
+ "413": {
+  "h1": "Exercise Library: Workouts & Fitness Guides | ACE",
+  "canon": "https://www.acefitness.org/resources/everyone/exercise-library/"
+ },
+ "414": {
+  "h1": "Exercise Library: Workouts & Fitness Guides | ACE",
+  "canon": "https://www.acefitness.org/resources/everyone/exercise-library/"
+ },
+ "415": {
+  "h1": "Exercise Library: Workouts & Fitness Guides | ACE",
+  "canon": "https://www.acefitness.org/resources/everyone/exercise-library/"
+ },
+ "416": {
+  "h1": "Exercise Library: Workouts & Fitness Guides | ACE",
+  "canon": "https://www.acefitness.org/resources/everyone/exercise-library/"
+ },
+ "417": {
+  "h1": "Exercise Library: Workouts & Fitness Guides | ACE",
+  "canon": "https://www.acefitness.org/resources/everyone/exercise-library/"
+ },
+ "418": {
+  "h1": "Exercise Library: Workouts & Fitness Guides | ACE",
+  "canon": "https://www.acefitness.org/resources/everyone/exercise-library/"
+ },
+ "419": {
+  "h1": "Exercise Library: Workouts & Fitness Guides | ACE",
+  "canon": "https://www.acefitness.org/resources/everyone/exercise-library/"
+ },
+ "420": {
+  "h1": "Exercise Library: Workouts & Fitness Guides | ACE",
+  "canon": "https://www.acefitness.org/resources/everyone/exercise-library/"
+ }
+}

@@ -7,6 +7,7 @@ import { renderExercises } from './render/exercises.mjs';
 import { renderPlans } from './render/plans.mjs';
 import { loadChapters, renderChapters } from './render/chapters.mjs';
 import { validateChapters, validateChapterList } from './validate/chapters.mjs';
+import { validateInternalLinks } from './validate/links.mjs';
 
 const defaultRoot = path.resolve(import.meta.dirname, '..');
 
@@ -33,6 +34,8 @@ export async function build(root = defaultRoot) {
     planHtml: renderPlans(data.plans, renderCtx),
     claimHtml: renderClaimRegistry(data.claims),
   });
+  const linkErrs = validateInternalLinks(html);
+  if (linkErrs.length) throw new Error(`内部锚点校验失败:\n- ${linkErrs.join('\n- ')}`);
   await mkdir(path.join(root, 'dist'), { recursive: true });
   await writeFile(path.join(root, 'dist/index.html'), html, 'utf8');
   return html;
