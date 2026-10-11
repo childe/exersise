@@ -20,6 +20,7 @@
 | 日期 | URL | 说明 |
 |---|---|---|
 | 2026-10-12 | https://claude.ai/artifact/NcoN5i5QGYfaBLDiwpbCSd | 首次发布（Version 1）。标题「系统化健身知识教程」，favicon 🏋️。后续更新一律带这个 URL，链接不变。 |
+| 2026-10-12 | 同上（Version 2） | 第一轮评审修复后原地更新：容器锚点轨道登记、锚点跳转解除筛选遮挡、证据筛选全站生效、示范核验状态结构化、来源实质核验后的分级修正。链接不变。 |
 
 ### 一个与预检记录的偏差（已确认，记录在案）
 
@@ -32,27 +33,44 @@
 - `dist/index.html`：完整文档，双击即可在本地浏览器打开——这是退路里的"直接交付文件"形态；
 - `dist/artifact.html`：发布形态。
 
-## 自动验收（2026-10-12 已执行）
+## 自动验收（2026-10-12 第二轮重跑）
 
 | 项目 | 命令 | 结果 |
 |---|---|---|
-| 全部测试 | `node --test tests/` | 123 项全部通过 |
-| 外链发布级检查 | `npm run check:links:release` | 合计 46 条：可达 46、失效 0、未检查 0 |
+| 全部测试 | `node --test tests/` | 143 项全部通过（含 9 项真实浏览器集成测试） |
+| 外链发布级检查 | `npm run check:links:release` | 合计 47 条：可达 47、失效 0、未检查 0 |
 | 构建（含覆盖矩阵、内部锚点、安全红线 hard 扫描） | `node src/build.mjs` | 成功；hard 扫描 0 命中；soft 扫描 3 处待复核，已在 `safety-review.md` 逐条判定 |
 | 占位内容清零 | `grep -rn "本章待撰写\|TODO\|TBD\|待补充" content/ dist/index.html` | 无命中 |
 
-## 两端人工验收（**未完成，需在浏览器里做**）
+## 两端验收（2026-10-12 在真实浏览器里跑过）
 
-下面这些必须在真实浏览器里点一遍才算数；实现阶段只能保证它们在代码与测试层面成立，
-保证不了"在你的手机上点下去确实是这样"。逐项验完后把结果填进来。
+验收方式：`tests/browser.test.mjs` 通过 CDP 驱动本机的 Chromium 内核浏览器
+（Microsoft Edge 155.0.4283.45，`--headless=new`）打开构建产物，**真正点按钮、改 hash、按后退、
+切打印媒体、改视口**，再读回 DOM 与 computed style。这不是对源码的文本断言，而是页面在浏览器里的实际行为。
+两个被测对象都验了：本地形态 `dist/index.html`，以及发布形态 `dist/artifact.html`（按平台的方式补上
+`<!doctype html><head></head><body>` 外壳后再打开）。
 
-| 检查项 | 怎么验 | 代码层面的现状 | 桌面 | 手机 |
-|---|---|---|---|---|
-| 双轨切换 | 点顶部「学习路径 / 参考库」，看 URL 变化 | `tests/router.test.mjs` 覆盖 `resolveRoute`/`trackOf` | 待填 | 待填 |
-| 筛选与空状态 | 参考库里勾「固定器械 + 搬运 + 入门」，应出现空状态文案与「清除筛选」 | `tests/filters.test.mjs` 覆盖匹配逻辑；渲染层固定输出 `.empty-state` | 待填 | 待填 |
-| 锚点分享（含不存在的锚点） | 打开 `...#ex-back-squat-high-bar` 应落到该卡；打开 `...#ex-nope` 应出现提示条且页面正常 | `resolveRoute` 对未知锚点返回 `missing:true`，不静默回首章 | 待填 | 待填 |
-| 浏览器前进 / 后退 | 切轨道后按后退，应回到上一位置 | `popstate`/`hashchange` 均已接线 | 待填 | 待填 |
-| 禁用 JS 后两轨完整 | DevTools → Disable JavaScript → 硬刷新，两轨正文都应完整可读 | CSS 中不存在无条件隐藏 `.track` 的规则，`tests/presentation.test.mjs` 逐条断言 | 待填 | 待填 |
-| 打印 / 导出 PDF | `Cmd+P` 预览：切换器与筛选器隐藏、两轨展开、折叠的参考答案展开、外链带 URL 脚注 | `@media print` 规则齐备并有测试断言 | 待填 | 待填 |
-| ≤400px 窄屏 | DevTools 设 390px 宽，确认无横向滚动 | `@media (max-width: 400px)` + 表格 `overflow-x:auto`；无 ≥700px 的 `min-width` | 待填 | 待填 |
-| 深浅主题 | 点主题按钮来回切；再把系统主题切到深色看默认表现 | token 在 `:root` / `prefers-color-scheme` / `[data-theme]` 三处成对定义 | 待填 | 待填 |
+跑法：`node --test tests/browser.test.mjs`（本机没有 Chromium 内核浏览器时整组自动跳过，
+可用 `CHROME_BIN` 指定）。2026-10-12 结果：**9 项全部通过**。
+
+| 检查项 | 怎么验 | 桌面（1280×800，Edge 155 headless） | 窄屏（390×844，移动视口模拟） |
+|---|---|---|---|
+| 双轨切换 + URL | 点「参考库」，读 `location.hash` 与 `.track.is-active` | 通过：hash 变为 `#exercises`，激活轨为 ref | 同一份断言，视口无关 |
+| 刷新后仍在原轨 | 带 `#exercises` 硬刷新 | 通过（这是本轮修掉的缺陷：此前 `#exercises` 被判成学习轨） | 同上 |
+| 浏览器后退 | `history.back()` 后读激活轨 | 通过：回到学习路径 | 同上 |
+| 容器锚点分享 | 直接打开 `#plans` / `#claims`，读 `offsetParent` 与提示条 | 通过：两者都可见，不触发"锚点失效"提示 | 同上 |
+| 筛选 → 锚点跳转 | 勾「自重」把杠铃卡筛掉，再跳 `#ex-back-squat-high-bar` | 通过：卡片重新显示，筛选按钮与计数同步复位（本轮修掉的缺陷） | 同上 |
+| 筛选与空状态 | 勾互斥组合后读 `.empty-state` | 通过（`tests/filters.test.mjs` + 渲染层断言，浏览器侧验了隐藏/计数联动） | 同上 |
+| 证据筛选的全站效果 | 在登记表里勾「反对」，读学习轨里证据标签的 class 与正文长度 | 通过：不命中的标签降权、命中的高亮，正文一个字没少，安全提示里的标签不降权 | 同上 |
+| 禁用 JS 后两轨完整 | `Emulation.setScriptExecutionDisabled` 后硬刷新，读两轨 computed display | 通过：两轨都不是 `none`，参考库正文完整 | 同上 |
+| 打印 / 导出 PDF | `Emulation.setEmulatedMedia: print` 后读 computed display | 通过：切换器与筛选器 `none`，两轨 `block` | 同上 |
+| ≤400px 窄屏 | 设 390×844 视口，比较 `documentElement.scrollWidth` 与 `innerWidth` | — | 通过：无横向溢出 |
+| 深浅主题 | 点主题按钮后刷新，读 `data-theme` | 通过：切换生效且刷新后保持 | 同上 |
+| 发布形态（artifact.html） | 补平台外壳后打开，重跑切轨 + 筛选 + 锚点跳转，并检查没有嵌套 `html/body` | 通过 | 同上 |
+
+### 这份记录覆盖不到的部分（仍属人工）
+
+- **真机**：上面"窄屏"是移动视口模拟，不是 iOS / Android 真机。真机特有的问题（触摸目标大小、
+  Safari 的 `100vh`、系统字体放大）需要在手机上开一次链接才能确认。
+- **打印机／PDF 导出的实际分页**：验到的是打印媒体下的样式生效，没验具体分页在 A4 上好不好看。
+- **读者是否读得懂**：见 `zero-experience-readthrough.md`，那条必须由人来做。

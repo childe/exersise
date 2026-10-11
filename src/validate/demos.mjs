@@ -1,5 +1,18 @@
 const SOURCE_TYPES = ['机构官方', '专业示范', '人工绘制'];
 const KEY_EQUIPMENT = ['杠铃', '哑铃'];
+const STATUSES = ['符合', '未覆盖', '不符'];
+const COVERAGE = ['逐条核验', '部分覆盖', '形态参考'];
+
+// 核验成色由机器从逐条状态推出，数据里写的必须与它一致——
+// 这样"页面其实没覆盖这条判据"或"页面用的是别的器械"就不可能再被写成已核验。
+export function deriveCoverage(demo, exercise) {
+  const items = demo?.verification ?? [];
+  const hits = items.filter((v) => v.status === '符合').length;
+  if (hits === 0) return '形态参考';
+  const sameKit = !exercise || demo?.shows_equipment === exercise.equipment;
+  if (hits === items.length && sameKit && demo?.shows_variant === '相同') return '逐条核验';
+  return '部分覆盖';
+}
 
 export function validateDemos(demos, { exercises }) {
   const errs = [];
@@ -35,7 +48,36 @@ export function validateDemos(demos, { exercises }) {
       }
       (d?.verification ?? []).forEach((v, j) => {
         if (!v.result) errs.push(`${at}.verification[${j}].result: 必填`);
+        if (!STATUSES.includes(v?.status)) {
+          errs.push(`${at}.verification[${j}].status: 必须是 ${STATUSES.join('/')}（缺省不等于"符合"）`);
+        }
       });
+
+      // 来源页面实际展示的器械与变式必须显式登记：靠"没写就是一样"是上一轮
+      // 把 TRX 悬吊带滚轮当成杠铃滚轮示范的直接原因。
+      if (!d?.shows_equipment) errs.push(`${at}: shows_equipment 必填（来源页面实际展示的器械）`);
+      if (!['相同', '不同'].includes(d?.shows_variant)) {
+        errs.push(`${at}: shows_variant 必须是 相同/不同（来源页面展示的是不是同一变式）`);
+      }
+      if (d?.shows_equipment && d.shows_equipment !== ex.equipment && !d?.substitute_note) {
+        errs.push(`${at}: 来源器械（${d.shows_equipment}）与本卡（${ex.equipment}）不同，`
+          + '必须填 substitute_note 写明哪些部分可参考、哪些以本卡为准');
+      }
+      if (d?.shows_variant === '不同' && !d?.variant_note) {
+        errs.push(`${at}: 来源展示的是别的变式，必须填 variant_note 写明差异`);
+      }
+      if (!COVERAGE.includes(d?.coverage)) {
+        errs.push(`${at}: coverage 必须是 ${COVERAGE.join('/')}`);
+      } else {
+        const want = deriveCoverage(d, ex);
+        if (d.coverage !== want) {
+          errs.push(`${at}: coverage 写的是「${d.coverage}」，但逐条状态只支持「${want}」`
+            + (want === '形态参考' ? '——没有任何一条判据被覆盖的来源只能作形态参考，不得标为已核验' : ''));
+        }
+        if (want !== '逐条核验' && !d?.gaps_note) {
+          errs.push(`${at}: 非「逐条核验」的来源必须填 gaps_note（缺口是什么、读者以什么为准）`);
+        }
+      }
     }
   });
 

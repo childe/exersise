@@ -7,16 +7,22 @@
     "publisher": "ACE（American Council on Exercise）",
     "author_credential": "机构官方动作库（ACE Exercise Library）",
     "license": "链接引用，不转载",
-    "verified_on": "2026-10-11",
-    "verified_by": "childe（核验方式：打开页面，逐条比对页面的分步执行文字与本卡自检判据；未逐帧核验视频）",
+    "shows_equipment": "杠铃",
+    "shows_variant": "相同",
+    "coverage": "部分覆盖",
+    "gaps_note": "足中线一条该页未覆盖，以本卡的文字要点与自检方法为准。",
+    "verified_on": "2026-10-12",
+    "verified_by": "childe（核验方式：打开来源页面读完它的分步执行说明与器械标注，再逐条比对本卡的自检判据，逐条记录符合／未覆盖／不符；未逐帧核验视频画面）",
     "verification": [
       {
         "criterion": "杠全程位于足中线正上方",
-        "result": "未覆盖——页面步骤只写了「坐髋下蹲、背部挺直、髋低于膝」，没有描述杠与足中线的关系；这一条以本卡的文字要点与自检方法为准。"
+        "status": "未覆盖",
+        "result": "页面步骤只写了「坐髋下蹲、背部挺直、髋低于膝」，没有描述杠与足中线的关系。"
       },
       {
         "criterion": "脊柱保持在中立范围内，不出现明显的、突然的曲度变化",
-        "result": "符合——页面明确要求「抬胸、肩胛收紧，全程保持背部挺直」，与本判据一致。"
+        "status": "符合",
+        "result": "页面明确要求「抬胸、肩胛收紧，全程保持背部挺直」，与本判据一致。"
       }
     ],
     "dead": false
@@ -29,16 +35,22 @@
     "publisher": "ACE（American Council on Exercise）",
     "author_credential": "机构官方动作库（ACE Exercise Library）",
     "license": "链接引用，不转载",
-    "verified_on": "2026-10-11",
-    "verified_by": "childe（核验方式：打开页面，逐条比对页面的分步执行文字与本卡自检判据；未逐帧核验视频）",
+    "shows_equipment": "哑铃",
+    "shows_variant": "相同",
+    "coverage": "部分覆盖",
+    "gaps_note": "踩实一条该页未覆盖，以本卡的文字要点与自检方法为准。",
+    "verified_on": "2026-10-12",
+    "verified_by": "childe（核验方式：打开来源页面读完它的分步执行说明与器械标注，再逐条比对本卡的自检判据，逐条记录符合／未覆盖／不符；未逐帧核验视频画面）",
     "verification": [
       {
         "criterion": "躯干接近直立，哑铃全程贴着胸前",
-        "result": "符合——页面要求双手捧住哑铃抵在胸前、躯干保持直立下蹲，与本判据一致。"
+        "status": "符合",
+        "result": "页面要求双手捧住哑铃抵在胸前、肘贴肋、背部挺直下蹲，与本判据一致。"
       },
       {
         "criterion": "整个脚掌全程踩实地面",
-        "result": "未覆盖——页面未单独提脚掌压力分布；这一条以本卡的文字要点与自检方法为准。"
+        "status": "未覆盖",
+        "result": "页面只写「双脚压地站起」，没有要求整个脚掌全程踩实。"
       }
     ],
     "dead": false
@@ -51,16 +63,23 @@
     "publisher": "ACE（American Council on Exercise）",
     "author_credential": "机构官方动作库（ACE Exercise Library）",
     "license": "链接引用，不转载",
+    "shows_equipment": "杠铃",
+    "shows_variant": "不同",
+    "variant_note": "ACE 该页示范的是通用（高杠位）背蹲，没有区分高杠与低杠；低杠特有的杠位、握距与躯干前倾角，页面里都看不到。",
+    "coverage": "形态参考",
+    "gaps_note": "本卡的两条判据该页一条也没覆盖，因此它只能当作背蹲的动作形态参考；低杠的杠位与前倾角一律以本卡文字与自检方法为准。",
     "verified_on": "2026-10-12",
-    "verified_by": "childe（核验方式：打开页面读完它的分步执行说明与器械标注，再逐条比对本卡的自检判据；未逐帧核验视频画面）",
+    "verified_by": "childe（核验方式：打开来源页面读完它的分步执行说明与器械标注，再逐条比对本卡的自检判据，逐条记录符合／未覆盖／不符；未逐帧核验视频画面）",
     "verification": [
       {
         "criterion": "杠全程位于足中线正上方",
-        "result": "页面示范的是通用杠铃背蹲，没有区分高杠与低杠的杠位；低杠特有的杠位与躯干前倾以本卡文字为准。"
+        "status": "未覆盖",
+        "result": "页面没有描述杠与足中线的关系。"
       },
       {
         "criterion": "躯干前倾角在下降与上升两段保持一致",
-        "result": "页面示范的是通用杠铃背蹲，没有区分高杠与低杠的杠位；低杠特有的杠位与躯干前倾以本卡文字为准。"
+        "status": "未覆盖",
+        "result": "页面没有讨论躯干前倾角在下降与上升两段是否一致。"
       }
     ],
     "dead": false
@@ -73,16 +92,21 @@
     "publisher": "ACE（American Council on Exercise）",
     "author_credential": "机构官方动作库（ACE Exercise Library）",
     "license": "链接引用，不转载",
+    "shows_equipment": "哑铃",
+    "shows_variant": "相同",
+    "coverage": "逐条核验",
     "verified_on": "2026-10-12",
-    "verified_by": "childe（核验方式：打开页面读完它的分步执行说明与器械标注，再逐条比对本卡的自检判据；未逐帧核验视频画面）",
+    "verified_by": "childe（核验方式：打开来源页面读完它的分步执行说明与器械标注，再逐条比对本卡的自检判据，逐条记录符合／未覆盖／不符；未逐帧核验视频画面）",
     "verification": [
       {
         "criterion": "躯干接近直立，哑铃始终靠在肩上",
-        "result": "页面的 Front Squat 用的就是哑铃，与本卡器械一致。"
+        "status": "符合",
+        "result": "页面要求把哑铃放在肩前沿、抬胸，与「躯干接近直立、哑铃靠肩」一致。"
       },
       {
         "criterion": "膝与脚尖方向一致，不主动内扣",
-        "result": "页面的 Front Squat 用的就是哑铃，与本卡器械一致。"
+        "status": "符合",
+        "result": "页面多处要求「膝对齐第二脚趾、踝不内外塌」，与本判据一致。"
       }
     ],
     "dead": false
@@ -95,16 +119,22 @@
     "publisher": "ACE（American Council on Exercise）",
     "author_credential": "机构官方动作库（ACE Exercise Library）",
     "license": "链接引用，不转载",
+    "shows_equipment": "哑铃",
+    "shows_variant": "相同",
+    "coverage": "形态参考",
+    "gaps_note": "两条判据该页都未覆盖，只能作动作形态参考；小腿角度与骨盆朝向以本卡文字与自检方法为准。",
     "verified_on": "2026-10-12",
-    "verified_by": "childe（核验方式：打开页面读完它的分步执行说明与器械标注，再逐条比对本卡的自检判据；未逐帧核验视频画面）",
+    "verified_by": "childe（核验方式：打开来源页面读完它的分步执行说明与器械标注，再逐条比对本卡的自检判据，逐条记录符合／未覆盖／不符；未逐帧核验视频画面）",
     "verification": [
       {
         "criterion": "前侧小腿在底部接近垂直，膝盖不过度前移",
-        "result": "页面示范用的就是哑铃 + 凳子的保加利亚分腿蹲，与本卡一致。"
+        "status": "未覆盖",
+        "result": "页面没有描述前侧小腿在底部的角度或膝的前移幅度。"
       },
       {
         "criterion": "骨盆与肩在全程朝向正前方，不随动作转动",
-        "result": "页面示范用的就是哑铃 + 凳子的保加利亚分腿蹲，与本卡一致。"
+        "status": "未覆盖",
+        "result": "页面只要求「背部挺直」，没有讲骨盆与肩是否随动作转动。"
       }
     ],
     "dead": false
@@ -117,16 +147,22 @@
     "publisher": "ACE（American Council on Exercise）",
     "author_credential": "机构官方动作库（ACE Exercise Library）",
     "license": "链接引用，不转载",
+    "shows_equipment": "杠铃",
+    "shows_variant": "相同",
+    "coverage": "部分覆盖",
+    "gaps_note": "杠的运动轨迹该页未覆盖，以本卡文字要点与自检方法为准。",
     "verified_on": "2026-10-12",
-    "verified_by": "childe（核验方式：打开页面读完它的分步执行说明与器械标注，再逐条比对本卡的自检判据；未逐帧核验视频画面）",
+    "verified_by": "childe（核验方式：打开来源页面读完它的分步执行说明与器械标注，再逐条比对本卡的自检判据，逐条记录符合／未覆盖／不符；未逐帧核验视频画面）",
     "verification": [
       {
         "criterion": "杠全程贴着腿，不前飘",
-        "result": "页面示范的是杠铃常规硬拉，与本卡器械与模式一致。"
+        "status": "未覆盖",
+        "result": "页面只写起始时「小腿几乎贴杠」，没有描述拉起过程中杠是否贴腿。"
       },
       {
         "criterion": "背在起杠瞬间就是中立的，不在拉起过程中才\"找正\"",
-        "result": "页面示范的是杠铃常规硬拉，与本卡器械与模式一致。"
+        "status": "符合",
+        "result": "页面要求握杠前就「坐髋、保持背部挺直」，拉起全程「背保持平」，与本判据一致。"
       }
     ],
     "dead": false
@@ -139,16 +175,21 @@
     "publisher": "ACE（American Council on Exercise）",
     "author_credential": "机构官方动作库（ACE Exercise Library）",
     "license": "链接引用，不转载",
+    "shows_equipment": "杠铃",
+    "shows_variant": "相同",
+    "coverage": "逐条核验",
     "verified_on": "2026-10-12",
-    "verified_by": "childe（核验方式：打开页面读完它的分步执行说明与器械标注，再逐条比对本卡的自检判据；未逐帧核验视频画面）",
+    "verified_by": "childe（核验方式：打开来源页面读完它的分步执行说明与器械标注，再逐条比对本卡的自检判据，逐条记录符合／未覆盖／不符；未逐帧核验视频画面）",
     "verification": [
       {
         "criterion": "下放到底时膝角与起始基本一致",
-        "result": "页面示范的是杠铃罗马尼亚硬拉，与本卡一致。"
+        "status": "符合",
+        "result": "页面要求「双膝保持微屈」、站起时「把膝往后拉」，与「膝角基本不变」一致。"
       },
       {
         "criterion": "背在整个下放过程保持中立，没有突然塌陷",
-        "result": "页面示范的是杠铃罗马尼亚硬拉，与本卡一致。"
+        "status": "符合",
+        "result": "页面要求全程「背部挺直」，与本判据一致。"
       }
     ],
     "dead": false
@@ -161,16 +202,23 @@
     "publisher": "ACE（American Council on Exercise）",
     "author_credential": "机构官方动作库（ACE Exercise Library）",
     "license": "链接引用，不转载",
+    "shows_equipment": "杠铃",
+    "shows_variant": "相同",
+    "substitute_note": "ACE 该页示范的是杠铃版罗马尼亚硬拉。髋铰链轨迹、膝角与贴腿路径可以参考；双手持哑铃的握持与两侧配平以本卡文字为准。",
+    "coverage": "部分覆盖",
+    "gaps_note": "下放幅度的界限该页用的是另一个标准，以本卡「背还能保持中立」为准。",
     "verified_on": "2026-10-12",
-    "verified_by": "childe（核验方式：打开页面读完它的分步执行说明与器械标注，再逐条比对本卡的自检判据；未逐帧核验视频画面）",
+    "verified_by": "childe（核验方式：打开来源页面读完它的分步执行说明与器械标注，再逐条比对本卡的自检判据，逐条记录符合／未覆盖／不符；未逐帧核验视频画面）",
     "verification": [
       {
         "criterion": "哑铃全程贴着腿移动",
-        "result": "页面示范的是杠铃版罗马尼亚硬拉：髋铰链的要点（膝角固定、杠/铃贴腿、背中立）与本卡一致；哑铃的握持方式以本卡文字为准。"
+        "status": "符合",
+        "result": "页面要求「杠全程非常贴近身体」，髋铰链的轨迹与本卡一致。"
       },
       {
         "criterion": "下放幅度以\"背还能保持中立\"为界",
-        "result": "页面示范的是杠铃版罗马尼亚硬拉：髋铰链的要点（膝角固定、杠/铃贴腿、背中立）与本卡一致；哑铃的握持方式以本卡文字为准。"
+        "status": "未覆盖",
+        "result": "页面用的幅度界限是「腿后侧感到张力」，不是「背还能保持中立」。"
       }
     ],
     "dead": false
@@ -183,16 +231,22 @@
     "publisher": "ACE（American Council on Exercise）",
     "author_credential": "机构官方动作库（ACE Exercise Library）",
     "license": "链接引用，不转载",
+    "shows_equipment": "哑铃",
+    "shows_variant": "相同",
+    "coverage": "形态参考",
+    "gaps_note": "两条判据该页都未覆盖，只能作动作形态参考（上背靠凳、哑铃置于髋的设置与本卡一致）；顶点姿态与膝的控制以本卡文字与自检方法为准。",
     "verified_on": "2026-10-12",
-    "verified_by": "childe（核验方式：打开页面读完它的分步执行说明与器械标注，再逐条比对本卡的自检判据；未逐帧核验视频画面）",
+    "verified_by": "childe（核验方式：打开来源页面读完它的分步执行说明与器械标注，再逐条比对本卡的自检判据，逐条记录符合／未覆盖／不符；未逐帧核验视频画面）",
     "verification": [
       {
         "criterion": "顶点时躯干与大腿接近一条线，肋骨不外翻",
-        "result": "页面示范的是凳上抬高的臀桥（哑铃负重），与本卡的动作模式与器械一致。"
+        "status": "未覆盖",
+        "result": "页面只写「夹臀推到顶」，没有描述顶点时躯干与大腿的相对位置或肋骨是否外翻。"
       },
       {
         "criterion": "双脚压力均衡，膝不左右摇摆",
-        "result": "页面示范的是凳上抬高的臀桥（哑铃负重），与本卡的动作模式与器械一致。"
+        "status": "未覆盖",
+        "result": "页面只写双脚与髋同宽压地，没有讲两侧压力是否均衡、膝是否摇摆。"
       }
     ],
     "dead": false
@@ -205,16 +259,22 @@
     "publisher": "ACE（American Council on Exercise）",
     "author_credential": "机构官方动作库（ACE Exercise Library）",
     "license": "链接引用，不转载",
+    "shows_equipment": "杠铃",
+    "shows_variant": "相同",
+    "coverage": "形态参考",
+    "gaps_note": "两条判据该页都未覆盖，只能作动作形态参考；前臂角度与肩胛位置以本卡文字与自检方法为准。",
     "verified_on": "2026-10-12",
-    "verified_by": "childe（核验方式：打开页面读完它的分步执行说明与器械标注，再逐条比对本卡的自检判据；未逐帧核验视频画面）",
+    "verified_by": "childe（核验方式：打开来源页面读完它的分步执行说明与器械标注，再逐条比对本卡的自检判据，逐条记录符合／未覆盖／不符；未逐帧核验视频画面）",
     "verification": [
       {
         "criterion": "下放到底时前臂接近垂直于地面",
-        "result": "页面的 Chest Press 用的是杠铃 + 卧推凳，与本卡器械一致；页面未写保护杆与失败退出，这部分以本卡与导读为准。"
+        "status": "未覆盖",
+        "result": "页面的下放终点写的是「肘略低于凳面」，没有描述前臂角度。"
       },
       {
         "criterion": "肩胛全程保持收紧，不随推起而前伸",
-        "result": "页面的 Chest Press 用的是杠铃 + 卧推凳，与本卡器械一致；页面未写保护杆与失败退出，这部分以本卡与导读为准。"
+        "status": "未覆盖",
+        "result": "页面没有提到肩胛收紧或它在推起时是否前伸。"
       }
     ],
     "dead": false
@@ -227,16 +287,21 @@
     "publisher": "ACE（American Council on Exercise）",
     "author_credential": "机构官方动作库（ACE Exercise Library）",
     "license": "链接引用，不转载",
+    "shows_equipment": "杠铃",
+    "shows_variant": "相同",
+    "coverage": "逐条核验",
     "verified_on": "2026-10-12",
-    "verified_by": "childe（核验方式：打开页面读完它的分步执行说明与器械标注，再逐条比对本卡的自检判据；未逐帧核验视频画面）",
+    "verified_by": "childe（核验方式：打开来源页面读完它的分步执行说明与器械标注，再逐条比对本卡的自检判据，逐条记录符合／未覆盖／不符；未逐帧核验视频画面）",
     "verification": [
       {
         "criterion": "顶点时杠在足中线与肩的正上方",
-        "result": "页面的 Standing Shoulder Press 用的是杠铃站姿推举，与本卡一致。"
+        "status": "符合",
+        "result": "页面要求「把杠直接推到头顶正上方」，与本判据一致。"
       },
       {
         "criterion": "全程肋骨不外翻、腰不额外后仰",
-        "result": "页面的 Standing Shoulder Press 用的是杠铃站姿推举，与本卡一致。"
+        "status": "符合",
+        "result": "页面要求全程「背部挺直、身体立直」，与「腰不额外后仰」一致。"
       }
     ],
     "dead": false
@@ -249,16 +314,22 @@
     "publisher": "ACE（American Council on Exercise）",
     "author_credential": "机构官方动作库（ACE Exercise Library）",
     "license": "链接引用，不转载",
+    "shows_equipment": "杠铃",
+    "shows_variant": "相同",
+    "coverage": "部分覆盖",
+    "gaps_note": "手腕一条该页未覆盖，以本卡文字要点与自检方法为准。",
     "verified_on": "2026-10-12",
-    "verified_by": "childe（核验方式：打开页面读完它的分步执行说明与器械标注，再逐条比对本卡的自检判据；未逐帧核验视频画面）",
+    "verified_by": "childe（核验方式：打开来源页面读完它的分步执行说明与器械标注，再逐条比对本卡的自检判据，逐条记录符合／未覆盖／不符；未逐帧核验视频画面）",
     "verification": [
       {
         "criterion": "肘在下放过程贴近躯干而不是外展",
-        "result": "页面的 Close-grip Bench Press 用的是杠铃，与本卡一致；保护杆与退出方式以本卡为准。"
+        "status": "符合",
+        "result": "页面要求下放时「屈肘并让肘贴近肋骨」，与本判据一致。"
       },
       {
         "criterion": "手腕保持中立，不后折",
-        "result": "页面的 Close-grip Bench Press 用的是杠铃，与本卡一致；保护杆与退出方式以本卡为准。"
+        "status": "未覆盖",
+        "result": "页面没有提到手腕姿态。"
       }
     ],
     "dead": false
@@ -271,16 +342,22 @@
     "publisher": "ACE（American Council on Exercise）",
     "author_credential": "机构官方动作库（ACE Exercise Library）",
     "license": "链接引用，不转载",
+    "shows_equipment": "哑铃",
+    "shows_variant": "相同",
+    "coverage": "部分覆盖",
+    "gaps_note": "前臂角度该页未覆盖，以本卡文字要点与自检方法为准。",
     "verified_on": "2026-10-12",
-    "verified_by": "childe（核验方式：打开页面读完它的分步执行说明与器械标注，再逐条比对本卡的自检判据；未逐帧核验视频画面）",
+    "verified_by": "childe（核验方式：打开来源页面读完它的分步执行说明与器械标注，再逐条比对本卡的自检判据，逐条记录符合／未覆盖／不符；未逐帧核验视频画面）",
     "verification": [
       {
         "criterion": "下放到底时前臂接近垂直",
-        "result": "页面的 Chest Press 用的是哑铃 + 卧推凳，与本卡器械一致。"
+        "status": "未覆盖",
+        "result": "页面只说肘可以贴身或外展两种打法，没有描述底部的前臂角度。"
       },
       {
         "criterion": "两侧哑铃高度同步",
-        "result": "页面的 Chest Press 用的是哑铃 + 卧推凳，与本卡器械一致。"
+        "status": "符合",
+        "result": "页面要求两只哑铃「同步（in unison）」下放与推起，与本判据一致。"
       }
     ],
     "dead": false
@@ -293,16 +370,21 @@
     "publisher": "ACE（American Council on Exercise）",
     "author_credential": "机构官方动作库（ACE Exercise Library）",
     "license": "链接引用，不转载",
+    "shows_equipment": "哑铃",
+    "shows_variant": "相同",
+    "coverage": "逐条核验",
     "verified_on": "2026-10-12",
-    "verified_by": "childe（核验方式：打开页面读完它的分步执行说明与器械标注，再逐条比对本卡的自检判据；未逐帧核验视频画面）",
+    "verified_by": "childe（核验方式：打开来源页面读完它的分步执行说明与器械标注，再逐条比对本卡的自检判据，逐条记录符合／未覆盖／不符；未逐帧核验视频画面）",
     "verification": [
       {
         "criterion": "下放位置在胸上段而不是腹侧",
-        "result": "页面的 Incline Chest Press 用的是哑铃 + 上斜凳，与本卡一致。"
+        "status": "符合",
+        "result": "页面要求下放到「上胸」并略偏腋侧，与本判据一致。"
       },
       {
         "criterion": "两侧哑铃同步，躯干不左右转",
-        "result": "页面的 Incline Chest Press 用的是哑铃 + 上斜凳，与本卡一致。"
+        "status": "符合",
+        "result": "页面要求两侧「同步」，且头/肩/臀/脚全程保持接触，与「躯干不左右转」一致。"
       }
     ],
     "dead": false
@@ -315,16 +397,22 @@
     "publisher": "ACE（American Council on Exercise）",
     "author_credential": "机构官方动作库（ACE Exercise Library）",
     "license": "链接引用，不转载",
+    "shows_equipment": "哑铃",
+    "shows_variant": "相同",
+    "coverage": "部分覆盖",
+    "gaps_note": "底部幅度该页未覆盖，以本卡文字要点与自检方法为准。",
     "verified_on": "2026-10-12",
-    "verified_by": "childe（核验方式：打开页面读完它的分步执行说明与器械标注，再逐条比对本卡的自检判据；未逐帧核验视频画面）",
+    "verified_by": "childe（核验方式：打开来源页面读完它的分步执行说明与器械标注，再逐条比对本卡的自检判据，逐条记录符合／未覆盖／不符；未逐帧核验视频画面）",
     "verification": [
       {
         "criterion": "底部时前臂接近垂直、肘不低于肩太多",
-        "result": "页面的 Seated Overhead Press 用的是哑铃 + 凳，与本卡一致。"
+        "status": "未覆盖",
+        "result": "页面只写「屈肘有控制地下放」，没有给底部的前臂角度或肘与肩的相对高度。"
       },
       {
         "criterion": "全程腰不额外后仰",
-        "result": "页面的 Seated Overhead Press 用的是哑铃 + 凳，与本卡一致。"
+        "status": "符合",
+        "result": "页面要求推起时「腰部不出现任何反弓」，与本判据一致。"
       }
     ],
     "dead": false
@@ -337,16 +425,21 @@
     "publisher": "ACE（American Council on Exercise）",
     "author_credential": "机构官方动作库（ACE Exercise Library）",
     "license": "链接引用，不转载",
+    "shows_equipment": "哑铃",
+    "shows_variant": "相同",
+    "coverage": "逐条核验",
     "verified_on": "2026-10-12",
-    "verified_by": "childe（核验方式：打开页面读完它的分步执行说明与器械标注，再逐条比对本卡的自检判据；未逐帧核验视频画面）",
+    "verified_by": "childe（核验方式：打开来源页面读完它的分步执行说明与器械标注，再逐条比对本卡的自检判据，逐条记录符合／未覆盖／不符；未逐帧核验视频画面）",
     "verification": [
       {
         "criterion": "顶点时上臂约与地面平行，不耸肩",
-        "result": "页面的 Lateral Raise 用的是哑铃，与本卡一致。"
+        "status": "符合",
+        "result": "页面要求抬到「手臂与肩同高、约与地面平行」，与本判据一致。"
       },
       {
         "criterion": "躯干全程不前后晃",
-        "result": "页面的 Lateral Raise 用的是哑铃，与本卡一致。"
+        "status": "符合",
+        "result": "页面要求全程「躯干保持直立、腰不反弓」，与本判据一致。"
       }
     ],
     "dead": false
@@ -359,16 +452,22 @@
     "publisher": "ACE（American Council on Exercise）",
     "author_credential": "机构官方动作库（ACE Exercise Library）",
     "license": "链接引用，不转载",
+    "shows_equipment": "杠铃",
+    "shows_variant": "相同",
+    "coverage": "部分覆盖",
+    "gaps_note": "躯干角度稳定性该页未覆盖，以本卡文字要点与自检方法为准。",
     "verified_on": "2026-10-12",
-    "verified_by": "childe（核验方式：打开页面读完它的分步执行说明与器械标注，再逐条比对本卡的自检判据；未逐帧核验视频画面）",
+    "verified_by": "childe（核验方式：打开来源页面读完它的分步执行说明与器械标注，再逐条比对本卡的自检判据，逐条记录符合／未覆盖／不符；未逐帧核验视频画面）",
     "verification": [
       {
         "criterion": "躯干角度在一组内保持稳定",
-        "result": "页面的 Bent-over Row 用的是杠铃，与本卡一致。"
+        "status": "未覆盖",
+        "result": "页面没有要求躯干角度在一组内保持不变。"
       },
       {
         "criterion": "背在全程保持中立，不随拉起而塌陷",
-        "result": "页面的 Bent-over Row 用的是杠铃，与本卡一致。"
+        "status": "符合",
+        "result": "页面要求「拉起过程中保持背平」，与本判据一致。"
       }
     ],
     "dead": false
@@ -381,16 +480,21 @@
     "publisher": "ACE（American Council on Exercise）",
     "author_credential": "机构官方动作库（ACE Exercise Library）",
     "license": "链接引用，不转载",
+    "shows_equipment": "杠铃",
+    "shows_variant": "相同",
+    "coverage": "逐条核验",
     "verified_on": "2026-10-12",
-    "verified_by": "childe（核验方式：打开页面读完它的分步执行说明与器械标注，再逐条比对本卡的自检判据；未逐帧核验视频画面）",
+    "verified_by": "childe（核验方式：打开来源页面读完它的分步执行说明与器械标注，再逐条比对本卡的自检判据，逐条记录符合／未覆盖／不符；未逐帧核验视频画面）",
     "verification": [
       {
         "criterion": "上臂全程贴住躯干不前移",
-        "result": "页面的 Bicep Curl 用的是杠铃，与本卡一致。"
+        "status": "符合",
+        "result": "页面要求「肘保持在身体中部两侧」，与「上臂贴住躯干不前移」一致。"
       },
       {
         "criterion": "躯干不随举起而后仰",
-        "result": "页面的 Bicep Curl 用的是杠铃，与本卡一致。"
+        "status": "符合",
+        "result": "页面要求「胸口不动，只用手臂完成动作」，与「躯干不后仰」一致。"
       }
     ],
     "dead": false
@@ -403,16 +507,21 @@
     "publisher": "ACE（American Council on Exercise）",
     "author_credential": "机构官方动作库（ACE Exercise Library）",
     "license": "链接引用，不转载",
+    "shows_equipment": "哑铃",
+    "shows_variant": "相同",
+    "coverage": "逐条核验",
     "verified_on": "2026-10-12",
-    "verified_by": "childe（核验方式：打开页面读完它的分步执行说明与器械标注，再逐条比对本卡的自检判据；未逐帧核验视频画面）",
+    "verified_by": "childe（核验方式：打开来源页面读完它的分步执行说明与器械标注，再逐条比对本卡的自检判据，逐条记录符合／未覆盖／不符；未逐帧核验视频画面）",
     "verification": [
       {
         "criterion": "躯干在整组中不旋转",
-        "result": "页面的 Single-arm Row 用的是哑铃 + 凳，与本卡一致。"
+        "status": "符合",
+        "result": "页面两次要求「不要旋转躯干、不改变脊柱位置」，与本判据一致。"
       },
       {
         "criterion": "哑铃落点在髋侧而不是肩侧",
-        "result": "页面的 Single-arm Row 用的是哑铃 + 凳，与本卡一致。"
+        "status": "符合",
+        "result": "页面要求「上臂向后拉、手臂贴着身体侧面」，与「落点在髋侧」一致。"
       }
     ],
     "dead": false
@@ -425,16 +534,21 @@
     "publisher": "ACE（American Council on Exercise）",
     "author_credential": "机构官方动作库（ACE Exercise Library）",
     "license": "链接引用，不转载",
+    "shows_equipment": "哑铃",
+    "shows_variant": "相同",
+    "coverage": "逐条核验",
     "verified_on": "2026-10-12",
-    "verified_by": "childe（核验方式：打开页面读完它的分步执行说明与器械标注，再逐条比对本卡的自检判据；未逐帧核验视频画面）",
+    "verified_by": "childe（核验方式：打开来源页面读完它的分步执行说明与器械标注，再逐条比对本卡的自检判据，逐条记录符合／未覆盖／不符；未逐帧核验视频画面）",
     "verification": [
       {
         "criterion": "顶点时上臂约与躯干在一条线上，不超过",
-        "result": "页面的 Incline Reverse Fly 用的是哑铃 + 上斜凳，与本卡的目标肌群与动作模式一致。"
+        "status": "符合",
+        "result": "页面要求抬到「手臂接近与肩同高」为止，与「不超过躯干一线」一致。"
       },
       {
         "criterion": "肘角在全程保持不变",
-        "result": "页面的 Incline Reverse Fly 用的是哑铃 + 上斜凳，与本卡的目标肌群与动作模式一致。"
+        "status": "符合",
+        "result": "页面要求起始与下放全程「肘保持微屈」，与「肘角不变」一致。"
       }
     ],
     "dead": false
@@ -447,16 +561,22 @@
     "publisher": "ACE（American Council on Exercise）",
     "author_credential": "机构官方动作库（ACE Exercise Library）",
     "license": "链接引用，不转载",
+    "shows_equipment": "哑铃",
+    "shows_variant": "相同",
+    "coverage": "部分覆盖",
+    "gaps_note": "放回幅度该页未覆盖，以本卡文字要点与自检方法为准。",
     "verified_on": "2026-10-12",
-    "verified_by": "childe（核验方式：打开页面读完它的分步执行说明与器械标注，再逐条比对本卡的自检判据；未逐帧核验视频画面）",
+    "verified_by": "childe（核验方式：打开来源页面读完它的分步执行说明与器械标注，再逐条比对本卡的自检判据，逐条记录符合／未覆盖／不符；未逐帧核验视频画面）",
     "verification": [
       {
         "criterion": "上臂贴住躯干不前移",
-        "result": "页面的 Seated Biceps Curl 用的是哑铃 + 凳，与本卡一致。"
+        "status": "符合",
+        "result": "页面要求「不要让肘向前移动」，与本判据一致。"
       },
       {
         "criterion": "放回时手臂接近完全伸直",
-        "result": "页面的 Seated Biceps Curl 用的是哑铃 + 凳，与本卡一致。"
+        "status": "未覆盖",
+        "result": "页面只写「放回起始位置」，没有写明放到接近完全伸直。"
       }
     ],
     "dead": false
@@ -469,16 +589,24 @@
     "publisher": "ACE（American Council on Exercise）",
     "author_credential": "机构官方动作库（ACE Exercise Library）",
     "license": "链接引用，不转载",
+    "shows_equipment": "哑铃",
+    "shows_variant": "不同",
+    "substitute_note": "ACE 该页示范的是双手持哑铃垂于体侧的农夫行走，不是杠铃前架位行走：负重位置、握持与上背的受力都不同。",
+    "variant_note": "前架位（杠放在锁骨/前三角、肘抬起）与手提位是两种不同的搬运变式，页面只能提供「负重行走」这一层形态参考。",
+    "coverage": "形态参考",
+    "gaps_note": "本卡两条判据该页都没覆盖，前架位的肘位与行走控制一律以本卡文字与自检方法为准。",
     "verified_on": "2026-10-12",
-    "verified_by": "childe（核验方式：打开页面读完它的分步执行说明与器械标注，再逐条比对本卡的自检判据；未逐帧核验视频画面）",
+    "verified_by": "childe（核验方式：打开来源页面读完它的分步执行说明与器械标注，再逐条比对本卡的自检判据，逐条记录符合／未覆盖／不符；未逐帧核验视频画面）",
     "verification": [
       {
         "criterion": "全程肘保持抬起、杠不下滑",
-        "result": "页面示范的是哑铃农夫行走：与本卡共通的是负重行走时的躯干稳定与步态，这部分可直接参考；**前架位特有的握持与肘位本页面没有示范**，以本卡文字与自检判据为准。"
+        "status": "未覆盖",
+        "result": "页面是手提位负重，根本不涉及「肘抬起、杠不下滑」。"
       },
       {
         "criterion": "行走路线是直线，躯干不左右摇摆",
-        "result": "页面示范的是哑铃农夫行走：与本卡共通的是负重行走时的躯干稳定与步态，这部分可直接参考；**前架位特有的握持与肘位本页面没有示范**，以本卡文字与自检判据为准。"
+        "status": "未覆盖",
+        "result": "页面只写「走一段预定距离再折返」，没有要求直线行走或躯干不摇。"
       }
     ],
     "dead": false
@@ -491,16 +619,22 @@
     "publisher": "ACE（American Council on Exercise）",
     "author_credential": "机构官方动作库（ACE Exercise Library）",
     "license": "链接引用，不转载",
+    "shows_equipment": "哑铃",
+    "shows_variant": "相同",
+    "coverage": "部分覆盖",
+    "gaps_note": "肩的位置该页未覆盖，以本卡文字要点与自检方法为准。",
     "verified_on": "2026-10-12",
-    "verified_by": "childe（核验方式：打开页面读完它的分步执行说明与器械标注，再逐条比对本卡的自检判据；未逐帧核验视频画面）",
+    "verified_by": "childe（核验方式：打开来源页面读完它的分步执行说明与器械标注，再逐条比对本卡的自检判据，逐条记录符合／未覆盖／不符；未逐帧核验视频画面）",
     "verification": [
       {
         "criterion": "肩保持下沉后收，不耸起来",
-        "result": "页面的 Farmer's Carry 用的是哑铃，与本卡一致。"
+        "status": "未覆盖",
+        "result": "页面没有提到肩是否下沉后收。"
       },
       {
         "criterion": "行走是直线，躯干不左右摇",
-        "result": "页面的 Farmer's Carry 用的是哑铃，与本卡一致。"
+        "status": "符合",
+        "result": "页面要求「保持背部挺直走完预定距离」，与「躯干不左右摇」一致。"
       }
     ],
     "dead": false
@@ -513,16 +647,22 @@
     "publisher": "ACE（American Council on Exercise）",
     "author_credential": "机构官方动作库（ACE Exercise Library）",
     "license": "链接引用，不转载",
+    "shows_equipment": "哑铃",
+    "shows_variant": "相同",
+    "coverage": "部分覆盖",
+    "gaps_note": "侧倾一条该页未覆盖，以本卡文字要点与自检方法为准。",
     "verified_on": "2026-10-12",
-    "verified_by": "childe（核验方式：打开页面读完它的分步执行说明与器械标注，再逐条比对本卡的自检判据；未逐帧核验视频画面）",
+    "verified_by": "childe（核验方式：打开来源页面读完它的分步执行说明与器械标注，再逐条比对本卡的自检判据，逐条记录符合／未覆盖／不符；未逐帧核验视频画面）",
     "verification": [
       {
         "criterion": "两侧肩在同一高度，躯干不侧倾",
-        "result": "页面的 Suitcase Carry 用的是哑铃单侧负重行走，与本卡一致。"
+        "status": "未覆盖",
+        "result": "页面只写「保持背部挺直」，没有讲两肩高度或躯干侧倾。"
       },
       {
         "criterion": "两侧行走距离或时间一致",
-        "result": "页面的 Suitcase Carry 用的是哑铃单侧负重行走，与本卡一致。"
+        "status": "符合",
+        "result": "页面要求走完同一段预定距离后「换手重复」，与「两侧一致」一致。"
       }
     ],
     "dead": false
@@ -530,21 +670,27 @@
   {
     "id": "demo-barbell-rollout",
     "exercise_id": "barbell-rollout",
-    "url": "https://www.acefitness.org/resources/everyone/exercise-library/79/trx-reg-front-rollout/",
+    "url": "https://www.acefitness.org/resources/everyone/exercise-library/309/roll-out/",
     "source_type": "机构官方",
     "publisher": "ACE（American Council on Exercise）",
     "author_credential": "机构官方动作库（ACE Exercise Library）",
     "license": "链接引用，不转载",
+    "shows_equipment": "杠铃",
+    "shows_variant": "相同",
+    "coverage": "部分覆盖",
+    "gaps_note": "回程发起方式与该页写法不一致：以本卡「由躯干发起、手臂不主导」为准——用手臂下拉会把动作退化成直臂下压。",
     "verified_on": "2026-10-12",
-    "verified_by": "childe（核验方式：打开页面读完它的分步执行说明与器械标注，再逐条比对本卡的自检判据；未逐帧核验视频画面）",
+    "verified_by": "childe（核验方式：打开来源页面读完它的分步执行说明与器械标注，再逐条比对本卡的自检判据，逐条记录符合／未覆盖／不符；未逐帧核验视频画面）",
     "verification": [
       {
         "criterion": "最远处腰段没有明显塌陷",
-        "result": "页面的 TRX Front Rollout 用的是悬吊带而不是杠铃：共通的是\"抗腰段伸展、以腰不塌为幅度上限\"这一判据，可作为动作形态参考；杠铃版的握持与圆片选择以本卡文字为准。"
+        "status": "符合",
+        "result": "页面要求「髋保持前顶、背部挺直，让杠向前滚出」，与「腰不塌」一致。"
       },
       {
         "criterion": "回来的过程由躯干发起而不是手臂",
-        "result": "页面的 TRX Front Rollout 用的是悬吊带而不是杠铃：共通的是\"抗腰段伸展、以腰不塌为幅度上限\"这一判据，可作为动作形态参考；杠铃版的握持与圆片选择以本卡文字为准。"
+        "status": "不符",
+        "result": "页面写的是「保持躯干姿态并用手臂下拉把杠拉回」，本卡要求回程由躯干发起；这一条与来源不一致。"
       }
     ],
     "dead": false
@@ -557,16 +703,23 @@
     "publisher": "ACE（American Council on Exercise）",
     "author_credential": "机构官方动作库（ACE Exercise Library）",
     "license": "链接引用，不转载",
+    "shows_equipment": "自重",
+    "shows_variant": "相同",
+    "substitute_note": "ACE 该页示范的是徒手死虫：动作轨迹、节奏与腰椎控制可以参考；本卡的哑铃负重版需要额外控制上肢重量，持铃方式以本卡文字为准。",
+    "gaps_note": "两条判据该页都对得上，但它示范的是徒手版；加上哑铃后的持铃与上肢配重以本卡文字与自检方法为准。",
+    "coverage": "部分覆盖",
     "verified_on": "2026-10-12",
-    "verified_by": "childe（核验方式：打开页面读完它的分步执行说明与器械标注，再逐条比对本卡的自检判据；未逐帧核验视频画面）",
+    "verified_by": "childe（核验方式：打开来源页面读完它的分步执行说明与器械标注，再逐条比对本卡的自检判据，逐条记录符合／未覆盖／不符；未逐帧核验视频画面）",
     "verification": [
       {
         "criterion": "全程腰贴住地面",
-        "result": "页面的 Supine Dead Bug 是徒手版：动作轨迹与\"腰贴地\"的判据完全一致，可直接参考；本卡加的是手持轻哑铃，握持与放下方式以本卡文字为准。"
+        "status": "符合",
+        "result": "页面要求全程维持腹部收紧、「腰部反弓不增加、髋不离地」，与「腰贴住地面」一致。"
       },
       {
         "criterion": "伸展幅度以腰不离地为界",
-        "result": "页面的 Supine Dead Bug 是徒手版：动作轨迹与\"腰贴地\"的判据完全一致，可直接参考；本卡加的是手持轻哑铃，握持与放下方式以本卡文字为准。"
+        "status": "符合",
+        "result": "页面要求伸出的手与脚跟「轻触地面但不放松」并保持收紧，与「幅度以腰不离地为界」一致。"
       }
     ],
     "dead": false

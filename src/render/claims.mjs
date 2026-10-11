@@ -32,6 +32,7 @@ export function renderClaimRegistry(claims) {
   const certs = [...new Set(claims.map((c) => c.certainty))];
   const filters = `<div class="filters" data-for="claims">${facet('direction', '方向', dirs)}${facet('certainty', '确定性', certs)}` +
     `<p class="result-count" role="status"></p>` +
+    `<p class="evidence-scope" role="status">证据筛选同时作用于全站证据标签</p>` +
     `<p class="empty-state" hidden>这组条件下没有任何条目——这通常意味着该组合本身不存在。<button type="button" class="clear-filters">清除筛选</button></p></div>`;
   return `<section id="claims" class="claim-registry"><h2>结论登记表</h2>${filters}<div class="claim-grid">${items}</div></section>`;
 }

@@ -45,6 +45,13 @@ a { color: var(--accent); }
 }
 .claim-tag[data-direction="反对"] { border-color: var(--danger); color: var(--danger); }
 
+/* 证据筛选的全站效果：命中的标出来，不命中的降权但仍可读、可点；
+   正文一个字都不隐藏，安全提示里的标签永不降权（.is-pinned）。 */
+.claim-tag.is-on { outline: 2px solid currentColor; outline-offset: 1px; font-weight: 700; }
+.claim-tag.is-off { opacity: 0.4; }
+.claim-tag.is-pinned { opacity: 1; border-style: dashed; }
+.evidence-scope { font-size: 0.85em; color: var(--muted, inherit); }
+
 .toc { border: 1px solid var(--rule); padding: 8px 16px; border-radius: 8px; background: var(--surface); }
 .chapter, .ex-card, .plan-card, .claim-entry, .quiz-item {
   border: 1px solid var(--rule); border-radius: 8px; padding: 16px;
@@ -83,4 +90,6 @@ figure.concept figcaption { color: var(--muted); font-size: 0.88em; }
   details > *:not(summary) { display: block !important; }
   a[href^="http"]::after { content: "（" attr(href) "）"; font-size: 0.85em; word-break: break-all; }
   .chapter, .ex-card, .plan-card { break-inside: avoid-page; }
+  /* 打印是完整版：证据筛选的降权不能跟到纸上 */
+  .claim-tag.is-off { opacity: 1 !important; }
 }

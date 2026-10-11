@@ -1,13 +1,34 @@
 import { escapeHtml } from './claims.mjs';
 import { expandTokens } from './tokens.mjs';
 
+// 示范的成色必须写在读者眼前：「逐条核验」「部分覆盖」「形态参考」是三件不同的事，
+// 把后两者也显示成"已核验的示范"，等于用一个链接给没核验过的判据背书。
+const DEMO_LABEL = {
+  逐条核验: (d) => `示范（${escapeHtml(d.publisher)}，逐条核验于 ${escapeHtml(d.verified_on)}）`,
+  部分覆盖: (d) => `示范（${escapeHtml(d.publisher)}，部分覆盖，核验于 ${escapeHtml(d.verified_on)}）`,
+  形态参考: (d) => `动作形态参考（${escapeHtml(d.publisher)}，未覆盖本卡任何一条自检判据）`,
+};
+
+export function renderDemo(demo) {
+  const label = (DEMO_LABEL[demo.coverage] ?? DEMO_LABEL['形态参考'])(demo);
+  const notes = [demo.substitute_note, demo.variant_note, demo.gaps_note]
+    .filter(Boolean).map((n) => escapeHtml(n)).join(' ');
+  const per = (demo.verification ?? []).filter((v) => v.status !== '符合')
+    .map((v) => `${escapeHtml(v.criterion)}（${escapeHtml(v.status)}）`).join('、');
+  return `<p class="demo" data-coverage="${escapeHtml(demo.coverage ?? '')}">`
+    + `<a href="${escapeHtml(demo.url)}" rel="noreferrer noopener" target="_blank">${label}</a>`
+    + (per ? `<br><span class="demo-gaps">该来源未对上的判据：${per}。</span>` : '')
+    + (notes ? `<br><span class="demo-note">${notes}</span>` : '')
+    + '</p>';
+}
+
 function card(e, ctx) {
   const demo = e.demo_id ? ctx.demos.get(e.demo_id) : null;
   const demoHtml = !demo
     ? ''
     : demo.dead
       ? `<p class="demo dead">示范链接已失效（${escapeHtml(demo.dead_note ?? '')}），请依据上方文字要点与自检判据执行；原来源：${escapeHtml(demo.publisher)}</p>`
-      : `<p class="demo"><a href="${escapeHtml(demo.url)}" rel="noreferrer noopener" target="_blank">示范（${escapeHtml(demo.publisher)}，核验于 ${escapeHtml(demo.verified_on)}）</a></p>`;
+      : renderDemo(demo);
   return `
 <article class="ex-card" id="ex-${e.slug}"
   data-pattern="${e.pattern}" data-equipment="${e.equipment}"

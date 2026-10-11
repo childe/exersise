@@ -36,3 +36,13 @@ test('安全口径可被解析成受控取值', async () => {
   assert.ok(!isCanonRef('canon:C3', canon, 'C1'));
   assert.equal(expandCanon('canon:C1', canon), canon.C1);
 });
+
+test('参考库里的每个容器锚点都在 CONTAINER_TRACK 里登记为 ref', async () => {
+  // 新增一个分区却忘了登记轨道时，这条会先失败——而不是等读者分享链接时才发现。
+  const { trackOf } = await import('../src/assets/app.js');
+  const html = await build(root);
+  const ref = html.slice(html.indexOf('id="track-ref"'));
+  const ids = [...ref.matchAll(/<section id="([a-z0-9-]+)"/g)].map((m) => m[1]);
+  assert.ok(ids.length >= 3, '参考库应至少有动作库 / 模板 / 登记表三个分区');
+  for (const id of ids) assert.equal(trackOf(id), 'ref', `容器锚点 #${id} 未登记到参考库轨`);
+});
