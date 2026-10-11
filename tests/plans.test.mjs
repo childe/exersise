@@ -91,3 +91,36 @@ test('仓库内 data/plans.json 始终合法', async () => {
   });
   assert.deepEqual(errs, []);
 });
+
+test('五套模板齐备且 slug 固定', async () => {
+  const plans = JSON.parse(await readFile(path.join(root, 'data/plans.json'), 'utf8'));
+  assert.deepEqual(plans.map((p) => p.slug).sort(),
+    ['cut-maintain-3d', 'home-3d', 'novice-3d', 'ppl-6d', 'upper-lower-4d']);
+});
+
+test('每套模板的替代动作与被替代动作属于同一动作模式', async () => {
+  const plans = JSON.parse(await readFile(path.join(root, 'data/plans.json'), 'utf8'));
+  const exercises = JSON.parse(await readFile(path.join(root, 'data/exercises.json'), 'utf8'));
+  const pattern = new Map(exercises.map((e) => [e.slug, e.pattern]));
+  for (const p of plans) {
+    for (const s of p.substitutions) {
+      for (const alt of s.alts) {
+        assert.equal(pattern.get(alt), pattern.get(s.exercise),
+          `${p.slug}: ${alt} 与 ${s.exercise} 不同模式`);
+      }
+    }
+  }
+});
+
+test('家庭模板不使用健身房器械', async () => {
+  const plans = JSON.parse(await readFile(path.join(root, 'data/plans.json'), 'utf8'));
+  const exercises = new Map(JSON.parse(await readFile(path.join(root, 'data/exercises.json'), 'utf8'))
+    .map((e) => [e.slug, e]));
+  const home = plans.find((p) => p.slug === 'home-3d');
+  for (const d of home.week) {
+    for (const it of d.items ?? []) {
+      assert.ok(['自重', '弹力带', '哑铃'].includes(exercises.get(it.exercise).equipment),
+        `home-3d 用到了 ${it.exercise}（${exercises.get(it.exercise).equipment}）`);
+    }
+  }
+});
