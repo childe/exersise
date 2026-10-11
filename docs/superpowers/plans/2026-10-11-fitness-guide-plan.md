@@ -68,7 +68,8 @@ data/quiz.json                  # §9.2 情境题
 content/chapters.json           # 章节清单（号、标题、文件、依赖）
 content/ch0.html … ch10.html    # 11 章正文片段
 tests/*.test.mjs                # 与 src/validate、src/render 一一对应
-docs/acceptance/                # 人工验收记录（§9.3 第 10–13 条）
+docs/safety-canon.md            # 疼痛与操作安全口径的单一事实源（Task 1 Step 1c 先定稿）
+docs/acceptance/                # 人工验收记录（§9.3 第 10–13 条）+ 发布能力预检
 ```
 
 ---
@@ -76,7 +77,7 @@ docs/acceptance/                # 人工验收记录（§9.3 第 10–13 条）
 ### Task 1: 项目骨架与构建管道
 
 **Files:**
-- Create: `package.json`, `src/build.mjs`, `src/data.mjs`, `src/render/page.mjs`, `src/assets/styles.css`, `src/assets/app.js`, `content/chapters.json`, `.gitignore`（追加 `dist/`）
+- Create: `package.json`, `src/build.mjs`, `src/data.mjs`, `src/render/page.mjs`, `src/assets/styles.css`, `src/assets/app.js`, `content/chapters.json`, `docs/safety-canon.md`, `docs/acceptance/delivery-check.md`, `.gitignore`（追加 `dist/`）
 - Test: `tests/build.test.mjs`
 
 **Interfaces:**
@@ -93,6 +94,53 @@ cd "$(git rev-parse --show-toplevel)"
 git config user.email childe@ctrip.com
 git config user.name "vlj刘佳(IT)"
 ```
+
+- [ ] **Step 1b: 发布能力预检（交付依赖，必须在写内容之前确认）**
+
+交付形态是"一个可分享的单页链接"，这依赖发布工具真的可用。现在就确认，不要等到 Task 18 才发现没有路径：
+
+1. 确认当前会话是否真的有 Artifact 发布工具（工具清单里有 `Artifact`，且 `action: "list"` 能正常返回）。
+2. 确认三件事并记进 `docs/acceptance/delivery-check.md` 的「发布能力预检」一节：
+   - **具体工具与上传方式**：`Artifact` 工具，`file_path` 指向 `dist/index.html`，单文件发布；
+   - **访问模型**：发布后默认私有，链接可分享；页面不含任何个人健康数据（见 Global Constraints），因此可公开分享；
+   - **更新行为**：同一 `file_path` 重复发布 → 同一 URL 原地更新；跨会话更新需带 `url` 参数。首次发布后把 URL 写进本文件，后续一律带该 URL 更新。
+3. **不可用时的退路**（任一条不成立就走这条，并同步到设计文档 §1 的交付说明）：产物仍是自包含的 `dist/index.html`，改为"交付文件 + 任一静态托管"——按优先级：GitLab Pages（本仓库已有 GitLab 账号）→ 直接交付 `dist/index.html` 文件本身（双击即可在浏览器打开，功能不依赖服务器）。把实际选定的路径写进 `docs/acceptance/delivery-check.md`，Task 18 Step 9 按这里记录的路径执行。
+
+> 这一步只产出一份记录，不发布任何内容——正式发布在 Task 18 Step 9。
+
+- [ ] **Step 1c: 先敲定安全口径，再写任何动作卡／模板／章节**
+
+疼痛与操作安全的措辞会同时出现在动作卡字段 8/11、模板字段 9/10、导读「第一次训练前必读」和第 9 章。第 9 章排在 Task 16，但引用它的内容从 Task 11 就开始写——所以**权威口径必须现在定下来并落成一个文件**，否则后面几轮必然出现口径冲突和返工。
+
+创建 `docs/safety-canon.md`，写死以下四条的**原句**（后续所有任务直接引用这些句子，不得各写各的）：
+
+```markdown
+# 安全口径（单一事实源）
+
+> 本文件是全站疼痛与操作安全措辞的唯一出处。动作卡、计划模板、导读、第 9 章一律引用本文件的原句；
+> 第 9 章负责展开"为什么"，但**不得改动这里的判定与动作**。改这里需要同时回改引用处。
+
+## C1 疼痛
+训练中出现疼痛：**当场停止该动作**；当次不用其他动作替代着练同一部位；按第 9 章的判断原则决定继续观察还是就医。
+**疼痛不走 deload、不走减量、不走换同模式动作。** deload 与减量只处理疲劳（模板字段 8）。
+
+## C2 疼痛 vs 酸胀
+延迟性酸胀：训练后 12–48 小时出现、双侧对称、活动后减轻、几天内自行消退 → 不属于 C1。
+疼痛：动作中出现、位置明确、单侧、活动时加重、休息后不退 → 走 C1。
+
+## C3 卡扣
+使用杠铃的任何动作，**两侧卡扣必须上紧，无例外**；任何"轻重量可以不上卡扣"的说法都不得出现在本站。
+
+## C4 独练与失败退出
+无保护杆且无保护者时，不做需要保护的动作，改做卡上 `safety.solo_alt`。
+每张卡的 `safety.bailout` 必须写明"做不动了怎么把自己和杠安全分开"。
+
+## C5 红旗征（导读速查，第 9 章展开）
+（列出需要立即停止并就医的信号；本条的具体内容在 Task 16 写第 9 章时由安全级 claim 定稿后回填，
+回填后同步更新导读速查——这是本文件唯一允许后补的一条。）
+```
+
+后续引用约定（写进各任务时照此执行）：动作卡 `audience.cautions` 用 C1 原句的短版；模板 `pain_path` 用 C1 全句；`substitutions[].scope` 的"不适用于疼痛"由 C1 导出；导读「第一次训练前必读」逐条照抄 C3/C4/C5；第 9 章把 C1/C2 作为结论复述并给出依据。
 
 - [ ] **Step 2: 写失败测试**
 
@@ -145,7 +193,8 @@ Expected: FAIL — `Cannot find module '../src/build.mjs'`
     "build": "node src/build.mjs",
     "test": "node --test tests/",
     "check": "node --test tests/",
-    "check:links": "node src/validate/links.mjs --external"
+    "check:links": "node src/validate/links.mjs --external",
+    "check:links:release": "node src/validate/links.mjs --external --release"
   },
   "dependencies": {},
   "devDependencies": {}
@@ -311,8 +360,8 @@ Expected: PASS（2 项）
 ```bash
 cd "$(git rev-parse --show-toplevel)"
 printf 'dist/\nnode_modules/\n' >> .gitignore
-git add package.json src content data tests .gitignore
-git commit -m "feat: 构建管道骨架与单文件产出"
+git add package.json src content data tests docs/safety-canon.md docs/acceptance .gitignore
+git commit -m "feat: 构建管道骨架、安全口径单一事实源与发布能力预检"
 ```
 
 ---
@@ -590,7 +639,8 @@ git commit -m "feat: 结论登记表校验与证据标签渲染"
 **Interfaces:**
 - Consumes: Task 2 的 `validateClaims` 模式（返回错误数组）、`escapeHtml`
 - Produces:
-  - `export function validateExercises(exercises, { claims, demos, chapters }): string[]`
+  - `export function validateExercises(exercises, { claims, demos, chapters, exercises: allSlugs }): string[]`
+    —— `ctx.exercises` 是**完整动作库的 slug 集合**（`Set<string>`），`home_alts` / `solo_alt` 的存在性一律对它判定，**不对传入的 `exercises` 数组判定**。省略 `ctx.exercises` 时回退为"传入数组自身的 slug 集合"（只用于整库校验这一种调用），这样单条卡也能引用库内其他动作作为替代项。
   - `export function validateCoverage(exercises): string[]`（§2 覆盖矩阵，内容灌满前会报错，Task 11/12 之后必须为空）
   - `export function renderExercises(exercises, ctx): string`
   - 动作卡数据契约（后续所有任务按此写卡）：
@@ -628,7 +678,9 @@ import path from 'node:path';
 import { validateExercises, validateCoverage } from '../src/validate/exercises.mjs';
 
 const root = path.resolve(import.meta.dirname, '..');
-const ctx = { claims: new Set(), demos: new Set(['demo-x']), chapters: new Set(['ch4','ch5']) };
+// ctx.exercises 是「完整动作库的 slug 集合」，与被校验的那一条/那几条无关
+const ctx = { claims: new Set(), demos: new Set(['demo-x']), chapters: new Set(['ch4','ch5']),
+              exercises: new Set(['back-squat-high-bar', 'goblet-squat']) };
 
 const card = {
   slug: 'back-squat-high-bar', name_zh: '高杠背蹲', name_en: 'High-Bar Back Squat',
@@ -649,8 +701,21 @@ const card = {
   demo_id: 'demo-x', chapter_refs: ['ch4'], claim_refs: [],
 };
 
-test('合法动作卡通过', () => {
+test('单条合法动作卡通过（替代项在库内、不在被校验数组内）', () => {
+  // card.home_alts = ['goblet-squat']，它不在 [card] 里，但在 ctx.exercises 里 —— 必须通过
   assert.deepEqual(validateExercises([card], ctx), []);
+});
+
+test('替代项在库内不存在时被拒（ctx.exercises 是唯一判据）', () => {
+  const narrow = { ...ctx, exercises: new Set(['back-squat-high-bar']) };
+  const errs = validateExercises([card], narrow);
+  assert.ok(errs.some((e) => e.includes('goblet-squat')));
+});
+
+test('省略 ctx.exercises 时回退为数组自身的 slug 集合（整库校验路径）', () => {
+  const { exercises, ...noSet } = ctx;
+  const self = { ...card, slug: 'goblet-squat', home_alts: ['back-squat-high-bar'] };
+  assert.deepEqual(validateExercises([card, self], noSet), []);
 });
 
 test('字段 7 自检判据为空的动作不进库', () => {
@@ -698,6 +763,7 @@ test('仓库内的 data/exercises.json 始终满足 13 字段校验', async () =
     claims: new Set(claims.map((c) => c.id)),
     demos: new Set(demos.map((d) => d.id)),
     chapters: new Set(chapters.map((c) => c.id)),
+    exercises: new Set(exercises.map((e) => e.slug)),
   });
   assert.deepEqual(errs, []);
 });
@@ -722,7 +788,9 @@ const NO_COLLAR_RE = /(不上|免|不用|无需|可不)\s*卡扣/;
 export function validateExercises(list, ctx) {
   const errs = [];
   if (!Array.isArray(list)) return ['data/exercises.json: 顶层必须是数组'];
-  const slugs = new Set(list.map((e) => e?.slug));
+  // 替代项（home_alts / solo_alt）一律对「完整动作库」判定；
+  // 省略 ctx.exercises 时才回退到传入数组自身，使单条校验不会因引用库内其他动作而失败。
+  const slugs = ctx?.exercises ?? new Set(list.map((e) => e?.slug));
   list.forEach((e, i) => {
     const at = `data/exercises.json[${i}] (${e?.slug ?? '无 slug'})`;
     if (!SLUG_RE.test(e?.slug ?? '')) errs.push(`${at}: slug 必须是 [a-z0-9-]`);
@@ -809,7 +877,7 @@ function card(e, ctx) {
   const demoHtml = !demo
     ? ''
     : demo.dead
-      ? `<p class="demo dead">示范链接当前不可达，请依据文字要点与自检判据执行；来源：${escapeHtml(demo.publisher)}</p>`
+      ? `<p class="demo dead">示范链接已失效（${escapeHtml(demo.dead_note ?? '')}），请依据上方文字要点与自检判据执行；原来源：${escapeHtml(demo.publisher)}</p>`
       : `<p class="demo"><a href="${escapeHtml(demo.url)}" rel="noreferrer noopener" target="_blank">示范（${escapeHtml(demo.publisher)}，核验于 ${escapeHtml(demo.verified_on)}）</a></p>`;
   return `
 <article class="ex-card" id="ex-${e.slug}"
@@ -851,12 +919,13 @@ import { validateExercises, validateCoverage } from './validate/exercises.mjs';
     claims: new Set(claims.map((c) => c.id)),
     demos: new Set(demos.map((d) => d.id)),
     chapters: new Set(chapters.map((c) => c.id)),
+    exercises: new Set(exercises.map((e) => e.slug)),
   };
   errs.push(...validateExercises(exercises, ctx));
   if (process.env.SKIP_COVERAGE !== '1') errs.push(...validateCoverage(exercises));
 ```
 
-> 覆盖矩阵在内容灌满前必然报错，因此 Task 3–10 期间构建用 `SKIP_COVERAGE=1 node src/build.mjs`；Task 12 完成后去掉该开关并永久保持默认开启。
+> 覆盖矩阵在内容灌满前必然报错，因此 Task 3–11 期间构建用 `SKIP_COVERAGE=1 node src/build.mjs`；Task 12 完成后去掉该开关并永久保持默认开启（分阶段闸门的完整对照表见 Task 5 Step 5）。
 
 - [ ] **Step 6: 用示例测试里的高杠背蹲卡 + 其 home_alt（`goblet-squat`）初始化 data/exercises.json**
 
@@ -1293,7 +1362,19 @@ export function validateChapters(loaded) {
 
 - [ ] **Step 5: 建 content/ch0.html … ch10.html 的合规骨架**
 
-每个文件先写成上面「章节片段的硬性结构」的最小合规版本：真实标题 + 一句"本章待撰写"的正文占位 + 3 条自测清单 + 1 个练习任务与参考答案。这不是最终内容占位符，而是让管道在内容任务之前就能跑通；Task 11–14 会逐章替换正文。**Task 14 结束时任何一章仍含"本章待撰写"即视为未完成**（该检查在 Task 17 的全站扫描中执行）。
+每个文件先写成上面「章节片段的硬性结构」的最小合规版本：真实标题 + 一句"本章待撰写"的正文占位 + 3 条自测清单 + 1 个练习任务与参考答案。这不是最终内容占位符，而是让管道在内容任务之前就能跑通。
+
+**各章正文的实际替换时间**：第 0–2 章 → Task 14；第 3–5 章 → Task 15；第 6–9 章 → Task 16；第 10 章 → Task 17。
+
+**两类构建，闸门不同**（阶段检查不得要求提前完成后续任务）：
+
+| 阶段 | 命令 | 覆盖矩阵（Task 3 引入） | 章节占位（"本章待撰写"） |
+|---|---|---|---|
+| Task 5–11 | `SKIP_COVERAGE=1 node src/build.mjs` | 跳过（内容未灌满） | 允许残留 |
+| Task 12–16 | `node src/build.mjs` | 强制（Task 12 已删开关） | 允许残留——尚未轮到的章节本来就还没写 |
+| Task 17 起（发布构建） | `node src/build.mjs` | 强制 | **一处都不许有** |
+
+因此：**Task 17 结束时任何一章仍含"本章待撰写"即视为未完成**，该检查由 **Task 18 Step 3 的全站 hard 扫描**（`scanSafety` 的占位规则）执行并使构建失败。Task 17 的 Step「运行测试与构建」必须用不带 `SKIP_COVERAGE` 的 `node src/build.mjs`，这是第一次要求零占位的构建。
 
 - [ ] **Step 6: 接进 build.mjs**
 
@@ -1413,6 +1494,18 @@ test('失效链接必须标记 dead=true 而不是留着假装可用', () => {
   const errs = validateDemos([{ ...demo, dead: 'yes' }], { exercises: ex });
   assert.ok(errs.some((e) => e.includes('dead')));
 });
+
+test('标 dead 后必须留下降级记录并清掉 url（不留死链）', () => {
+  const errs = validateDemos([{ ...demo, dead: true }], { exercises: ex });
+  assert.ok(errs.some((e) => e.includes('dead_note')));
+  assert.ok(errs.some((e) => e.includes('retired_url')));
+});
+
+test('重点动作不接受"只剩失效提示"', () => {
+  const degraded = { ...demo, dead: true, dead_note: '2026-10-11 404', retired_url: demo.url, url: undefined };
+  const errs = validateDemos([degraded], { exercises: ex });
+  assert.ok(errs.some((e) => e.includes('必须更换为可用来源')));
+});
 ```
 
 `tests/links.test.mjs`：
@@ -1420,7 +1513,7 @@ test('失效链接必须标记 dead=true 而不是留着假装可用', () => {
 ```js
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { validateInternalLinks, checkExternalUrls } from '../src/validate/links.mjs';
+import { validateInternalLinks, checkExternalUrls, summarizeLinkCheck } from '../src/validate/links.mjs';
 
 test('指向不存在锚点的内部链接被报出', () => {
   const html = '<a href="#ch3">x</a><section id="ch2"></section>';
@@ -1440,6 +1533,42 @@ test('重复 id 被报出（锚点分享会落错位置）', () => {
 test('网络不可用时标记 unchecked，不报 ok', async () => {
   const res = await checkExternalUrls(['https://invalid.invalid/nope'], { timeoutMs: 1500 });
   assert.notEqual(res[0].status, 'ok');
+});
+
+// —— 开发检查 vs 发布检查：四种结果组合 ——
+
+const ok = (u) => ({ url: u, status: 'ok', detail: 200 });
+const dead = (u) => ({ url: u, status: 'dead', detail: 404 });
+const unk = (u) => ({ url: u, status: 'unchecked', detail: '超时' });
+
+test('全部可达：开发与发布都通过', () => {
+  const rs = [ok('https://a'), ok('https://b')];
+  assert.equal(summarizeLinkCheck(rs).exitCode, 0);
+  assert.equal(summarizeLinkCheck(rs, { release: true }).exitCode, 0);
+});
+
+test('存在失效：开发与发布都失败', () => {
+  const rs = [ok('https://a'), dead('https://b')];
+  assert.equal(summarizeLinkCheck(rs).exitCode, 1);
+  assert.equal(summarizeLinkCheck(rs, { release: true }).exitCode, 1);
+});
+
+test('全部未检查：开发可通过，发布必须失败（离线不等于可达）', () => {
+  const rs = [unk('https://a'), unk('https://b')];
+  assert.equal(summarizeLinkCheck(rs).exitCode, 0);
+  const rel = summarizeLinkCheck(rs, { release: true });
+  assert.equal(rel.exitCode, 1);
+  assert.ok(rel.lines.some((l) => l.includes('未检查')));
+});
+
+test('混合（可达 + 未检查）：开发通过，发布失败', () => {
+  const rs = [ok('https://a'), unk('https://b')];
+  assert.equal(summarizeLinkCheck(rs).exitCode, 0);
+  assert.equal(summarizeLinkCheck(rs, { release: true }).exitCode, 1);
+});
+
+test('一条都没检查时发布失败，而不是"零失效即通过"', () => {
+  assert.equal(summarizeLinkCheck([], { release: true }).exitCode, 1);
 });
 ```
 
@@ -1473,6 +1602,13 @@ export function validateDemos(demos, { exercises }) {
     if (!/^\d{4}-\d{2}-\d{2}$/.test(d?.verified_on ?? '')) errs.push(`${at}: verified_on 必填，格式 YYYY-MM-DD`);
     if (!d?.verified_by) errs.push(`${at}: verified_by 必填（核验人）`);
     if (typeof d?.dead !== 'boolean') errs.push(`${at}: dead 必须是布尔值`);
+    // 失效降级的闭环：标 dead 之后这条链接退出检查队列、也退出页面上的可点击链接，
+    // 因此必须留下"为什么降级、原链接是什么、降级后读者看什么"的书面记录。
+    if (d?.dead === true) {
+      if (!d?.dead_note) errs.push(`${at}: dead=true 必须填 dead_note（失效日期 + 读者改看什么：文字要点 + 自检判据）`);
+      if (!d?.retired_url && d?.url) errs.push(`${at}: dead=true 时把原 url 移到 retired_url 并清空 url，确保渲染不再产出可点击链接`);
+      if (d?.url) errs.push(`${at}: dead=true 的条目不得保留 url 字段（页面只输出失效提示，不留死链）`);
+    }
     const ex = exercises.find((e) => e.slug === d?.exercise_id);
     if (ex) {
       const covered = new Set((d?.verification ?? []).map((v) => v.criterion));
@@ -1487,13 +1623,22 @@ export function validateDemos(demos, { exercises }) {
 
   for (const e of exercises) {
     const isKey = KEY_EQUIPMENT.includes(e.equipment);
-    if (isKey && !(e.demo_id && byId.has(e.demo_id))) {
+    if (!isKey) continue;
+    const d = e.demo_id ? byId.get(e.demo_id) : null;
+    if (!d) {
       errs.push(`重点动作 ${e.slug}（${e.equipment}）必须有登记在 data/demos.json 的示范来源（§7.2）`);
+    } else if (d.dead === true) {
+      // 设计 §243：重点动作要有"可用"示范。失效提示本身不满足这一条——
+      // 必须换一条新的可用来源（或自制授权图）才能发布。
+      errs.push(`重点动作 ${e.slug} 的示范 ${d.id} 已标 dead=true：重点动作不接受只剩失效提示，`
+        + `必须更换为可用来源（机构官方／专业示范／自制授权图）后才能发布（§7.2 / 设计 §243）`);
     }
   }
   return errs;
 }
 ```
+
+> **降级范围**：`dead=true` 只适用于**非重点动作**的示范（自重／弹力带／固定器械动作），以及 `claims` 之外的辅助链接。重点动作（杠铃／哑铃）与 claim 来源不可降级——前者必须换示范，后者必须换来源。`claims` 的 `sources[].url` 失效一律走"更换来源"，没有 dead 标记这条路。
 
 - [ ] **Step 4: 实现 src/validate/links.mjs**
 
@@ -1537,24 +1682,56 @@ export async function checkExternalUrls(urls, { timeoutMs = 10000 } = {}) {
   }));
 }
 
+/**
+ * 开发检查与发布检查的判据不同，用同一个纯函数表达，便于测试：
+ * - dev（默认）：只有未处理的 dead 才失败；unchecked 允许（离线开发）。
+ * - release（`--release`）：任何 dead 或任何 unchecked 都失败——
+ *   "全部未检查"绝不等于"全部可达"，发布验收必须真的检查过。
+ */
+export function summarizeLinkCheck(results, { release = false } = {}) {
+  const dead = results.filter((r) => r.status === 'dead');
+  const unchecked = results.filter((r) => r.status === 'unchecked');
+  const ok = results.filter((r) => r.status === 'ok');
+  const lines = [`合计 ${results.length}：可达 ${ok.length}，失效 ${dead.length}，未检查 ${unchecked.length}`];
+  const problems = [];
+  if (dead.length) {
+    problems.push(`失效 ${dead.length} 条：必须更换来源，或在 data/demos.json 把该条标 dead=true 并填 dead_note（降级为"文字 + 判据 + 失效提示"）。`
+      + `标记后本检查不再抓取它，也不再在页面上输出可点击链接。`);
+  }
+  if (release && unchecked.length) {
+    problems.push(`未检查 ${unchecked.length} 条：发布验收不接受 unchecked（离线或超时都算没检查过），请在有网环境重跑 \`npm run check:links:release\`。`);
+  }
+  if (release && results.length === 0) {
+    problems.push('一条外链都没有被检查——发布验收至少要覆盖全部 claim 来源与未降级的示范链接。');
+  }
+  return { exitCode: problems.length ? 1 : 0, lines: [...lines, ...problems] };
+}
+
 if (process.argv[1]?.endsWith('links.mjs') && process.argv.includes('--external')) {
   const { readFile } = await import('node:fs/promises');
   const path = await import('node:path');
+  const release = process.argv.includes('--release');
   const root = path.resolve(import.meta.dirname, '..', '..');
   const claims = JSON.parse(await readFile(path.join(root, 'data/claims.json'), 'utf8'));
   const demos = JSON.parse(await readFile(path.join(root, 'data/demos.json'), 'utf8'));
+  // 已标 dead=true 的示范是"已处理"的：不再抓取、不再因它失败，但会显式列出来
+  const degraded = demos.filter((d) => d.dead === true);
   const urls = [...claims.flatMap((c) => c.sources.map((s) => s.url)),
-                ...demos.map((d) => d.url).filter(Boolean)];
+                ...demos.filter((d) => d.dead !== true).map((d) => d.url).filter(Boolean)];
   const results = await checkExternalUrls(urls);
   for (const r of results) console.log(`${r.status.padEnd(9)} ${r.url}  ${r.detail}`);
-  const dead = results.filter((r) => r.status === 'dead');
-  const unchecked = results.filter((r) => r.status === 'unchecked');
-  console.log(`\n合计 ${results.length}：可达 ${results.length - dead.length - unchecked.length}，失效 ${dead.length}，未检查 ${unchecked.length}`);
-  if (dead.length) {
-    console.error('失效链接必须在 data/demos.json 标记 dead=true（降级为文字+判据+失效提示），或更换来源。');
-    process.exit(1);
-  }
+  for (const d of degraded) console.log(`degraded  ${d.id}  已降级为文字+判据+失效提示：${d.dead_note ?? '（缺 dead_note）'}`);
+  const { exitCode, lines } = summarizeLinkCheck(results, { release });
+  console.log('\n' + lines.join('\n'));
+  if (exitCode) process.exit(exitCode);
 }
+```
+
+`package.json` 的 scripts 相应加一条（Task 1 Step 4 的 scripts 块同步补上）：
+
+```json
+"check:links": "node src/validate/links.mjs --external",
+"check:links:release": "node src/validate/links.mjs --external --release"
 ```
 
 - [ ] **Step 5: 接进 src/data.mjs 与 build.mjs**
@@ -1714,7 +1891,14 @@ const ids = [...`${chapterHtml}${exerciseHtml}${planHtml}${claimHtml}${quizHtml}
 //   <script type="module">${js}</script>
 ```
 
-同时给 `styles.css` 加：`.track { display: none } .track.is-active { display: block }`（无 JS 与打印下的兜底在 Task 9 处理）。
+同时给 `styles.css` 加轨道显隐规则。**注意：不要写 `.track { display: none }`**——那是"默认隐藏、靠 JS 解除"，无 JS 时两轨全没。从一开始就写成"默认都显示，只有脚本跑起来后才隐藏非活动轨"：
+
+```css
+.track { display: block; }
+.js-on .track:not(.is-active) { display: none; }
+```
+
+对应地，`app.js` 的 DOM 守卫块里第一件事就是 `document.body.classList.add('js-on')`（Task 9 Step 4 复述同一条）。Task 9 只是补全主题与打印，不再改这两条规则。
 
 - [ ] **Step 5: 运行测试与构建**
 
@@ -1907,6 +2091,16 @@ test('存在 ≤400px 的窄屏规则且无横向溢出来源', () => {
   assert.match(css, /table[\s\S]*overflow-x:\s*auto|\.table-wrap[\s\S]*overflow-x:\s*auto/);
 });
 
+test('无 JS 时两轨都可见：不存在无条件隐藏 .track 的规则', () => {
+  // 只允许 .js-on 前缀下的隐藏；裸 .track{display:none} 会让禁用 JS 的读者丢掉半份教程
+  assert.doesNotMatch(css, /(^|[^-\w.])\.track\s*(:not\([^)]*\))?\s*\{[^}]*display\s*:\s*none/m);
+  assert.match(css, /\.js-on\s+\.track:not\(\.is-active\)\s*\{[^}]*display\s*:\s*none/);
+});
+
+test('打印时两轨强制展开', () => {
+  assert.match(css, /@media\s+print[\s\S]*\.track\s*\{[^}]*display\s*:\s*block\s*!important/);
+});
+
 test('nextTheme 在 light/dark 间切换', () => {
   assert.equal(nextTheme('light'), 'dark');
   assert.equal(nextTheme('dark'), 'light');
@@ -1948,7 +2142,10 @@ main { max-width: 68rem; margin: 0 auto; padding: 16px; }
 img, svg { max-width: 100%; }
 .table-wrap, table { display: block; overflow-x: auto; max-width: 100%; }
 
-/* 无 JS 与打印时两轨都展开；只有脚本跑起来后才隐藏非活动轨 */
+/* 无 JS 与打印时两轨都展开；只有脚本跑起来后才隐藏非活动轨。
+   这两条在 Task 7 Step 4 已经这样写了，此处只是保持不变——
+   全文件中不得存在任何无条件的 .track { display: none }。 */
+.track { display: block; }
 .js-on .track:not(.is-active) { display: none; }
 
 @media (max-width: 400px) {
@@ -1985,7 +2182,7 @@ Expected: 全部 PASS
 
 - [ ] **Step 6: 人工确认**
 
-浏览器打开产物：① 切深浅主题；② 开发者工具设宽度 390px 检查无横向滚动；③ `Cmd+P` 预览确认两轨内容都在、折叠的参考答案已展开、外部链接带 URL 脚注；④ 在开发者工具里禁用 JavaScript 刷新，确认两轨内容仍可读。
+浏览器打开产物：① 切深浅主题；② 开发者工具设宽度 390px 检查无横向滚动；③ `Cmd+P` 预览确认两轨内容都在、折叠的参考答案已展开、外部链接带 URL 脚注；④ **真浏览器禁用 JS 验收**：在 Chrome DevTools → Command Palette → `Disable JavaScript`，硬刷新 `dist/index.html`，确认学习路径与参考库**两轨正文都完整可读**（不是只剩一轨、也不是两轨全空），轨道切换按钮虽无效但不遮挡内容；把截图说明记进 `docs/acceptance/delivery-check.md`。这一条不通过即回到 Task 7 Step 4 检查是否残留了裸 `.track { display: none }`。
 
 - [ ] **Step 7: 提交**
 
@@ -2167,8 +2364,10 @@ git commit -m "feat: 四张内联 SVG 概念图与图注刻度规则"
 - Test: `tests/exercises.test.mjs`（已存在的"仓库内 data/exercises.json 始终合规"一条即为闸门）
 
 **Interfaces:**
-- Consumes: Task 3 的 13 字段契约与 `validateExercises`、Task 6 的 `validateDemos`
+- Consumes: Task 3 的 13 字段契约与 `validateExercises`、Task 6 的 `validateDemos`、**Task 1 Step 1c 的 `docs/safety-canon.md`**
 - Produces: 每个主干动作的 `slug` 成为后续模板与章节可引用的锚点
+
+> **安全措辞不自创**：每张卡的 `audience.cautions` 用 safety-canon C1 的短版，`safety.collars` 用 C3 原句，`safety.solo_ok/solo_alt/bailout` 按 C4 写。第 9 章（Task 16）只负责展开「为什么」，不会改这些判定，所以本任务不需要等它。
 
 **本任务要写进库的动作（每个一张完整 13 字段卡，变式分卡）：**
 
@@ -2311,8 +2510,10 @@ git commit -m "content: 动作库补齐覆盖矩阵与肌群兜底，移除覆�
 - Test: `tests/plans.test.mjs`（追加一条"五套齐备"）
 
 **Interfaces:**
-- Consumes: Task 4 的 `validatePlans`、Task 11/12 的动作 slug
+- Consumes: Task 4 的 `validatePlans`、Task 11/12 的动作 slug、**Task 1 Step 1c 的 `docs/safety-canon.md`**
 - Produces: `novice-3d`、`upper-lower-4d`、`ppl-6d`、`home-3d`、`cut-maintain-3d` 五个锚点
+
+> **字段 9 `pain_path` 一律照抄 safety-canon C1 全句**；字段 10 的 `scope` 末尾统一写「不适用于疼痛（见安全口径 C1）」；字段 8 只写疲劳，不出现「疼痛」二字。五套模板的这三处措辞必须完全一致。
 
 - [ ] **Step 1: 追加闸门测试**
 
@@ -2394,7 +2595,7 @@ git commit -m "content: 五套计划模板，各自的有氧安排、进阶规�
 - Test: `tests/ch0.test.mjs`
 
 **Interfaces:**
-- Consumes: Task 5 的章节结构契约、Task 2 的 `{{claim:}}`、Task 10 的 `{{fig:volume-response}}`
+- Consumes: Task 5 的章节结构契约、Task 2 的 `{{claim:}}`、Task 10 的 `{{fig:volume-response}}`、**Task 1 Step 1c 的 `docs/safety-canon.md`**（导读「第一次训练前必读」逐条照抄 C3/C4，并放 C5 红旗征速查的占位小节，Task 16 回填内容）
 - Produces: 第 1–2 章建立的术语与变量命名，后续各章一律沿用（负荷强度 / 容量 / 频率 / RIR / 动作选择 / 节奏 / 组间休息）
 
 - [ ] **Step 1: 写导读结构的失败测试**
@@ -2566,7 +2767,7 @@ git commit -m "content: 第 3–5 章与双轨反向链接接缝"
 ### Task 16: 第 6–9 章（营养、恢复与疲劳、有氧与心肺、伤病预防与疼痛）
 
 **Files:**
-- Modify: `content/ch6.html`, `content/ch7.html`, `content/ch8.html`, `content/ch9.html`, `data/claims.json`
+- Modify: `content/ch6.html`, `content/ch7.html`, `content/ch8.html`, `content/ch9.html`, `content/ch0.html`（回填 C5 红旗征速查）, `docs/safety-canon.md`（回填 C5）, `data/claims.json`
 - Test: `tests/ch9.test.mjs`
 
 **Interfaces:**
@@ -2586,6 +2787,17 @@ import path from 'node:path';
 const root = path.resolve(import.meta.dirname, '..');
 const ch9 = await readFile(path.join(root, 'content/ch9.html'), 'utf8');
 const ch6 = await readFile(path.join(root, 'content/ch6.html'), 'utf8');
+
+test('第 9 章与 docs/safety-canon.md 的 C1/C2 口径一致', async () => {
+  const canon = await readFile(path.join(root, 'docs/safety-canon.md'), 'utf8');
+  // C1 的判定动作必须原样出现在第 9 章，不得各写各的
+  assert.ok(canon.includes('当场停止该动作'));
+  assert.match(ch9, /当场停止该动作/);
+  assert.match(ch9, /deload[^。]{0,20}(只|仅)[^。]{0,10}疲劳|疲劳[^。]{0,20}deload[^。]{0,20}疼痛(不|绝不)/);
+  // C5 红旗征在本任务回填后，导读速查必须同步
+  const ch0 = await readFile(path.join(root, 'content/ch0.html'), 'utf8');
+  assert.match(ch0, /红旗/);
+});
 
 test('第 9 章给出疼痛 vs 酸胀的区分与停止规则', () => {
   assert.match(ch9, /酸胀/);
@@ -2630,7 +2842,7 @@ Expected: FAIL
 
 - [ ] **Step 6: 写 content/ch9.html（伤病预防与疼痛）**
 
-腰/膝/肩的常见损伤机制（接上第 4 章的力矩与第 7 章的疲劳）、热身的作用与它办不到的事、疼痛 vs 酸胀的判断原则、红旗征（回链 `#ch0` 的速查）、**什么时候停、什么时候就医、什么时候可以恢复训练**。安全结论按 §4.3 的更高门槛登记（来源限 ACSM / NSCA / WHO / 骨科或运动医学学会），`safety: true`。练习任务：给三段主诉，判断"继续、停这个动作、还是就医"。
+腰/膝/肩的常见损伤机制（接上第 4 章的力矩与第 7 章的疲劳）、热身的作用与它办不到的事、疼痛 vs 酸胀的判断原则（**照 `docs/safety-canon.md` 的 C1/C2 原句复述，只补"为什么"，不改判定**）、红旗征（回链 `#ch0` 的速查）、**什么时候停、什么时候就医、什么时候可以恢复训练**。本步同时回填 safety-canon 的 C5 红旗征清单，并同步更新 `content/ch0.html` 的速查——两处内容必须逐字一致。安全结论按 §4.3 的更高门槛登记（来源限 ACSM / NSCA / WHO / 骨科或运动医学学会），`safety: true`。练习任务：给三段主诉，判断"继续、停这个动作、还是就医"。
 
 - [ ] **Step 7: 运行测试与构建**
 
@@ -2641,7 +2853,7 @@ Expected: 全部 PASS，无 dead 链接
 
 ```bash
 cd "$(git rev-parse --show-toplevel)"
-git add content/ch6.html content/ch7.html content/ch8.html content/ch9.html data/claims.json tests/ch9.test.mjs
+git add content/ch6.html content/ch7.html content/ch8.html content/ch9.html content/ch0.html docs/safety-canon.md data/claims.json tests/ch9.test.mjs
 git commit -m "content: 第 6–9 章，疼痛判断原则作为全站权威口径"
 ```
 
@@ -2805,10 +3017,10 @@ import { validateQuiz } from './validate/quiz.mjs';
 // build.mjs：renderPage(..., { quizHtml: renderQuiz(data.quiz, renderCtx) })
 ```
 
-- [ ] **Step 8: 运行测试与构建**
+- [ ] **Step 8: 运行测试与构建（第一次要求零占位）**
 
-Run: `node --test tests/` → `node src/build.mjs`
-Expected: 全部 PASS
+Run: `node --test tests/` → `node src/build.mjs` → `grep -rn "本章待撰写\|TODO\|TBD\|待补充" content/ dist/index.html; echo "grep exit=$?"`
+Expected: 全部 PASS；grep 无命中（exit=1）。至此第 0–10 章正文全部写完，Task 18 的 hard 扫描才可能通过——如仍有命中，回到对应内容任务（第 0–2 章→Task 14，3–5→Task 15，6–9→Task 16，第 10 章→本任务）补写，不得靠放宽扫描规则绕过。
 
 - [ ] **Step 9: 提交**
 
@@ -2838,39 +3050,59 @@ git commit -m "content: 第 10 章指导他人基础与 12 道情境题"
 ```js
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { scanSafety } from '../src/validate/safety.mjs';
+import { scanSafety, scanSafetyReview } from '../src/validate/safety.mjs';
 import { build } from '../src/build.mjs';
 import path from 'node:path';
 
 const root = path.resolve(import.meta.dirname, '..');
 
-test('免卡扣表述被扫出', () => {
-  assert.ok(scanSafety('<p>轻重量时可以不上卡扣</p>').some((e) => e.includes('卡扣')));
-  assert.ok(scanSafety('<p>熟练后无需卡扣</p>').length > 0);
-});
+// ——— hard 层：确定性规则，命中即构建失败 ———
 
-test('把疼痛并进疲劳调整的表述被扫出', () => {
-  assert.ok(scanSafety('<p>如果肩膀疼就先 deload 一周</p>').some((e) => e.includes('疼痛')));
-  assert.ok(scanSafety('<p>关节痛的话换个同模式动作继续练</p>').length > 0);
-  assert.ok(scanSafety('<p>有点痛就把重量降 10% 接着做</p>').length > 0);
-});
-
-test('AI 生成图的痕迹被扫出', () => {
-  assert.ok(scanSafety('<img src="data:image/png;base64,AAAA">').some((e) => e.includes('图')));
-  assert.ok(scanSafety('<p>下图由 AI 生成</p>').length > 0);
+test('内嵌位图被扫出', () => {
+  assert.ok(scanSafety('<img src="data:image/png;base64,AAAA">').some((e) => e.includes('位图')));
 });
 
 test('未写完的占位内容被扫出', () => {
-  assert.ok(scanSafety('<p>本章待撰写</p>').some((e) => e.includes('占位')));
+  assert.ok(scanSafety('<p>本章待撰写</p>').some((e) => e.includes('未完成')));
   assert.ok(scanSafety('<p>TODO: 补充</p>').length > 0);
 });
 
-test('合规文本不误报', () => {
-  assert.deepEqual(scanSafety('<p>两侧卡扣必须上紧，无例外。出现疼痛先停止该动作，按第 9 章判断是否就医。</p>'), []);
-  assert.deepEqual(scanSafety('<p>恢复不足时先插入一周 deload，而不是先降重量。</p>'), []);
+test('hard 层不碰自由文本关键词', () => {
+  assert.deepEqual(scanSafety('<p>轻重量时可以不上卡扣</p>'), []);
+  assert.deepEqual(scanSafety('<p>如果肩膀疼就先 deload 一周</p>'), []);
 });
 
-test('最终产物通过全站安全扫描', async () => {
+// ——— soft 层：待复核提示，人工安全验收判定 ———
+
+test('免卡扣的"建议"进待复核', () => {
+  assert.ok(scanSafetyReview('<p>轻重量时可以不上卡扣</p>').some((e) => e.includes('卡扣')));
+  assert.ok(scanSafetyReview('<p>熟练后无需卡扣</p>').length > 0);
+});
+
+test('把疼痛并进疲劳调整的"建议"进待复核', () => {
+  assert.ok(scanSafetyReview('<p>如果肩膀疼就先 deload 继续练</p>').some((e) => e.includes('疼痛')));
+  assert.ok(scanSafetyReview('<p>关节痛的话换个同模式动作继续练</p>').length > 0);
+});
+
+test('AI 生成图的字样进待复核', () => {
+  assert.ok(scanSafetyReview('<p>下图由 AI 生成</p>').length > 0);
+});
+
+// ——— 否定／引用／纠错语境不得误报（这是本层存在的前提） ———
+
+test('禁令句不误报', () => {
+  assert.deepEqual(scanSafetyReview('<p>出现疼痛，禁止减量继续练，先停止该动作。</p>'), []);
+  assert.deepEqual(scanSafetyReview('<p>禁止不上卡扣，两侧卡扣必须上紧，无例外。</p>'), []);
+  assert.deepEqual(scanSafetyReview('<p>本教程不含任何 AI 生成的动作或解剖示意图。</p>'), []);
+  assert.deepEqual(scanSafetyReview('<p>常见误区：有点痛就把重量降 10% 接着做。</p>'), []);
+});
+
+test('合规文本不误报', () => {
+  assert.deepEqual(scanSafetyReview('<p>两侧卡扣必须上紧，无例外。出现疼痛先停止该动作，按第 9 章判断是否就医。</p>'), []);
+  assert.deepEqual(scanSafetyReview('<p>恢复不足时先插入一周 deload，而不是先降重量。</p>'), []);
+});
+
+test('最终产物通过 hard 层全站扫描', async () => {
   const html = await build(root);
   assert.deepEqual(scanSafety(html), []);
 });
@@ -2883,49 +3115,88 @@ Expected: FAIL — 模块不存在
 
 - [ ] **Step 3: 实现 src/validate/safety.mjs**
 
+> **这一步的定位（重要）**：自由文本的正则扫描**不能证明内容安全**——它无法分辨"做法"与"禁令／引用／纠错"。因此扫描分两层：
+> - **hard**：确定性规则，命中即构建失败。只放那些无论语境都不该出现的东西（内嵌位图、未完成占位）。
+> - **soft**：语境敏感的关键词命中，产出**待复核提示**（`review` 数组），写进 `docs/acceptance/safety-review.md` 由 Step 7 的人工安全验收逐条判定；它不让构建失败，也**不作为"内容安全"的证据**。
+>
+> 真正起确定性作用的是**结构化字段校验**（Task 3 的 `safety.collars` / Task 4 的 `pain_path`、`failure_rules`、`substitutions.scope`）——那里的取值是受控的，不存在否定语境。
+
 ```js
-const RULES = [
-  { re: /(不上|免|不用|无需|可不|没必要上)\s*卡扣/g,
-    msg: '出现"不上卡扣"类表述，全站禁止（§5.1 / §9.3-11d）' },
-  { re: /(疼痛|疼|痛)[^。；\n]{0,24}(deload|减量|降(重|重量)|减(重|重量)|换(一个)?(同模式)?动作)[^。；\n]{0,16}(继续|接着|再练|练)/g,
-    msg: '把疼痛并入疲劳调整规则（§9.3-11e）：疼痛必须导向停止该动作与第 9 章就医判断' },
-  { re: /(deload|减量|降重)[^。；\n]{0,16}(来|以)?(处理|应对|缓解)[^。；\n]{0,8}(疼痛|疼|痛)/g,
-    msg: '用 deload／减量作为疼痛处理方案（§9.3-11e）' },
+// 否定／引用／纠错语境：命中点所在句子里出现这些词时，不计为"建议这么做"
+const NEGATION_RE = /(禁止|严禁|不得|不要|不可|不应|不能|绝不|切勿|无例外|反例|错误(示范|做法|说法)|常见误区|有人说|不是|并非)/;
+
+// 取命中点所在的整句（以 。！？；\n 和 HTML 标签边界切分）用于否定判定
+function sentenceAround(text, index) {
+  const start = Math.max(0, text.lastIndexOf('。', index), text.lastIndexOf('；', index),
+                         text.lastIndexOf('\n', index), text.lastIndexOf('>', index));
+  const tail = text.slice(index).search(/[。；！？\n<]/);
+  return text.slice(start, tail === -1 ? text.length : index + tail);
+}
+
+const HARD_RULES = [
   { re: /<img[^>]+src="data:image\/(png|jpe?g|webp)/g,
     msg: '内嵌位图可能是 AI 生成的动作或解剖图（§9.1-9）：动作示范走外部核验链接，概念图走内联 SVG' },
-  { re: /(AI\s*生成|由\s*AI\s*绘制|gpt-image|midjourney|stable\s*diffusion)/gi,
-    msg: '出现 AI 生成图痕迹（§7.2.1）' },
-  { re: /(待撰写|待补充|TODO|TBD|占位|lorem ipsum)/gi,
+  { re: /(待撰写|待补充|TODO|TBD|lorem ipsum)/gi,
     msg: '存在未完成的占位内容' },
 ];
 
-export function scanSafety(html) {
-  const errs = [];
-  for (const { re, msg } of RULES) {
+const SOFT_RULES = [
+  { re: /(不上|免|不用|无需|可不|没必要上)\s*卡扣/g,
+    msg: '出现"不上卡扣"字样（§5.1 / §9.3-11d）——确认是禁令／纠错而不是建议' },
+  { re: /(疼痛|疼|痛)[^。；\n]{0,24}(deload|减量|降(重|重量)|减(重|重量)|换(一个)?(同模式)?动作)[^。；\n]{0,16}(继续|接着|再练|练)/g,
+    msg: '疼痛与疲劳调整规则同句出现（§9.3-11e）——确认疼痛仍导向停止该动作与第 9 章就医判断' },
+  { re: /(deload|减量|降重)[^。；\n]{0,16}(来|以)?(处理|应对|缓解)[^。；\n]{0,8}(疼痛|疼|痛)/g,
+    msg: '把 deload／减量与疼痛处理并提（§9.3-11e）——确认是否定句' },
+  { re: /(AI\s*生成|由\s*AI\s*绘制|gpt-image|midjourney|stable\s*diffusion)/gi,
+    msg: '出现 AI 生成图字样（§7.2.1）——确认是声明"本站不含"而不是真的用了' },
+  { re: /占位/g, msg: '出现"占位"字样——确认是在讲占位符机制而不是遗留未写内容' },
+];
+
+function hits(html, rules, { skipNegated }) {
+  const out = [];
+  for (const { re, msg } of rules) {
     for (const m of html.matchAll(re)) {
+      if (skipNegated && NEGATION_RE.test(sentenceAround(html, m.index))) continue;
       const start = Math.max(0, m.index - 40);
-      errs.push(`${msg} —— 命中「${html.slice(start, m.index + m[0].length + 40).replace(/\s+/g, ' ')}」`);
+      out.push(`${msg} —— 命中「${html.slice(start, m.index + m[0].length + 40).replace(/\s+/g, ' ')}」`);
     }
   }
-  return errs;
+  return out;
+}
+
+/** 构建闸门：只有 hard 规则。 */
+export function scanSafety(html) {
+  return hits(html, HARD_RULES, { skipNegated: false });
+}
+
+/** 人工安全验收的待复核清单：soft 规则，且已剔除明确的否定／引用／纠错语境。 */
+export function scanSafetyReview(html) {
+  return hits(html, SOFT_RULES, { skipNegated: true });
 }
 ```
 
 - [ ] **Step 4: 在 build.mjs 写文件前接入**
 
 ```js
-import { scanSafety } from './validate/safety.mjs';
+import { scanSafety, scanSafetyReview } from './validate/safety.mjs';
   const safetyErrs = scanSafety(html);
   if (safetyErrs.length) throw new Error(`安全红线扫描失败:\n- ${safetyErrs.join('\n- ')}`);
+  const review = scanSafetyReview(html);
+  if (review.length) {
+    console.warn(`安全待复核 ${review.length} 处（不阻断构建，须在 docs/acceptance/safety-review.md 逐条判定）:\n- ${review.join('\n- ')}`);
+  }
 ```
 
 - [ ] **Step 5: 跑全量自动验收（§9.1 全部条目）**
 
 ```bash
 cd "$(git rev-parse --show-toplevel)"
-node --test tests/ && npm run check:links && node src/build.mjs && echo "自动验收通过"
+node --test tests/ && npm run check:links:release && node src/build.mjs && echo "自动验收通过"
 ```
-Expected: 测试全绿、无 dead 链接、构建成功。任一失败即回到对应任务修订，不得跳过。
+Expected: 测试全绿；外链检查**在有网环境**下零 dead、零 unchecked（`--release` 会因任何 unchecked 非零退出，所以"全部未检查"不可能被当成通过）；构建成功。任一失败即回到对应任务修订，不得跳过。
+
+> 开发期用 `npm run check:links`（允许 unchecked）；只有这一条发布验收用 `check:links:release`。如果本机确实没有外网，这一步不算做过——必须找有网环境重跑，不得以 `check:links` 的输出代替。
+> 注意：`echo "自动验收通过"` 只代表**自动**部分通过。§9.3 的四项人工验收（Step 6–9）未做完之前，不得对外宣称验收通过。
 
 - [ ] **Step 6: 人工验收 ①——来源核验（§9.3 第 10 条）**
 
@@ -2942,7 +3213,9 @@ Expected: 测试全绿、无 dead 链接、构建成功。任一失败即回到�
 
 - [ ] **Step 7: 人工验收 ②——安全内容复核（§9.3 第 11 条）**
 
-逐条检查导读「第一次训练前必读」、所有动作卡字段 11、所有模板字段 8/9/10、所有自检判据的 (a)–(e) 五问，写进 `docs/acceptance/safety-review.md`（每张卡一行，五列 a–e）。**有一处不合格即不通过**，回改后重跑 Step 5。
+逐条检查导读「第一次训练前必读」、所有动作卡字段 11、所有模板字段 8/9/10、所有自检判据的 (a)–(e) 五问，写进 `docs/acceptance/safety-review.md`（每张卡一行，五列 a–e）。
+
+同一份文件另起一节「自动扫描待复核」，把 `node -e "import('./src/validate/safety.mjs').then(async m=>{const {build}=await import('./src/build.mjs');console.log(m.scanSafetyReview(await build()).join('\n'))})"` 输出的每一条逐条判定为「禁令／引用／纠错，保留」或「确为违规建议，已修改为…」。**soft 扫描结果为空不等于安全通过；本步的人工判定才是 §9.3-11 的验收证据。** 有一处不合格即不通过，回改后重跑 Step 5。
 
 - [ ] **Step 8: 人工验收 ③——零经验试读（§9.3 第 12 条）**
 
@@ -2950,7 +3223,12 @@ Expected: 测试全绿、无 dead 链接、构建成功。任一失败即回到�
 
 - [ ] **Step 9: 发布为 Artifact 并做交付可用性验收（§9.3 第 13 条）**
 
-用 Artifact 工具发布 `dist/index.html`（标题「系统化健身知识教程」，favicon 一个即可，首次发布后记录 URL；更新时复用同一 URL，链接不变）。随后在手机与桌面各打开一次，验证双轨切换、筛选、锚点分享、浏览器前进后退、打印导出，记进 `docs/acceptance/delivery-check.md`（含发布 URL 与两端截图说明）。
+按 **Task 1 Step 1b 预检中记录的发布路径**执行：
+
+- 预检确认 Artifact 可用 → 用 Artifact 工具发布 `dist/index.html`（标题「系统化健身知识教程」，favicon 一个即可，首次发布后记录 URL；更新时复用同一 URL／带 `url` 参数，链接不变）。
+- 预检走了退路 → 按记录的静态托管或文件交付方式执行，同样记录访问地址。
+
+随后在手机与桌面各打开一次，验证双轨切换、筛选、锚点分享（含一个不存在的锚点如 `#ex-nope` 的降级提示）、浏览器前进后退、禁用 JS 后两轨仍完整、打印导出，记进 `docs/acceptance/delivery-check.md`（含发布 URL 与两端截图说明）。
 
 - [ ] **Step 10: 提交**
 
@@ -2966,4 +3244,6 @@ git commit -m "feat: 全站安全红线扫描；docs: 四份人工验收记录�
 
 - **规范覆盖**：§1 交付形态→Task 1/9/18；§2 覆盖矩阵与排除项→Task 3/12/16/17；§3 双轨→Task 7；§4 证据分级与登记表→Task 2；§5 章节依赖→Task 5/14/15/16；§5.1 两块前置安全内容→Task 14（测试逐项断言）；§5.2 第 10 章五节→Task 17；§5.3 练习链→Task 5 的结构校验 + 各内容任务；§6.1 十三字段→Task 3/11/12；§6.2 十一字段→Task 4/13；§6.3 五套模板→Task 13；§7.1–7.3 示范与自检→Task 6/11；§7.4 四张 SVG→Task 10；§8 网页形态→Task 7/8/9；§9.1 结构验收→Task 1–13 的测试；§9.2 情境题→Task 17；§9.3 人工验收→Task 18。
 - **类型一致性**：`validateX(list, ctx) -> string[]` 在全部校验器中统一；动作用 `slug`、结论用 `id`、模板用 `slug`，锚点一律 `#ex-/#plan-/#claim-/#ch`；`renderCtx` 的六个 Map 在 Task 5 定义后被 Task 8/10/17 沿用，键名不变。
-- **已知的顺序依赖**：覆盖矩阵检查在 Task 3 引入时带 `SKIP_COVERAGE` 逃生门，Task 12 删除它——这是计划内唯一的临时开关，Task 12 的 Step 5 用 grep 确认已清除。
+- **已知的顺序依赖**：①覆盖矩阵检查在 Task 3 引入时带 `SKIP_COVERAGE` 逃生门，Task 12 删除它——这是计划内唯一的临时开关，Task 12 的 Step 5 用 grep 确认已清除。②安全口径 `docs/safety-canon.md` 在 Task 1 Step 1c 先定稿，Task 11/13/14 引用它，Task 16 写第 9 章时只回填 C5 并展开「为什么」——避免动作卡与模板等第 9 章写完才能定稿。③章节占位的清零时点是 Task 17（第 10 章写完），由 Task 18 Step 3 的 hard 扫描强制；阶段构建允许残留占位。
+- **闸门分层**：确定性闸门＝结构化字段校验（Task 2/3/4/5/6）+ 内部锚点完整性 + hard 安全扫描（内嵌位图、未完成占位）；非确定性提示＝soft 安全扫描（关键词 + 否定语境过滤），只产出待复核清单，由 Task 18 Step 7 的人工安全验收判定，不作为「内容安全」的自动证据。外链检查分开发（允许 unchecked）与发布（`--release`，任何 unchecked 或 dead 均失败）两套判据。
+- **交付依赖**：发布能力在 Task 1 Step 1c 之前的 Step 1b 就预检并记录退路，Task 18 Step 9 按预检记录执行。
