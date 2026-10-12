@@ -228,3 +228,47 @@ test('自重深蹲用自己的手臂姿态：前伸、在矢状面内、不需�
     assert.ok(deg(p.elbow, p.shoulder, p.wrist) >= 35, `${n}: 肘角 ${deg(p.elbow, p.shoulder, p.wrist).toFixed(1)}°`);
   }
 });
+
+// ── 低杠背蹲必须真的和高杠不同 ─────────────────────────
+
+test('低杠与高杠不共用姿态——图注声称有差别就不能画一样的图', async () => {
+  const figs = await readJson('data/figures.json');
+  const hi = figs['back-squat-high-bar'], lo = figs['back-squat-low-bar'];
+  assert.notEqual(lo.start, hi.start, '低杠与高杠共用了起始姿态');
+  assert.notEqual(lo.end, hi.end, '低杠与高杠共用了结束姿态');
+});
+
+test('低杠的两处差别可量：杠位更低、躯干更倾', () => {
+  const lean = (p) => Math.abs(Math.atan2(p.shoulder[0] - p.hip[0], p.hip[1] - p.shoulder[1]) * 180 / Math.PI);
+  // 杠位：高杠在肩之上（斜方肌上缘），低杠在肩之下（后三角/肩胛冈）
+  assert.ok(POSES.squat_top.load.at[1] < POSES.squat_top.shoulder[1],
+    '高杠的杠应在肩之上');
+  assert.ok(POSES.squat_lowbar_top.load.at[1] > POSES.squat_lowbar_top.shoulder[1] + 5,
+    '低杠的杠应明显在肩之下');
+  // 躯干：底部前倾低杠明显更多
+  const d = lean(POSES.squat_lowbar_bottom) - lean(POSES.squat_bottom);
+  assert.ok(d > 8, `低杠底部应比高杠前倾更多，实际只多 ${d.toFixed(1)}°`);
+});
+
+test('髋更往后是约束推出来的，不是摆出来的', () => {
+  // 杠位更低 + 躯干更倾，而「杠过足中线」对两者都不变 → 髋必须更往后走。
+  // 这条断言的意义：如果哪天有人"顺手"把低杠的髋挪回去，图就不再演示这个力学关系了。
+  const back = POSES.squat_bottom.hip[0] - POSES.squat_lowbar_bottom.hip[0];
+  assert.ok(back > 8, `低杠底部的髋应明显更靠后，实际只多 ${back.toFixed(1)}px`);
+  for (const n of ['squat_bottom', 'squat_lowbar_bottom']) {
+    assert.ok(Math.abs(POSES[n].load.at[0] - MIDFOOT) < 0.5,
+      `${n}: 杠未落在足中线上，上面那条推理的前提就不成立`);
+  }
+});
+
+test('契约文档与代码里的阈值一致', async () => {
+  const doc = await readFile(path.join(root, 'docs/figure-contract.md'), 'utf8');
+  // 文档写错数字比没有文档更糟——它会被当成权威
+  for (const [what, want] of [['大腿 / 小腿', '60 / 60'], ['上臂 / 前臂', '30 / 29'],
+                              ['躯干 / 颈', '80 / 17']]) {
+    assert.ok(doc.includes(what) && doc.includes(want), `契约里的 ${what} 应为 ${want}`);
+  }
+  assert.ok(doc.includes('35°') && doc.includes('38°'), '契约应记录肘/膝角下限');
+  assert.ok(doc.includes('85%'), '契约应记录投影缩短比例');
+  assert.ok(doc.includes('±24'), '契约应记录握点上限');
+});

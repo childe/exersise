@@ -74,6 +74,7 @@ export function rebuildArm(p, opts = {}) {
 export const OUT_OF_PLANE_ARM = new Set([
   'squat_top', 'squat_bottom',
   'squat_front_top', 'squat_front_bottom',
+  'squat_lowbar_top', 'squat_lowbar_bottom',
   'carry_front', 'ohp_bottom', 'seated_press_bottom',
 ]);
 
