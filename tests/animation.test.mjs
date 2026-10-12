@@ -6,7 +6,7 @@ import { POSES, MIDFOOT, GROUND, renderPose, renderSkeleton } from '../src/rende
 import { interpolate, validateInterp } from '../src/render/interp.mjs';
 import { rebuildArm, OUT_OF_PLANE_ARM } from '../src/render/arm.mjs';
 import { MUSCLE_SEG } from '../src/render/muscle-segments.mjs';
-import { validateJointAngles, ELBOW_PENDING } from '../src/validate/poses.mjs';
+import { validateJointAngles, ELBOW_PENDING, validateFigures } from '../src/validate/poses.mjs';
 import { MUSCLE_NAMES } from '../src/render/muscles.mjs';
 
 const root = path.resolve(import.meta.dirname, '..');
@@ -208,4 +208,23 @@ test('器械、判据线、主动肌各用各的颜色变量', async () => {
   assert.match(decl('.sk-muscle'), /--danger/, '主动肌应与肌肉分布图同色');
   // --equip 必须在三处主题块里都有定义，否则某个主题下是空值
   assert.equal((css.match(/--equip:/g) ?? []).length, 3, '--equip 应在浅色/深色/手动深色三处都定义');
+});
+
+test('no_load 用上出平面手臂的姿态会被判失败——否则手臂静默回落成折叠的', async () => {
+  const exercises = await readJson('data/exercises.json');
+  const bad = { 'bodyweight-squat': { start: 'squat_top', end: 'squat_bottom', no_load: true } };
+  for (const e of exercises) if (!bad[e.slug]) bad[e.slug] = { start: 'plank' };
+  const errs = validateFigures(bad, exercises);
+  assert.ok(errs.some((e) => e.includes('no_load') && e.includes('squat_top')),
+    `应当报出 no_load 与出平面手臂矛盾，实际: ${errs.slice(0, 2).join(' | ')}`);
+});
+
+test('自重深蹲用自己的手臂姿态：前伸、在矢状面内、不需要重建', () => {
+  for (const n of ['squat_bw_top', 'squat_bw_bottom']) {
+    const p = POSES[n];
+    assert.ok(!OUT_OF_PLANE_ARM.has(n), `${n} 不该在出平面集合里`);
+    assert.equal(p.load, undefined, `${n} 不该带负荷`);
+    assert.ok(p.wrist[0] - p.shoulder[0] > 30, `${n}: 手该在肩前，实际 ${(p.wrist[0] - p.shoulder[0]).toFixed(1)}px`);
+    assert.ok(deg(p.elbow, p.shoulder, p.wrist) >= 35, `${n}: 肘角 ${deg(p.elbow, p.shoulder, p.wrist).toFixed(1)}°`);
+  }
 });

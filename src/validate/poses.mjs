@@ -5,6 +5,7 @@
 // 这个文件就是那个前提。断言失败 = 构建失败，画错的图进不了页面。
 
 import { POSES, GROUND, MIDFOOT, FIG_W, FIG_H } from '../render/skeleton.mjs';
+import { rebuildArm, OUT_OF_PLANE_ARM } from '../render/arm.mjs';
 
 const JOINTS = ['head', 'shoulder', 'elbow', 'wrist', 'hip', 'knee', 'ankle', 'heel', 'toe'];
 
@@ -123,6 +124,16 @@ export function validateFigures(figures, exercises) {
       if (f[key] && !POSES[f[key]]) errors.push(`${slug}.${key} 引用了不存在的姿态 ${f[key]}`);
     }
     if (!f.start) errors.push(`${slug} 缺少 start 姿态`);
+    // 出平面的手臂之所以出平面，正是因为它握着器械——握距沿 Z 轴展开。
+    // no_load 把器械摘掉，这个前提就没了：rebuildArm 失去定握点的依据会返回 null，
+    // 渲染**静默回落**到原始坐标，也就是那根折叠的手臂，而页面上不报任何错。
+    // 这类动作该有自己的手臂姿态（例如自重深蹲两臂前伸），不是把别人的杠摘掉。
+    for (const key of ['start', 'end']) {
+      if (f.no_load && f[key] && OUT_OF_PLANE_ARM.has(f[key])) {
+        errors.push(`${slug}: ${key} 用了出平面手臂的姿态 ${f[key]}，却标了 no_load。`
+          + '器械摘掉后手臂重建失去前提，会静默回落成折叠的手臂——请为它另写一套手臂在矢状面内的姿态。');
+      }
+    }
   }
   return errors;
 }
@@ -171,7 +182,6 @@ export function validateMuscles(exercises, regionNames) {
 
 // ── 关节角 ─────────────────────────────────────────────
 
-import { rebuildArm, OUT_OF_PLANE_ARM } from '../render/arm.mjs';
 
 const deg = (c, a, b) => {
   const ux = a[0] - c[0], uy = a[1] - c[1], vx = b[0] - c[0], vy = b[1] - c[1];
