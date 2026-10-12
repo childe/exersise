@@ -1,0 +1,46 @@
+name: 构建并部署到 Cloudflare Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# 同一时刻只跑一个部署；新的 push 取消排队中的旧任务
+concurrency:
+  group: pages-deploy
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      # 这是一份涉及身体的教程：红旗征、慎用人群、负重进阶规则都在数据里。
+      # 测试是闸门不是装饰——不过就不部署，宁可线上停在上一个已知正确的版本。
+      - name: 跑测试
+        run: npm test
+
+      - name: 构建
+        run: npm run build
+
+      # dist/ 里还有 artifact.html（给 Artifact 平台的无壳变体），不该对外暴露，
+      # 所以只把 index.html 放进发布目录。
+      - name: 准备发布目录
+        run: |
+          mkdir -p site
+          cp dist/index.html site/index.html
+          ls -la site/
+
+      - name: 部署
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy site --project-name fitness-guide --branch main
