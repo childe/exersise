@@ -201,6 +201,45 @@ if (typeof document !== 'undefined') {
       refresh();
     });
 
+    // 肌肉分布图与「部位」筛选是同一个状态的两个入口：
+    // 点图上的肌群，等同于点下面那一排按钮，两边的 aria-pressed 必须一起变。
+    if (group === 'exercises') {
+      const syncMap = () => {
+        const on = state.muscles ?? new Set();
+        for (const el of document.querySelectorAll('#muscle-map [data-muscle]')) {
+          el.classList.toggle('is-on', on.has(el.dataset.muscle));
+          if (el.tagName === 'BUTTON') el.setAttribute('aria-pressed', String(on.has(el.dataset.muscle)));
+        }
+      };
+      const toggleMuscle = (name) => {
+        if (!name || !state.muscles) return;
+        const fs = panel.querySelector('fieldset[data-dim="muscles"]');
+        const btn = fs?.querySelector(`button[data-value="${CSS.escape(name)}"]`);
+        if (!btn) return; // 没有任何动作练它，就没有对应按钮，点了不该有反应
+        if (state.muscles.has(name)) state.muscles.delete(name);
+        else state.muscles.add(name);
+        btn.setAttribute('aria-pressed', String(state.muscles.has(name)));
+        syncMap();
+        refresh();
+        document.getElementById('exercises')?.scrollIntoView({ block: 'start' });
+      };
+      const map = document.getElementById('muscle-map');
+      map?.addEventListener('click', (e) => {
+        const t = e.target.closest('[data-muscle]');
+        if (t) toggleMuscle(t.dataset.muscle);
+      });
+      map?.addEventListener('keydown', (e) => {
+        if (e.key !== 'Enter' && e.key !== ' ') return;
+        const t = e.target.closest('[data-muscle]');
+        if (!t) return;
+        e.preventDefault();
+        toggleMuscle(t.dataset.muscle);
+      });
+      const prevClear = clearAll;
+      panels.set(group, { clear: () => { prevClear(); syncMap(); } });
+      syncMap();
+    }
+
     refresh();
   }
 

@@ -1,5 +1,7 @@
 import { escapeHtml } from './claims.mjs';
 import { expandTokens } from './tokens.mjs';
+import { renderSkeleton } from './skeleton.mjs';
+import { renderCardMuscleMap, renderFullMuscleMap } from './muscles.mjs';
 
 // 示范的成色必须写在读者眼前：「逐条核验」「部分覆盖」「形态参考」是三件不同的事，
 // 把后两者也显示成"已核验的示范"，等于用一个链接给没核验过的判据背书。
@@ -42,6 +44,10 @@ function card(e, ctx) {
   data-difficulty="${e.difficulty}" data-muscles="${escapeHtml([...e.muscles.prime, ...e.muscles.synergist].join(' '))}">
   <h3>${escapeHtml(e.name_zh)} <span class="en">${escapeHtml(e.name_en)}</span></h3>
   <p class="meta">${e.pattern} · ${e.laterality} · ${e.equipment} · ${e.difficulty}</p>
+  <div class="ex-visual">
+    ${ctx.poseFigures?.[e.slug] ? renderSkeleton(ctx.poseFigures[e.slug], e.name_zh) : ''}
+    ${renderCardMuscleMap(e.muscles, e.name_zh)}
+  </div>
   <p class="muscles">主动肌 ${escapeHtml(e.muscles.prime.join('、'))}；协同肌 ${escapeHtml(e.muscles.synergist.join('、'))}；稳定肌 ${escapeHtml(e.muscles.stabilizer.join('、'))}</p>
   <h4>执行要点</h4><ol>${e.cues.map((c) => `<li><b>${escapeHtml(c.phase)}</b>：${escapeHtml(c.text)}</li>`).join('')}</ol>
   <h4>常见错误 → 它导致什么</h4><ul>${e.mistakes.map((m) => `<li>${escapeHtml(m.error)} → ${escapeHtml(m.consequence)}</li>`).join('')}</ul>
@@ -75,7 +81,14 @@ export function renderExercises(list, ctx) {
     facet('muscles', '部位', uniq(list.flatMap((e) => [...e.muscles.prime, ...e.muscles.synergist]))),
     facet('difficulty', '难度', uniq(list.map((e) => e.difficulty))),
   ].join('');
+  const counts = new Map();
+  for (const e of list) {
+    for (const m of new Set([...e.muscles.prime, ...e.muscles.synergist])) {
+      counts.set(m, (counts.get(m) ?? 0) + 1);
+    }
+  }
   return `<section id="exercises"><h2>动作库</h2>
+${renderFullMuscleMap(counts)}
 <div class="filters" data-for="exercises">${filters}<p class="result-count" role="status"></p>
 <p class="empty-state" hidden>这组条件下没有任何条目——这通常意味着该组合本身不存在（例如固定器械很少覆盖搬运模式）。<button type="button" class="clear-filters">清除筛选</button></p></div>
 <div class="ex-grid">${body}</div></section>`;

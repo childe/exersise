@@ -11,6 +11,9 @@ import { validateChapters, validateChapterList } from './validate/chapters.mjs';
 import { validateInternalLinks } from './validate/links.mjs';
 import { loadFigures, validateFigures } from './validate/figures.mjs';
 import { scanSafety, scanSafetyReview } from './validate/safety.mjs';
+import { validatePoses, validateFigures as validatePoseFigures, validateMuscles,
+  validateFrameConsistency } from './validate/poses.mjs';
+import { MUSCLE_NAMES } from './render/muscles.mjs';
 import { escapeHtml } from './render/claims.mjs';
 
 const defaultRoot = path.resolve(import.meta.dirname, '..');
@@ -25,6 +28,15 @@ export async function build(root = defaultRoot) {
   const figs = await loadFigures(root);
   const figErrs = validateFigures(figs);
   if (figErrs.length) throw new Error(`概念图校验失败:\n- ${figErrs.join('\n- ')}`);
+  // 骨架图：几何断言是「构造上正确」的兑现处，画错的图不许进页面
+  const poseErrs = validatePoses();
+  if (poseErrs.length) throw new Error(`骨架姿态几何校验失败:\n- ${poseErrs.join('\n- ')}`);
+  const poseFigErrs = validatePoseFigures(data.poseFigures, data.exercises);
+  if (poseFigErrs.length) throw new Error(`动作骨架图映射校验失败:\n- ${poseFigErrs.join('\n- ')}`);
+  const frameErrs = validateFrameConsistency(data.poseFigures);
+  if (frameErrs.length) throw new Error(`骨架两帧一致性校验失败:\n- ${frameErrs.join('\n- ')}`);
+  const muscleErrs = validateMuscles(data.exercises, MUSCLE_NAMES);
+  if (muscleErrs.length) throw new Error(`肌肉分区校验失败:\n- ${muscleErrs.join('\n- ')}`);
   const renderCtx = {
     claims: new Map(data.claims.map((c) => [c.id, c])),
     exercises: new Map(data.exercises.map((e) => [e.slug, e])),
@@ -34,6 +46,7 @@ export async function build(root = defaultRoot) {
       [k, `<figure class="concept">${v.svg.replace(/<!--caption:[\s\S]*?-->\s*/, '')}<figcaption>${escapeHtml(v.caption)}</figcaption></figure>`])),
     chapterTitles: new Map(data.chapters.map((c) => [c.id, `第 ${c.num} 章 ${c.title}`])),
     safetyCanon: data.safetyCanon,
+    poseFigures: data.poseFigures,
   };
   const html = renderPage(data, {
     css, js,
