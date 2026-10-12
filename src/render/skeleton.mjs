@@ -1,3 +1,7 @@
+// 出平面手臂的重建与主动肌标注。两者都只影响画法，不改姿态数据本身。
+import { rebuildArm, OUT_OF_PLANE_ARM } from './arm.mjs';
+import { MUSCLE_SEG } from './muscle-segments.mjs';
+
 // 动作骨架示意图。
 //
 // §7 排除的是**生成的**动作图：模型不持有「杠过足中线」这类力学约束，只拟合
@@ -24,6 +28,22 @@ export const POSES = {
     head: [104, 74], shoulder: [92, 92], elbow: [74, 114], wrist: [94, 96],
     hip: [44, 160], knee: [108, 152], ankle: [82, 216], heel: [72, 225], toe: [108, 225],
     load: { type: 'bar', at: [90, 86] },
+  }),
+
+  // 自重深蹲用自己的一套手臂：两臂前伸配重。
+  //
+  // 不能照搬 squat_top/bottom 再把杠摘掉——那样手会悬在原杠位的半空，
+  // 摆着握杠的姿势却没有杠。更要紧的是握杠手臂属于出平面的那一类，
+  // 摘掉杠之后 rebuildArm 失去前提（它要靠 load 定握点），会静默回落到
+  // 原始坐标，也就是那根 5.7° 的折叠手臂。
+  // 前伸的手臂本来就在矢状面内，全长作图即可，不需要重建。
+  squat_bw_top: P({
+    head: [100, 34], shoulder: [88, 52], elbow: [114, 60], wrist: [142, 58],
+    hip: [80, 112], knee: [84, 150], ankle: [80, 216], heel: [72, 225], toe: [108, 225],
+  }),
+  squat_bw_bottom: P({
+    head: [104, 74], shoulder: [92, 92], elbow: [118, 100], wrist: [146, 98],
+    hip: [44, 160], knee: [108, 152], ankle: [82, 216], heel: [72, 225], toe: [108, 225],
   }),
   squat_top: P({
     head: [100, 34], shoulder: [88, 52], elbow: [70, 74], wrist: [88, 56],
@@ -595,6 +615,7 @@ export const POSE_NAMES = Object.keys(POSES);
 
 // ── 渲染 ───────────────────────────────────────────────
 
+
 // 固定 200×240 的画布上，人只占中间一小条，缩到卡片宽度后就糊成一团。
 // 按内容算包围盒再留边，同样的显示宽度下人形能大一倍，是可读性最便宜的一次改进。
 export function contentBox(p, { plumb = false } = {}) {
@@ -623,6 +644,7 @@ export function contentBox(p, { plumb = false } = {}) {
   const y0 = Math.min(...ys) - padTop, y1 = Math.max(...ys) + 6;
   return { x: x0, y: y0, w: x1 - x0, h: y1 - y0 };
 }
+const escapeAttr = (s) => s.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
 const seg = (a, b, cls = 'sk-limb') => `<line class="${cls}" x1="${a[0]}" y1="${a[1]}" x2="${b[0]}" y2="${b[1]}"/>`;
 
 function load(l) {
@@ -631,9 +653,11 @@ function load(l) {
   switch (l.type) {
     case 'bar':
     case 'front':
+      // 杠片半径 11、位置 ±30 时，杠上净空只剩 ±19，握点放不下，手臂被迫画小。
+      // 外推画细后净空 ±24 —— 肩部的拥挤来自这两个圆盘，不来自杠的长度，所以杠长不动。
       return `<g class="sk-load"><line class="sk-bar" x1="${x - 34}" y1="${y}" x2="${x + 34}" y2="${y}"/>`
-        + `<circle class="sk-plate" cx="${x - 30}" cy="${y}" r="11"/>`
-        + `<circle class="sk-plate" cx="${x + 30}" cy="${y}" r="11"/></g>`;
+        + `<circle class="sk-plate" cx="${x - 31}" cy="${y}" r="7"/>`
+        + `<circle class="sk-plate" cx="${x + 31}" cy="${y}" r="7"/></g>`;
     case 'hands':
       return `<g class="sk-load"><rect class="sk-dumbbell" x="${x - 9}" y="${y - 5}" width="18" height="10" rx="3"/></g>`;
     case 'hands2':
@@ -672,7 +696,12 @@ function fixed(f) {
 
 /** 一帧姿态。plumb=true 时画出杠线与足中线（站姿动作的核心判据）。 */
 export function renderPose(p, opts = {}) {
-  const { plumb = false, caption = '' } = opts;
+  const { plumb = false, caption = '', name = '', prime = [] } = opts;
+  // 出平面的手臂（杠横架在肩上、哑铃举在两侧）按投影重建：
+  // 严格侧视下握杠的手投影回肩旁，按全长画只能折叠成贴在一起的两根线。
+  const arm = OUT_OF_PLANE_ARM.has(name) ? rebuildArm(p) : null;
+  const ELBOW = arm ? arm.elbow : p.elbow;
+  const HAND = arm ? arm.hand : p.wrist;
   const g = [];
   const gb = opts.box;
   g.push(`<line class="sk-ground" x1="${gb ? gb.x + 2 : 8}" y1="${GROUND}" x2="${gb ? gb.x + gb.w - 2 : FIG_W - 8}" y2="${GROUND}"/>`);
@@ -683,6 +712,26 @@ export function renderPose(p, opts = {}) {
     g.push(`<line class="sk-rig" x1="${x + w - 8}" y1="${y + h}" x2="${x + w - 8}" y2="${GROUND}"/>`);
   }
   g.push(fixed(p.fixed));
+
+  // 主动肌：骨架之下的一层"荧光笔"。火柴人没有体积，肌肉只能标在它附着的骨头上，
+  // 所以 MUSCLE_SEG 把每块肌肉映射成某根骨头的一段（比例区间）。
+  if (prime.length) {
+    const J = { shoulder: p.shoulder, hip: p.hip, knee: p.knee, ankle: p.ankle,
+                elbow: ELBOW, wrist: HAND };
+    const at = (a, b, t) => [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t];
+    for (const m of prime) {
+      for (const [a, b, t0, t1] of MUSCLE_SEG[m] ?? []) {
+        if (!J[a] || !J[b]) continue;
+        g.push(seg(at(J[a], J[b], t0), at(J[a], J[b], t1), 'sk-muscle'));
+      }
+    }
+  }
+
+  // 架在肩上的杠画在身体**之后**：侧视里它在头颈后方。画在前面的话，
+  // 杠心到头心 14.2px 而头半径 12.5px、杠线宽 3.4px，杠必然从头颅穿过去。
+  // 其余负荷（哑铃、把手、阻力垫）握在手上或顶在肢体上，仍画在前面。
+  const barBehind = p.load && (p.load.type === 'bar' || p.load.type === 'front');
+  if (barBehind) g.push(load(p.load));
 
   // 远侧肢体先画（浅一档），形成前后关系
   if (p.knee2) {
@@ -700,16 +749,18 @@ export function renderPose(p, opts = {}) {
   g.push(seg(p.hip, p.knee));
   g.push(seg(p.knee, p.ankle));
   g.push(seg(p.heel, p.toe, 'sk-foot'));
-  g.push(seg(p.shoulder, p.elbow));
-  g.push(seg(p.elbow, p.wrist));
+  g.push(seg(p.shoulder, ELBOW));
+  g.push(seg(ELBOW, HAND));
   g.push(`<circle class="sk-head" cx="${p.head[0]}" cy="${p.head[1]}" r="12"/>`);
   g.push(seg(p.shoulder, [p.head[0] - 5, p.head[1] + 9], 'sk-neck'));
 
-  for (const j of ['shoulder', 'elbow', 'hip', 'knee', 'ankle']) {
+  for (const j of ['shoulder', 'hip', 'knee', 'ankle']) {
     g.push(`<circle class="sk-joint" cx="${p[j][0]}" cy="${p[j][1]}" r="3.2"/>`);
   }
+  g.push(`<circle class="sk-joint" cx="${ELBOW[0]}" cy="${ELBOW[1]}" r="3.2"/>`);
+  g.push(`<circle class="sk-hand" cx="${HAND[0]}" cy="${HAND[1]}" r="4"/>`);
 
-  g.push(load(p.load));
+  if (!barBehind) g.push(load(p.load));
 
   if (plumb && p.load && p.heel && p.toe) {
     const bx = p.load.at[0];
@@ -725,7 +776,7 @@ export function renderPose(p, opts = {}) {
 }
 
 /** 一个动作的两帧（起止位置）。 */
-export function renderSkeleton(fig, nameZh) {
+export function renderSkeleton(fig, nameZh, prime = []) {
   // 自重动作把模板里的负荷摘掉——照着画一副不存在的杠铃，就是在教错东西
   const strip = (p) => (fig.no_load && p ? { ...p, load: undefined } : p);
   const a = strip(POSES[fig.start]);
@@ -741,10 +792,18 @@ export function renderSkeleton(fig, nameZh) {
   const frame = (p, cap, key) => {
     return `<svg viewBox="${box.x.toFixed(1)} ${box.y.toFixed(1)} ${box.w.toFixed(1)} ${box.h.toFixed(1)}"`
       + ` class="sk-frame" data-pose="${key}" preserveAspectRatio="xMidYMid meet"`
-      + ` role="img" aria-label="${nameZh}·${cap}">${renderPose(p, { plumb, caption: cap, box })}</svg>`;
+      + ` role="img" aria-label="${nameZh}·${cap}">`
+      + `${renderPose(p, { plumb, caption: cap, box, name: key, prime })}</svg>`;
   };
   const two = fig.end && fig.end !== fig.start;
-  return `<figure class="skeleton" data-exercise="${nameZh}">`
+  // 动画是渐进增强：没有 JS 时这两帧静态图本身就是完整的图示。
+  // data-anim 只登记"用哪两个姿态、画在哪个框里"，补间在客户端算。
+  const anim = two
+    ? ` data-anim="${escapeAttr(JSON.stringify({ a: fig.start, b: fig.end, plumb,
+        no_load: !!fig.no_load, box: [+box.x.toFixed(1), +box.y.toFixed(1), +box.w.toFixed(1), +box.h.toFixed(1)],
+        prime }))}"`
+    : '';
+  return `<figure class="skeleton" data-exercise="${nameZh}"${anim}>`
     + frame(a, fig.cap_start ?? '起始', fig.start)
     + (two ? frame(b, fig.cap_end ?? '结束', fig.end) : '')
     + `<figcaption>${fig.note ?? '示意图：关节位置按本卡自检判据摆放，非写实插画。'}</figcaption>`
