@@ -10,7 +10,7 @@
 // 脚就在地上前后滑——深蹲时脚是固定基座，髋才是动的那个。
 // 为什么躯干角要反解不能插值：真实深蹲里小腿角、大腿角、躯干角是协调变化的，
 // 正是这种协调让杠走直线。线性插值各角度不满足这个约束，杠会漂出去十几像素。
-import { POSES, GROUND, MIDFOOT } from '/Users/jialiu/Projects/exersise/src/render/skeleton.mjs';
+import { POSES, GROUND, MIDFOOT } from './skeleton.mjs';
 
 const len = (a, b) => Math.hypot(a[0] - b[0], a[1] - b[1]);
 const ang = (a, b) => Math.atan2(b[1] - a[1], b[0] - a[0]);
