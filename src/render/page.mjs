@@ -1,5 +1,5 @@
 export function renderPage(data, parts) {
-  const { css, js, chapterHtml = '', exerciseHtml = '', planHtml = '',
+  const { css, js, animJs = '', chapterHtml = '', exerciseHtml = '', planHtml = '',
           claimHtml = '', quizHtml = '' } = parts;
   const ids = [...`${chapterHtml}${exerciseHtml}${planHtml}${claimHtml}${quizHtml}`
     .matchAll(/\sid="([^"]+)"/g)].map((m) => m[1]);
@@ -27,6 +27,7 @@ export function renderPage(data, parts) {
 </main>
 <script>window.__IDS__=${JSON.stringify(ids)}</script>
 <script type="module">${js}</script>
+<script type="module">${animJs}</script>
 </body>
 </html>
 `;

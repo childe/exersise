@@ -45,7 +45,7 @@ function card(e, ctx) {
   <h3>${escapeHtml(e.name_zh)} <span class="en">${escapeHtml(e.name_en)}</span></h3>
   <p class="meta">${e.pattern} · ${e.laterality} · ${e.equipment} · ${e.difficulty}</p>
   <div class="ex-visual">
-    ${ctx.poseFigures?.[e.slug] ? renderSkeleton(ctx.poseFigures[e.slug], e.name_zh) : ''}
+    ${ctx.poseFigures?.[e.slug] ? renderSkeleton(ctx.poseFigures[e.slug], e.name_zh, e.muscles.prime) : ''}
     ${renderCardMuscleMap(e.muscles, e.name_zh)}
   </div>
   <p class="muscles">主动肌 ${escapeHtml(e.muscles.prime.join('、'))}；协同肌 ${escapeHtml(e.muscles.synergist.join('、'))}；稳定肌 ${escapeHtml(e.muscles.stabilizer.join('、'))}</p>

@@ -12,16 +12,43 @@ import { validateInternalLinks } from './validate/links.mjs';
 import { loadFigures, validateFigures } from './validate/figures.mjs';
 import { scanSafety, scanSafetyReview } from './validate/safety.mjs';
 import { validatePoses, validateFigures as validatePoseFigures, validateMuscles,
-  validateFrameConsistency } from './validate/poses.mjs';
+  validateFrameConsistency, validateJointAngles } from './validate/poses.mjs';
 import { MUSCLE_NAMES } from './render/muscles.mjs';
 import { escapeHtml } from './render/claims.mjs';
 
 const defaultRoot = path.resolve(import.meta.dirname, '..');
 
+// 客户端骨架动画：把几个模块拼成一段内联脚本。项目不引打包器，
+// 办法是去掉 import/export 后按依赖序拼接——但两个模块里重名的顶层 const
+// 会让整段脚本**静默失效**（页面不报错，动画就是不出来）。
+// 所以拼完必须编译一遍并扫重名：这类错误不该靠肉眼在页面上发现。
+const ANIM_MODULES = [
+  'src/render/arm.mjs',
+  'src/render/muscle-segments.mjs',
+  'src/render/skeleton.mjs',   // 依赖上面两个
+  'src/render/interp.mjs',     // 依赖 skeleton
+  'src/assets/anim.js',
+];
+
+async function bundleAnim(root) {
+  const parts = [];
+  for (const f of ANIM_MODULES) {
+    const src = await readFile(path.join(root, f), 'utf8');
+    parts.push(src.replace(/^import .*?;$/gm, '').replace(/^export\s+/gm, ''));
+  }
+  const js = `${parts.join('\n')}\ninitSkeletonAnimation({ POSES, interpolate, renderPose });\n`;
+  const tops = [...js.matchAll(/^(?:const|let|function|class)\s+([A-Za-z_$][\w$]*)/gm)].map((m) => m[1]);
+  const dup = [...new Set(tops.filter((n, i) => tops.indexOf(n) !== i))];
+  if (dup.length) throw new Error(`动画脚本拼接后顶层重名声明：${dup.join('、')}`);
+  try { new Function(js); } catch (e) { throw new Error(`动画脚本编译失败：${e.message}`); }
+  return js;
+}
+
 export async function build(root = defaultRoot) {
   const data = await loadData(root);
   const css = await readFile(path.join(root, 'src/assets/styles.css'), 'utf8');
   const js = await readFile(path.join(root, 'src/assets/app.js'), 'utf8');
+  const animJs = await bundleAnim(root);
   const loaded = await loadChapters(root, data.chapters);
   const chapterErrs = [...validateChapterList(data.chapters), ...validateChapters(loaded)];
   if (chapterErrs.length) throw new Error(`章节校验失败:\n- ${chapterErrs.join('\n- ')}`);
@@ -37,6 +64,8 @@ export async function build(root = defaultRoot) {
   if (frameErrs.length) throw new Error(`骨架两帧一致性校验失败:\n- ${frameErrs.join('\n- ')}`);
   const muscleErrs = validateMuscles(data.exercises, MUSCLE_NAMES);
   if (muscleErrs.length) throw new Error(`肌肉分区校验失败:\n- ${muscleErrs.join('\n- ')}`);
+  const angleErrs = validateJointAngles();
+  if (angleErrs.length) throw new Error(`关节角校验失败:\n- ${angleErrs.join('\n- ')}`);
   const renderCtx = {
     claims: new Map(data.claims.map((c) => [c.id, c])),
     exercises: new Map(data.exercises.map((e) => [e.slug, e])),
@@ -49,7 +78,7 @@ export async function build(root = defaultRoot) {
     poseFigures: data.poseFigures,
   };
   const html = renderPage(data, {
-    css, js,
+    css, js, animJs,
     chapterHtml: renderChapters(loaded, renderCtx),
     exerciseHtml: renderExercises(data.exercises, renderCtx),
     planHtml: renderPlans(data.plans, renderCtx),

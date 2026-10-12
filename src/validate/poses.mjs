@@ -168,3 +168,54 @@ export function validateMuscles(exercises, regionNames) {
   }
   return errors;
 }
+
+// ── 关节角 ─────────────────────────────────────────────
+
+import { rebuildArm, OUT_OF_PLANE_ARM } from '../render/arm.mjs';
+
+const deg = (c, a, b) => {
+  const ux = a[0] - c[0], uy = a[1] - c[1], vx = b[0] - c[0], vy = b[1] - c[1];
+  const d = (ux * vx + uy * vy) / (Math.hypot(ux, uy) * Math.hypot(vx, vy));
+  return Math.acos(Math.max(-1, Math.min(1, d))) * 180 / Math.PI;
+};
+
+// 解剖活动范围：肘完全伸直 180°，最大屈曲约 145° → 夹角下限 35°。
+// 膝完全伸直 180°，最大屈曲约 140° → 夹角下限约 38°。
+// 低于下限意味着前臂折回贴在上臂上——画出来是一根断掉的骨头，不是手臂。
+const ELBOW_MIN = 35, KNEE_MIN = 38;
+
+// 棘轮：这些姿态的肘角在加上本断言时就已超限，且手臂在矢状面内
+// （没有投影退化可解释，属于坐标画过头），需要逐个调 wrist/elbow。
+// 列在这里是为了「锁住现状、禁止新增」——改好一个就从表里删一个，
+// 而任何**新的**超限姿态都会让构建失败。不要往这张表里加东西。
+export const ELBOW_PENDING = new Map([
+  ['row_end', 34.5], ['one_arm_row_end', 33.6],
+  ['back_extension_down', 31.8], ['back_extension_up', 31.3],
+  ['face_pull_end', 28.4], ['curl_up', 23.6], ['triceps_top', 14.7],
+]);
+
+/** 关节角校验。出平面的手臂按重建后的肘位判定——那才是实际画出来的东西。 */
+export function validateJointAngles() {
+  const errors = [];
+  for (const [name, p] of Object.entries(POSES)) {
+    if (p.hip && p.knee && p.ankle) {
+      const k = deg(p.knee, p.hip, p.ankle);
+      if (k < KNEE_MIN) errors.push(`${name}: 膝角 ${k.toFixed(1)}° 低于解剖下限 ${KNEE_MIN}°`);
+    }
+    if (!p.shoulder || !p.elbow || !p.wrist) continue;
+    const arm = OUT_OF_PLANE_ARM.has(name) ? rebuildArm(p) : null;
+    const e = arm ? deg(arm.elbow, p.shoulder, arm.hand) : deg(p.elbow, p.shoulder, p.wrist);
+    if (e >= ELBOW_MIN) {
+      if (ELBOW_PENDING.has(name)) {
+        errors.push(`${name}: 肘角已达 ${e.toFixed(1)}°，应从 ELBOW_PENDING 移除`);
+      }
+      continue;
+    }
+    if (!ELBOW_PENDING.has(name)) {
+      errors.push(`${name}: 肘角 ${e.toFixed(1)}° 低于解剖下限 ${ELBOW_MIN}°`
+        + '（前臂折回贴在上臂上）。出平面的手臂应登记进 OUT_OF_PLANE_ARM 走投影重建；'
+        + '矢状面内的应调 wrist/elbow 坐标——不要往 ELBOW_PENDING 里加。');
+    }
+  }
+  return errors;
+}

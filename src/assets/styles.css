@@ -2,16 +2,19 @@
   color-scheme: light dark;
   --bg: #fcfcfa; --surface: #fff; --fg: #1b1b1a; --muted: #5d5d58;
   --rule: #d9d8d2; --accent: #7a4a1e; --warn-bg: #fdf1e7; --danger: #a2301c;
+  --equip: #3f6378;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
     --bg: #15161a; --surface: #1d1f24; --fg: #e8e6e1; --muted: #a3a099;
     --rule: #33363d; --accent: #e0a46a; --warn-bg: #2a2119; --danger: #e0725c;
+    --equip: #79aac6;
   }
 }
 :root[data-theme="dark"] {
   --bg: #15161a; --surface: #1d1f24; --fg: #e8e6e1; --muted: #a3a099;
   --rule: #33363d; --accent: #e0a46a; --warn-bg: #2a2119; --danger: #e0725c;
+    --equip: #79aac6;
 }
 
 body {
@@ -124,13 +127,21 @@ figure.concept figcaption { color: var(--muted); font-size: 0.88em; }
 .sk-ground { stroke: var(--rule); stroke-width: 2.5; }
 .sk-bench, .sk-sled { fill: var(--rule); stroke: var(--muted); stroke-width: 1.5; }
 .sk-rig { stroke: var(--rule); stroke-width: 3; }
-.sk-bar { stroke: var(--accent); stroke-width: 4; stroke-linecap: round; }
-.sk-plate { fill: var(--accent); }
-.sk-dumbbell, .sk-handle, .sk-pad { fill: var(--accent); }
-.sk-wheel { fill: none; stroke: var(--accent); stroke-width: 3.5; }
-/* 判据线：杠线与足中线是深蹲/硬拉唯一的硬性力学判据，必须最显眼 */
-.sk-plumb { stroke: var(--danger); stroke-width: 2; stroke-dasharray: 6 5; }
-.sk-midfoot { stroke: var(--danger); stroke-width: 4; }
+/* 四类各一个颜色：身体 --fg、器械 --equip、判据线 --accent、主动肌 --danger。
+   器械原本和判据线共用 --accent 的红/褐系，两者意义完全不同，混在一起读不出哪根是杆子。 */
+.sk-bar { stroke: var(--equip); stroke-width: 4; stroke-linecap: round; }
+.sk-plate { fill: var(--equip); }
+.sk-dumbbell, .sk-handle, .sk-pad { fill: var(--equip); }
+.sk-wheel { fill: none; stroke: var(--equip); stroke-width: 3.5; }
+/* 判据线：杠线与足中线是深蹲/硬拉唯一的硬性力学判据，必须最显眼。
+   用 --accent 而不是 --danger——红留给主动肌，与肌肉分布图的 .m-prime 同色，
+   读者在同一张卡上学一次"红=主动肌"就够了，不该在骨架上换个意思。
+   判据线现在是全图唯一的褐色，反而比原来和 .m-prime 共用红时更好辨认。 */
+.sk-plumb { stroke: var(--accent); stroke-width: 2; stroke-dasharray: 6 5; }
+.sk-midfoot { stroke: var(--accent); stroke-width: 4; }
+/* 主动肌：骨架之下的一层"荧光笔"，颜色与肌肉分布图的主动肌一致 */
+.sk-muscle { stroke: var(--danger); stroke-width: 16; stroke-linecap: round; opacity: .34; fill: none; }
+.sk-hand { fill: var(--fg); stroke: var(--surface); stroke-width: 1.5; }
 .sk-caption {
   fill: var(--muted); font-size: 15px; text-anchor: middle;
   font-family: inherit;
@@ -194,3 +205,6 @@ figure.concept figcaption { color: var(--muted); font-size: 0.88em; }
   .muscle-map-full g[data-muscle] ellipse,
   .muscle-map-full g[data-muscle] path { transition: none; }
 }
+
+/* 循环演示格：与两帧静态图同宽，排在它们之后。JS 关掉时它根本不存在。 */
+.sk-anim { outline: 1px solid var(--accent); outline-offset: -1px; }
