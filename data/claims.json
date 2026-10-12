@@ -1,0 +1,451 @@
+[
+  {
+    "id": "claim-protein-threshold",
+    "statement": "以增肌为目标时，每日蛋白质摄入约 1.6 g/kg 体重之后，继续加量带来的额外收益很小。",
+    "direction": "支持",
+    "certainty": "高",
+    "sources": [
+      {
+        "authors": "Morton 等",
+        "year": 2018,
+        "title": "A systematic review, meta-analysis and meta-regression of the effect of protein supplementation on resistance training-induced gains in muscle mass and strength in healthy adults",
+        "type": "系统综述",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/28698222/"
+      }
+    ],
+    "population": "健康成年抗阻训练者（49 项 RCT、1863 人），男女均有、以年轻受训者为主；可外推到本教程读者。",
+    "limitations": "多数纳入研究周期 6–12 周；蛋白质摄入靠自我记录，测量误差偏大；高龄、极低能量摄入与减脂期人群的阈值可能更高，外推受限。",
+    "rating_rationale": "多项 RCT 汇总出的剂量—反应曲线一致地在 1.6 g/kg 附近转平，拐点估计在敏感性分析中稳定，故为支持·高。"
+  },
+  {
+    "id": "claim-spot-reduction",
+    "statement": "针对某个部位做训练，能优先消耗该部位的脂肪（局部减脂）。",
+    "direction": "反对",
+    "certainty": "高",
+    "sources": [
+      {
+        "authors": "Ramírez-Campillo 等",
+        "year": 2013,
+        "title": "Regional fat changes induced by localized muscle endurance resistance training",
+        "type": "RCT",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/23222084/"
+      },
+      {
+        "authors": "Vispute 等",
+        "year": 2011,
+        "title": "The effect of abdominal exercise on abdominal fat",
+        "type": "RCT",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/21804427/"
+      }
+    ],
+    "population": "健康年轻成年人（单侧腿部训练组与腹部训练组），未受训或轻度受训；本教程读者可直接外推。",
+    "limitations": "样本量小（各 20–40 人）、干预 6–12 周；影像测量脂肪的精度有限，极端训练量或超长周期未被检验。",
+    "rating_rationale": "存在直接反证而不仅仅是缺证据：同一受试者的训练侧与非训练侧脂肪变化没有差异，多项独立 RCT 结论一致，故为反对·高。"
+  },
+  {
+    "id": "claim-stretch-timing",
+    "statement": "把静态拉伸放在抗阻训练之前，会改变这次训练带来的肌肥大效果。",
+    "direction": "未定",
+    "certainty": "低",
+    "sources": [
+      {
+        "authors": "Behm 等",
+        "year": 2016,
+        "title": "Acute effects of muscle stretching on physical performance, range of motion, and injury incidence in healthy active individuals: a systematic review",
+        "type": "系统综述",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/26642915/"
+      }
+    ],
+    "population": "健康活跃人群，年龄与训练水平跨度大；研究终点以急性表现与活动度为主，不是长期肌肥大。",
+    "limitations": "目前没有足够研究直接比较「训练前拉伸 vs 不拉伸」对长期肌肥大的影响；现有证据只能说明长时间静态拉伸会短暂削弱随后的最大力量输出，由此推断的肥大影响属于间接推论。",
+    "rating_rationale": "证据不足以判断哪边成立——这是没研究清楚，不是已被推翻；由急性力量下降推断肥大受损属机制推论，故为未定·低。"
+  },
+  {
+    "id": "claim-gain-rate",
+    "statement": "增肌期把体重增速控制在每周约 0.25%–0.5% 体重，比更快的增重更能把增加的重量留在瘦体重上。",
+    "direction": "支持",
+    "certainty": "低",
+    "sources": [
+      {
+        "authors": "Garthe 等",
+        "year": 2013,
+        "title": "Effect of nutritional intervention on body composition and performance in elite athletes",
+        "type": "RCT",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/23679146/"
+      },
+      {
+        "authors": "Garthe 等",
+        "year": 2011,
+        "title": "Effect of two different weight-loss rates on body composition and strength and power-related performance in elite athletes",
+        "type": "RCT",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/21558571/"
+      }
+    ],
+    "population": "精英运动员（有多年训练史），样本量各 20–40 人；外推到新手读者时方向可用，具体速率上限可能更宽松。",
+    "limitations": "两项来源都没有直接比较\"每周 0.25%–0.5%\"这个区间：Garthe 2013 是增重试验，快增组（约 8–12 周增 3.9% 体重）比自由进食组多增的是脂肪，瘦体重增幅两组没有差异；Garthe 2011 是减重试验，给出的 0.7%/周是减重速率。本条的数值区间是把这两项结果外推得到的，来源只支持\"增重越快、多出来的部分越偏向脂肪\"这个方向，不支持把 0.25%–0.5% 当成被验证过的最优值。两项研究的样本都是精英运动员，周期 8–12 周。",
+    "rating_rationale": "有直接比较不同速率的人体 RCT 支持这个方向，但样本窄、研究数量少，速率区间的边界仍可能被修正，故为支持·中。"
+  },
+  {
+    "id": "claim-mechanical-tension",
+    "statement": "机械张力是抗阻训练引起肌肥大的主要驱动因素。",
+    "direction": "支持",
+    "certainty": "中",
+    "sources": [
+      {
+        "authors": "Schoenfeld",
+        "year": 2010,
+        "title": "The mechanisms of muscle hypertrophy and their application to resistance training",
+        "type": "机制",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/20847704/"
+      }
+    ],
+    "population": "以健康成年抗阻训练者的人体与离体实验为主；可外推到本教程读者的训练决策层面。",
+    "limitations": "Schoenfeld 2010 是叙述性机制综述，摘要层面的表述是\"机械张力、肌肉损伤、代谢应激都可能起作用\"；\"张力是主要驱动\"是该综述正文的论证方向，不是对三者贡献的定量比较，因此分级不升到\"高\"。",
+    "rating_rationale": "机制证据一致且与训练实践吻合，但缺少能把三类机制分离开的人体 RCT，所以是支持·中而不是支持·高。"
+  },
+  {
+    "id": "claim-damage-not-required",
+    "statement": "肌肉损伤是肌肥大的必要条件。",
+    "direction": "反对",
+    "certainty": "中",
+    "sources": [
+      {
+        "authors": "Damas 等",
+        "year": 2018,
+        "title": "The development of skeletal muscle hypertrophy through resistance training: the role of muscle damage and muscle protein synthesis",
+        "type": "系统综述",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/29282529/"
+      }
+    ],
+    "population": "健康成年人（多为未受训或轻度受训者）的纵向训练研究；可外推到本教程读者。",
+    "limitations": "损伤标志物（肌酸激酶、肌节紊乱）与真实损伤程度之间不是线性关系；多数研究周期 8–12 周，长期的关系没有被检验。",
+    "rating_rationale": "有直接证据表明随着训练适应，损伤下降而肥大继续发生——这是反证而不是\"没研究\"；但测量损伤本身有方法学局限，故为反对·中。"
+  },
+  {
+    "id": "claim-soreness-not-indicator",
+    "statement": "训练后酸痛的程度可以用来判断这次训练的肥大效果。",
+    "direction": "反对",
+    "certainty": "中",
+    "sources": [
+      {
+        "authors": "Damas 等",
+        "year": 2018,
+        "title": "The development of skeletal muscle hypertrophy through resistance training: the role of muscle damage and muscle protein synthesis",
+        "type": "系统综述",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/29282529/"
+      },
+      {
+        "authors": "Schoenfeld",
+        "year": 2010,
+        "title": "The mechanisms of muscle hypertrophy and their application to resistance training",
+        "type": "机制",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/20847704/"
+      }
+    ],
+    "population": "健康成年抗阻训练者；对新手尤其适用——新手的酸痛在头几周最明显，而这几周的肥大其实很有限。",
+    "limitations": "没有以\"酸痛程度\"为主要暴露因素的大样本 RCT；现有证据是从损伤与肥大的解耦间接得出的。",
+    "rating_rationale": "训练者适应后酸痛显著下降而肥大继续，二者在时间上解耦，是明确的反证；但缺少直接以酸痛分级为自变量的试验，故为反对·中。"
+  },
+  {
+    "id": "claim-volume-dose-response",
+    "statement": "在一定范围内，每周每个肌群的有效组数越多，肌肥大越多（存在剂量—反应关系）。",
+    "direction": "支持",
+    "certainty": "中",
+    "sources": [
+      {
+        "authors": "Schoenfeld、Ogborn 与 Krieger",
+        "year": 2017,
+        "title": "Dose-response relationship between weekly resistance training volume and increases in muscle mass: A systematic review and meta-analysis",
+        "type": "系统综述",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/27433992/"
+      }
+    ],
+    "population": "健康成年人，训练水平跨度大；可外推到本教程读者，但新手在很低的容量下就能有明显反应。",
+    "limitations": "纳入研究多在每周 5–10+ 组的区间，曲线上端（很高容量）的数据稀少；\"有效组数\"的定义在各研究间不统一；多数研究 6–12 周。",
+    "rating_rationale": "多项研究方向一致且有荟萃支持，但上端的拐点位置不确定、个体差异大，故为支持·中。"
+  },
+  {
+    "id": "claim-load-equivalence",
+    "statement": "只要把组做到接近力竭，低负荷高次数与高负荷低次数带来的肌肥大相当。",
+    "direction": "支持",
+    "certainty": "中",
+    "sources": [
+      {
+        "authors": "Schoenfeld 等",
+        "year": 2017,
+        "title": "Strength and Hypertrophy Adaptations Between Low- vs. High-Load Resistance Training: A Systematic Review and Meta-analysis",
+        "type": "系统综述",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/28834797/"
+      },
+      {
+        "authors": "Lasevicius 等",
+        "year": 2018,
+        "title": "Effects of different intensities of resistance training with equated volume load on muscle strength and hypertrophy",
+        "type": "RCT",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/29564973/"
+      }
+    ],
+    "population": "健康成年人，男性样本偏多；可外推到本教程读者。",
+    "limitations": "Schoenfeld 2017 的荟萃要求所有组做到力竭，结论是肥大相当、最大力量仍偏向大负荷；但 Lasevicius 2018 在容量负荷相等的条件下发现 20% 1RM 的 CSA 增幅明显低于 80% 1RM（股外侧肌 8.9% vs 19.5%），所以\"等效\"的适用区间大致是 30%–80% 1RM，不能一路外推到极低负荷。受试者以男性为主。",
+    "rating_rationale": "荟萃分析在肥大终点上结论一致，但对\"接近力竭\"的依赖很强，稍微留太多余力结论就不成立，故为支持·中。"
+  },
+  {
+    "id": "claim-rest-interval",
+    "statement": "以肌肥大为目标时，组间休息 2 分钟以上优于 1 分钟左右的短休息。",
+    "direction": "支持",
+    "certainty": "中",
+    "sources": [
+      {
+        "authors": "Schoenfeld 等",
+        "year": 2016,
+        "title": "Longer Interset Rest Periods Enhance Muscle Strength and Hypertrophy in Resistance-Trained Men",
+        "type": "RCT",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/26605807/"
+      }
+    ],
+    "population": "有训练经验的成年男性，样本量 20 余人；女性与新手的外推有限。",
+    "limitations": "单项 RCT、样本小、周期 8 周；休息时长与总容量在真实训练里互相影响，短休息往往同时意味着后面几组的次数下降。",
+    "rating_rationale": "有直接的人体 RCT 支持这个方向，但只有少数几项研究、样本窄，故为支持·中。"
+  },
+  {
+    "id": "claim-failure-not-required",
+    "statement": "每一组都必须练到力竭才能最大化肌肥大。",
+    "direction": "反对",
+    "certainty": "中",
+    "sources": [
+      {
+        "authors": "Grgic 等",
+        "year": 2022,
+        "title": "Effects of resistance training performed to repetition failure or non-failure on muscular strength and hypertrophy: A systematic review and meta-analysis",
+        "type": "系统综述",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/33497853/"
+      }
+    ],
+    "population": "健康成年人，训练水平跨度大；可外推到本教程读者。",
+    "limitations": "Grgic 2022 的主分析在力竭与非力竭之间没有显著差异（肥大 ES 0.22，95%CI −0.11–0.55），但在\"已受训者\"亚组里力竭训练对肥大有显著但很小的优势（ES 0.15，95%CI 0.03–0.26）；纳入研究全部是年轻成年人，缺少老年与高水平训练者的数据。",
+    "rating_rationale": "荟萃分析显示留 1–3 次余力与练到力竭的肥大差异很小，是对\"必须力竭\"的直接反证；但各研究对\"接近程度\"的定义不统一，故为反对·中。"
+  },
+  {
+    "id": "claim-frequency",
+    "statement": "在每周总容量相等时，把容量分到每周 ≥2 次训练，比集中在 1 次更有利于肌肥大。",
+    "direction": "支持",
+    "certainty": "中",
+    "sources": [
+      {
+        "authors": "Schoenfeld、Ogborn 与 Krieger",
+        "year": 2016,
+        "title": "Effects of Resistance Training Frequency on Measures of Muscle Hypertrophy: A Systematic Review and Meta-Analysis",
+        "type": "系统综述",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/27102172/"
+      }
+    ],
+    "population": "健康成年人；可外推到本教程读者。",
+    "limitations": "容量在各研究中的\"相等\"程度不一致；频率从 2 次再往上加（3 次以上）是否继续更好，证据不足；多数研究 6–12 周。",
+    "rating_rationale": "荟萃结果方向一致，但效应量不大、且很可能是通过\"更容易完成同样容量\"间接实现的，故为支持·中。"
+  },
+  {
+    "id": "claim-rir-accuracy",
+    "statement": "人对 RIR（还能再做几次）的估计，在离力竭越近时越准；离得远时普遍高估自己剩下的次数。",
+    "direction": "支持",
+    "certainty": "低",
+    "sources": [
+      {
+        "authors": "Zourdos 等",
+        "year": 2021,
+        "title": "Proximity to Failure and Total Repetitions Performed in a Set Influences Accuracy of Intraset Repetitions in Reserve-Based Rating of Perceived Exertion",
+        "type": "观察",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/30747900/"
+      }
+    ],
+    "population": "有训练经验的成年人，样本量小；新手的估计准确性只会更差，这一点是外推而非直接证据。",
+    "limitations": "样本小、动作种类有限（以卧推、深蹲为主）；估计准确性随训练经验变化，没有长期追踪。",
+    "rating_rationale": "只有少数小样本观察研究，结论方向合理但精度未知，故为支持·低——用 RIR 安排训练可以，但别把它当成精确刻度。"
+  },
+  {
+    "id": "claim-energy-balance",
+    "statement": "体重的长期变化方向由能量收支决定：持续盈余才会增重，持续亏空才会减重。",
+    "direction": "支持",
+    "certainty": "高",
+    "sources": [
+      {
+        "authors": "Hall 等",
+        "year": 2012,
+        "title": "Energy balance and its components: implications for body weight regulation（ASN／ILSI North America 共识声明）",
+        "type": "指南",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/22434603/"
+      }
+    ],
+    "population": "健康成年人，跨年龄与体重范围；可直接外推到本教程读者。",
+    "limitations": "本轮（2026-10-12）已通过 PMC 开放全文（PMC3302369）完成实质核验，不再是\"只核到标题\"。该文是美国营养学会与 ILSI North America 的共识声明（不是系统综述，来源类型已据此改正），支持本条的原文是：能量平衡方程「is a statement of the principle of energy conservation」，以及「The development of obesity by necessity requires positive energy imbalance」。三条边界同样来自这篇全文：① 体重变化里还包含体水分变化，\"短期体重\"不等于能量收支（本条只讲长期方向）；② 文章明确反对用\"3500 kcal 掉一磅\"这类线性换算去预测减重幅度；③ 摄入与消耗会互相代偿，单独改一边常被另一边抵消。另需读者知道：该共识会议由 ILSI North America（食品行业会员会费支持）资助，且未经 AJCN 编辑部同行评议——本条只用它支撑能量守恒层面的方向性结论，不用它支撑任何干预效果的量级。",
+    "rating_rationale": "方向性结论由热力学第一定律与共识声明的原文直接支持，经代谢舱研究反复验证，故为支持·高；不确定的是\"怎么测、能减多少\"，不是\"方向成不成立\"——量级问题已写进 limitations。"
+  },
+  {
+    "id": "claim-sleep-performance",
+    "statement": "睡眠不足会削弱运动表现；对长期训练适应的影响证据更弱。",
+    "direction": "支持",
+    "certainty": "低",
+    "sources": [
+      {
+        "authors": "Fullagar 等",
+        "year": 2015,
+        "title": "Sleep and athletic performance: the effects of sleep loss on exercise performance, and physiological and cognitive responses to exercise",
+        "type": "系统综述",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/25315456/"
+      }
+    ],
+    "population": "运动员与健康成年人；对本教程读者可外推，但多数研究用的是急性睡眠剥夺而不是长期轻度睡眠债。",
+    "limitations": "Fullagar 2015 自己的结论是\"证据并不一致\"：部分最大用力与粗大运动表现在睡眠剥夺后仍能维持，只有在运动员身上测的专项表现较一致地下降；该综述测的是急性睡眠剥夺/限制对表现的影响，没有测长期训练适应（肌肥大、力量增长），本条里与\"训练适应\"相关的部分属于外推。",
+    "rating_rationale": "方向一致且机制清楚，但从急性剥夺外推到日常睡眠债属于外推，故为支持·中。"
+  },
+  {
+    "id": "claim-overtraining-rare",
+    "statement": "业余训练者最常见的问题是\"训练不足 + 恢复不足\"，而不是医学意义上的过度训练综合征。",
+    "direction": "支持",
+    "certainty": "低",
+    "sources": [
+      {
+        "authors": "Meeusen 等（ECSS/ACSM 联合共识）",
+        "year": 2013,
+        "title": "Prevention, diagnosis, and treatment of the overtraining syndrome: joint consensus statement of the European College of Sport Science and the American College of Sports Medicine",
+        "type": "指南",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/23247672/"
+      }
+    ],
+    "population": "运动员为主；对业余训练者而言，诊断门槛与发生率的外推是推论而非直接数据。",
+    "limitations": "ECSS/ACSM 共识讲的是过度训练综合征的诊断门槛、排除诊断与标志物缺失，它没有给出任何人群（更没有业余训练者）里 OTS 与\"训练不足/恢复不足\"的发生率比较。本条是从\"OTS 需要长期适应不良并排除其他病因\"这一诊断门槛推出的实践判断，不是来源里的统计结论。",
+    "rating_rationale": "共识文件明确指出该综合征的诊断需要排除其他原因且需长期表现下降，据此可推出业余场景下它被过度归因；但缺少人群发生率数据，故为支持·中。"
+  },
+  {
+    "id": "claim-interference-effect",
+    "statement": "在同一周期里同时练有氧与力量，会削弱力量与肌肥大的增长（干扰效应）。",
+    "direction": "支持",
+    "certainty": "中",
+    "sources": [
+      {
+        "authors": "Wilson 等",
+        "year": 2012,
+        "title": "Concurrent training: a meta-analysis examining interference of aerobic and resistance exercises",
+        "type": "系统综述",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/22002517/"
+      }
+    ],
+    "population": "健康成年人，以年轻男性为主；可外推到本教程读者。",
+    "limitations": "干扰的量级随有氧的模式（跑步 > 骑行）、时长与频率上升；在本教程推荐的量（每周 2–3 次、每次 20–30 分钟低强度）下，荟萃数据显示的干扰很小，甚至难以与噪声区分。",
+    "rating_rationale": "荟萃分析支持\"干扰存在且随有氧量增加\"，但在低剂量区间的效应很小、研究间异质性大，故为支持·中——这条结论的实际用法是安排位置与剂量，而不是不做有氧。"
+  },
+  {
+    "id": "claim-cardio-mortality",
+    "statement": "心肺耐力水平越高，全因死亡风险越低；这一价值独立于增肌目标。",
+    "direction": "支持",
+    "certainty": "高",
+    "sources": [
+      {
+        "authors": "Bull 等（WHO 2020 指南工作组）",
+        "year": 2020,
+        "title": "World Health Organization 2020 guidelines on physical activity and sedentary behaviour",
+        "type": "指南",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/33239350/"
+      }
+    ],
+    "population": "全球成年人群（指南综合了大规模队列证据）；可直接外推到本教程读者。",
+    "limitations": "WHO 2020 指南给出的证据是\"身体活动量—健康结局（含全因死亡）\"，暴露指标是活动量而不是实测心肺耐力；把它读成\"心肺耐力水平越高、死亡风险越低\"是相邻指标之间的外推。指南本身的推荐强度与证据分级支持\"规律有氧活动降低全因死亡风险\"。",
+    "rating_rationale": "大规模队列结果一致、剂量—反应清楚，并被 WHO 指南采纳，故为支持·高。"
+  },
+  {
+    "id": "claim-redflag-referral",
+    "safety": true,
+    "statement": "出现红旗征（如外伤后立即丧失功能、鞍区麻木或大小便失禁、夜间痛醒、不明原因体重骤降）时，应当停止训练并就医，而不是自行调整训练继续。",
+    "direction": "支持",
+    "certainty": "高",
+    "sources": [
+      {
+        "authors": "Riebe 等（美国运动医学会 ACSM 科学圆桌）",
+        "year": 2015,
+        "title": "Updating ACSM's Recommendations for Exercise Preparticipation Health Screening",
+        "type": "指南",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/26473759/"
+      },
+      {
+        "authors": "Qaseem 等（美国内科医师学会临床实践指南）",
+        "year": 2017,
+        "title": "Noninvasive Treatments for Acute, Subacute, and Chronic Low Back Pain: A Clinical Practice Guideline From the American College of Physicians",
+        "type": "指南",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/28192789/"
+      },
+      {
+        "authors": "Downie A, Williams CM, Henschke N, 等",
+        "year": 2013,
+        "title": "Red flags to screen for malignancy and fracture in patients with low back pain: systematic review",
+        "type": "系统综述",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/24335669/"
+      },
+      {
+        "authors": "Miller 等（综述英国脊柱外科协会 BASS 标准）",
+        "year": 2023,
+        "title": "Cauda equina syndrome",
+        "type": "指南",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/38186331/"
+      }
+    ],
+    "population": "成年腰背痛患者；红旗征的筛查逻辑在其他部位同样适用，本教程按更保守的方向使用。",
+    "limitations": "本轮逐条核到了清单里每一类红旗征的出处（覆盖表见 docs/acceptance/source-audit.md）：胸痛／晕厥／静息呼吸困难三条由 ACSM 2015 的运动前筛查更新支撑（该文写明「exercise-related cardiovascular events are often preceded by warning signs/symptoms」，并把\"有症状／体征\"作为必须转诊评估的分流条件；症状的具体清单在 ACSM 指南正文，不在这篇摘要里）；鞍区麻木／大小便失禁由 Miller 2023 的马尾综合征综述支撑（明确把膀胱功能障碍与鞍区麻木列为需要立即就诊、1 小时内 MRI 的红旗征）；夜间痛醒、不明原因体重骤降、外伤后丧失功能三条属于 Downie 2013 评估的腰背痛红旗征范围。必须说明的反向证据：Downie 2013 的结论恰恰是\"多数红旗征单独使用时几乎不改变骨折或肿瘤的概率\"，诊断价值较高的只有少数几条（外伤后 11%、长期用糖皮质激素 33%、可见挫伤／擦伤 62%、既往恶性肿瘤史 33%，多条同时出现时升到 90%）。因此本教程把红旗征当作**停止训练并就医的触发器**（宁可多去一次），不当作诊断依据——这正是本条 statement 的措辞。ACP 2017 指南本身讲的是无红旗征腰背痛的非侵入性治疗，它把红旗征人群排除在适用范围之外，只作为\"先排除严重病因再谈保守治疗\"的流程旁证保留。把腰背痛的红旗征逻辑推广到肩、膝等部位是保守外推，方向上只会让读者更早就医，不会让他更晚。",
+    "rating_rationale": "主流临床指南一致要求先排除红旗征再谈保守治疗，且漏诊代价不可逆，故为支持·高；这条按 §4.3 的安全来源门槛登记。"
+  },
+  {
+    "id": "claim-strength-training-injury-prevention",
+    "safety": true,
+    "statement": "规律的力量训练能降低运动损伤的发生率。",
+    "direction": "支持",
+    "certainty": "中",
+    "sources": [
+      {
+        "authors": "Lauersen 等",
+        "year": 2014,
+        "title": "The effectiveness of exercise interventions to prevent sports injuries: a systematic review and meta-analysis of randomised controlled trials",
+        "type": "系统综述",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/24100287/"
+      }
+    ],
+    "population": "运动人群（含青少年与成年运动员）；对一般健身人群属于外推，方向可用。",
+    "limitations": "纳入研究以运动队为背景，干预往往是一整套神经肌肉训练而不是单纯力量训练；随访期多在一个赛季以内。",
+    "rating_rationale": "多项 RCT 的荟萃结果方向一致且效应量可观，但人群与干预形式与一般健身者不完全相同，故为支持·中。"
+  },
+  {
+    "id": "claim-stretching-not-injury-prevention",
+    "safety": true,
+    "statement": "训练前做静态拉伸能预防运动损伤。",
+    "direction": "反对",
+    "certainty": "中",
+    "sources": [
+      {
+        "authors": "Lauersen 等",
+        "year": 2014,
+        "title": "The effectiveness of exercise interventions to prevent sports injuries: a systematic review and meta-analysis of randomised controlled trials",
+        "type": "系统综述",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/24100287/"
+      }
+    ],
+    "population": "运动人群；可外推到一般健身者的热身决策。",
+    "limitations": "\"拉伸\"在各研究里的时长与方式差异大；本条说的是\"预防损伤\"这一终点，不涉及拉伸对活动度的作用（那是另一回事且证据更正面）。",
+    "rating_rationale": "荟萃分析中拉伸组与对照组的损伤率没有显著差异——这是反证而不是没研究；但纳入研究数量有限，故为反对·中。"
+  },
+  {
+    "id": "claim-load-spike-injury",
+    "safety": true,
+    "statement": "训练负荷在短时间内大幅跳升，与随后的损伤风险上升相关。",
+    "direction": "支持",
+    "certainty": "中",
+    "sources": [
+      {
+        "authors": "Gabbett",
+        "year": 2016,
+        "title": "The training-injury prevention paradox: should athletes be training smarter and harder?",
+        "type": "系统综述",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/26758673/"
+      }
+    ],
+    "population": "团队项目运动员；对健身人群属于外推，但与\"渐进超负荷要有上限\"的实践一致。",
+    "limitations": "主要是观察性数据，负荷的量化方式（急慢性负荷比）后来受到方法学批评，阈值不应被当作精确数字使用；因果方向无法由观察数据确立。",
+    "rating_rationale": "方向在多个队列中重复出现且机制合理，但量化方法有争议、证据等级是观察性的，故为支持·中——用法是\"别一次跳太多\"，不是去算某个比值。"
+  }
+]

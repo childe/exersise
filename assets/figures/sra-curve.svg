@@ -1,0 +1,24 @@
+<!--caption: 刺激—恢复—适应（SRA）示意图，表达趋势而非数值；不是对个体反应的预测。曲线的高低与快慢因人、因动作、因负荷而异。-->
+<svg data-kind="conceptual" viewBox="0 0 640 300" role="img" aria-label="刺激、恢复、适应三阶段的表现水平变化示意曲线" xmlns="http://www.w3.org/2000/svg">
+  <g stroke="currentColor" fill="none" stroke-width="1">
+    <path d="M60 250 L600 250" />
+    <path d="M60 250 L60 40" />
+    <path d="M595 245 L600 250 L595 255" />
+    <path d="M55 45 L60 40 L65 45" />
+  </g>
+  <path d="M60 160 L600 160" stroke="currentColor" fill="none" stroke-width="1" stroke-dasharray="4 5" opacity="0.6" />
+  <path d="M60 160 L120 160 L190 225 L300 160 L380 110 L470 130 L560 158"
+        stroke="var(--accent)" fill="none" stroke-width="3" />
+  <g stroke="currentColor" fill="none" stroke-width="1" stroke-dasharray="3 4" opacity="0.7">
+    <path d="M120 60 L120 250" />
+    <path d="M380 60 L380 250" />
+  </g>
+  <text x="300" y="283" fill="currentColor" text-anchor="middle" font-size="15">时间 →</text>
+  <text x="22" y="150" fill="currentColor" font-size="15" transform="rotate(-90 22 150)" text-anchor="middle">表现水平 →</text>
+  <text x="66" y="152" fill="currentColor" font-size="13">原有水平</text>
+  <text x="126" y="55" fill="currentColor" font-size="14">① 刺激（这次训练）</text>
+  <text x="196" y="246" fill="currentColor" font-size="14">② 恢复：先掉下去</text>
+  <text x="330" y="100" fill="currentColor" font-size="14">③ 适应：升到原有水平之上</text>
+  <text x="386" y="55" fill="currentColor" font-size="14">④ 下一次刺激的窗口</text>
+  <text x="470" y="178" fill="currentColor" font-size="13">窗口错过就滑回去</text>
+</svg>

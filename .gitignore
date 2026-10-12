@@ -1,0 +1,5 @@
+.xdev/
+.worktrees/
+dist/
+node_modules/
+.ace-index.json

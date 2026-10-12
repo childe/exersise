@@ -1,0 +1,1138 @@
+[
+  {
+    "slug": "novice-3d",
+    "title": "新手 全身 3 天（健身房）",
+    "audience": {
+      "level": "新手",
+      "days_per_week": 3,
+      "equipment": "健身房",
+      "goal": "增肌",
+      "prerequisites": "已读导读「第一次训练前必读」，并在空杆下练过每个动作的失败退出方式"
+    },
+    "week": [
+      {
+        "day": "周一",
+        "type": "力量",
+        "items": [
+          {
+            "exercise": "back-squat-high-bar",
+            "sets": 3,
+            "reps": "5",
+            "rir": 2,
+            "rest": "3–5 分钟"
+          },
+          {
+            "exercise": "db-bench-press",
+            "sets": 3,
+            "reps": "8",
+            "rir": 2,
+            "rest": "2–3 分钟"
+          },
+          {
+            "exercise": "seated-cable-row",
+            "sets": 3,
+            "reps": "10",
+            "rir": 2,
+            "rest": "2 分钟"
+          },
+          {
+            "exercise": "plank",
+            "sets": 3,
+            "reps": "30 秒",
+            "rir": 2,
+            "rest": "60 秒"
+          }
+        ]
+      },
+      {
+        "day": "周二",
+        "type": "休息"
+      },
+      {
+        "day": "周三",
+        "type": "力量",
+        "items": [
+          {
+            "exercise": "db-romanian-deadlift",
+            "sets": 3,
+            "reps": "8",
+            "rir": 2,
+            "rest": "2–3 分钟"
+          },
+          {
+            "exercise": "machine-shoulder-press",
+            "sets": 3,
+            "reps": "10",
+            "rir": 2,
+            "rest": "2 分钟"
+          },
+          {
+            "exercise": "lat-pulldown",
+            "sets": 3,
+            "reps": "10",
+            "rir": 2,
+            "rest": "2 分钟"
+          },
+          {
+            "exercise": "db-farmer-carry",
+            "sets": 3,
+            "reps": "30 米",
+            "rir": 2,
+            "rest": "90 秒"
+          }
+        ]
+      },
+      {
+        "day": "周四",
+        "type": "有氧",
+        "cardio": {
+          "mode": "快走或固定单车",
+          "minutes": 25,
+          "intensity": "能完整说出一句话的强度（Zone 2）",
+          "placement": "独立日",
+          "placement_reason": "新手的恢复余量小，把有氧与力量日分开可以避开干扰效应，也更容易坚持",
+          "chapter_ref": "ch8"
+        }
+      },
+      {
+        "day": "周五",
+        "type": "力量",
+        "items": [
+          {
+            "exercise": "leg-press",
+            "sets": 3,
+            "reps": "10",
+            "rir": 2,
+            "rest": "2–3 分钟"
+          },
+          {
+            "exercise": "push-up",
+            "sets": 3,
+            "reps": "8–12",
+            "rir": 2,
+            "rest": "2 分钟"
+          },
+          {
+            "exercise": "db-one-arm-row",
+            "sets": 3,
+            "reps": "10",
+            "rir": 2,
+            "rest": "2 分钟"
+          },
+          {
+            "exercise": "cable-pallof-press",
+            "sets": 2,
+            "reps": "8",
+            "rir": 2,
+            "rest": "60 秒"
+          }
+        ]
+      },
+      {
+        "day": "周六",
+        "type": "休息"
+      },
+      {
+        "day": "周日",
+        "type": "休息"
+      }
+    ],
+    "start_load": "每个动作：先用空杆或最轻一档做 8 次评估动作质量 → 每组加一对最小片（或上调一档），直到这一组做完还剩 2 次（RIR 2）→ 取该重量的 90% 作为第一周工作重量。第一次不测极限，第一周不追求接近力竭。",
+    "start_load_refs": [
+      {
+        "exercise": "back-squat-high-bar",
+        "range": "空杆 20 kg 起，常见首周工作重量 20–35 kg",
+        "source": "区间是常见起点示例，个体差异大，以字段 4 的流程实测为准"
+      },
+      {
+        "exercise": "db-bench-press",
+        "range": "每只 5–10 kg 起，常见首周 8–14 kg",
+        "source": "区间是常见起点示例，个体差异大，以字段 4 的流程实测为准"
+      },
+      {
+        "exercise": "db-romanian-deadlift",
+        "range": "每只 6–10 kg 起，常见首周 8–16 kg",
+        "source": "区间是常见起点示例，个体差异大，以字段 4 的流程实测为准"
+      }
+    ],
+    "warmup": {
+      "general": "5 分钟渐进有氧（快走、固定单车或划船机）把心率与体温抬起来，微微出汗即可",
+      "specific": "当天第一个大动作：空杆 × 10 → 50% × 5 → 70% × 3 → 90% × 1 → 工作重量；同一动作模式的后续动作只做 1 组轻重量",
+      "by_type": "单关节与固定器械动作只做 1–2 组轻重量递增；搬运类用一次半程距离试走，不做完整递增阶梯"
+    },
+    "progression": [
+      {
+        "exercise": "back-squat-high-bar",
+        "increment_kg": "2.5–5",
+        "cap_pct": 5,
+        "trigger": "连续 2 次训练都能在 RIR ≥ 2 下完成 3 组 × 5 次则上调"
+      },
+      {
+        "exercise": "db-bench-press",
+        "increment_kg": "1–2",
+        "cap_pct": 5,
+        "trigger": "连续 2 次训练都能在 RIR ≥ 2 下完成 3 组 × 8 次则上调"
+      },
+      {
+        "exercise": "db-romanian-deadlift",
+        "increment_kg": "2",
+        "cap_pct": 5,
+        "trigger": "连续 2 次训练都能在 RIR ≥ 2 下完成 3 组 × 8 次则上调"
+      },
+      {
+        "exercise": "leg-press",
+        "increment_kg": "5",
+        "cap_pct": 5,
+        "trigger": "连续 2 次训练都能在 RIR ≥ 2 下完成 3 组 × 10 次则上调"
+      }
+    ],
+    "increment_mismatch": "本套采用 double progression：器械最小增量偏大时（哑铃一跳 2 kg、固定器械一片 5 kg），先把次数从区间下限爬到上限，能在 RIR ≥ 2 下完成上限次数再跳下一档重量，并回到区间下限。",
+    "failure_rules": {
+      "single_miss": "单次没完成：保持重量重做一次，不下调",
+      "two_misses": "连续两次同一动作未达标：下调该动作 10%，按进阶规则重新爬坡",
+      "miss_one_session": "缺课 1 次：顺延，不补练",
+      "miss_1_2_weeks": "缺课 1–2 周：按原重量的 ~90% 重启",
+      "miss_over_month": "缺课超过 1 个月：按字段 4 的起始负荷流程重走一遍",
+      "underrecovery": "出现恢复不足信号（睡眠债、静息心率升高、广泛酸胀迟迟不退、连续两次表现下滑）：先插入一周 deload（容量减半或强度降 10%），而不是先降重量。新手最常见的不是练太少，而是恢复没跟上，deload 周照样按原计划出勤，只是把量砍半。"
+    },
+    "substitutions": [
+      {
+        "exercise": "back-squat-high-bar",
+        "alts": [
+          "goblet-squat",
+          "leg-press"
+        ],
+        "scope": "适用场景仅限杠铃架被占用或当前水平还撑不住杠铃背蹲；不适用于疼痛（见安全口径 C1）"
+      },
+      {
+        "exercise": "db-bench-press",
+        "alts": [
+          "machine-chest-press",
+          "push-up"
+        ],
+        "scope": "适用场景仅限哑铃区被占用或当天没有合适重量的哑铃；不适用于疼痛（见安全口径 C1）"
+      },
+      {
+        "exercise": "lat-pulldown",
+        "alts": [
+          "seated-cable-row",
+          "band-row"
+        ],
+        "scope": "适用场景仅限下拉器械被占用；不适用于疼痛（见安全口径 C1）"
+      }
+    ],
+    "exit_criteria": {
+      "when": "同一动作连续两次 deload 之后仍无法推进，或线性加重已连续 4 周停滞（说明\"每次训练都加重\"这条规则对你已经到头）",
+      "next": "upper-lower-4d",
+      "chapter_ref": "ch5"
+    },
+    "pain_path": "canon:C1"
+  },
+  {
+    "slug": "upper-lower-4d",
+    "title": "进阶 上下肢分化 4 天",
+    "audience": {
+      "level": "进阶",
+      "days_per_week": 4,
+      "equipment": "健身房",
+      "goal": "增肌",
+      "prerequisites": "已在新手全身模板上稳定训练 3 个月以上，且主要动作的线性加重已停滞"
+    },
+    "week": [
+      {
+        "day": "周一",
+        "type": "力量",
+        "items": [
+          {
+            "exercise": "barbell-bench-press",
+            "sets": 4,
+            "reps": "6",
+            "rir": 2,
+            "rest": "3 分钟"
+          },
+          {
+            "exercise": "barbell-row",
+            "sets": 4,
+            "reps": "8",
+            "rir": 2,
+            "rest": "2–3 分钟"
+          },
+          {
+            "exercise": "db-shoulder-press",
+            "sets": 3,
+            "reps": "10",
+            "rir": 2,
+            "rest": "2 分钟"
+          },
+          {
+            "exercise": "cable-face-pull",
+            "sets": 3,
+            "reps": "15",
+            "rir": 2,
+            "rest": "90 秒"
+          }
+        ]
+      },
+      {
+        "day": "周二",
+        "type": "力量",
+        "items": [
+          {
+            "exercise": "back-squat-high-bar",
+            "sets": 4,
+            "reps": "5",
+            "rir": 2,
+            "rest": "3–5 分钟"
+          },
+          {
+            "exercise": "romanian-deadlift",
+            "sets": 3,
+            "reps": "8",
+            "rir": 2,
+            "rest": "3 分钟"
+          },
+          {
+            "exercise": "seated-calf-raise",
+            "sets": 3,
+            "reps": "12",
+            "rir": 1,
+            "rest": "90 秒"
+          },
+          {
+            "exercise": "ab-wheel-rollout",
+            "sets": 3,
+            "reps": "8",
+            "rir": 2,
+            "rest": "90 秒"
+          }
+        ]
+      },
+      {
+        "day": "周三",
+        "type": "休息"
+      },
+      {
+        "day": "周四",
+        "type": "力量",
+        "items": [
+          {
+            "exercise": "overhead-press",
+            "sets": 4,
+            "reps": "6",
+            "rir": 2,
+            "rest": "3 分钟"
+          },
+          {
+            "exercise": "pull-up",
+            "sets": 4,
+            "reps": "6–8",
+            "rir": 2,
+            "rest": "2–3 分钟"
+          },
+          {
+            "exercise": "db-incline-bench-press",
+            "sets": 3,
+            "reps": "10",
+            "rir": 2,
+            "rest": "2 分钟"
+          },
+          {
+            "exercise": "db-curl",
+            "sets": 3,
+            "reps": "12",
+            "rir": 1,
+            "rest": "90 秒"
+          }
+        ]
+      },
+      {
+        "day": "周五",
+        "type": "力量",
+        "items": [
+          {
+            "exercise": "conventional-deadlift",
+            "sets": 3,
+            "reps": "5",
+            "rir": 2,
+            "rest": "3–5 分钟"
+          },
+          {
+            "exercise": "db-bulgarian-split-squat",
+            "sets": 3,
+            "reps": "10",
+            "rir": 2,
+            "rest": "2 分钟"
+          },
+          {
+            "exercise": "lying-leg-curl",
+            "sets": 3,
+            "reps": "12",
+            "rir": 1,
+            "rest": "90 秒"
+          }
+        ]
+      },
+      {
+        "day": "周六",
+        "type": "有氧",
+        "cardio": {
+          "mode": "划船机或快走",
+          "minutes": 30,
+          "intensity": "能完整说出一句话的强度（Zone 2）",
+          "placement": "力量日之后的独立日",
+          "placement_reason": "放在周六既不占用周内的力量日，也与周二、周五的下肢日隔开，减少对腿部力量的干扰",
+          "chapter_ref": "ch8"
+        }
+      },
+      {
+        "day": "周日",
+        "type": "休息"
+      }
+    ],
+    "start_load": "沿用上一套模板里每个动作的最近工作重量；新加入的动作按\"最轻一档 × 8 次评估 → 每组加一档到 RIR 2 → 取 90%\"的流程现场测，第一周所有动作都留 RIR 2–3。",
+    "start_load_refs": [
+      {
+        "exercise": "barbell-bench-press",
+        "range": "沿用现有重量；没练过杠铃卧推时从空杆 20 kg 起，常见首周 25–45 kg",
+        "source": "区间是常见起点示例，个体差异大，以字段 4 的流程实测为准"
+      },
+      {
+        "exercise": "overhead-press",
+        "range": "空杆 20 kg 起，常见首周 20–35 kg",
+        "source": "区间是常见起点示例，个体差异大，以字段 4 的流程实测为准"
+      },
+      {
+        "exercise": "conventional-deadlift",
+        "range": "常见首周工作重量 40–70 kg，以能保持背中立为上限",
+        "source": "区间是常见起点示例，个体差异大，以字段 4 的流程实测为准"
+      }
+    ],
+    "warmup": {
+      "general": "5 分钟渐进有氧（快走、固定单车或划船机）把心率与体温抬起来，微微出汗即可",
+      "specific": "当天第一个大动作：空杆 × 10 → 50% × 5 → 70% × 3 → 90% × 1 → 工作重量；同一动作模式的后续动作只做 1 组轻重量",
+      "by_type": "单关节与固定器械动作只做 1–2 组轻重量递增；搬运类用一次半程距离试走，不做完整递增阶梯"
+    },
+    "progression": [
+      {
+        "exercise": "barbell-bench-press",
+        "increment_kg": "2.5",
+        "cap_pct": 5,
+        "trigger": "当周 4 组 × 6 次全部在 RIR ≥ 2 下完成，下周上调；按周而不是按次上调"
+      },
+      {
+        "exercise": "back-squat-high-bar",
+        "increment_kg": "2.5–5",
+        "cap_pct": 5,
+        "trigger": "当周 4 组 × 5 次全部在 RIR ≥ 2 下完成，下周上调"
+      },
+      {
+        "exercise": "overhead-press",
+        "increment_kg": "1–2.5",
+        "cap_pct": 5,
+        "trigger": "当周 4 组 × 6 次全部在 RIR ≥ 2 下完成，下周上调"
+      },
+      {
+        "exercise": "conventional-deadlift",
+        "increment_kg": "5",
+        "cap_pct": 5,
+        "trigger": "当周 3 组 × 5 次全部在 RIR ≥ 2 下完成，下周上调"
+      }
+    ],
+    "increment_mismatch": "本套采用小配重片：给杠铃配 0.5–1.25 kg 的小片，让上肢动作也能做到 1–2 kg 的增量；没有小片的动作退回 double progression。",
+    "failure_rules": {
+      "single_miss": "单次没完成：保持重量重做一次，不下调",
+      "two_misses": "连续两次同一动作未达标：下调该动作 10%，按进阶规则重新爬坡",
+      "miss_one_session": "缺课 1 次：顺延，不补练",
+      "miss_1_2_weeks": "缺课 1–2 周：按原重量的 ~90% 重启",
+      "miss_over_month": "缺课超过 1 个月：按字段 4 的起始负荷流程重走一遍",
+      "underrecovery": "出现恢复不足信号（睡眠债、静息心率升高、广泛酸胀迟迟不退、连续两次表现下滑）：先插入一周 deload（容量减半或强度降 10%），而不是先降重量。到了这个阶段，连续两周达不到目标次数更可能是周内恢复不足而不是刺激不够，先查睡眠与进食。"
+    },
+    "substitutions": [
+      {
+        "exercise": "barbell-bench-press",
+        "alts": [
+          "db-bench-press",
+          "machine-chest-press"
+        ],
+        "scope": "适用场景仅限卧推架被占用，或当天没有保护杆也没有保护者；不适用于疼痛（见安全口径 C1）"
+      },
+      {
+        "exercise": "pull-up",
+        "alts": [
+          "lat-pulldown",
+          "inverted-row"
+        ],
+        "scope": "适用场景仅限单杠被占用或当前次数还做不满；不适用于疼痛（见安全口径 C1）"
+      },
+      {
+        "exercise": "conventional-deadlift",
+        "alts": [
+          "romanian-deadlift",
+          "back-extension"
+        ],
+        "scope": "适用场景仅限没有可用的硬拉区域或地面不允许放杠；不适用于疼痛（见安全口径 C1）"
+      }
+    ],
+    "exit_criteria": {
+      "when": "周内恢复不足反复出现（连续 2–3 周表现下滑且 deload 后很快重现），说明 4 天的总量与你的恢复能力不匹配",
+      "next": "ppl-6d",
+      "chapter_ref": "ch5"
+    },
+    "pain_path": "canon:C1"
+  },
+  {
+    "slug": "ppl-6d",
+    "title": "推拉腿 6 天",
+    "audience": {
+      "level": "进阶",
+      "days_per_week": 6,
+      "equipment": "健身房",
+      "goal": "增肌",
+      "prerequisites": "睡眠与进食稳定、每周能稳定到场 6 次，且已在 4 天分化上完整训练过一个周期"
+    },
+    "week": [
+      {
+        "day": "周一（推·重）",
+        "type": "力量",
+        "items": [
+          {
+            "exercise": "barbell-bench-press",
+            "sets": 4,
+            "reps": "5",
+            "rir": 2,
+            "rest": "3 分钟"
+          },
+          {
+            "exercise": "overhead-press",
+            "sets": 3,
+            "reps": "8",
+            "rir": 2,
+            "rest": "2–3 分钟"
+          },
+          {
+            "exercise": "cable-pushdown",
+            "sets": 3,
+            "reps": "12",
+            "rir": 1,
+            "rest": "90 秒"
+          }
+        ]
+      },
+      {
+        "day": "周二（拉·重）",
+        "type": "力量",
+        "items": [
+          {
+            "exercise": "barbell-row",
+            "sets": 4,
+            "reps": "6",
+            "rir": 2,
+            "rest": "3 分钟"
+          },
+          {
+            "exercise": "pull-up",
+            "sets": 3,
+            "reps": "6–8",
+            "rir": 2,
+            "rest": "2–3 分钟"
+          },
+          {
+            "exercise": "barbell-curl",
+            "sets": 3,
+            "reps": "10",
+            "rir": 1,
+            "rest": "90 秒"
+          }
+        ]
+      },
+      {
+        "day": "周三（腿·重）",
+        "type": "力量",
+        "items": [
+          {
+            "exercise": "back-squat-low-bar",
+            "sets": 4,
+            "reps": "5",
+            "rir": 2,
+            "rest": "3–5 分钟"
+          },
+          {
+            "exercise": "romanian-deadlift",
+            "sets": 3,
+            "reps": "8",
+            "rir": 2,
+            "rest": "3 分钟"
+          },
+          {
+            "exercise": "standing-calf-raise-bodyweight",
+            "sets": 3,
+            "reps": "15",
+            "rir": 1,
+            "rest": "60 秒"
+          }
+        ]
+      },
+      {
+        "day": "周四（推·中）",
+        "type": "力量",
+        "items": [
+          {
+            "exercise": "db-incline-bench-press",
+            "sets": 4,
+            "reps": "10",
+            "rir": 2,
+            "rest": "2 分钟"
+          },
+          {
+            "exercise": "machine-shoulder-press",
+            "sets": 3,
+            "reps": "12",
+            "rir": 2,
+            "rest": "2 分钟"
+          },
+          {
+            "exercise": "db-lateral-raise",
+            "sets": 3,
+            "reps": "15",
+            "rir": 1,
+            "rest": "60 秒"
+          }
+        ]
+      },
+      {
+        "day": "周五（拉·中）",
+        "type": "力量",
+        "items": [
+          {
+            "exercise": "seated-cable-row",
+            "sets": 4,
+            "reps": "10",
+            "rir": 2,
+            "rest": "2 分钟"
+          },
+          {
+            "exercise": "lat-pulldown",
+            "sets": 3,
+            "reps": "12",
+            "rir": 2,
+            "rest": "2 分钟"
+          },
+          {
+            "exercise": "db-reverse-fly",
+            "sets": 3,
+            "reps": "15",
+            "rir": 1,
+            "rest": "60 秒"
+          }
+        ]
+      },
+      {
+        "day": "周六（腿·轻 + 有氧）",
+        "type": "有氧",
+        "cardio": {
+          "mode": "固定单车或椭圆机",
+          "minutes": 25,
+          "intensity": "能完整说出一句话的强度（Zone 2）",
+          "placement": "安排在腿日之外的轻日",
+          "placement_reason": "6 天分化里下肢已经占了两天，有氧只放在非腿日并保持低强度，避免叠加到腿的恢复账上",
+          "chapter_ref": "ch8"
+        }
+      },
+      {
+        "day": "周日",
+        "type": "休息"
+      }
+    ],
+    "start_load": "从 4 天分化的最近工作重量起步，重日取该重量、中日取其 80–85% 配更高次数；新动作仍按\"最轻一档 × 8 次 → 加到 RIR 2 → 取 90%\"现场测。",
+    "start_load_refs": [
+      {
+        "exercise": "back-squat-low-bar",
+        "range": "从高杠背蹲的最近工作重量起，先按 90% 熟悉杠位",
+        "source": "区间是常见起点示例，个体差异大，以字段 4 的流程实测为准"
+      },
+      {
+        "exercise": "barbell-bench-press",
+        "range": "沿用 4 天分化的工作重量；重日 5 次、中日用其 80–85%",
+        "source": "区间是常见起点示例，个体差异大，以字段 4 的流程实测为准"
+      }
+    ],
+    "warmup": {
+      "general": "5 分钟渐进有氧（快走、固定单车或划船机）把心率与体温抬起来，微微出汗即可",
+      "specific": "当天第一个大动作：空杆 × 10 → 50% × 5 → 70% × 3 → 90% × 1 → 工作重量；同一动作模式的后续动作只做 1 组轻重量",
+      "by_type": "单关节与固定器械动作只做 1–2 组轻重量递增；搬运类用一次半程距离试走，不做完整递增阶梯"
+    },
+    "progression": [
+      {
+        "exercise": "barbell-bench-press",
+        "increment_kg": "2.5",
+        "cap_pct": 5,
+        "trigger": "波动安排：重日 5 次能在 RIR ≥ 2 完成 2 周则上调；中日只跟着重日的百分比走，不单独加重"
+      },
+      {
+        "exercise": "back-squat-low-bar",
+        "increment_kg": "2.5–5",
+        "cap_pct": 5,
+        "trigger": "重日 4 组 × 5 次在 RIR ≥ 2 下完成 2 周则上调"
+      },
+      {
+        "exercise": "barbell-row",
+        "increment_kg": "2.5",
+        "cap_pct": 5,
+        "trigger": "重日 4 组 × 6 次在 RIR ≥ 2 下完成 2 周则上调"
+      }
+    ],
+    "increment_mismatch": "本套先加组再加重：最小增量够不着时，先在中日给该动作加 1 组（每周最多加 1 组），加到该动作当周 5 组仍有余量，再跳下一档重量并把组数退回起点。",
+    "failure_rules": {
+      "single_miss": "单次没完成：保持重量重做一次，不下调",
+      "two_misses": "连续两次同一动作未达标：下调该动作 10%，按进阶规则重新爬坡",
+      "miss_one_session": "缺课 1 次：顺延，不补练",
+      "miss_1_2_weeks": "缺课 1–2 周：按原重量的 ~90% 重启",
+      "miss_over_month": "缺课超过 1 个月：按字段 4 的起始负荷流程重走一遍",
+      "underrecovery": "出现恢复不足信号（睡眠债、静息心率升高、广泛酸胀迟迟不退、连续两次表现下滑）：先插入一周 deload（容量减半或强度降 10%），而不是先降重量。6 天分化最容易在第 3–5 周出现累积性的表现下滑，一旦连续两周下滑就按本条插 deload，而不是靠意志力顶过去。"
+    },
+    "substitutions": [
+      {
+        "exercise": "back-squat-low-bar",
+        "alts": [
+          "back-squat-high-bar",
+          "leg-press"
+        ],
+        "scope": "适用场景仅限杠铃架被占用，或低杠杠位当天找不舒服；不适用于疼痛（见安全口径 C1）"
+      },
+      {
+        "exercise": "pull-up",
+        "alts": [
+          "lat-pulldown"
+        ],
+        "scope": "适用场景仅限单杠被占用；不适用于疼痛（见安全口径 C1）"
+      },
+      {
+        "exercise": "barbell-curl",
+        "alts": [
+          "db-curl",
+          "cable-curl"
+        ],
+        "scope": "适用场景仅限直杆被占用或手腕在直杆握法下别扭；不适用于疼痛（见安全口径 C1）"
+      }
+    ],
+    "exit_criteria": {
+      "when": "睡眠或恢复撑不住 6 天（连续两个 deload 周期之后仍然在第 3 周就掉表现），或每周实际到场次数长期少于 5 次",
+      "next": "upper-lower-4d",
+      "chapter_ref": "ch5"
+    },
+    "pain_path": "canon:C1"
+  },
+  {
+    "slug": "home-3d",
+    "title": "家庭有限器械 3 天",
+    "audience": {
+      "level": "新手",
+      "days_per_week": 3,
+      "equipment": "家庭（自重 + 弹力带 + 一对可调哑铃）",
+      "goal": "增肌",
+      "prerequisites": "已读导读「第一次训练前必读」；家里有一块平整地面与一个能承重的固定点"
+    },
+    "week": [
+      {
+        "day": "周一",
+        "type": "力量",
+        "items": [
+          {
+            "exercise": "goblet-squat",
+            "sets": 3,
+            "reps": "10",
+            "rir": 2,
+            "rest": "2 分钟"
+          },
+          {
+            "exercise": "push-up",
+            "sets": 3,
+            "reps": "8–12",
+            "rir": 2,
+            "rest": "90 秒"
+          },
+          {
+            "exercise": "band-row",
+            "sets": 3,
+            "reps": "12",
+            "rir": 2,
+            "rest": "90 秒"
+          },
+          {
+            "exercise": "plank",
+            "sets": 3,
+            "reps": "30 秒",
+            "rir": 2,
+            "rest": "60 秒"
+          }
+        ]
+      },
+      {
+        "day": "周二",
+        "type": "休息"
+      },
+      {
+        "day": "周三",
+        "type": "力量",
+        "items": [
+          {
+            "exercise": "db-romanian-deadlift",
+            "sets": 3,
+            "reps": "10",
+            "rir": 2,
+            "rest": "2 分钟"
+          },
+          {
+            "exercise": "band-overhead-press",
+            "sets": 3,
+            "reps": "12",
+            "rir": 2,
+            "rest": "90 秒"
+          },
+          {
+            "exercise": "inverted-row",
+            "sets": 3,
+            "reps": "8–12",
+            "rir": 2,
+            "rest": "90 秒"
+          },
+          {
+            "exercise": "glute-bridge-bodyweight",
+            "sets": 3,
+            "reps": "15",
+            "rir": 2,
+            "rest": "60 秒"
+          }
+        ]
+      },
+      {
+        "day": "周四",
+        "type": "有氧",
+        "cardio": {
+          "mode": "快走、慢跑或跳绳（跳绳用分段：1 分钟跳 + 1 分钟走）",
+          "minutes": 25,
+          "intensity": "能完整说出一句话的强度（Zone 2）",
+          "placement": "与力量同日之后或独立日均可，本套默认独立日",
+          "placement_reason": "家庭训练的总量本来就不大，有氧与力量同日也不会明显干扰；放独立日只是更容易坚持",
+          "chapter_ref": "ch8"
+        }
+      },
+      {
+        "day": "周五",
+        "type": "力量",
+        "items": [
+          {
+            "exercise": "db-bulgarian-split-squat",
+            "sets": 3,
+            "reps": "10",
+            "rir": 2,
+            "rest": "90 秒"
+          },
+          {
+            "exercise": "knee-push-up",
+            "sets": 3,
+            "reps": "12–15",
+            "rir": 2,
+            "rest": "90 秒"
+          },
+          {
+            "exercise": "db-one-arm-row",
+            "sets": 3,
+            "reps": "12",
+            "rir": 2,
+            "rest": "90 秒"
+          },
+          {
+            "exercise": "band-pallof-press",
+            "sets": 3,
+            "reps": "8",
+            "rir": 2,
+            "rest": "60 秒"
+          }
+        ]
+      },
+      {
+        "day": "周六",
+        "type": "休息"
+      },
+      {
+        "day": "周日",
+        "type": "休息"
+      }
+    ],
+    "start_load": "自重动作：先做 1 组看能在 RIR 2 下做到几次，次数低于区间下限就换更容易的变式（如跪姿俯卧撑），高于上限就换更难的变式或抬高/放低身体角度。哑铃与弹力带动作：用最轻一档做 8 次评估 → 上调到 RIR 2 → 取低一档作为第一周。",
+    "start_load_refs": [
+      {
+        "exercise": "goblet-squat",
+        "range": "8–12 kg 起，常见首周 10–16 kg",
+        "source": "区间是常见起点示例，个体差异大，以字段 4 的流程实测为准"
+      },
+      {
+        "exercise": "push-up",
+        "range": "标准俯卧撑做不到 8 次就先做跪姿版；能超过 15 次再抬高脚",
+        "source": "区间是常见起点示例，个体差异大，以字段 4 的流程实测为准"
+      },
+      {
+        "exercise": "band-row",
+        "range": "从最轻一档带子起，站位退到起始位已有张力",
+        "source": "区间是常见起点示例，个体差异大，以字段 4 的流程实测为准"
+      }
+    ],
+    "warmup": {
+      "general": "5 分钟原地快走、开合跳或爬楼梯，把心率与体温抬起来",
+      "specific": "每个动作先用徒手或最轻一档弹力带做 1 组 8–10 次，确认轨迹顺畅再进入工作组",
+      "by_type": "自重动作用更容易的变式（如跪姿俯卧撑）当热身组；弹力带动作先用低一档阻力做一组"
+    },
+    "progression": [
+      {
+        "exercise": "goblet-squat",
+        "increment_kg": "2",
+        "cap_pct": 5,
+        "trigger": "连续 2 次训练都能在 RIR ≥ 2 下完成 3 组 × 12 次则上调一档"
+      },
+      {
+        "exercise": "push-up",
+        "increment_kg": "0（自重动作按次数与变式推进，不加重量）",
+        "cap_pct": 5,
+        "trigger": "连续 2 次训练都能在 RIR ≥ 2 下完成 3 组 × 15 次，就换更难的变式（抬高脚）并回到 8 次"
+      },
+      {
+        "exercise": "band-row",
+        "increment_kg": "0（换带子或缩短站距来加阻力）",
+        "cap_pct": 5,
+        "trigger": "连续 2 次训练都能在 RIR ≥ 2 下完成 3 组 × 20 次则换高一档带子并回到 12 次"
+      }
+    ],
+    "increment_mismatch": "本套用变式难度替代重量增量：弹力带与自重没有 2.5 kg 这种细增量，推进顺序固定为「加次数 → 换更难的变式或更高阻力的带子 → 回到次数区间下限」。",
+    "failure_rules": {
+      "single_miss": "单次没完成：保持重量重做一次，不下调",
+      "two_misses": "连续两次同一动作未达标：下调该动作 10%，按进阶规则重新爬坡",
+      "miss_one_session": "缺课 1 次：顺延，不补练",
+      "miss_1_2_weeks": "缺课 1–2 周：按原重量的 ~90% 重启",
+      "miss_over_month": "缺课超过 1 个月：按字段 4 的起始负荷流程重走一遍",
+      "underrecovery": "出现恢复不足信号（睡眠债、静息心率升高、广泛酸胀迟迟不退、连续两次表现下滑）：先插入一周 deload（容量减半或强度降 10%），而不是先降重量。家庭训练的总量小，恢复不足更常见的原因是睡眠与进食而不是训练本身。"
+    },
+    "substitutions": [
+      {
+        "exercise": "push-up",
+        "alts": [
+          "knee-push-up",
+          "band-overhead-press"
+        ],
+        "scope": "适用场景仅限当前水平还做不满标准俯卧撑的次数区间；不适用于疼痛（见安全口径 C1）"
+      },
+      {
+        "exercise": "inverted-row",
+        "alts": [
+          "band-row"
+        ],
+        "scope": "适用场景仅限家里找不到能稳固承重的横杆或桌沿；不适用于疼痛（见安全口径 C1）"
+      },
+      {
+        "exercise": "db-romanian-deadlift",
+        "alts": [
+          "band-good-morning",
+          "glute-bridge-bodyweight"
+        ],
+        "scope": "适用场景仅限哑铃重量已经不够或家里没有哑铃；不适用于疼痛（见安全口径 C1）"
+      }
+    ],
+    "exit_criteria": {
+      "when": "弹力带已用到最大阻力、自重动作换到最难变式仍能在 RIR ≥ 3 下完成次数上限（家里的负荷已经到顶）",
+      "next": "novice-3d",
+      "chapter_ref": "ch5"
+    },
+    "pain_path": "canon:C1"
+  },
+  {
+    "slug": "cut-maintain-3d",
+    "title": "减脂期维持 3 天",
+    "audience": {
+      "level": "新手或进阶",
+      "days_per_week": 3,
+      "equipment": "健身房",
+      "goal": "减脂期保住肌肉与力量",
+      "prerequisites": "已经有一套在执行的训练计划；本套是减脂期的\"降量维持\"版本，不是增肌版本"
+    },
+    "week": [
+      {
+        "day": "周一",
+        "type": "力量",
+        "items": [
+          {
+            "exercise": "back-squat-high-bar",
+            "sets": 3,
+            "reps": "5",
+            "rir": 3,
+            "rest": "3 分钟"
+          },
+          {
+            "exercise": "barbell-bench-press",
+            "sets": 3,
+            "reps": "6",
+            "rir": 3,
+            "rest": "3 分钟"
+          },
+          {
+            "exercise": "seated-cable-row",
+            "sets": 3,
+            "reps": "10",
+            "rir": 3,
+            "rest": "2 分钟"
+          }
+        ]
+      },
+      {
+        "day": "周二",
+        "type": "有氧",
+        "cardio": {
+          "mode": "快走或固定单车",
+          "minutes": 30,
+          "intensity": "能完整说出一句话的强度（Zone 2）",
+          "placement": "力量日之外的独立日",
+          "placement_reason": "减脂期的恢复余量更小，有氧与力量分开可以把有限的恢复优先留给力量训练；并且有氧不是造赤字的唯一手段，饮食那一侧同样要算（第 6 章）",
+          "chapter_ref": "ch8"
+        }
+      },
+      {
+        "day": "周三",
+        "type": "力量",
+        "items": [
+          {
+            "exercise": "romanian-deadlift",
+            "sets": 3,
+            "reps": "6",
+            "rir": 3,
+            "rest": "3 分钟"
+          },
+          {
+            "exercise": "overhead-press",
+            "sets": 3,
+            "reps": "8",
+            "rir": 3,
+            "rest": "2–3 分钟"
+          },
+          {
+            "exercise": "lat-pulldown",
+            "sets": 3,
+            "reps": "10",
+            "rir": 3,
+            "rest": "2 分钟"
+          }
+        ]
+      },
+      {
+        "day": "周四",
+        "type": "有氧",
+        "cardio": {
+          "mode": "快走",
+          "minutes": 30,
+          "intensity": "能完整说出一句话的强度（Zone 2）",
+          "placement": "力量日之外的独立日",
+          "placement_reason": "每周 2–3 次低强度有氧用来补能量缺口的一部分，不替代饮食控制，也不叠加到力量日",
+          "chapter_ref": "ch8"
+        }
+      },
+      {
+        "day": "周五",
+        "type": "力量",
+        "items": [
+          {
+            "exercise": "leg-press",
+            "sets": 3,
+            "reps": "10",
+            "rir": 3,
+            "rest": "2–3 分钟"
+          },
+          {
+            "exercise": "db-incline-bench-press",
+            "sets": 3,
+            "reps": "10",
+            "rir": 3,
+            "rest": "2 分钟"
+          },
+          {
+            "exercise": "db-one-arm-row",
+            "sets": 3,
+            "reps": "10",
+            "rir": 3,
+            "rest": "2 分钟"
+          }
+        ]
+      },
+      {
+        "day": "周六",
+        "type": "休息"
+      },
+      {
+        "day": "周日",
+        "type": "休息"
+      }
+    ],
+    "start_load": "直接沿用进入减脂期之前的工作重量，不重新测：本套的目标是用尽量少的量把现有力量守住。如果中断超过两周再开始，按原重量的 90% 重启。",
+    "start_load_refs": [
+      {
+        "exercise": "back-squat-high-bar",
+        "range": "沿用减脂期之前的工作重量",
+        "source": "区间是常见起点示例，个体差异大，以字段 4 的流程实测为准"
+      },
+      {
+        "exercise": "barbell-bench-press",
+        "range": "沿用减脂期之前的工作重量",
+        "source": "区间是常见起点示例，个体差异大，以字段 4 的流程实测为准"
+      }
+    ],
+    "warmup": {
+      "general": "5 分钟渐进有氧（快走、固定单车或划船机）把心率与体温抬起来，微微出汗即可",
+      "specific": "当天第一个大动作：空杆 × 10 → 50% × 5 → 70% × 3 → 90% × 1 → 工作重量；同一动作模式的后续动作只做 1 组轻重量",
+      "by_type": "单关节与固定器械动作只做 1–2 组轻重量递增；搬运类用一次半程距离试走，不做完整递增阶梯"
+    },
+    "progression": [
+      {
+        "exercise": "back-squat-high-bar",
+        "increment_kg": "0（维持为主，不追求加重）",
+        "cap_pct": 5,
+        "trigger": "减脂期默认不上调；只有连续 2 周在 RIR ≥ 3 下轻松完成且体重下降在计划区间内，才考虑上调 2.5 kg"
+      },
+      {
+        "exercise": "barbell-bench-press",
+        "increment_kg": "0（维持为主，不追求加重）",
+        "cap_pct": 5,
+        "trigger": "同上：连续 2 周 RIR ≥ 3 轻松完成才考虑上调 2.5 kg"
+      }
+    ],
+    "increment_mismatch": "本套不适用增量推进：重量保持不变，器械最小增量的问题不会出现；真要调整时仍按 double progression 的次数优先原则。",
+    "failure_rules": {
+      "single_miss": "单次没完成：保持重量重做一次，不下调",
+      "two_misses": "连续两次同一动作未达标：下调该动作 10%，按进阶规则重新爬坡",
+      "miss_one_session": "缺课 1 次：顺延，不补练",
+      "miss_1_2_weeks": "缺课 1–2 周：按原重量的 ~90% 重启",
+      "miss_over_month": "缺课超过 1 个月：按字段 4 的起始负荷流程重走一遍",
+      "underrecovery": "出现恢复不足信号（睡眠债、静息心率升高、广泛酸胀迟迟不退、连续两次表现下滑）：先插入一周 deload（容量减半或强度降 10%），而不是先降重量。减脂期本来就处在能量缺口里，表现小幅下滑是预期之内；只有连续两次明显下滑才按本条插 deload，并同时检查体重下降速率是不是太快。"
+    },
+    "substitutions": [
+      {
+        "exercise": "barbell-bench-press",
+        "alts": [
+          "db-bench-press",
+          "machine-chest-press"
+        ],
+        "scope": "适用场景仅限卧推架被占用，或当天没有保护杆也没有保护者；不适用于疼痛（见安全口径 C1）"
+      },
+      {
+        "exercise": "back-squat-high-bar",
+        "alts": [
+          "leg-press",
+          "goblet-squat"
+        ],
+        "scope": "适用场景仅限杠铃架被占用，或当天状态不适合自由重量背蹲；不适用于疼痛（见安全口径 C1）"
+      }
+    ],
+    "exit_criteria": {
+      "when": "减脂期结束、体重与围度回到维持区间，或减脂已持续超过 12–16 周需要回到维持",
+      "next": "upper-lower-4d",
+      "chapter_ref": "ch5"
+    },
+    "pain_path": "canon:C1"
+  }
+]

@@ -1,0 +1,196 @@
+:root {
+  color-scheme: light dark;
+  --bg: #fcfcfa; --surface: #fff; --fg: #1b1b1a; --muted: #5d5d58;
+  --rule: #d9d8d2; --accent: #7a4a1e; --warn-bg: #fdf1e7; --danger: #a2301c;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #15161a; --surface: #1d1f24; --fg: #e8e6e1; --muted: #a3a099;
+    --rule: #33363d; --accent: #e0a46a; --warn-bg: #2a2119; --danger: #e0725c;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #15161a; --surface: #1d1f24; --fg: #e8e6e1; --muted: #a3a099;
+  --rule: #33363d; --accent: #e0a46a; --warn-bg: #2a2119; --danger: #e0725c;
+}
+
+body {
+  margin: 0; background: var(--bg); color: var(--fg);
+  font: 16px/1.7 system-ui, -apple-system, "PingFang SC", "Noto Sans CJK SC", sans-serif;
+}
+main { max-width: 68rem; margin: 0 auto; padding: 16px; }
+img, svg { max-width: 100%; }
+.table-wrap, table { display: block; overflow-x: auto; max-width: 100%; }
+table { border-collapse: collapse; }
+th, td { border: 1px solid var(--rule); padding: 6px 10px; text-align: left; vertical-align: top; }
+a { color: var(--accent); }
+
+.site-head {
+  display: flex; gap: 12px; align-items: center; flex-wrap: wrap;
+  padding: 12px 16px; border-bottom: 1px solid var(--rule); background: var(--surface);
+}
+.site-head h1 { font-size: 1.1rem; margin: 0; margin-right: auto; }
+.track-switch button, .theme-toggle, .filters button {
+  font: inherit; padding: 4px 10px; border: 1px solid var(--rule);
+  background: var(--bg); color: var(--fg); border-radius: 999px; cursor: pointer;
+}
+.track-switch button[aria-selected="true"], .filters button[aria-pressed="true"] {
+  background: var(--accent); color: var(--bg); border-color: var(--accent);
+}
+.route-notice { margin: 0; padding: 12px 16px; background: var(--warn-bg); color: var(--fg); }
+
+.claim-tag {
+  font-size: 0.8em; padding: 1px 6px; border: 1px solid var(--rule);
+  border-radius: 999px; text-decoration: none; white-space: nowrap;
+}
+.claim-tag[data-direction="反对"] { border-color: var(--danger); color: var(--danger); }
+
+/* 证据筛选的全站效果：命中的标出来，不命中的降权但仍可读、可点；
+   正文一个字都不隐藏，安全提示里的标签永不降权（.is-pinned）。 */
+.claim-tag.is-on { outline: 2px solid currentColor; outline-offset: 1px; font-weight: 700; }
+.claim-tag.is-off { opacity: 0.4; }
+.claim-tag.is-pinned { opacity: 1; border-style: dashed; }
+.evidence-scope { font-size: 0.85em; color: var(--muted, inherit); }
+
+.toc { border: 1px solid var(--rule); padding: 8px 16px; border-radius: 8px; background: var(--surface); }
+.chapter, .ex-card, .plan-card, .claim-entry, .quiz-item {
+  border: 1px solid var(--rule); border-radius: 8px; padding: 16px;
+  margin: 16px 0; background: var(--surface);
+}
+.ex-grid { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr)); }
+.ex-card .en { color: var(--muted); font-weight: normal; font-size: 0.85em; }
+.ex-card .meta, .ex-card .muscles { color: var(--muted); }
+.safety, .pain-path { background: var(--warn-bg); padding: 8px 12px; border-radius: 6px; }
+.pain-path { border-left: 4px solid var(--danger); }
+.red-flags, .first-session { border: 2px solid var(--danger); border-radius: 8px; padding: 12px 16px; }
+.filters { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 12px 0; }
+.filters fieldset { border: 1px solid var(--rule); border-radius: 8px; padding: 4px 8px; }
+.filters legend { color: var(--muted); font-size: 0.85em; }
+.result-count { color: var(--muted); font-size: 0.85em; width: 100%; margin: 0; }
+.empty-state { background: var(--warn-bg); padding: 8px 12px; border-radius: 6px; width: 100%; }
+figure.concept { margin: 16px 0; }
+figure.concept figcaption { color: var(--muted); font-size: 0.88em; }
+
+/* 无 JS 与打印时两轨都展开；只有脚本跑起来后才隐藏非活动轨。
+   全文件中不得存在任何无条件隐藏 .track 的规则。 */
+.track { display: block; }
+.js-on .track:not(.is-active) { display: none; }
+
+@media (max-width: 400px) {
+  main { padding: 12px; }
+  .ex-grid { grid-template-columns: 1fr; }
+  .site-head { flex-wrap: wrap; }
+}
+
+@media print {
+  .track-switch, .filters, .toc, .theme-toggle, .route-notice { display: none !important; }
+  .track { display: block !important; }
+  [hidden] { display: revert !important; }
+  details > summary { display: none; }
+  details > *:not(summary) { display: block !important; }
+  a[href^="http"]::after { content: "（" attr(href) "）"; font-size: 0.85em; word-break: break-all; }
+  .chapter, .ex-card, .plan-card { break-inside: avoid-page; }
+  /* 打印是完整版：证据筛选的降权不能跟到纸上 */
+  .claim-tag.is-off { opacity: 1 !important; }
+}
+
+/* ─── 动作骨架图与肌肉分布图 ─────────────────────────────
+   全部走主题 token：深浅两套都要读得出。骨架用 currentColor 系，
+   负荷与判据线用 accent / danger 区分——判据线是读者该盯的东西。 */
+.ex-visual {
+  display: flex; flex-wrap: wrap; gap: 14px; align-items: flex-start;
+  margin: 10px 0 14px;
+}
+.ex-visual figure { margin: 0; }
+
+.skeleton { display: flex; flex-wrap: wrap; gap: 8px; align-items: flex-start; }
+.skeleton figcaption {
+  flex-basis: 100%; font-size: .78rem; color: var(--muted); line-height: 1.5;
+}
+.sk-frame {
+  width: 168px; height: auto; max-width: 100%;
+  background: var(--surface); border: 1px solid var(--rule); border-radius: 4px;
+}
+.sk-limb, .sk-trunk, .sk-foot, .sk-neck {
+  stroke: var(--fg); fill: none; stroke-linecap: round; stroke-linejoin: round;
+}
+.sk-limb { stroke-width: 6; }
+.sk-trunk { stroke-width: 11; }
+.sk-foot { stroke-width: 4.5; }
+.sk-neck { stroke-width: 4; }
+.sk-far { opacity: .34; }
+.sk-head { fill: var(--fg); stroke: none; }
+.sk-joint { fill: var(--fg); }
+.sk-ground { stroke: var(--rule); stroke-width: 2.5; }
+.sk-bench, .sk-sled { fill: var(--rule); stroke: var(--muted); stroke-width: 1.5; }
+.sk-rig { stroke: var(--rule); stroke-width: 3; }
+.sk-bar { stroke: var(--accent); stroke-width: 4; stroke-linecap: round; }
+.sk-plate { fill: var(--accent); }
+.sk-dumbbell, .sk-handle, .sk-pad { fill: var(--accent); }
+.sk-wheel { fill: none; stroke: var(--accent); stroke-width: 3.5; }
+/* 判据线：杠线与足中线是深蹲/硬拉唯一的硬性力学判据，必须最显眼 */
+.sk-plumb { stroke: var(--danger); stroke-width: 2; stroke-dasharray: 6 5; }
+.sk-midfoot { stroke: var(--danger); stroke-width: 4; }
+.sk-caption {
+  fill: var(--muted); font-size: 15px; text-anchor: middle;
+  font-family: inherit;
+}
+
+.muscle-map svg { width: 150px; height: auto; max-width: 100%; display: block; }
+.m-body { fill: var(--rule); stroke: none; opacity: .55; }
+.m-region { stroke: var(--surface); stroke-width: .8; }
+.m-off { fill: var(--rule); opacity: .22; }
+.m-prime { fill: var(--danger); opacity: .92; }
+.m-syn { fill: var(--accent); opacity: .78; }
+.m-stab { fill: var(--muted); opacity: .5; }
+.m-viewlabel { fill: var(--muted); font-size: 12px; text-anchor: middle; font-family: inherit; }
+.m-legend { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 4px; }
+.m-key { font-size: .72rem; padding: 1px 7px; border-radius: 3px; color: var(--surface); }
+.m-key.m-prime { background: var(--danger); opacity: 1; }
+.m-key.m-syn { background: var(--accent); opacity: 1; }
+.m-key.m-stab { background: var(--muted); opacity: 1; }
+
+/* 整体肌肉分布图：可点，点了筛动作库 */
+.muscle-map-full {
+  display: flex; flex-wrap: wrap; gap: 20px; align-items: flex-start;
+  margin: 0 0 20px; padding: 16px;
+  background: var(--surface); border: 1px solid var(--rule); border-radius: 6px;
+}
+.muscle-map-full svg { width: 230px; }
+.muscle-map-full figcaption { flex: 1 1 260px; min-width: 0; }
+.m-full-hint { margin: 0 0 10px; color: var(--muted); font-size: .85rem; }
+.m-full-list {
+  list-style: none; margin: 0; padding: 0;
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 6px;
+}
+.m-full-list button {
+  width: 100%; text-align: left; cursor: pointer;
+  background: var(--bg); border: 1px solid var(--rule); border-radius: 4px;
+  padding: 6px 9px; color: var(--fg); font: inherit; font-size: .8rem;
+  display: grid; gap: 1px;
+}
+.m-full-list button:hover { border-color: var(--accent); }
+.m-full-list button[aria-pressed="true"] { border-color: var(--danger); background: var(--warn-bg); }
+.m-full-label { color: var(--muted); font-size: .72rem; }
+.m-count { color: var(--muted); font-size: .72rem; font-variant-numeric: tabular-nums; }
+.muscle-map-full [data-muscle] { cursor: pointer; }
+.muscle-map-full [data-muscle]:hover .m-region,
+.muscle-map-full g[data-muscle]:hover ellipse,
+.muscle-map-full g[data-muscle]:hover path { opacity: 1; }
+.muscle-map-full g[data-muscle] ellipse,
+.muscle-map-full g[data-muscle] path { transition: opacity .12s ease; }
+.muscle-map-full g[data-muscle].is-on ellipse,
+.muscle-map-full g[data-muscle].is-on path { fill: var(--danger); opacity: 1; }
+.muscle-map-full [data-muscle]:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+@media (max-width: 480px) {
+  .ex-visual { gap: 10px; }
+  .sk-frame { width: 140px; }
+  .muscle-map svg { width: 124px; }
+  .muscle-map-full { padding: 12px; gap: 14px; }
+  .muscle-map-full svg { width: 100%; max-width: 280px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .muscle-map-full g[data-muscle] ellipse,
+  .muscle-map-full g[data-muscle] path { transition: none; }
+}
