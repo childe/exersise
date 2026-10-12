@@ -16,13 +16,14 @@ const PLUMB_TOL = 6;
 // 这些姿态是站姿且持械，杠线断言对它们生效
 const STANDING_LOADED = new Set([
   'squat_bottom', 'squat_top', 'squat_front_bottom', 'squat_front_top',
+  'squat_lowbar_top', 'squat_lowbar_bottom',
   'hinge_bottom', 'hinge_top', 'rdl_bottom',
   'ohp_bottom', 'ohp_top', 'row_start', 'row_end',
   'carry_stance', 'carry_front', 'carry_overhead',
 ]);
 
 // 这些姿态要求髋低于膝（蹲到位）
-const DEPTH_REQUIRED = new Set(['squat_bottom', 'squat_front_bottom']);
+const DEPTH_REQUIRED = new Set(['squat_bottom', 'squat_front_bottom', 'squat_lowbar_bottom']);
 
 export function validatePoses() {
   const errors = [];

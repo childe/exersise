@@ -30,6 +30,31 @@ export const POSES = {
     load: { type: 'bar', at: [90, 86] },
   }),
 
+  // 低杠背蹲自己的一对姿态。
+  //
+  // 原先它和高杠共用 squat_top/squat_bottom，而图注写着「低杠位杠更靠后、
+  // 躯干前倾更多」——声称侧视有差别，却画一模一样的图。两张卡并排放在
+  // 参考库里，读者看到的是两张相同的图配两段不同的说明。
+  // （对照：窄握卧推也共用姿态，但它的图注老实说明「侧视的躯干与肩位与
+  // 平板卧推一致」。共用姿态可以，声称有差别又画一样的不行。）
+  //
+  // 差别只有两处，都是可量的：
+  //   杠位：从斜方肌上缘下移到后三角/肩胛冈，约肩下 8–10px
+  //   躯干：底部前倾由 35° 增到约 48°
+  // 而「杠必须过足中线」不变——正是这条不变，才逼出低杠的真正特征：
+  // 杠位更低、躯干更倾，髋就必须更往后走才能让杠停在足中线上。
+  // 所以这张图自己演示了低杠与高杠的力学区别，不用再靠图注断言。
+  squat_lowbar_top: P({
+    head: [102, 36], shoulder: [90, 54], elbow: [72, 78], wrist: [92, 62],
+    hip: [78, 114], knee: [84, 150], ankle: [80, 216], heel: [72, 225], toe: [108, 225],
+    load: { type: 'bar', at: [94, 63] },
+  }),
+  squat_lowbar_bottom: P({
+    head: [112, 86], shoulder: [100, 104], elbow: [80, 128], wrist: [100, 114],
+    hip: [38, 164], knee: [100, 154], ankle: [84, 216], heel: [72, 225], toe: [108, 225],
+    load: { type: 'bar', at: [102, 113] },
+  }),
+
   // 自重深蹲用自己的一套手臂：两臂前伸配重。
   //
   // 不能照搬 squat_top/bottom 再把杠摘掉——那样手会悬在原杠位的半空，
@@ -467,6 +492,7 @@ const BONE = {
 const LOAD_ANCHOR = {
   squat_bottom: 'shoulder', squat_top: 'shoulder',
   squat_front_bottom: 'shoulder', squat_front_top: 'shoulder',
+  squat_lowbar_top: 'shoulder', squat_lowbar_bottom: 'shoulder',
   carry_front: 'shoulder', ohp_bottom: 'shoulder',
   // 腿部器械的阻力垫顶在踝上、腿举的踏板被脚蹬着——
   // 默认跟着手腕走会让它们浮在半空，读起来像个没来由的点。
@@ -585,6 +611,7 @@ function normalize(name, p) {
 // 这条判据变成构造事实而不是人工对齐的结果。
 const SHIFT_TO_MIDFOOT = new Set([
   'squat_bottom', 'squat_top', 'squat_front_bottom', 'squat_front_top',
+  'squat_lowbar_top', 'squat_lowbar_bottom',
   'hinge_bottom', 'hinge_top', 'rdl_bottom',
   'ohp_bottom', 'ohp_top', 'row_start', 'row_end',
   'carry_stance', 'carry_front', 'carry_overhead',

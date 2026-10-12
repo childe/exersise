@@ -1,6 +1,6 @@
 {
   "back-squat-high-bar":          { "start": "squat_top", "end": "squat_bottom", "cap_start": "顶部", "cap_end": "底部" },
-  "back-squat-low-bar":           { "start": "squat_top", "end": "squat_bottom", "cap_start": "顶部", "cap_end": "底部", "note": "低杠位杠更靠后、躯干前倾更多，但杠线判据不变：仍须过足中线。" },
+  "back-squat-low-bar":           { "start": "squat_lowbar_top", "end": "squat_lowbar_bottom", "cap_start": "顶部", "cap_end": "底部", "note": "与高杠对照看：杠位低到后三角，躯干前倾更多（底部约 46° vs 高杠 35°），髋因此必须更往后走——因为「杠过足中线」这条判据对两者都不变。" },
   "bodyweight-squat":             { "start": "squat_bw_top", "end": "squat_bw_bottom", "cap_start": "顶部", "cap_end": "底部", "note": "自重深蹲两臂前伸配重；没有杠，所以没有杠线判据，深度与脊柱中立仍照看。" },
   "db-front-squat":               { "start": "squat_front_top", "end": "squat_front_bottom", "cap_start": "顶部", "cap_end": "底部" },
   "goblet-squat":                 { "start": "squat_front_top", "end": "squat_front_bottom", "cap_start": "顶部", "cap_end": "底部" },
