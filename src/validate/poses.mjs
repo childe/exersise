@@ -271,7 +271,9 @@ export function validateJointAngles(figures = {}) {
  * 脚端下沉得多、整体上提后手就悬在半空——俯卧撑手离地 36px、平板前臂 27px、
  * 臀桥上背 67px，全是这一条漏的。这里逐点核对，一个都不许飘。
  */
-export const SUPINE_ON_FLOOR = new Set(['bridge_bottom', 'bridge_top', 'deadbug_start', 'deadbug_end']);
+export const SUPINE_ON_FLOOR = new Set(['bridge_bottom', 'bridge_top', 'deadbug_start', 'deadbug_end',
+  // 哑铃臀推从臀桥拆出来时漏了登记——新姿态没有任何断言证明它画对了
+  'hipthrust_bottom', 'hipthrust_top']);
 
 export function validateContacts() {
   const errors = [];
@@ -319,6 +321,7 @@ export function validateContacts() {
  */
 export const STRAIGHT_LINE = {
   plank: ['shoulder', 'ankle', 'hip', 'knee'],
+  hipthrust_top: ['shoulder', 'knee', 'hip'],
   pushup_top: ['shoulder', 'ankle', 'hip', 'knee'],
   pushup_bottom: ['shoulder', 'ankle', 'hip', 'knee'],
   rollout_end: ['shoulder', 'knee', 'hip'],
@@ -428,6 +431,31 @@ export function validateKneeStable() {
  */
 const HELD_LOAD = new Set(['bar', 'front', 'hands', 'hands2', 'handle', 'band']);
 const HEAD_CLEAR = 16;   // 头半径 12 + 把手半高 4
+/**
+ * 静态帧：手持类器械的手必须真的握在器械上。
+ *
+ * validateDrawnAnimation 的手—器械上界取自两端点，两端点自己就松的时候它查不出来——
+ * 绳索下压的底部帧手离握把 14.6px（顶部只有 6.0），动画里握把就那样从手里滑出去。
+ */
+export function validateHeldLoad(figures) {
+  const errors = [];
+  const L = (a, b) => Math.hypot(a[0] - b[0], a[1] - b[1]);
+  const lt = new Map();
+  for (const f of Object.values(figures)) {
+    if (!f.load_type) continue;
+    for (const k of ['start', 'end']) if (f[k]) lt.set(f[k], f.load_type);
+  }
+  for (const [name, p] of Object.entries(POSES)) {
+    if (!p.load) continue;
+    const type = lt.get(name) ?? p.load.type;
+    if (!HELD_LOAD.has(type)) continue;
+    if (p.loadAnchor === 'shoulder') continue;      // 架在身上的杠不是握在手里
+    const d = L(drawnArm(name, p, lt.get(name)).H, p.load.at);
+    if (d > 12) errors.push(`${name}: 画出的手离器械 ${d.toFixed(1)}px——${type} 是手持器械，手该握在上面`);
+  }
+  return errors;
+}
+
 export function validateDrawnAnimation(figures, { steps = 24 } = {}) {
   const errors = [];
   const L = (a, b) => Math.hypot(a[0] - b[0], a[1] - b[1]);

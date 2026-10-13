@@ -189,25 +189,7 @@ export function interpolate(A, B, t, opts = {}) {
   // 俯撑家族（手与脚尖/膝都在地上）：手臂与身体各自插值后手会离地几像素。
   // 真实动作是身体绕脚尖/膝这个支点转动、手始终按在地上，所以这里对整条链
   // 绕支点转一个角 δ，使腕回到地面——与站姿"反解躯干角让杠过足中线"是同一类解。
-  if ((toeRooted || kneeRooted) && onG(A,'wrist') && onG(B,'wrist') && q.wrist) {
-    const P = toeRooted ? q.toe : q.knee;
-    const keys = ['ankle','knee','hip','shoulder','shoulder2','elbow','wrist','head','elbow2','wrist2','knee2','ankle2'];
-    const rot = (pt, d) => { const dx = pt[0]-P[0], dy = pt[1]-P[1]; return [P[0] + dx*Math.cos(d) - dy*Math.sin(d), P[1] + dx*Math.sin(d) + dy*Math.cos(d)]; };
-    const wristY = (d) => rot(q.wrist, d)[1];
-    let lo = -0.3, hi = 0.3;
-    if ((wristY(lo) - GROUND) * (wristY(hi) - GROUND) < 0) {
-      for (let i = 0; i < 40; i++) { const mid = (lo+hi)/2; if ((wristY(mid)-GROUND) * (wristY(lo)-GROUND) <= 0) hi = mid; else lo = mid; }
-      const d = (lo+hi)/2;
-      for (const k of keys) if (q[k] && q[k] !== P) q[k] = rot(q[k], d);
-      q._pivoted = d;
-    }
-  }
-  for (const [f, src] of [['heel','ankle'],['toe','ankle'],['heel2','ankle2'],['toe2','ankle2']]) {
-    if (!A[f] || !B[f] || !q[src]) continue;
-    if (grounded && (f === 'heel' || f === 'toe')) { q[f] = [...A[f]]; continue; }   // 脚是刚体，踝钉死脚就不动
-    if (toeRooted && f === 'toe') continue;                                        // 已钉
-    q[f] = [q[src][0] + lerp(A[f][0]-A[src][0], B[f][0]-B[src][0], t), q[src][1] + lerp(A[f][1]-A[src][1], B[f][1]-B[src][1], t)];
-  }
+  // 负荷先算：第二接触点的求解要知道轮心在哪（健腹轮贴地的是轮，不是手）
   if (A.load && B.load && q._torsoOff) {
     // 肩锚：负荷在躯干系里的位置是插出来的，这里按解出的躯干角放回世界坐标
     const dth = Math.atan2(q.shoulder[1]-q.hip[1], q.shoulder[0]-q.hip[0]);
@@ -224,6 +206,40 @@ export function interpolate(A, B, t, opts = {}) {
         ? [q.wrist2[0] + lerp(A.load.at2[0]-A.wrist2[0], B.load.at2[0]-B.wrist2[0], t), q.wrist2[1] + lerp(A.load.at2[1]-A.wrist2[1], B.load.at2[1]-B.wrist2[1], t)]
         : lerp2(A.load.at2, B.load.at2, t);   // 没有远侧手臂时直接插值，不能冻结在 A
     }
+  }
+  // 第二接触点：链只钉得住一个支点，另一个接触点会在中途离面。
+  // 统一的解法是绕支点转一个角 δ，把它送回去——与站姿「反解躯干角让杠过足中线」同类。
+  //   俯撑家族：支点是脚尖/膝，要送回地面的是手；
+  //   健腹轮：手离地 16px，真正贴地的是**轮底**（原来只看手，轮因此中途沉进地面 3.2px）；
+  //   仰卧家族：支点是脚，要送回地面的是上背（肩漂 4.8px、头圆陷地 2.05px）。
+  const supine = grounded && onG(A,'shoulder') && onG(B,'shoulder');
+  const pivotable = (toeRooted || kneeRooted || supine) && q.wrist;
+  if (pivotable) {
+    const P = toeRooted ? q.toe : kneeRooted ? q.knee : q.ankle;
+    const keys = ['ankle','knee','hip','shoulder','shoulder2','elbow','wrist','head','elbow2','wrist2','knee2','ankle2','heel','toe','heel2','toe2'];
+    const rot = (pt, d) => { const dx = pt[0]-P[0], dy = pt[1]-P[1]; return [P[0] + dx*Math.cos(d) - dy*Math.sin(d), P[1] + dx*Math.sin(d) + dy*Math.cos(d)]; };
+    // 要送回地面的那个点，以及它贴地时的目标 y
+    let probe = null, target = GROUND;
+    if (supine) { probe = () => q.shoulder; target = A.shoulder[1]; }
+    else if (onG(A,'wrist') && onG(B,'wrist')) probe = () => q.wrist;
+    else if (q.load?.type === 'wheel') { probe = () => q.load.at; target = GROUND - 9; }
+    if (probe) {
+      const yAt = (d) => rot(probe(), d)[1];
+      let lo = -0.3, hi = 0.3;
+      if ((yAt(lo) - target) * (yAt(hi) - target) < 0) {
+        for (let i = 0; i < 40; i++) { const mid = (lo+hi)/2; if ((yAt(mid)-target) * (yAt(lo)-target) <= 0) hi = mid; else lo = mid; }
+        const d = (lo+hi)/2;
+        for (const k of keys) if (q[k] && q[k] !== P) q[k] = rot(q[k], d);
+        if (q.load) q.load = { ...q.load, at: rot(q.load.at, d) };
+        q._pivoted = d;
+      }
+    }
+  }
+  for (const [f, src] of [['heel','ankle'],['toe','ankle'],['heel2','ankle2'],['toe2','ankle2']]) {
+    if (!A[f] || !B[f] || !q[src]) continue;
+    if (grounded && (f === 'heel' || f === 'toe')) { q[f] = [...A[f]]; continue; }   // 脚是刚体，踝钉死脚就不动
+    if (toeRooted && f === 'toe') continue;                                        // 已钉
+    q[f] = [q[src][0] + lerp(A[f][0]-A[src][0], B[f][0]-B[src][0], t), q[src][1] + lerp(A[f][1]-A[src][1], B[f][1]-B[src][1], t)];
   }
   if (A.bench && B.bench) q.bench = A.bench.map((v, i) => lerp(v, B.bench[i], t));
   if (A.benchIncline) q.benchIncline = A.benchIncline;   // 凳子不动

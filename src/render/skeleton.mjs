@@ -144,12 +144,10 @@ export const POSES = {
   bridge_bottom: P({
     head: [42, 213], shoulder: [57.7, 219], elbow: [107.7, 221], wrist: [146.7, 222],
     hip: [137.5, 214], knee: [160.6, 158.5], ankle: [178, 216], heel: [174, 225], toe: [194, 225],
-    load: { type: 'bar', at: [137.5, 206] },
   }),
   bridge_top: P({
     head: [42, 213], shoulder: [57.7, 219], elbow: [107.7, 221], wrist: [146.7, 222],
     hip: [129.2, 183.1], knee: [182.8, 156.2], ankle: [178, 216], heel: [174, 225], toe: [194, 225],
-    load: { type: 'bar', at: [129.2, 175] },
   }),
 
   // 哑铃臀推借用臀桥姿态时，手躺在地面、哑铃在髋上，两者相距 18–50px——
@@ -531,9 +529,10 @@ export const POSES = {
     fixed: { type: 'low_bar', at: [105, 107] },
   }),
   face_pull_start: P({
-    head: [98, 40], shoulder: [86, 58], elbow: [112, 72], wrist: [142, 70],
+    // 起始帧手应落在「滑轮—面部」那条线上：原来把手低于头心 35px，读起来像直臂下拉。
+    head: [98, 40], shoulder: [86, 58], elbow: [114, 52], wrist: [144, 46],
     hip: [84, 116], knee: [84, 152], ankle: [82, 216], heel: [72, 225], toe: [108, 225],
-    load: { type: 'handle', at: [148, 70] },
+    load: { type: 'handle', at: [150, 46] },
   }),
   face_pull_end: P({
     head: [98, 40], shoulder: [86, 58], elbow: [84, 32], wrist: [116, 46],
