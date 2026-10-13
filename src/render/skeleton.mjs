@@ -1065,7 +1065,8 @@ export function contentBox(p, { plumb = false, loadType } = {}) {
   return { x: x0, y: y0, w: x1 - x0, h: y1 - y0 };
 }
 const escapeAttr = (s) => s.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
-const seg = (a, b, cls = 'sk-limb') => `<line class="${cls}" x1="${a[0]}" y1="${a[1]}" x2="${b[0]}" y2="${b[1]}"/>`;
+const seg = (a, b, cls = 'sk-limb', bone = null) =>
+  `<line class="${cls}"${bone ? ` data-bone="${bone}"` : ''} x1="${a[0]}" y1="${a[1]}" x2="${b[0]}" y2="${b[1]}"/>`;
 
 function load(l) {
   if (!l) return '';
@@ -1232,7 +1233,10 @@ export function renderPose(p, opts = {}) {
       for (const [a, b, t0, t1] of MUSCLE_SEG[m] ?? []) {
         if (!J[a] || !J[b]) continue;
         const A = originFor(a, b), B = J[b];
-        g.push(seg(at(A, B, t0), at(A, B, t1), 'sk-muscle'));
+        // 带上归属骨头：断言要量「在该在的那根骨头上」，不是「离某根骨头近」。
+        // 侧平举手臂抬平时肩线与上臂几乎共线，16px 的起点错位离上臂只有 0.58px——
+        // 只找最近的骨头会放过它。
+        g.push(seg(at(A, B, t0), at(A, B, t1), 'sk-muscle', `${a}-${b}`));
       }
     }
   }
@@ -1258,12 +1262,12 @@ export function renderPose(p, opts = {}) {
   }
 
   // 躯干与近侧肢体
-  g.push(seg(trunkTop, p.hip, 'sk-trunk'));
+  g.push(seg(trunkTop, p.hip, 'sk-trunk', 'shoulder-hip'));
   if (p.shoulderMid && p.shoulder2) g.push(seg(p.shoulder, p.shoulder2, 'sk-trunk'));
-  g.push(seg(p.hip, p.knee));
-  g.push(seg(p.knee, p.ankle));
+  g.push(seg(p.hip, p.knee, 'sk-limb', 'hip-knee'));
+  g.push(seg(p.knee, p.ankle, 'sk-limb', 'knee-ankle'));
   g.push(seg(p.heel, p.toe, 'sk-foot'));
-  g.push(seg(p.shoulder, ELBOW));
+  g.push(seg(p.shoulder, ELBOW, 'sk-limb', 'shoulder-elbow'));
   g.push(seg(ELBOW, HAND));
   g.push(`<circle class="sk-head" cx="${p.head[0]}" cy="${p.head[1]}" r="${HEAD_RADIUS}"/>`);
   // 面部标记。没有它，实心圆的头不带任何朝向信息，读者判断不了人面向哪边——

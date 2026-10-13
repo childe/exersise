@@ -796,9 +796,12 @@ export function validateMuscleOnBone(figures, exercises) {
     const t = Math.max(0, Math.min(1, ((pt[0] - a[0]) * vx + (pt[1] - a[1]) * vy) / L2));
     return Math.hypot(pt[0] - (a[0] + vx * t), pt[1] - (a[1] + vy * t));
   };
-  const lines = (svg, cls) => [...svg.matchAll(
-    new RegExp(`class="${cls}[^"]*" x1="([-0-9.]+)" y1="([-0-9.]+)" x2="([-0-9.]+)" y2="([-0-9.]+)"`, 'g'))]
-    .map((m) => [[+m[1], +m[2]], [+m[3], +m[4]]]);
+  // 只认带 data-bone 的线：肌肉段声称附着在哪根骨头上，就对着那一根量。
+  // 量「离最近的骨头」会放过真错位——侧平举手臂抬平时肩线与上臂几乎共线，
+  // 把中束起点错设成 shoulderMid（16px）离正确上臂只有 0.58px，照样通过。
+  const boned = (svg, cls) => [...svg.matchAll(new RegExp(
+    `class="${cls}[^"]*" data-bone="([a-z-]+)" x1="([-0-9.]+)" y1="([-0-9.]+)" x2="([-0-9.]+)" y2="([-0-9.]+)"`, 'g'))]
+    .map((m) => [m[1], [+m[2], +m[3]], [+m[4], +m[5]]]);
   let checked = 0, expected = 0;
   for (const [slug, f] of Object.entries(figures)) {
     const prime = primeOf.get(slug) ?? [];
@@ -806,15 +809,18 @@ export function validateMuscleOnBone(figures, exercises) {
     for (const key of [f.start, f.end]) {
       if (!key || !POSES[key]) continue;
       const svg = renderPose(POSES[key], { name: key, prime, loadType: f.load_type });
-      const bones = [...lines(svg, 'sk-trunk'), ...lines(svg, 'sk-limb'), ...lines(svg, 'sk-neck')];
-      if (!bones.length) { errors.push(`${slug}/${key}: 渲染产物里一根骨头都没解析到`); continue; }
+      const bones = new Map();
+      for (const [bone, a, b] of [...boned(svg, 'sk-trunk'), ...boned(svg, 'sk-limb')]) bones.set(bone, [a, b]);
+      if (!bones.size) { errors.push(`${slug}/${key}: 渲染产物里一根骨头都没解析到`); continue; }
       expected += prime.reduce((n, m) => n + (MUSCLE_SEG[m]?.length ?? 0), 0);
-      for (const [ma, mb] of lines(svg, 'sk-muscle')) {
+      for (const [bone, ma, mb] of boned(svg, 'sk-muscle')) {
         checked++;
-        // 高亮段的两端都要贴在某一根画出来的骨头上
+        const on = bones.get(bone);
+        if (!on) { errors.push(`${slug}/${key}: 肌肉段声称附着在 ${bone}，产物里没有这根骨头`); continue; }
+        // 容差 0.5px：全库实测最大 0.000px，收紧零成本
         for (const [pt, which] of [[ma, '起点'], [mb, '终点']]) {
-          const best = Math.min(...bones.map(([a, b]) => segDist(pt, a, b)));
-          if (best > 2) errors.push(`${slug}/${key}: 肌肉段${which}离最近的骨头 ${best.toFixed(1)}px——没画在骨头上`);
+          const d = segDist(pt, on[0], on[1]);
+          if (d > 0.5) errors.push(`${slug}/${key}: 肌肉段${which}离 ${bone} 这根骨头 ${d.toFixed(1)}px——没画在它附着的骨头上`);
         }
       }
     }
