@@ -148,8 +148,17 @@ export function interpolate(A, B, t, opts = {}) {
     }
     q.shoulder = from(q.hip, th, tl);
   }
-  // 远侧腿从髋建（两条腿共用一个髋）
-  for (const [c, p] of [['knee2','hip'],['ankle2','knee2']]) if (A[c] && B[c]) q[c] = seg(p, c);
+  // 远侧腿从髋建（两条腿共用一个髋）。
+  // 但两帧的远侧踝若在同一点，它就是第二个接触点（保加利亚的后脚搭在凳上）——
+  // 自由摆出来的话中途会离开凳面 12.5px 并穿进凳板。钉死它，膝由两骨 IK 解。
+  const ankle2Pinned = A.ankle2 && B.ankle2 && Math.hypot(A.ankle2[0]-B.ankle2[0], A.ankle2[1]-B.ankle2[1]) < 1;
+  if (ankle2Pinned) {
+    q.ankle2 = [...A.ankle2];
+    q.knee2 = ik2(q.hip, q.ankle2, lerp(len(A.hip,A.knee2), len(B.hip,B.knee2), t),
+      lerp(len(A.knee2,A.ankle2), len(B.knee2,B.ankle2), t), lerp2(A.knee2, B.knee2, t));
+  } else {
+    for (const [c, p] of [['knee2','hip'],['ankle2','knee2']]) if (A[c] && B[c]) q[c] = seg(p, c);
+  }
   if (A.shoulder2 && B.shoulder2) q.shoulder2 = from(q.hip, alerp(ang(A.hip,A.shoulder2), ang(B.hip,B.shoulder2), t), len(A.hip,A.shoulder2));
   for (const [c, p] of UPPER) {
     if (!A[c] || !B[c]) continue;

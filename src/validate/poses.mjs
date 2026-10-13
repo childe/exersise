@@ -4,7 +4,7 @@
 // 前提是它必须可核验——而可核验的意思不是"我看了一眼觉得对"，是**写成断言、构建期跑**。
 // 这个文件就是那个前提。断言失败 = 构建失败，画错的图进不了页面。
 
-import { POSES, RAW_POSES, FORESHORTENED_ARM, GROUND, MIDFOOT, FIG_W, FIG_H, drawnArm, contentBox } from '../render/skeleton.mjs';
+import { POSES, RAW_POSES, FORESHORTENED_ARM, GROUND, MIDFOOT, FIG_W, FIG_H, drawnArm, contentBox, torsoCoords } from '../render/skeleton.mjs';
 import { interpolate } from '../render/interp.mjs';
 import { armDescriptor, blendArm } from '../assets/anim.js';
 import { rebuildArmFor, OUT_OF_PLANE_ARM } from '../render/arm.mjs';
@@ -485,6 +485,23 @@ const BACK_RACK = new Set(['squat_top', 'squat_bottom', 'squat_lowbar_top', 'squ
 const FRONT_RACK = new Set(['squat_front_top', 'squat_front_bottom', 'carry_front']);
 export function validateRackSide() {
   const errors = [];
+  // 同一动作两帧的躯干系偏移必须一致：杠压在同一块肌肉上，不会在背上滑。
+  // 偏移是从世界坐标反推的，两帧原始躯干角不同就会推出两个值——低杠曾差 1.92px。
+  for (const [a, b] of [['squat_top', 'squat_bottom'], ['squat_lowbar_top', 'squat_lowbar_bottom'],
+                        ['squat_front_top', 'squat_front_bottom'], ['gm_top', 'gm_bottom']]) {
+    if (!POSES[a]?.load || !POSES[b]?.load) continue;
+    const oa = torsoCoords(POSES[a].hip, POSES[a].shoulder, POSES[a].load.at);
+    const ob = torsoCoords(POSES[b].hip, POSES[b].shoulder, POSES[b].load.at);
+    const d = Math.hypot(oa[0] - ob[0], oa[1] - ob[1]);
+    if (d > 0.5) errors.push(`${a}/${b}: 躯干系的负荷偏移两帧差 ${d.toFixed(2)}px——杠在背上滑`);
+  }
+  // 前架位比背蹲直、低杠比高杠倾：这是杠位推出来的，不是摆出来的
+  const lean = (n) => Math.abs(Math.atan2(POSES[n].shoulder[0] - POSES[n].hip[0],
+    POSES[n].hip[1] - POSES[n].shoulder[1]) * 180 / Math.PI);
+  if (lean('squat_bottom') - lean('squat_front_bottom') < 8)
+    errors.push(`前架位底部躯干 ${lean('squat_front_bottom').toFixed(1)}° 没有比高杠 ${lean('squat_bottom').toFixed(1)}° 明显更直`);
+  if (lean('squat_lowbar_bottom') - lean('squat_bottom') < 8)
+    errors.push(`低杠底部躯干 ${lean('squat_lowbar_bottom').toFixed(1)}° 没有比高杠 ${lean('squat_bottom').toFixed(1)}° 明显更倾`);
   for (const [name, p] of Object.entries(POSES)) {
     if (!p.load || (!BACK_RACK.has(name) && !FRONT_RACK.has(name))) continue;
     const f = facing(name, p);
