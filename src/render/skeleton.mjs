@@ -393,11 +393,11 @@ export const POSES = {
   // ── 单关节 / 正视要点 ─────────────────────────────
   lateral_raise_down: P({
     view: 'front',
-    head: [100, 40], shoulder: [84, 62], elbow: [80, 112], wrist: [94.5, 148.2],
+    head: [100, 40], shoulder: [84, 62], elbow: [80, 112], wrist: [88, 149],
     hip: [100, 124], knee: [86, 172], ankle: [84, 216], heel: [80, 225], toe: [88, 225],
     knee2: [114, 172], ankle2: [116, 216], heel2: [112, 225], toe2: [120, 225],
-    shoulder2: [116, 62], elbow2: [120, 112], wrist2: [105.5, 148.2],
-    load: { type: 'hands2', at: [94.5, 154.2], at2: [105.5, 154.2] },
+    shoulder2: [116, 62], elbow2: [120, 112], wrist2: [112, 149],
+    load: { type: 'hands2', at: [88, 155], at2: [112, 155] },
   }),
   lateral_raise_up: P({
     view: 'front',
