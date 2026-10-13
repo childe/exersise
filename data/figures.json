@@ -25,7 +25,7 @@
   "push-up": {"start": "pushup_top", "end": "pushup_bottom", "cap_start": "顶部", "cap_end": "底部", "plumb": false},
   "knee-push-up": {"start": "knee_pushup_top", "end": "knee_pushup_bottom", "cap_start": "顶部", "cap_end": "底部", "plumb": false},
   "overhead-press": {"start": "ohp_bottom", "end": "ohp_top", "cap_start": "起始（肩位）", "cap_end": "锁定（过顶）"},
-  "band-overhead-press": {"start": "ohp_bottom", "end": "ohp_top", "cap_start": "起始", "cap_end": "锁定"},
+  "band-overhead-press": {"start": "ohp_bottom", "end": "ohp_top", "cap_start": "起始", "cap_end": "锁定", "load_type": "band", "note": "弹力带踩在脚下、从足中线拉到手；身体姿态与杠铃推举共用。"},
   "db-shoulder-press": {"start": "seated_press_bottom", "end": "seated_press_top", "cap_start": "起始", "cap_end": "锁定", "plumb": false},
   "machine-shoulder-press": {"start": "seated_press_bottom", "end": "seated_press_top", "cap_start": "起始", "cap_end": "锁定", "plumb": false},
   "db-lateral-raise": {"start": "lateral_raise_down", "end": "lateral_raise_up", "cap_start": "起始", "cap_end": "肩高", "plumb": false, "note": "正视图：侧平举的要点是肩外展的高度与肘腕关系，侧视看不出来。"},
