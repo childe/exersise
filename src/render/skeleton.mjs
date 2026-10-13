@@ -396,11 +396,12 @@ export const POSES = {
   // ── 单关节 / 正视要点 ─────────────────────────────
   lateral_raise_down: P({
     view: 'front',
-    head: [100, 40], shoulder: [84, 62], elbow: [76, 112], wrist: [87.6, 149.2],
+    // 手垂在髋外侧：原来落在肩宽以内，两只 18px 的哑铃只隔 6px，连成一条横杠。
+    head: [100, 40], shoulder: [84, 62], elbow: [70, 112], wrist: [77.3, 150.3],
     hip: [100, 124], knee: [86, 172], ankle: [84, 216], heel: [80, 225], toe: [88, 225],
     knee2: [114, 172], ankle2: [116, 216], heel2: [112, 225], toe2: [120, 225],
-    shoulder2: [116, 62], elbow2: [124, 112], wrist2: [112.4, 149.2],
-    load: { type: 'hands2', at: [87.6, 155.2], at2: [112.4, 155.2] },
+    shoulder2: [116, 62], elbow2: [130, 112], wrist2: [122.7, 150.3],
+    load: { type: 'hands2', at: [77.3, 156.3], at2: [122.7, 156.3] },
   }),
   lateral_raise_up: P({
     view: 'front',
