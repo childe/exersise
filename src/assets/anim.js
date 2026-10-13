@@ -8,6 +8,33 @@
 // 只重绘当前在视口里的那几格；标签页切走时整个停掉。
 
 const REP = 4.2;                       // 一次完整起落的秒数
+const ARM_TAU = Math.PI * 2;
+// 最短弧：跨 ±π 时走近路
+const armAngMix = (a, b, t) => { let d = b - a; while (d > Math.PI) d -= ARM_TAU; while (d < -Math.PI) d += ARM_TAU; return a + d * t; };
+const armPolar = (base, a, l) => [base[0] + Math.cos(a) * l, base[1] + Math.sin(a) * l];
+
+/** 把一端的「画出来的手臂」拆成可插值的极坐标描述。 */
+export function armDescriptor(d, p) {
+  const anc = p.load?.at ?? p.fixed?.at ?? null;
+  return { rebuilt: d.rebuilt,
+    eAng: Math.atan2(d.E[1] - p.shoulder[1], d.E[0] - p.shoulder[0]),
+    eLen: Math.hypot(d.E[0] - p.shoulder[0], d.E[1] - p.shoulder[1]),
+    hAng: Math.atan2(d.H[1] - d.E[1], d.H[0] - d.E[0]),
+    hLen: Math.hypot(d.H[0] - d.E[0], d.H[1] - d.E[1]),
+    grip: anc ? [d.H[0] - anc[0], d.H[1] - anc[1]] : null };
+}
+
+/** 两端都在矢状面内 → 回 undefined，让 renderPose 用补间链的 elbow/wrist。 */
+export function blendArm(a, b, u, p) {
+  if (!a.rebuilt && !b.rebuilt) return undefined;
+  const E = armPolar(p.shoulder, armAngMix(a.eAng, b.eAng, u), a.eLen + (b.eLen - a.eLen) * u);
+  const anc = p.load?.at ?? p.fixed?.at ?? null;
+  const H = (anc && a.grip && b.grip)
+    ? [anc[0] + a.grip[0] + (b.grip[0] - a.grip[0]) * u, anc[1] + a.grip[1] + (b.grip[1] - a.grip[1]) * u]
+    : armPolar(E, armAngMix(a.hAng, b.hAng, u), a.hLen + (b.hLen - a.hLen) * u);
+  return { E, H };
+}
+
 const SVG_NS = 'http://www.w3.org/2000/svg';
 const ease = (t) => (t < 0.5 ? 2 * t * t : 1 - ((-2 * t + 2) ** 2) / 2);
 
@@ -31,13 +58,16 @@ export function initSkeletonAnimation({ POSES, interpolate, renderPose, drawnArm
     // 自重动作把模板里的负荷摘掉——照着练一副不存在的杠铃就是教错
     const strip = (p) => (cfg.no_load ? { ...p, load: undefined } : p);
     const A = strip(POSES[cfg.a]), B = strip(POSES[cfg.b]);
-    // 画出来的手臂按两端点各求一次（出平面的走重建，矢状面内的用原坐标），
-    // 中间帧在两组肘/手之间插值。每帧重解会在手臂过顶时无解回落原坐标、
-    // 在握点钳制处跳 36px，末帧还会画出折叠手臂——都是真实发生过的。
-    const rel = (arm, p) => ({ E: [arm.E[0] - p.shoulder[0], arm.E[1] - p.shoulder[1]],
-                               H: [arm.H[0] - p.shoulder[0], arm.H[1] - p.shoulder[1]] });
+    // 手臂分两种画法，按端点是不是**重建过**来分：
+    //   矢状面内（没重建）：直接用补间链算出的 elbow/wrist。链保证骨长不变、
+    //     俯撑家族的手回到地面；以前对所有图一律走下面的混合，等于在两端点之间
+    //     拉一条弦——角度走得越大弦越短，手臂中途缩水约 20%，俯卧撑的手还飘离地面。
+    //   出平面（重建过）：解不能每帧重求（过顶无解、握点钳制处跳 36px），
+    //     所以仍在两端之间插值，但插极坐标不插直角坐标：肘按「相对肩的方向+投影长」，
+    //     手按「相对器械的握点偏移」——手因此全程贴在杠/哑铃上，不会脱手。
+    const desc = (key, p) => armDescriptor(drawnArm(key, p, cfg.load_type ?? undefined), p);
     items.push({ svg, cfg, box: { x, y, w, h }, A, B, visible: false, t: 0,
-      armA: rel(drawnArm(cfg.a, A), A), armB: rel(drawnArm(cfg.b, B), B) });
+      armA: desc(cfg.a, A), armB: desc(cfg.b, B) });
   }
   if (!items.length) return null;
 
@@ -53,8 +83,7 @@ export function initSkeletonAnimation({ POSES, interpolate, renderPose, drawnArm
     const ph = it.t / REP;
     const u = ease(ph < 0.5 ? ph * 2 : (1 - ph) * 2);
     const p = interpolate(it.A, it.B, u, { plumb: it.cfg.plumb });
-    const mix = (a, b) => [p.shoulder[0] + a[0] + (b[0] - a[0]) * u, p.shoulder[1] + a[1] + (b[1] - a[1]) * u];
-    const arm = { E: mix(it.armA.E, it.armB.E), H: mix(it.armA.H, it.armB.H) };
+    const arm = blendArm(it.armA, it.armB, u, p);
     it.svg.innerHTML = renderPose(p, { plumb: it.cfg.plumb, box: it.box, arm,
       caption: '循环演示', name: it.cfg.a, prime: it.cfg.prime, loadType: it.cfg.load_type ?? undefined });
   };

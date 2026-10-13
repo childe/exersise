@@ -28,7 +28,7 @@ export const POSES = {
   squat_bottom: P({
     head: [104, 74], shoulder: [92, 92], elbow: [74, 114], wrist: [94, 96],
     hip: [44, 160], knee: [108, 152], ankle: [80, 216], heel: [72, 225], toe: [108, 225],
-    load: { type: 'bar', at: [90, 86] },
+    load: { type: 'bar', at: [91.3, 87.8] },
   }),
 
   // 低杠背蹲自己的一对姿态。
@@ -40,7 +40,7 @@ export const POSES = {
   // 平板卧推一致」。共用姿态可以，声称有差别又画一样的不行。）
   //
   // 差别只有两处，都是可量的：
-  //   杠位：从斜方肌上缘下移到后三角/肩胛冈，约肩下 8–10px
+  //   杠位：从斜方肌上缘下移到后三角/肩胛冈，沿躯干约 11px（偏移写在躯干系里，前倾时跟着转）
   //   躯干：底部前倾由 35° 增到约 48°
   // 而「杠必须过足中线」不变——正是这条不变，才逼出低杠的真正特征：
   // 杠位更低、躯干更倾，髋就必须更往后走才能让杠停在足中线上。
@@ -48,12 +48,12 @@ export const POSES = {
   squat_lowbar_top: P({
     head: [102, 36], shoulder: [90, 54], elbow: [72, 78], wrist: [92, 62],
     hip: [78, 114], knee: [84, 150], ankle: [80, 216], heel: [72, 225], toe: [108, 225],
-    load: { type: 'bar', at: [94, 63] },
+    load: { type: 'bar', at: [83.5, 60.9] },   // 躯干系 (−8, −5)：低杠在后三角/肩胛冈，比高杠沿躯干低 11px、更靠后
   }),
   squat_lowbar_bottom: P({
     head: [112, 86], shoulder: [100, 104], elbow: [80, 128], wrist: [100, 114],
     hip: [8, 170], knee: [82, 152], ankle: [80, 216], heel: [72, 225], toe: [108, 225],
-    load: { type: 'bar', at: [102, 113] },
+    load: { type: 'bar', at: [90.6, 104.6] },
   }),
 
   // 自重深蹲用自己的一套手臂：两臂前伸配重。
@@ -74,18 +74,18 @@ export const POSES = {
   squat_top: P({
     head: [100, 34], shoulder: [88, 52], elbow: [70, 74], wrist: [88, 56],
     hip: [80, 112], knee: [84, 150], ankle: [80, 216], heel: [72, 225], toe: [108, 225],
-    load: { type: 'bar', at: [90, 50] },
+    load: { type: 'bar', at: [85.4, 48.6] },   // 躯干系 (+3, −3)：高杠在斜方肌上缘、略偏后
   }),
   // 前架位（高脚杯蹲 / 前蹲）：负荷在身前，躯干更直
   squat_front_bottom: P({
     head: [100, 70], shoulder: [88, 88], elbow: [102, 112], wrist: [96, 92],
     hip: [48, 158], knee: [106, 150], ankle: [80, 216], heel: [72, 225], toe: [108, 225],
-    load: { type: 'front', at: [92, 90] },
+    load: { type: 'front', at: [94.2, 89.2] },
   }),
   squat_front_top: P({
     head: [98, 32], shoulder: [86, 50], elbow: [96, 76], wrist: [92, 54],
     hip: [82, 110], knee: [84, 150], ankle: [80, 216], heel: [72, 225], toe: [108, 225],
-    load: { type: 'front', at: [96, 52] },
+    load: { type: 'front', at: [92.1, 48.4] },   // 躯干系 (+2, +6)：前架位在锁骨前
   }),
   // 单腿（分腿蹲 / 保加利亚 / 箭步）：后腿屈膝落后方
   split_bottom: P({
@@ -173,12 +173,12 @@ export const POSES = {
   gm_top: P({
     head: [100, 40], shoulder: [88, 58], elbow: [70, 78], wrist: [90, 62],
     hip: [84, 118], knee: [86, 152], ankle: [80, 216], heel: [72, 225], toe: [108, 225],
-    load: { type: 'band', at: [82, 52], from: [90, 225] },
+    load: { type: 'band', at: [84.4, 51.7], from: [90, 225] },
   }),
   gm_bottom: P({
     head: [104, 33], shoulder: [88, 39.4], elbow: [70, 60], wrist: [90, 44],
     hip: [41.6, 104.6], knee: [71.6, 156.6], ankle: [80, 216], heel: [72, 225], toe: [108, 225],
-    load: { type: 'band', at: [80, 34], from: [90, 225] },
+    load: { type: 'band', at: [88.2, 32.2], from: [90, 225] },
   }),
 
   // ── 垂直推 ─────────────────────────────────────────
@@ -255,7 +255,7 @@ export const POSES = {
   carry_front: P({
     head: [98, 38], shoulder: [86, 56], elbow: [106, 72], wrist: [100, 58],
     hip: [84, 114], knee: [84, 152], ankle: [82, 216], heel: [72, 225], toe: [108, 225],
-    load: { type: 'front', at: [96, 58] },
+    load: { type: 'front', at: [93.9, 58.3] },
   }),
   carry_overhead: P({
     head: [98, 44], shoulder: [86, 58], elbow: [86, 38], wrist: [88, 18],
@@ -734,14 +734,53 @@ function shiftAll(p, dx, dy, keys = ALL_JOINTS) {
 }
 const CANON_HEEL_X = 72;
 
+// 躯干坐标系：u 沿髋→肩，n 是它的法向。架在肩上的杠必须用这个系描述——
+// 它压在斜方肌/后三角上，躯干前倾时跟着一起转，不是在世界坐标里悬在肩下方 9px。
+// 用世界偏移的后果：低杠底部躯干倾到 48°，那个「肩下 9px」就转到了躯干**前面** 6px，
+// 画出来比前蹲的杠还靠前；高杠动画里杠还会在肩上滑 7px。
+export function torsoCoords(hip, shoulder, pt) {
+  const d = [shoulder[0] - hip[0], shoulder[1] - hip[1]], L = Math.hypot(d[0], d[1]) || 1;
+  const u = [d[0] / L, d[1] / L], n = [-u[1], u[0]];
+  const v = [pt[0] - shoulder[0], pt[1] - shoulder[1]];
+  return [v[0] * u[0] + v[1] * u[1], v[0] * n[0] + v[1] * n[1]];
+}
+export const fromTorso = (hip, th, L, a, b) => {
+  const u = [Math.cos(th), Math.sin(th)], n = [-u[1], u[0]];
+  const S = [hip[0] + u[0] * L, hip[1] + u[1] * L];
+  return { S, at: [S[0] + a * u[0] + b * n[0], S[1] + a * u[1] + b * n[1]] };
+};
+const wrap = (x) => { while (x > Math.PI) x -= 2 * Math.PI; while (x < -Math.PI) x += 2 * Math.PI; return x; };
+/**
+ * 解躯干角 th，使肩上 (a,b)（躯干系）的负荷落在 x = MIDFOOT 上：
+ *   (L+a)·cos th − b·sin th = MIDFOOT − hip.x   ⟺   R·cos(th+φ) = K
+ * 两个解里取离作者原角近的那支。无解回 null，留给杠线断言去报。
+ */
+export function solveTorsoAngle(hipX, a, b, L, th0) {
+  const R = Math.hypot(L + a, b), phi = Math.atan2(b, L + a), K = (MIDFOOT - hipX) / R;
+  if (Math.abs(K) > 1) return null;
+  const c = Math.acos(K);
+  return [-phi + c, -phi - c].sort((x, y) => Math.abs(wrap(x - th0)) - Math.abs(wrap(y - th0)))[0];
+}
+
 function pinFeetAndSolve(name, p) {
   if (!p.load || !p.heel) return p;
   // 1. 脚钉标准位
   let q = shiftAll(p, CANON_HEEL_X - p.heel[0], 0);
   if (p.bench) q.bench = [p.bench[0] + (CANON_HEEL_X - p.heel[0]), p.bench[1], p.bench[2], p.bench[3]];
   if (p.fixed) q.fixed = { ...p.fixed, at: [p.fixed.at[0] + (CANON_HEEL_X - p.heel[0]), p.fixed.at[1]] };
-  // 2. 反解躯干角。负荷相对肩的偏移是世界坐标下的量：手臂方向由作者给定，
-  //    躯干绕髋转动时整条手臂平移，偏移不变。于是 shoulder.x 有唯一解。
+  const th0 = Math.atan2(q.shoulder[1] - q.hip[1], q.shoulder[0] - q.hip[0]);
+  // 2a. 肩锚：负荷随躯干转，角度用上面的闭式解。
+  if (q.loadAnchor === 'shoulder') {
+    const [a, b] = torsoCoords(q.hip, q.shoulder, q.load.at);
+    const th = solveTorsoAngle(q.hip[0], a, b, BONE.torso, th0);
+    if (th === null) return q;
+    const { S, at } = fromTorso(q.hip, th, BONE.torso, a, b);
+    const moved = shiftAll(q, S[0] - q.shoulder[0], S[1] - q.shoulder[1], UPPER_JOINTS);
+    moved.load = { ...moved.load, at };
+    return moved;
+  }
+  // 2b. 腕锚等：负荷相对肩的偏移是世界坐标下的量——手臂方向由作者给定，
+  //     躯干绕髋转动时整条手臂平移，偏移不变。于是 shoulder.x 有唯一解。
   const off = [q.load.at[0] - q.shoulder[0], q.load.at[1] - q.shoulder[1]];
   const c = (MIDFOOT - off[0] - q.hip[0]) / BONE.torso;
   if (Math.abs(c) > 1) return q;                       // 解不出来：留给杠线断言去报
@@ -882,14 +921,17 @@ function fixed(f) {
  * 其余用原坐标。动画不能每帧重解：解有时无解（手臂过顶后射线不与杠线相交）、
  * 有时被握点钳制跳变——改成对两端点各求一次，中间帧在两组肘/手之间插值。
  */
-export function drawnArm(name, p) {
-  const arm = OUT_OF_PLANE_ARM.has(name) ? rebuildArmFor(name, p) : null;
-  return arm ? { E: arm.elbow, H: arm.hand } : { E: p.elbow, H: p.wrist };
+export function drawnArm(name, p, loadType) {
+  // 器械类型由 figures.json 覆盖时（高脚杯深蹲借用前蹲姿态但拿的是哑铃），
+  // 握点钳制必须按**画出来的**器械算：杠铃 ±24 是沿杠线外移的握距，哑铃只有 ±9。
+  const q = loadType && p.load ? { ...p, load: { ...p.load, type: loadType } } : p;
+  const arm = OUT_OF_PLANE_ARM.has(name) ? rebuildArmFor(name, q) : null;
+  return arm ? { E: arm.elbow, H: arm.hand, rebuilt: true } : { E: p.elbow, H: p.wrist, rebuilt: false };
 }
 
 export function renderPose(p, opts = {}) {
   const { plumb = false, caption = '', name = '', prime = [] } = opts;
-  const { E: ELBOW, H: HAND } = opts.arm ?? drawnArm(name, p);
+  const { E: ELBOW, H: HAND } = opts.arm ?? drawnArm(name, p, opts.loadType);
   // 器械类型可由 figures.json 覆盖：哑铃卧推共用杠铃卧推的姿态，但画的得是哑铃
   const LD = p.load && opts.loadType ? { ...p.load, type: opts.loadType } : p.load;
   const g = [];

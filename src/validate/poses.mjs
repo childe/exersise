@@ -4,7 +4,9 @@
 // 前提是它必须可核验——而可核验的意思不是"我看了一眼觉得对"，是**写成断言、构建期跑**。
 // 这个文件就是那个前提。断言失败 = 构建失败，画错的图进不了页面。
 
-import { POSES, RAW_POSES, FORESHORTENED_ARM, GROUND, MIDFOOT, FIG_W, FIG_H } from '../render/skeleton.mjs';
+import { POSES, RAW_POSES, FORESHORTENED_ARM, GROUND, MIDFOOT, FIG_W, FIG_H, drawnArm } from '../render/skeleton.mjs';
+import { interpolate } from '../render/interp.mjs';
+import { armDescriptor, blendArm } from '../assets/anim.js';
 import { rebuildArmFor, OUT_OF_PLANE_ARM } from '../render/arm.mjs';
 import { facing } from '../render/facing.mjs';
 
@@ -390,5 +392,72 @@ export function validateKneeStable() {
   const a = ang(POSES.hinge_top.knee, POSES.hinge_top.hip, POSES.hinge_top.ankle);
   const b = ang(POSES.rdl_bottom.knee, POSES.rdl_bottom.hip, POSES.rdl_bottom.ankle);
   if (Math.abs(a - b) > 15) errors.push(`rdl_bottom: 膝角 ${b.toFixed(1)}° 与 hinge_top ${a.toFixed(1)}° 差 ${Math.abs(a-b).toFixed(1)}°（RDL 膝角应基本不变，上限 15°）`);
+  return errors;
+}
+
+/**
+ * 逐帧核验**画出来的**手臂——不是补间链里的那条。
+ *
+ * 病根：anim.js 原先对所有图一律在两端点的肘/手之间拉直角坐标的弦。弦比弧短，
+ * 角度走得越大缩得越多（矢状面手臂中途短 ~20%）；腕锚的负荷跟着补间链走、手却走弦，
+ * 两者分家最远 26px（手离开杠）；俯撑家族「把手转回地面」那一步也被绕开，手飘起 12px。
+ * 现在矢状面手臂直接用链的 elbow/wrist，出平面手臂插极坐标且手钉在器械上。
+ * 这条断言把那个修复钉住：以后谁改回去，构建就红。
+ */
+const HELD_LOAD = new Set(['bar', 'front', 'hands', 'hands2', 'handle', 'band']);
+export function validateDrawnAnimation(figures, { steps = 24 } = {}) {
+  const errors = [];
+  const L = (a, b) => Math.hypot(a[0] - b[0], a[1] - b[1]);
+  for (const [slug, f] of Object.entries(figures)) {
+    if (!f.end || f.end === f.start) continue;
+    if (!POSES[f.start] || !POSES[f.end]) continue;
+    const strip = (p) => (f.no_load ? { ...p, load: undefined } : p);
+    const A = strip(POSES[f.start]), B = strip(POSES[f.end]);
+    const lt = f.load_type ?? undefined;
+    const dA = drawnArm(f.start, A, lt), dB = drawnArm(f.end, B, lt);
+    const a = armDescriptor(dA, A), b = armDescriptor(dB, B);
+    const upMax = Math.max(L(A.shoulder, dA.E), L(B.shoulder, dB.E));
+    const foreMax = Math.max(L(dA.E, dA.H), L(dB.E, dB.H));
+    const held = HELD_LOAD.has((lt ?? A.load?.type));
+    const handMax = held ? Math.max(A.load ? L(dA.H, A.load.at) : 0, B.load ? L(dB.H, B.load.at) : 0) : null;
+    const onGround = (p) => p.wrist && Math.abs(p.wrist[1] - GROUND) <= 7;
+    const handGrounded = onGround(A) && onGround(B);
+    for (let i = 0; i <= steps; i++) {
+      const u = i / steps;
+      const p = interpolate(A, B, u, { plumb: f.plumb });
+      const arm = blendArm(a, b, u, p) ?? { E: p.elbow, H: p.wrist };
+      const at = `${slug} t=${u.toFixed(2)}`;
+      if (L(p.shoulder, arm.E) > upMax + 1)
+        errors.push(`${at}: 画出的上臂 ${L(p.shoulder, arm.E).toFixed(1)} 超出两端最大值 ${upMax.toFixed(1)}`);
+      if (L(arm.E, arm.H) > foreMax + 9)
+        errors.push(`${at}: 画出的前臂 ${L(arm.E, arm.H).toFixed(1)} 超出两端最大值 ${foreMax.toFixed(1)} 逾 9px`);
+      if (handMax !== null && p.load && L(arm.H, p.load.at) > handMax + 1)
+        errors.push(`${at}: 画出的手离器械 ${L(arm.H, p.load.at).toFixed(1)}px（两端只有 ${handMax.toFixed(1)}）——手脱离了负荷`);
+      if (handGrounded && Math.abs(arm.H[1] - GROUND) > 4)
+        errors.push(`${at}: 手离地 ${(GROUND - arm.H[1]).toFixed(1)}px，而两帧的手都按在地上`);
+    }
+  }
+  return errors;
+}
+
+/**
+ * 架位断言：背蹲的杠在躯干线**后**，前架位在**前**。
+ *
+ * 低杠曾写成肩前 4px——比前蹲的杠还靠前，而图注说的是「杠更靠后」。
+ * 这类错误用肉眼看侧视图很难察觉（杠就在肩附近），但它把动作讲反了。
+ */
+const BACK_RACK = new Set(['squat_top', 'squat_bottom', 'squat_lowbar_top', 'squat_lowbar_bottom', 'gm_top', 'gm_bottom']);
+const FRONT_RACK = new Set(['squat_front_top', 'squat_front_bottom', 'carry_front']);
+export function validateRackSide() {
+  const errors = [];
+  for (const [name, p] of Object.entries(POSES)) {
+    if (!p.load || (!BACK_RACK.has(name) && !FRONT_RACK.has(name))) continue;
+    const f = facing(name, p);
+    const d = (p.load.at[0] - p.shoulder[0]) * f[0] + (p.load.at[1] - p.shoulder[1]) * f[1];
+    if (BACK_RACK.has(name) && d > -1)
+      errors.push(`${name}: 背部架位的杠却在躯干线前方 ${d.toFixed(1)}px——图注说「杠更靠后」，图画的是更靠前`);
+    if (FRONT_RACK.has(name) && d < 1)
+      errors.push(`${name}: 前部架位的杠却在躯干线后方 ${(-d).toFixed(1)}px`);
+  }
   return errors;
 }

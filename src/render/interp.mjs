@@ -10,7 +10,7 @@
 // 脚就在地上前后滑——深蹲时脚是固定基座，髋才是动的那个。
 // 为什么躯干角要反解不能插值：真实深蹲里小腿角、大腿角、躯干角是协调变化的，
 // 正是这种协调让杠走直线。线性插值各角度不满足这个约束，杠会漂出去十几像素。
-import { POSES, GROUND, MIDFOOT } from './skeleton.mjs';
+import { POSES, GROUND, MIDFOOT, torsoCoords, solveTorsoAngle } from './skeleton.mjs';
 
 const len = (a, b) => Math.hypot(a[0] - b[0], a[1] - b[1]);
 const ang = (a, b) => Math.atan2(b[1] - a[1], b[0] - a[0]);
@@ -80,15 +80,20 @@ export function interpolate(A, B, t, opts = {}) {
     if (grounded && plumb && A.load && B.load && (A.loadAnchor === 'shoulder' || A.loadAnchor === 'wrist')) {
       let off;
       if (A.loadAnchor === 'shoulder') {
-        off = lerp2([A.load.at[0]-A.shoulder[0], A.load.at[1]-A.shoulder[1]],
-                    [B.load.at[0]-B.shoulder[0], B.load.at[1]-B.shoulder[1]], t);
+        // 架在肩上的杠随躯干转，所以偏移取躯干系并在躯干系里插值，角度用同一个闭式解。
+        // 用世界偏移的话杠会在肩上来回滑（高杠 7px），因为躯干角在一次重复里变了 20°。
+        const oa = torsoCoords(A.hip, A.shoulder, A.load.at), ob = torsoCoords(B.hip, B.shoulder, B.load.at);
+        const a = lerp(oa[0], ob[0], t), b2 = lerp(oa[1], ob[1], t);
+        const sol = solveTorsoAngle(q.hip[0], a, b2, tl, th);
+        if (sol !== null) { th = sol; q._solved = true; q._torsoOff = [a, b2]; }
+        off = null;
       } else {
         const ua = alerp(ang(A.shoulder,A.elbow), ang(B.shoulder,B.elbow), t), ul = lerp(len(A.shoulder,A.elbow), len(B.shoulder,B.elbow), t);
         const fa = alerp(ang(A.elbow,A.wrist), ang(B.elbow,B.wrist), t), fl = lerp(len(A.elbow,A.wrist), len(B.elbow,B.wrist), t);
         const lo = lerp2([A.load.at[0]-A.wrist[0], A.load.at[1]-A.wrist[1]], [B.load.at[0]-B.wrist[0], B.load.at[1]-B.wrist[1]], t);
         off = [Math.cos(ua)*ul + Math.cos(fa)*fl + lo[0], Math.sin(ua)*ul + Math.sin(fa)*fl + lo[1]];
       }
-      const c = (MIDFOOT - off[0] - q.hip[0]) / tl;
+      const c = off === null ? 2 : (MIDFOOT - off[0] - q.hip[0]) / tl;
       if (Math.abs(c) <= 1) {
         const a1 = Math.acos(c), a2 = -a1;
         const gap = (x) => { let v = x - th; while (v > Math.PI) v -= 2*Math.PI; while (v < -Math.PI) v += 2*Math.PI; return Math.abs(v); };
@@ -130,7 +135,13 @@ export function interpolate(A, B, t, opts = {}) {
     if (toeRooted && f === 'toe') continue;                                        // 已钉
     q[f] = [q[src][0] + lerp(A[f][0]-A[src][0], B[f][0]-B[src][0], t), q[src][1] + lerp(A[f][1]-A[src][1], B[f][1]-B[src][1], t)];
   }
-  if (A.load && B.load) {
+  if (A.load && B.load && q._torsoOff) {
+    // 肩锚：负荷在躯干系里的位置是插出来的，这里按解出的躯干角放回世界坐标
+    const dth = Math.atan2(q.shoulder[1]-q.hip[1], q.shoulder[0]-q.hip[0]);
+    const uu = [Math.cos(dth), Math.sin(dth)], nn = [-uu[1], uu[0]];
+    const [a, b2] = q._torsoOff;
+    q.load = { ...A.load, at: [q.shoulder[0] + a*uu[0] + b2*nn[0], q.shoulder[1] + a*uu[1] + b2*nn[1]] };
+  } else if (A.load && B.load) {
     const anc = A.loadAnchor ?? 'wrist';
     const base = q[anc] ?? q.wrist ?? q.shoulder, ba = A[anc] ?? A.wrist ?? A.shoulder, bb = B[anc] ?? B.wrist ?? B.shoulder;
     // 展开保留 type 等字段：只回 at 的话 load() 按 type 分发落到 default 返回空串

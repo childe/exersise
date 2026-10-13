@@ -13,7 +13,8 @@ import { loadFigures, validateFigures } from './validate/figures.mjs';
 import { scanSafety, scanSafetyReview } from './validate/safety.mjs';
 import { validatePoses, validateFigures as validatePoseFigures, validateMuscles,
   validateFrameConsistency, validateJointAngles, validateContacts, validateStraightLines,
-  validateFixedRigs, validateBarOnChest, validateSecondHand, validateKneeStable } from './validate/poses.mjs';
+  validateFixedRigs, validateBarOnChest, validateSecondHand, validateKneeStable,
+  validateDrawnAnimation, validateRackSide } from './validate/poses.mjs';
 import { MUSCLE_NAMES } from './render/muscles.mjs';
 import { escapeHtml } from './render/claims.mjs';
 
@@ -90,6 +91,10 @@ export async function build(root = defaultRoot) {
   if (handErrs.length) throw new Error(`远侧负荷校验失败:\n- ${handErrs.join('\n- ')}`);
   const kneeErrs = validateKneeStable();
   if (kneeErrs.length) throw new Error(`RDL 膝角校验失败:\n- ${kneeErrs.join('\n- ')}`);
+  const rackErrs = validateRackSide();
+  if (rackErrs.length) throw new Error(`架位校验失败:\n- ${rackErrs.join('\n- ')}`);
+  const drawnErrs = validateDrawnAnimation(data.poseFigures);
+  if (drawnErrs.length) throw new Error(`动画手臂校验失败:\n- ${drawnErrs.join('\n- ')}`);
   const renderCtx = {
     claims: new Map(data.claims.map((c) => [c.id, c])),
     exercises: new Map(data.exercises.map((e) => [e.slug, e])),
