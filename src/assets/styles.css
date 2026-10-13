@@ -123,6 +123,9 @@ figure.concept figcaption { color: var(--muted); font-size: 0.88em; }
 .sk-neck { stroke-width: 4; }
 .sk-far { opacity: .34; }
 .sk-head { fill: var(--fg); stroke: none; }
+/* 面部标记：底色填充，在实心头上读作缺口。侧视一只眼指向前方，正视两只眼。
+   骨架没有任何其他朝向线索——没有它，读者判断不出人面向哪边。 */
+.sk-eye { fill: var(--surface); stroke: none; }
 .sk-joint { fill: var(--fg); }
 .sk-ground { stroke: var(--rule); stroke-width: 2.5; }
 .sk-bench, .sk-sled { fill: var(--rule); stroke: var(--muted); stroke-width: 1.5; }

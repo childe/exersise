@@ -1,0 +1,1603 @@
+[
+  {
+    "slug": "back-squat-high-bar",
+    "load": "bar",
+    "lostLoad": true,
+    "missing": [],
+    "endError": [
+      "hip",
+      2.741108137883657
+    ],
+    "contacts": [
+      [
+        "wrist",
+        -116.7
+      ],
+      [
+        "elbow",
+        -97.3
+      ],
+      [
+        "knee",
+        -64.6
+      ],
+      [
+        "heel",
+        0
+      ],
+      [
+        "toe",
+        0
+      ]
+    ]
+  },
+  {
+    "slug": "back-squat-low-bar",
+    "load": "bar",
+    "lostLoad": true,
+    "missing": [],
+    "endError": [
+      "heel",
+      5.791330043027912
+    ],
+    "contacts": [
+      [
+        "wrist",
+        -108.6
+      ],
+      [
+        "elbow",
+        -91.9
+      ],
+      [
+        "knee",
+        -67.1
+      ],
+      [
+        "heel",
+        0
+      ],
+      [
+        "toe",
+        0
+      ]
+    ]
+  },
+  {
+    "slug": "bodyweight-squat",
+    "lostLoad": false,
+    "missing": [],
+    "endError": [
+      "heel",
+      3.6973336615053682
+    ],
+    "contacts": [
+      [
+        "wrist",
+        -115.7
+      ],
+      [
+        "elbow",
+        -113.7
+      ],
+      [
+        "knee",
+        -64.6
+      ],
+      [
+        "heel",
+        0
+      ],
+      [
+        "toe",
+        0
+      ]
+    ]
+  },
+  {
+    "slug": "db-front-squat",
+    "load": "front",
+    "lostLoad": true,
+    "missing": [],
+    "endError": [
+      "hip",
+      11.19653635024131
+    ],
+    "contacts": [
+      [
+        "wrist",
+        -120.8
+      ],
+      [
+        "elbow",
+        -93
+      ],
+      [
+        "knee",
+        -65.4
+      ],
+      [
+        "heel",
+        0
+      ],
+      [
+        "toe",
+        0
+      ]
+    ]
+  },
+  {
+    "slug": "goblet-squat",
+    "load": "front",
+    "lostLoad": true,
+    "missing": [],
+    "endError": [
+      "hip",
+      11.19653635024131
+    ],
+    "contacts": [
+      [
+        "wrist",
+        -120.8
+      ],
+      [
+        "elbow",
+        -93
+      ],
+      [
+        "knee",
+        -65.4
+      ],
+      [
+        "heel",
+        0
+      ],
+      [
+        "toe",
+        0
+      ]
+    ]
+  },
+  {
+    "slug": "db-bulgarian-split-squat",
+    "load": "hands",
+    "lostLoad": true,
+    "missing": [
+      "knee2",
+      "ankle2",
+      "heel2",
+      "toe2"
+    ],
+    "endError": [
+      "toe",
+      4.765085189293858
+    ],
+    "contacts": [
+      [
+        "wrist",
+        -136.3
+      ],
+      [
+        "elbow",
+        -165.3
+      ],
+      [
+        "knee",
+        -70.6
+      ],
+      [
+        "heel",
+        -1.7
+      ],
+      [
+        "toe",
+        -1.7
+      ]
+    ]
+  },
+  {
+    "slug": "leg-press",
+    "load": "sled",
+    "lostLoad": true,
+    "missing": [],
+    "endError": [
+      "elbow",
+      3.1776437161565096e-14
+    ],
+    "contacts": [
+      [
+        "wrist",
+        -49.4
+      ],
+      [
+        "elbow",
+        -58.6
+      ],
+      [
+        "knee",
+        -85.9
+      ],
+      [
+        "heel",
+        -47.6
+      ],
+      [
+        "toe",
+        -67.6
+      ]
+    ]
+  },
+  {
+    "slug": "seated-leg-extension",
+    "load": "pad",
+    "lostLoad": true,
+    "missing": [],
+    "endError": [
+      "head",
+      1.4210854715202004e-14
+    ],
+    "contacts": [
+      [
+        "wrist",
+        -79.6
+      ],
+      [
+        "elbow",
+        -100.1
+      ],
+      [
+        "knee",
+        -40.5
+      ],
+      [
+        "heel",
+        -42.3
+      ],
+      [
+        "toe",
+        -62.3
+      ]
+    ]
+  },
+  {
+    "slug": "seated-calf-raise",
+    "load": "pad",
+    "lostLoad": true,
+    "missing": [],
+    "endError": [
+      "ankle",
+      2.842170943040401e-14
+    ],
+    "contacts": [
+      [
+        "wrist",
+        -108.7
+      ],
+      [
+        "elbow",
+        -129.3
+      ],
+      [
+        "knee",
+        -72.7
+      ],
+      [
+        "heel",
+        -8
+      ],
+      [
+        "toe",
+        0
+      ]
+    ]
+  },
+  {
+    "slug": "standing-calf-raise-bodyweight",
+    "lostLoad": false,
+    "missing": [
+      "load"
+    ],
+    "endError": [
+      "head",
+      1.4210854715202004e-14
+    ],
+    "contacts": [
+      [
+        "wrist",
+        -164
+      ],
+      [
+        "elbow",
+        -193
+      ],
+      [
+        "knee",
+        -83
+      ],
+      [
+        "heel",
+        -15
+      ],
+      [
+        "toe",
+        0
+      ]
+    ]
+  },
+  {
+    "slug": "conventional-deadlift",
+    "load": "bar",
+    "lostLoad": true,
+    "missing": [],
+    "endError": [
+      "head",
+      3.584012846535728
+    ],
+    "contacts": [
+      [
+        "wrist",
+        -149.5
+      ],
+      [
+        "elbow",
+        -178.5
+      ],
+      [
+        "knee",
+        -68.7
+      ],
+      [
+        "heel",
+        0
+      ],
+      [
+        "toe",
+        0
+      ]
+    ]
+  },
+  {
+    "slug": "romanian-deadlift",
+    "load": "bar",
+    "lostLoad": true,
+    "missing": [],
+    "endError": [
+      "head",
+      3.1275477698860072
+    ],
+    "contacts": [
+      [
+        "wrist",
+        -96.1
+      ],
+      [
+        "elbow",
+        -125
+      ],
+      [
+        "knee",
+        -68.7
+      ],
+      [
+        "heel",
+        0
+      ],
+      [
+        "toe",
+        0
+      ]
+    ]
+  },
+  {
+    "slug": "db-romanian-deadlift",
+    "load": "bar",
+    "lostLoad": true,
+    "missing": [],
+    "endError": [
+      "head",
+      3.1275477698860072
+    ],
+    "contacts": [
+      [
+        "wrist",
+        -96.1
+      ],
+      [
+        "elbow",
+        -125
+      ],
+      [
+        "knee",
+        -68.7
+      ],
+      [
+        "heel",
+        0
+      ],
+      [
+        "toe",
+        0
+      ]
+    ]
+  },
+  {
+    "slug": "band-good-morning",
+    "load": "bar",
+    "lostLoad": true,
+    "missing": [],
+    "endError": [
+      "head",
+      3.1275477698860072
+    ],
+    "contacts": [
+      [
+        "wrist",
+        -96.1
+      ],
+      [
+        "elbow",
+        -125
+      ],
+      [
+        "knee",
+        -68.7
+      ],
+      [
+        "heel",
+        0
+      ],
+      [
+        "toe",
+        0
+      ]
+    ]
+  },
+  {
+    "slug": "db-hip-thrust",
+    "load": "bar",
+    "lostLoad": true,
+    "missing": [],
+    "endError": [
+      "elbow",
+      8.996668390584965
+    ],
+    "contacts": [
+      [
+        "wrist",
+        -35.7
+      ],
+      [
+        "elbow",
+        -41.4
+      ],
+      [
+        "knee",
+        -62.7
+      ],
+      [
+        "heel",
+        0
+      ],
+      [
+        "toe",
+        0
+      ]
+    ]
+  },
+  {
+    "slug": "glute-bridge-bodyweight",
+    "lostLoad": false,
+    "missing": [
+      "load"
+    ],
+    "endError": [
+      "elbow",
+      8.996668390584965
+    ],
+    "contacts": [
+      [
+        "wrist",
+        -35.7
+      ],
+      [
+        "elbow",
+        -41.4
+      ],
+      [
+        "knee",
+        -62.7
+      ],
+      [
+        "heel",
+        0
+      ],
+      [
+        "toe",
+        0
+      ]
+    ]
+  },
+  {
+    "slug": "back-extension",
+    "load": "pad",
+    "lostLoad": true,
+    "missing": [],
+    "endError": [
+      "elbow",
+      1.5888218580782548e-14
+    ],
+    "contacts": [
+      [
+        "wrist",
+        -144.5
+      ],
+      [
+        "elbow",
+        -118.6
+      ],
+      [
+        "knee",
+        -67.7
+      ],
+      [
+        "heel",
+        0
+      ],
+      [
+        "toe",
+        -2
+      ]
+    ]
+  },
+  {
+    "slug": "lying-leg-curl",
+    "load": "pad",
+    "lostLoad": true,
+    "missing": [],
+    "endError": [
+      "ankle",
+      2.842170943040401e-14
+    ],
+    "contacts": [
+      [
+        "wrist",
+        -4
+      ],
+      [
+        "elbow",
+        -9.2
+      ],
+      [
+        "knee",
+        -26.4
+      ],
+      [
+        "heel",
+        -88.7
+      ],
+      [
+        "toe",
+        -96.7
+      ]
+    ]
+  },
+  {
+    "slug": "barbell-bench-press",
+    "load": "bar",
+    "lostLoad": true,
+    "missing": [],
+    "endError": [
+      "wrist",
+      2.2748467065386707e-14
+    ],
+    "contacts": [
+      [
+        "wrist",
+        -166.4
+      ],
+      [
+        "elbow",
+        -142.2
+      ],
+      [
+        "knee",
+        -68.7
+      ],
+      [
+        "heel",
+        0
+      ],
+      [
+        "toe",
+        0
+      ]
+    ]
+  },
+  {
+    "slug": "close-grip-bench-press",
+    "load": "bar",
+    "lostLoad": true,
+    "missing": [],
+    "endError": [
+      "wrist",
+      2.2748467065386707e-14
+    ],
+    "contacts": [
+      [
+        "wrist",
+        -166.4
+      ],
+      [
+        "elbow",
+        -142.2
+      ],
+      [
+        "knee",
+        -68.7
+      ],
+      [
+        "heel",
+        0
+      ],
+      [
+        "toe",
+        0
+      ]
+    ]
+  },
+  {
+    "slug": "db-bench-press",
+    "load": "bar",
+    "lostLoad": true,
+    "missing": [],
+    "endError": [
+      "wrist",
+      2.2748467065386707e-14
+    ],
+    "contacts": [
+      [
+        "wrist",
+        -166.4
+      ],
+      [
+        "elbow",
+        -142.2
+      ],
+      [
+        "knee",
+        -68.7
+      ],
+      [
+        "heel",
+        0
+      ],
+      [
+        "toe",
+        0
+      ]
+    ]
+  },
+  {
+    "slug": "db-incline-bench-press",
+    "load": "bar",
+    "lostLoad": true,
+    "missing": [],
+    "endError": [
+      "elbow",
+      3.1776437161565096e-14
+    ],
+    "contacts": [
+      [
+        "wrist",
+        -213.2
+      ],
+      [
+        "elbow",
+        -187.2
+      ],
+      [
+        "knee",
+        -65.6
+      ],
+      [
+        "heel",
+        0
+      ],
+      [
+        "toe",
+        0
+      ]
+    ]
+  },
+  {
+    "slug": "machine-chest-press",
+    "load": "handle",
+    "lostLoad": true,
+    "missing": [],
+    "endError": [
+      "head",
+      1.4210854715202004e-14
+    ],
+    "contacts": [
+      [
+        "wrist",
+        -117.1
+      ],
+      [
+        "elbow",
+        -121
+      ],
+      [
+        "knee",
+        -45.5
+      ],
+      [
+        "heel",
+        0
+      ],
+      [
+        "toe",
+        -4
+      ]
+    ]
+  },
+  {
+    "slug": "push-up",
+    "lostLoad": false,
+    "missing": [],
+    "endError": [
+      "knee",
+      2.842170943040401e-14
+    ],
+    "contacts": [
+      [
+        "wrist",
+        -19.8
+      ],
+      [
+        "elbow",
+        -41.8
+      ],
+      [
+        "knee",
+        -37.4
+      ],
+      [
+        "heel",
+        0
+      ],
+      [
+        "toe",
+        -10
+      ]
+    ]
+  },
+  {
+    "slug": "knee-push-up",
+    "lostLoad": false,
+    "missing": [],
+    "endError": [
+      "wrist",
+      3.552713678800501e-14
+    ],
+    "contacts": [
+      [
+        "wrist",
+        0
+      ],
+      [
+        "elbow",
+        -22
+      ],
+      [
+        "knee",
+        0.1
+      ],
+      [
+        "heel",
+        -20.4
+      ],
+      [
+        "toe",
+        -8.4
+      ]
+    ]
+  },
+  {
+    "slug": "overhead-press",
+    "load": "bar",
+    "lostLoad": true,
+    "missing": [],
+    "endError": [
+      "hip",
+      4.991218251406394
+    ],
+    "contacts": [
+      [
+        "wrist",
+        -267.8
+      ],
+      [
+        "elbow",
+        -238.9
+      ],
+      [
+        "knee",
+        -69
+      ],
+      [
+        "heel",
+        0
+      ],
+      [
+        "toe",
+        0
+      ]
+    ]
+  },
+  {
+    "slug": "band-overhead-press",
+    "load": "bar",
+    "lostLoad": true,
+    "missing": [],
+    "endError": [
+      "hip",
+      4.991218251406394
+    ],
+    "contacts": [
+      [
+        "wrist",
+        -267.8
+      ],
+      [
+        "elbow",
+        -238.9
+      ],
+      [
+        "knee",
+        -69
+      ],
+      [
+        "heel",
+        0
+      ],
+      [
+        "toe",
+        0
+      ]
+    ]
+  },
+  {
+    "slug": "db-shoulder-press",
+    "load": "hands2",
+    "lostLoad": true,
+    "missing": [],
+    "endError": [
+      "head",
+      1.4210854715202004e-14
+    ],
+    "contacts": [
+      [
+        "wrist",
+        -213.9
+      ],
+      [
+        "elbow",
+        -185
+      ],
+      [
+        "knee",
+        -63.8
+      ],
+      [
+        "heel",
+        -10
+      ],
+      [
+        "toe",
+        -14
+      ]
+    ]
+  },
+  {
+    "slug": "machine-shoulder-press",
+    "load": "hands2",
+    "lostLoad": true,
+    "missing": [],
+    "endError": [
+      "head",
+      1.4210854715202004e-14
+    ],
+    "contacts": [
+      [
+        "wrist",
+        -213.9
+      ],
+      [
+        "elbow",
+        -185
+      ],
+      [
+        "knee",
+        -63.8
+      ],
+      [
+        "heel",
+        -10
+      ],
+      [
+        "toe",
+        -14
+      ]
+    ]
+  },
+  {
+    "slug": "db-lateral-raise",
+    "load": "hands2",
+    "lostLoad": true,
+    "missing": [
+      "view",
+      "knee2",
+      "ankle2",
+      "heel2",
+      "toe2"
+    ],
+    "endError": [
+      "wrist",
+      2.864289338439558e-14
+    ],
+    "contacts": [
+      [
+        "wrist",
+        -204.8
+      ],
+      [
+        "elbow",
+        -204.8
+      ],
+      [
+        "knee",
+        -68.9
+      ],
+      [
+        "heel",
+        0
+      ],
+      [
+        "toe",
+        0
+      ]
+    ]
+  },
+  {
+    "slug": "cable-lateral-raise",
+    "load": "hands2",
+    "lostLoad": true,
+    "missing": [
+      "view",
+      "knee2",
+      "ankle2",
+      "heel2",
+      "toe2"
+    ],
+    "endError": [
+      "wrist",
+      2.864289338439558e-14
+    ],
+    "contacts": [
+      [
+        "wrist",
+        -204.8
+      ],
+      [
+        "elbow",
+        -204.8
+      ],
+      [
+        "knee",
+        -68.9
+      ],
+      [
+        "heel",
+        0
+      ],
+      [
+        "toe",
+        0
+      ]
+    ]
+  },
+  {
+    "slug": "cable-pushdown",
+    "load": "handle",
+    "lostLoad": true,
+    "missing": [],
+    "endError": [
+      "head",
+      1.4210854715202004e-14
+    ],
+    "contacts": [
+      [
+        "wrist",
+        -150.2
+      ],
+      [
+        "elbow",
+        -179
+      ],
+      [
+        "knee",
+        -69
+      ],
+      [
+        "heel",
+        0
+      ],
+      [
+        "toe",
+        0
+      ]
+    ]
+  },
+  {
+    "slug": "barbell-row",
+    "load": "bar",
+    "lostLoad": true,
+    "missing": [],
+    "endError": [
+      "head",
+      13.470878954345324
+    ],
+    "contacts": [
+      [
+        "wrist",
+        -120.9
+      ],
+      [
+        "elbow",
+        -113.9
+      ],
+      [
+        "knee",
+        -68.1
+      ],
+      [
+        "heel",
+        0
+      ],
+      [
+        "toe",
+        0
+      ]
+    ]
+  },
+  {
+    "slug": "db-one-arm-row",
+    "load": "hands",
+    "lostLoad": true,
+    "missing": [],
+    "endError": [
+      "hip",
+      7.105427357601002e-15
+    ],
+    "contacts": [
+      [
+        "wrist",
+        -118
+      ],
+      [
+        "elbow",
+        -110.4
+      ],
+      [
+        "knee",
+        -68
+      ],
+      [
+        "heel",
+        0
+      ],
+      [
+        "toe",
+        0
+      ]
+    ]
+  },
+  {
+    "slug": "inverted-row",
+    "lostLoad": false,
+    "missing": [],
+    "endError": [
+      "head",
+      2.842170943040401e-14
+    ],
+    "contacts": [
+      [
+        "wrist",
+        -113
+      ],
+      [
+        "elbow",
+        -88
+      ],
+      [
+        "knee",
+        -73
+      ],
+      [
+        "heel",
+        -41.6
+      ],
+      [
+        "toe",
+        -59.6
+      ]
+    ]
+  },
+  {
+    "slug": "band-row",
+    "load": "handle",
+    "lostLoad": true,
+    "missing": [],
+    "endError": [
+      "head",
+      1.4210854715202004e-14
+    ],
+    "contacts": [
+      [
+        "wrist",
+        -109.2
+      ],
+      [
+        "elbow",
+        -111.1
+      ],
+      [
+        "knee",
+        -43.5
+      ],
+      [
+        "heel",
+        0
+      ],
+      [
+        "toe",
+        -4
+      ]
+    ]
+  },
+  {
+    "slug": "seated-cable-row",
+    "load": "handle",
+    "lostLoad": true,
+    "missing": [],
+    "endError": [
+      "head",
+      1.4210854715202004e-14
+    ],
+    "contacts": [
+      [
+        "wrist",
+        -109.2
+      ],
+      [
+        "elbow",
+        -111.1
+      ],
+      [
+        "knee",
+        -43.5
+      ],
+      [
+        "heel",
+        0
+      ],
+      [
+        "toe",
+        -4
+      ]
+    ]
+  },
+  {
+    "slug": "lat-pulldown",
+    "load": "handle",
+    "lostLoad": true,
+    "missing": [],
+    "endError": [
+      "elbow",
+      1.5888218580782548e-14
+    ],
+    "contacts": [
+      [
+        "wrist",
+        -145.7
+      ],
+      [
+        "elbow",
+        -138.1
+      ],
+      [
+        "knee",
+        -39.2
+      ],
+      [
+        "heel",
+        7.8
+      ],
+      [
+        "toe",
+        3.8
+      ]
+    ]
+  },
+  {
+    "slug": "pull-up",
+    "lostLoad": false,
+    "missing": [],
+    "endError": [
+      "ankle",
+      5.684341886080802e-14
+    ],
+    "contacts": [
+      [
+        "wrist",
+        -257.2
+      ],
+      [
+        "elbow",
+        -234.9
+      ],
+      [
+        "knee",
+        -87.9
+      ],
+      [
+        "heel",
+        -22
+      ],
+      [
+        "toe",
+        -26
+      ]
+    ]
+  },
+  {
+    "slug": "cable-face-pull",
+    "load": "handle",
+    "lostLoad": true,
+    "missing": [],
+    "endError": [
+      "wrist",
+      1.5888218580782548e-14
+    ],
+    "contacts": [
+      [
+        "wrist",
+        -223.1
+      ],
+      [
+        "elbow",
+        -211.6
+      ],
+      [
+        "knee",
+        -69
+      ],
+      [
+        "heel",
+        0
+      ],
+      [
+        "toe",
+        0
+      ]
+    ]
+  },
+  {
+    "slug": "db-reverse-fly",
+    "load": "hands2",
+    "lostLoad": true,
+    "missing": [
+      "view",
+      "knee2",
+      "ankle2",
+      "heel2",
+      "toe2"
+    ],
+    "endError": [
+      "wrist",
+      3.552713678800501e-15
+    ],
+    "contacts": [
+      [
+        "wrist",
+        -202.1
+      ],
+      [
+        "elbow",
+        -202.1
+      ],
+      [
+        "knee",
+        -68.9
+      ],
+      [
+        "heel",
+        0
+      ],
+      [
+        "toe",
+        0
+      ]
+    ]
+  },
+  {
+    "slug": "barbell-curl",
+    "load": "hands",
+    "lostLoad": true,
+    "missing": [],
+    "endError": [
+      "wrist",
+      1.7763568394002505e-14
+    ],
+    "contacts": [
+      [
+        "wrist",
+        -204.9
+      ],
+      [
+        "elbow",
+        -179
+      ],
+      [
+        "knee",
+        -69
+      ],
+      [
+        "heel",
+        0
+      ],
+      [
+        "toe",
+        0
+      ]
+    ]
+  },
+  {
+    "slug": "db-curl",
+    "load": "hands",
+    "lostLoad": true,
+    "missing": [],
+    "endError": [
+      "wrist",
+      1.7763568394002505e-14
+    ],
+    "contacts": [
+      [
+        "wrist",
+        -204.9
+      ],
+      [
+        "elbow",
+        -179
+      ],
+      [
+        "knee",
+        -69
+      ],
+      [
+        "heel",
+        0
+      ],
+      [
+        "toe",
+        0
+      ]
+    ]
+  },
+  {
+    "slug": "cable-curl",
+    "load": "hands",
+    "lostLoad": true,
+    "missing": [],
+    "endError": [
+      "wrist",
+      1.7763568394002505e-14
+    ],
+    "contacts": [
+      [
+        "wrist",
+        -204.9
+      ],
+      [
+        "elbow",
+        -179
+      ],
+      [
+        "knee",
+        -69
+      ],
+      [
+        "heel",
+        0
+      ],
+      [
+        "toe",
+        0
+      ]
+    ]
+  },
+  {
+    "slug": "ab-wheel-rollout",
+    "load": "wheel",
+    "lostLoad": true,
+    "missing": [],
+    "endError": [
+      "shoulder",
+      3.1776437161565096e-14
+    ],
+    "contacts": [
+      [
+        "wrist",
+        -54.4
+      ],
+      [
+        "elbow",
+        -56
+      ],
+      [
+        "knee",
+        -15.8
+      ],
+      [
+        "heel",
+        0
+      ],
+      [
+        "toe",
+        -12
+      ]
+    ]
+  },
+  {
+    "slug": "barbell-rollout",
+    "load": "wheel",
+    "lostLoad": true,
+    "missing": [],
+    "endError": [
+      "shoulder",
+      3.1776437161565096e-14
+    ],
+    "contacts": [
+      [
+        "wrist",
+        -54.4
+      ],
+      [
+        "elbow",
+        -56
+      ],
+      [
+        "knee",
+        -15.8
+      ],
+      [
+        "heel",
+        0
+      ],
+      [
+        "toe",
+        -12
+      ]
+    ]
+  },
+  {
+    "slug": "db-dead-bug",
+    "lostLoad": false,
+    "missing": [
+      "load"
+    ],
+    "endError": [
+      "ankle",
+      2.842170943040401e-14
+    ],
+    "contacts": [
+      [
+        "wrist",
+        -63.9
+      ],
+      [
+        "elbow",
+        -47.8
+      ],
+      [
+        "knee",
+        -62.6
+      ],
+      [
+        "heel",
+        -34.3
+      ],
+      [
+        "toe",
+        -46.3
+      ]
+    ]
+  },
+  {
+    "slug": "band-pallof-press",
+    "load": "handle",
+    "lostLoad": true,
+    "missing": [
+      "view",
+      "knee2",
+      "ankle2",
+      "heel2",
+      "toe2"
+    ],
+    "endError": [
+      "head",
+      0
+    ],
+    "contacts": [
+      [
+        "wrist",
+        -146.6
+      ],
+      [
+        "elbow",
+        -175.6
+      ],
+      [
+        "knee",
+        -68.9
+      ],
+      [
+        "heel",
+        0
+      ],
+      [
+        "toe",
+        0
+      ]
+    ]
+  },
+  {
+    "slug": "cable-pallof-press",
+    "load": "handle",
+    "lostLoad": true,
+    "missing": [
+      "view",
+      "knee2",
+      "ankle2",
+      "heel2",
+      "toe2"
+    ],
+    "endError": [
+      "head",
+      0
+    ],
+    "contacts": [
+      [
+        "wrist",
+        -146.6
+      ],
+      [
+        "elbow",
+        -175.6
+      ],
+      [
+        "knee",
+        -68.9
+      ],
+      [
+        "heel",
+        0
+      ],
+      [
+        "toe",
+        0
+      ]
+    ]
+  }
+]

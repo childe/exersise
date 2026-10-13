@@ -78,3 +78,25 @@ test('CI 的 Node 版本是固定的，差异至少是可知的', async () => {
   assert.ok(m, 'deploy.yml 应当声明 node-version');
   assert.match(m[1], /^\d+/, `node-version 应钉死大版本，实际是「${m[1]}」`);
 });
+
+test('动画脚本的拼接清单是依赖闭包', async () => {
+  // 漏掉一个依赖不会让拼接后的脚本编译失败——它只在浏览器里抛 ReferenceError，
+  // 动画格静默空着而页面其余部分照常，构建和测试都发现不了。
+  // 这个测试独立于构建再算一遍闭包。（真实发生过：skeleton.mjs 新增了
+  // facing.mjs 的 import，清单没跟上，全部 49 格动画一起变空白。）
+  const build = await readFile(path.join(root, 'src/build.mjs'), 'utf8');
+  const list = build.match(/const ANIM_MODULES = \[([\s\S]*?)\];/)?.[1];
+  assert.ok(list, 'build.mjs 里找不到 ANIM_MODULES');
+  const mods = [...list.matchAll(/'([^']+)'/g)].map((m) => m[1]);
+  assert.ok(mods.length >= 3, 'ANIM_MODULES 解析结果不合理');
+  const included = new Set(mods.map((f) => path.resolve(root, f)));
+  const missing = [];
+  for (const f of mods) {
+    const src = await readFile(path.join(root, f), 'utf8');
+    for (const m of src.matchAll(/^import .*? from '(\.[^']+)';$/gm)) {
+      const dep = path.resolve(path.dirname(path.join(root, f)), m[1]);
+      if (!included.has(dep)) missing.push(`${f} → ${m[1]}`);
+    }
+  }
+  assert.deepEqual(missing, [], `这些依赖没进 ANIM_MODULES:\n${missing.join('\n')}`);
+});

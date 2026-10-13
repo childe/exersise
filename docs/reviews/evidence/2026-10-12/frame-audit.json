@@ -1,0 +1,541 @@
+[
+  {
+    "slug": "back-squat-high-bar",
+    "frames": 101,
+    "loadAbsent": 101,
+    "secondLegAbsent": 0,
+    "footDrift": 0,
+    "handYfromGround": [
+      -205.15,
+      -116.66
+    ]
+  },
+  {
+    "slug": "back-squat-low-bar",
+    "frames": 101,
+    "loadAbsent": 101,
+    "secondLegAbsent": 0,
+    "footDrift": 0,
+    "handYfromGround": [
+      -200.64,
+      -108.55
+    ]
+  },
+  {
+    "slug": "bodyweight-squat",
+    "frames": 101,
+    "loadAbsent": 0,
+    "secondLegAbsent": 0,
+    "footDrift": 0,
+    "handYfromGround": [
+      -201.1,
+      -115.75
+    ]
+  },
+  {
+    "slug": "db-front-squat",
+    "frames": 101,
+    "loadAbsent": 101,
+    "secondLegAbsent": 0,
+    "footDrift": 0,
+    "handYfromGround": [
+      -209.17,
+      -120.78
+    ]
+  },
+  {
+    "slug": "goblet-squat",
+    "frames": 101,
+    "loadAbsent": 101,
+    "secondLegAbsent": 0,
+    "footDrift": 0,
+    "handYfromGround": [
+      -209.17,
+      -120.78
+    ]
+  },
+  {
+    "slug": "db-bulgarian-split-squat",
+    "frames": 101,
+    "loadAbsent": 101,
+    "secondLegAbsent": 101,
+    "footDrift": 0,
+    "handYfromGround": [
+      -142.02,
+      -136.33
+    ]
+  },
+  {
+    "slug": "leg-press",
+    "frames": 101,
+    "loadAbsent": 101,
+    "secondLegAbsent": 0,
+    "footDrift": 41.31,
+    "handYfromGround": [
+      -49.43,
+      -49.43
+    ]
+  },
+  {
+    "slug": "seated-leg-extension",
+    "frames": 101,
+    "loadAbsent": 101,
+    "secondLegAbsent": 0,
+    "footDrift": 74.55,
+    "handYfromGround": [
+      -103.75,
+      -79.59
+    ]
+  },
+  {
+    "slug": "seated-calf-raise",
+    "frames": 101,
+    "loadAbsent": 101,
+    "secondLegAbsent": 0,
+    "footDrift": 7.16,
+    "handYfromGround": [
+      -108.75,
+      -104.05
+    ]
+  },
+  {
+    "slug": "standing-calf-raise-bodyweight",
+    "frames": 101,
+    "loadAbsent": 0,
+    "secondLegAbsent": 0,
+    "footDrift": 0,
+    "handYfromGround": [
+      -163.97,
+      -151.97
+    ]
+  },
+  {
+    "slug": "conventional-deadlift",
+    "frames": 101,
+    "loadAbsent": 101,
+    "secondLegAbsent": 0,
+    "footDrift": 0,
+    "handYfromGround": [
+      -149.48,
+      -85.05
+    ]
+  },
+  {
+    "slug": "romanian-deadlift",
+    "frames": 101,
+    "loadAbsent": 101,
+    "secondLegAbsent": 0,
+    "footDrift": 0,
+    "handYfromGround": [
+      -149.48,
+      -96.13
+    ]
+  },
+  {
+    "slug": "db-romanian-deadlift",
+    "frames": 101,
+    "loadAbsent": 101,
+    "secondLegAbsent": 0,
+    "footDrift": 0,
+    "handYfromGround": [
+      -149.48,
+      -96.13
+    ]
+  },
+  {
+    "slug": "band-good-morning",
+    "frames": 101,
+    "loadAbsent": 101,
+    "secondLegAbsent": 0,
+    "footDrift": 0,
+    "handYfromGround": [
+      -149.48,
+      -96.13
+    ]
+  },
+  {
+    "slug": "db-hip-thrust",
+    "frames": 101,
+    "loadAbsent": 101,
+    "secondLegAbsent": 0,
+    "footDrift": 0,
+    "handYfromGround": [
+      -35.7,
+      -28.8
+    ]
+  },
+  {
+    "slug": "glute-bridge-bodyweight",
+    "frames": 101,
+    "loadAbsent": 0,
+    "secondLegAbsent": 0,
+    "footDrift": 0,
+    "handYfromGround": [
+      -35.7,
+      -28.8
+    ]
+  },
+  {
+    "slug": "back-extension",
+    "frames": 101,
+    "loadAbsent": 101,
+    "secondLegAbsent": 0,
+    "footDrift": 0,
+    "handYfromGround": [
+      -144.5,
+      -74.23
+    ]
+  },
+  {
+    "slug": "lying-leg-curl",
+    "frames": 101,
+    "loadAbsent": 101,
+    "secondLegAbsent": 0,
+    "footDrift": 80.84,
+    "handYfromGround": [
+      -41.1,
+      -4
+    ]
+  },
+  {
+    "slug": "barbell-bench-press",
+    "frames": 101,
+    "loadAbsent": 101,
+    "secondLegAbsent": 0,
+    "footDrift": 0,
+    "handYfromGround": [
+      -173.03,
+      -166.35
+    ]
+  },
+  {
+    "slug": "close-grip-bench-press",
+    "frames": 101,
+    "loadAbsent": 101,
+    "secondLegAbsent": 0,
+    "footDrift": 0,
+    "handYfromGround": [
+      -173.03,
+      -166.35
+    ]
+  },
+  {
+    "slug": "db-bench-press",
+    "frames": 101,
+    "loadAbsent": 101,
+    "secondLegAbsent": 0,
+    "footDrift": 0,
+    "handYfromGround": [
+      -173.03,
+      -166.35
+    ]
+  },
+  {
+    "slug": "db-incline-bench-press",
+    "frames": 101,
+    "loadAbsent": 101,
+    "secondLegAbsent": 0,
+    "footDrift": 0,
+    "handYfromGround": [
+      -218.59,
+      -213.17
+    ]
+  },
+  {
+    "slug": "machine-chest-press",
+    "frames": 101,
+    "loadAbsent": 101,
+    "secondLegAbsent": 0,
+    "footDrift": 0,
+    "handYfromGround": [
+      -117.13,
+      -103.03
+    ]
+  },
+  {
+    "slug": "push-up",
+    "frames": 101,
+    "loadAbsent": 0,
+    "secondLegAbsent": 0,
+    "footDrift": 8.05,
+    "handYfromGround": [
+      -35.93,
+      -19.78
+    ]
+  },
+  {
+    "slug": "knee-push-up",
+    "frames": 101,
+    "loadAbsent": 0,
+    "secondLegAbsent": 0,
+    "footDrift": 11.36,
+    "handYfromGround": [
+      0,
+      2.78
+    ]
+  },
+  {
+    "slug": "overhead-press",
+    "frames": 101,
+    "loadAbsent": 101,
+    "secondLegAbsent": 0,
+    "footDrift": 0,
+    "handYfromGround": [
+      -267.8,
+      -208.47
+    ]
+  },
+  {
+    "slug": "band-overhead-press",
+    "frames": 101,
+    "loadAbsent": 101,
+    "secondLegAbsent": 0,
+    "footDrift": 0,
+    "handYfromGround": [
+      -267.8,
+      -208.47
+    ]
+  },
+  {
+    "slug": "db-shoulder-press",
+    "frames": 101,
+    "loadAbsent": 101,
+    "secondLegAbsent": 0,
+    "footDrift": 0,
+    "handYfromGround": [
+      -213.85,
+      -154.42
+    ]
+  },
+  {
+    "slug": "machine-shoulder-press",
+    "frames": 101,
+    "loadAbsent": 101,
+    "secondLegAbsent": 0,
+    "footDrift": 0,
+    "handYfromGround": [
+      -213.85,
+      -154.42
+    ]
+  },
+  {
+    "slug": "db-lateral-raise",
+    "frames": 101,
+    "loadAbsent": 101,
+    "secondLegAbsent": 101,
+    "footDrift": 0,
+    "handYfromGround": [
+      -204.78,
+      -153.57
+    ]
+  },
+  {
+    "slug": "cable-lateral-raise",
+    "frames": 101,
+    "loadAbsent": 101,
+    "secondLegAbsent": 101,
+    "footDrift": 0,
+    "handYfromGround": [
+      -204.78,
+      -153.57
+    ]
+  },
+  {
+    "slug": "cable-pushdown",
+    "frames": 101,
+    "loadAbsent": 101,
+    "secondLegAbsent": 0,
+    "footDrift": 0,
+    "handYfromGround": [
+      -207.41,
+      -150.15
+    ]
+  },
+  {
+    "slug": "barbell-row",
+    "frames": 101,
+    "loadAbsent": 101,
+    "secondLegAbsent": 0,
+    "footDrift": 0,
+    "handYfromGround": [
+      -120.9,
+      -77.43
+    ]
+  },
+  {
+    "slug": "db-one-arm-row",
+    "frames": 101,
+    "loadAbsent": 101,
+    "secondLegAbsent": 0,
+    "footDrift": 0,
+    "handYfromGround": [
+      -118,
+      -74.02
+    ]
+  },
+  {
+    "slug": "inverted-row",
+    "frames": 101,
+    "loadAbsent": 0,
+    "secondLegAbsent": 0,
+    "footDrift": 22.82,
+    "handYfromGround": [
+      -113.63,
+      -108.63
+    ]
+  },
+  {
+    "slug": "band-row",
+    "frames": 101,
+    "loadAbsent": 101,
+    "secondLegAbsent": 0,
+    "footDrift": 0,
+    "handYfromGround": [
+      -109.19,
+      -96.43
+    ]
+  },
+  {
+    "slug": "seated-cable-row",
+    "frames": 101,
+    "loadAbsent": 101,
+    "secondLegAbsent": 0,
+    "footDrift": 0,
+    "handYfromGround": [
+      -109.19,
+      -96.43
+    ]
+  },
+  {
+    "slug": "lat-pulldown",
+    "frames": 101,
+    "loadAbsent": 101,
+    "secondLegAbsent": 0,
+    "footDrift": 0,
+    "handYfromGround": [
+      -185.83,
+      -145.72
+    ]
+  },
+  {
+    "slug": "pull-up",
+    "frames": 101,
+    "loadAbsent": 0,
+    "secondLegAbsent": 0,
+    "footDrift": 1.29,
+    "handYfromGround": [
+      -286.64,
+      -257.16
+    ]
+  },
+  {
+    "slug": "cable-face-pull",
+    "frames": 101,
+    "loadAbsent": 101,
+    "secondLegAbsent": 0,
+    "footDrift": 0,
+    "handYfromGround": [
+      -223.06,
+      -184.47
+    ]
+  },
+  {
+    "slug": "db-reverse-fly",
+    "frames": 101,
+    "loadAbsent": 101,
+    "secondLegAbsent": 101,
+    "footDrift": 0,
+    "handYfromGround": [
+      -202.06,
+      -153.95
+    ]
+  },
+  {
+    "slug": "barbell-curl",
+    "frames": 101,
+    "loadAbsent": 101,
+    "secondLegAbsent": 0,
+    "footDrift": 0,
+    "handYfromGround": [
+      -204.9,
+      -149.96
+    ]
+  },
+  {
+    "slug": "db-curl",
+    "frames": 101,
+    "loadAbsent": 101,
+    "secondLegAbsent": 0,
+    "footDrift": 0,
+    "handYfromGround": [
+      -204.9,
+      -149.96
+    ]
+  },
+  {
+    "slug": "cable-curl",
+    "frames": 101,
+    "loadAbsent": 101,
+    "secondLegAbsent": 0,
+    "footDrift": 0,
+    "handYfromGround": [
+      -204.9,
+      -149.96
+    ]
+  },
+  {
+    "slug": "ab-wheel-rollout",
+    "frames": 101,
+    "loadAbsent": 101,
+    "secondLegAbsent": 0,
+    "footDrift": 6.77,
+    "handYfromGround": [
+      -54.42,
+      -34.81
+    ]
+  },
+  {
+    "slug": "barbell-rollout",
+    "frames": 101,
+    "loadAbsent": 101,
+    "secondLegAbsent": 0,
+    "footDrift": 6.77,
+    "handYfromGround": [
+      -54.42,
+      -34.81
+    ]
+  },
+  {
+    "slug": "db-dead-bug",
+    "frames": 101,
+    "loadAbsent": 0,
+    "secondLegAbsent": 0,
+    "footDrift": 58.77,
+    "handYfromGround": [
+      -80.38,
+      -63.88
+    ]
+  },
+  {
+    "slug": "band-pallof-press",
+    "frames": 101,
+    "loadAbsent": 101,
+    "secondLegAbsent": 101,
+    "footDrift": 0,
+    "handYfromGround": [
+      -165.98,
+      -146.61
+    ]
+  },
+  {
+    "slug": "cable-pallof-press",
+    "frames": 101,
+    "loadAbsent": 101,
+    "secondLegAbsent": 101,
+    "footDrift": 0,
+    "handYfromGround": [
+      -165.98,
+      -146.61
+    ]
+  }
+]

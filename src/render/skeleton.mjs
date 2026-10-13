@@ -1,6 +1,7 @@
 // 出平面手臂的重建与主动肌标注。两者都只影响画法，不改姿态数据本身。
 import { rebuildArm, OUT_OF_PLANE_ARM } from './arm.mjs';
 import { MUSCLE_SEG } from './muscle-segments.mjs';
+import { renderFace } from './facing.mjs';
 
 // 动作骨架示意图。
 //
@@ -779,6 +780,9 @@ export function renderPose(p, opts = {}) {
   g.push(seg(p.shoulder, ELBOW));
   g.push(seg(ELBOW, HAND));
   g.push(`<circle class="sk-head" cx="${p.head[0]}" cy="${p.head[1]}" r="12"/>`);
+  // 面部标记。没有它，实心圆的头不带任何朝向信息，读者判断不了人面向哪边——
+  // 站姿还能靠脚的形状反推，坐姿和卧姿里脚被器械挡着就完全看不出来。
+  g.push(renderFace(name, p));
   g.push(seg(p.shoulder, [p.head[0] - 5, p.head[1] + 9], 'sk-neck'));
 
   for (const j of ['shoulder', 'hip', 'knee', 'ankle']) {

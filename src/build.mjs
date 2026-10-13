@@ -25,15 +25,26 @@ const defaultRoot = path.resolve(import.meta.dirname, '..');
 const ANIM_MODULES = [
   'src/render/arm.mjs',
   'src/render/muscle-segments.mjs',
-  'src/render/skeleton.mjs',   // 依赖上面两个
+  'src/render/facing.mjs',
+  'src/render/skeleton.mjs',   // 依赖上面三个
   'src/render/interp.mjs',     // 依赖 skeleton
   'src/assets/anim.js',
 ];
 
 async function bundleAnim(root) {
   const parts = [];
+  const included = new Set(ANIM_MODULES.map((f) => path.resolve(root, f)));
   for (const f of ANIM_MODULES) {
     const src = await readFile(path.join(root, f), 'utf8');
+    // 漏掉一个依赖不会让拼接后的脚本编译失败——它只是在浏览器里抛 ReferenceError，
+    // 动画格静默空着而页面其余部分照常。所以这里逐个核对本地 import 都在清单内。
+    for (const m of src.matchAll(/^import .*? from '(\.[^']+)';$/gm)) {
+      const dep = path.resolve(path.dirname(path.join(root, f)), m[1]);
+      if (!included.has(dep)) {
+        throw new Error(`动画脚本漏了依赖：${f} 依赖 ${m[1]}，但它不在 ANIM_MODULES 里。`
+          + '拼接后 import 会被剥掉，浏览器里是 ReferenceError，动画格会静默空着。');
+      }
+    }
     parts.push(src.replace(/^import .*?;$/gm, '').replace(/^export\s+/gm, ''));
   }
   const js = `${parts.join('\n')}\ninitSkeletonAnimation({ POSES, interpolate, renderPose });\n`;
