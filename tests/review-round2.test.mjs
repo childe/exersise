@@ -84,15 +84,20 @@ test('反向划船绕脚跟旋转、杠两帧同位', () => {
 });
 
 // ── 推家族 ─────────────────────────────────────────────
-test('推举起始肘在肩前（不是颈后推），坐姿推举两只哑铃齐平且各有手臂', () => {
+test('推举起始肘在肩前（不是颈后推）；坐姿推举只画近侧那只哑铃', () => {
   for (const n of ['ohp_bottom', 'seated_press_bottom']) {
     const p = POSES[n], r = rebuildArmFor(n, p);
     assert.ok(r.elbow[0] > p.shoulder[0], `${n}: 肘应在肩前，实际 ${(r.elbow[0]-p.shoulder[0]).toFixed(1)}`);
   }
   assert.deepEqual(validateSecondHand(), []);
+  // 严格侧视里远侧哑铃与近侧完全重合：画第二只等于画一条看不见的手臂，
+  // 而那条手臂没走重建，被画成折叠 32° 的全长臂。改成只画近侧一只。
+  for (const n of ['seated_press_bottom', 'seated_press_top']) {
+    assert.equal(POSES[n].load.type, 'hands');
+    assert.ok(!POSES[n].load.at2 && !POSES[n].elbow2, `${n}: 侧视不该画远侧手臂`);
+  }
   const t = POSES.seated_press_top;
-  assert.ok(Math.abs(t.load.at[1] - t.load.at2[1]) < 4, `锁定位两只哑铃高差 ${Math.abs(t.load.at[1]-t.load.at2[1]).toFixed(1)}`);
-  assert.ok(t.load.at2[1] < t.head[1] - 12, '远侧哑铃也应过头');
+  assert.ok(t.load.at[1] < t.head[1] - 12, '锁定位哑铃应过头');
 });
 
 test('卧推底部：前臂竖直、杠在胸骨下段、重建前臂不超真长', () => {
@@ -143,12 +148,17 @@ test('健腹轮最远点肩角打开，手在轮轴上方', () => {
 
 // ── 动画：支点、手臂连续、末帧 ─────────────────────────
 test('补间的根随动作：悬垂腕根、俯卧撑脚尖根、健腹轮膝根，支点全程不漂', () => {
-  const cases = [['pullup_hang','pullup_top','wrist'], ['pushup_top','pushup_bottom','toe'], ['rollout_start','rollout_end','knee'], ['squat_top','squat_bottom','ankle']];
+  // 引体的根是「杠」：手钉在杠上，肩相对杠插值，肘由 IK 解出。
+  // 从腕经肘建到肩曾让肩沿圆弧甩出去——身体摆 32px、手离杠 23px。
+  const cases = [['pullup_hang','pullup_top','bar'], ['pushup_top','pushup_bottom','toe'], ['rollout_start','rollout_end','knee'], ['squat_top','squat_bottom','ankle']];
   for (const [a, b, root] of cases) {
     for (let i = 0; i <= 20; i++) {
       const q = interpolate(POSES[a], POSES[b], i/20, { plumb: root === 'ankle' });
       assert.equal(q._root, root, `${a}→${b} 根应为 ${root}`);
-      assert.ok(len(q[root], POSES[a][root]) < 0.5, `${a}→${b} t=${i/20}: 支点 ${root} 漂 ${len(q[root],POSES[a][root]).toFixed(2)}`);
+      // 「杠根」钉的是手在杠上，不是某个关节不动
+      const pin = root === 'bar' ? 'wrist' : root;
+      assert.ok(len(q[pin], POSES[a][pin]) < 0.5, `${a}→${b} t=${i/20}: 支点 ${pin} 漂 ${len(q[pin],POSES[a][pin]).toFixed(2)}`);
+      if (root === 'bar') assert.ok(len(q.wrist, POSES[a].fixed.at) < 8, `${a}→${b} t=${i/20}: 手离杠 ${len(q.wrist, POSES[a].fixed.at).toFixed(1)}px`);
     }
   }
 });

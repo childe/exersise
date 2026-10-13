@@ -23,6 +23,19 @@ const alerp = (a, b, t) => {
   return a + d * t;
 };
 const from = (base, a, l) => [base[0] + Math.cos(a) * l, base[1] + Math.sin(a) * l];
+/**
+ * 两骨 IK：肩 S、手 H 已定，求肘。l1/l2 是上臂/前臂长，near 用来在两个镜像解里选边。
+ * 握在固定杠上的姿态用它：手钉在杠上、肩由身体决定，肘是解出来的，不是插出来的。
+ */
+function ik2(S, H, l1, l2, near) {
+  const dx = H[0]-S[0], dy = H[1]-S[1], d = Math.hypot(dx, dy) || 1e-6;
+  const dc = Math.min(Math.max(d, Math.abs(l1-l2) + 1e-6), l1 + l2 - 1e-6);
+  const a = (l1*l1 - l2*l2 + dc*dc) / (2*dc), h = Math.sqrt(Math.max(0, l1*l1 - a*a));
+  const ux = dx/d, uy = dy/d, M = [S[0] + ux*a, S[1] + uy*a];
+  const c1 = [M[0] - uy*h, M[1] + ux*h], c2 = [M[0] + uy*h, M[1] - ux*h];
+  const dist = (c) => Math.hypot(c[0]-near[0], c[1]-near[1]);
+  return dist(c1) <= dist(c2) ? c1 : c2;
+}
 
 const flatOnGround = (p) => p.heel && p.toe
   && Math.abs(p.heel[1] - GROUND) <= 7 && Math.abs(p.toe[1] - GROUND) <= 7;
@@ -46,6 +59,7 @@ export function interpolate(A, B, t, opts = {}) {
   const { plumb = true } = opts;
   const q = { view: A.view, loadAnchor: A.loadAnchor };
   const wristRooted = !!(A.fixed && B.fixed && A.wrist && B.wrist);
+  const heelRooted = wristRooted && onG(A,'heel') && onG(B,'heel');
   const grounded = !wristRooted && flatOnGround(A) && flatOnGround(B);
   // 跪姿脚尖也在地上，但支点是膝：膝先于脚尖判定
   const kneeRooted = !wristRooted && !grounded && onG(A,'knee') && onG(B,'knee');
@@ -54,17 +68,48 @@ export function interpolate(A, B, t, opts = {}) {
     from(q[parent], alerp(ang(A[parent],A[child]), ang(B[parent],B[child]), t),
          lerp(len(A[parent],A[child]), len(B[parent],B[child]), t));
 
+  // 握在固定杠上：手全程钉在杠上，肘由 IK 解出。杠不动，动的是身体。
+  const armToBar = () => {
+    q.wrist = [...A.wrist];
+    const l1 = lerp(len(A.shoulder,A.elbow), len(B.shoulder,B.elbow), t);
+    const l2 = lerp(len(A.elbow,A.wrist), len(B.elbow,B.wrist), t);
+    const d = len(q.shoulder, q.wrist);
+    // 投影退化：引体顶部手在杠上、肩与杠齐平，侧视里手几乎落在肩上（d≈6 < |l1−l2|）。
+    // 这时链上的手臂本来就画不出来——画出来的那条由 arm.mjs 重建。标记一下，
+    // 让骨长断言跳过这几帧，而不是去断言一条不会被画的线。
+    q._ikClamped = d < Math.abs(l1 - l2) || d > l1 + l2;
+    q.elbow = ik2(q.shoulder, q.wrist, l1, l2, lerp2(A.elbow, B.elbow, t));
+  };
   const tl = len(A.hip, A.shoulder);
   let th = alerp(ang(A.hip,A.shoulder), ang(B.hip,B.shoulder), t);
   q._solved = false;
 
-  if (wristRooted) {
-    // 手钉在杠上，整个人从手往下建。躯干角不反解（没有足中线可对）。
-    q.wrist = [...A.wrist];
-    q.elbow = seg('wrist','elbow');
-    q.shoulder = seg('elbow','shoulder');
+  if (heelRooted) {
+    // 反向划船：脚跟是支点，身体近似一根刚体绕它转，手留在杠上。
+    // 从腕往上建链的后果是肩沿圆弧甩出去——手离杠 23px、身体摆 32px。
+    // 做法：把起始帧整体绕脚跟转 δ(t)，再按 t 线性补上「转完与结束帧」的残差，
+    // 两端因此都精确（t=0 是 A，t=1 是 B），而支点全程不动。
+    const P = A.heel;
+    const d0 = ang(P, A.hip), d1 = ang(P, B.hip);
+    const rot = (pt, d) => { const dx = pt[0]-P[0], dy = pt[1]-P[1];
+      return [P[0] + dx*Math.cos(d) - dy*Math.sin(d), P[1] + dx*Math.sin(d) + dy*Math.cos(d)]; };
+    let dd = d1 - d0; while (dd > Math.PI) dd -= 2*Math.PI; while (dd < -Math.PI) dd += 2*Math.PI;
+    for (const k of ['shoulder','hip','knee','ankle','head','shoulder2','knee2','ankle2']) {
+      if (!A[k] || !B[k]) continue;
+      const r = rot(A[k], dd * t), rf = rot(A[k], dd);
+      q[k] = [r[0] + (B[k][0] - rf[0]) * t, r[1] + (B[k][1] - rf[1]) * t];
+    }
+    armToBar();
+  } else if (wristRooted) {
+    // 悬垂：杠不动，人整体向杠移动。肩相对杠的位置直接插值，躯干以下照常建链。
+    // （原先从腕经肘建到肩：肘角取自**未重建**的出平面坐标，肩因此绕出一段圆弧。）
+    const bar = A.fixed.at;
+    q.shoulder = [bar[0] + lerp(A.shoulder[0]-bar[0], B.shoulder[0]-bar[0], t),
+                  bar[1] + lerp(A.shoulder[1]-bar[1], B.shoulder[1]-bar[1], t)];
     q.hip = from(q.shoulder, alerp(ang(A.shoulder,A.hip), ang(B.shoulder,B.hip), t), tl);
     q.knee = seg('hip','knee'); q.ankle = seg('knee','ankle');
+    q.head = from(q.shoulder, alerp(ang(A.shoulder,A.head), ang(B.shoulder,B.head), t), lerp(len(A.shoulder,A.head), len(B.shoulder,B.head), t));
+    armToBar();
   } else {
     if (grounded) { q.ankle = [...A.ankle]; q.knee = seg('ankle','knee'); q.hip = seg('knee','hip'); }
     else if (toeRooted) {
@@ -108,7 +153,7 @@ export function interpolate(A, B, t, opts = {}) {
   if (A.shoulder2 && B.shoulder2) q.shoulder2 = from(q.hip, alerp(ang(A.hip,A.shoulder2), ang(B.hip,B.shoulder2), t), len(A.hip,A.shoulder2));
   for (const [c, p] of UPPER) {
     if (!A[c] || !B[c]) continue;
-    if (wristRooted && (c === 'elbow' || c === 'wrist')) continue;   // 已从手建好
+    if (wristRooted && (c === 'elbow' || c === 'wrist' || c === 'head')) continue;   // 手钉在杠上，肘已由 IK 解出
     const pa = A[p] ?? A.shoulder, pb = B[p] ?? B.shoulder, pn = q[p] ?? q.shoulder;
     // 手臂的投影长度在两端之间插值（出平面/指向读者的手臂两端投影不同）；腿与躯干两端等长，插值等于取 A
     q[c] = from(pn, alerp(ang(pa,A[c]), ang(pb,B[c]), t), lerp(len(pa,A[c]), len(pb,B[c]), t));
@@ -155,7 +200,7 @@ export function interpolate(A, B, t, opts = {}) {
   if (A.bench && B.bench) q.bench = A.bench.map((v, i) => lerp(v, B.bench[i], t));
   if (A.benchIncline) q.benchIncline = A.benchIncline;   // 凳子不动
   if (A.fixed) q.fixed = { ...A.fixed, at: [...A.fixed.at] };   // 固定物不动
-  q._root = wristRooted ? 'wrist' : grounded ? 'ankle' : toeRooted ? 'toe' : kneeRooted ? 'knee' : 'hip';
+  q._root = heelRooted ? 'heel' : wristRooted ? 'bar' : grounded ? 'ankle' : toeRooted ? 'toe' : kneeRooted ? 'knee' : 'hip';
   return q;
 }
 
@@ -170,6 +215,7 @@ export function validateInterp(A, B, { steps = 24, plumb = true } = {}) {
       if (!A[j1]||!A[j2]||!B[j1]||!B[j2]||!q[j1]||!q[j2]) continue;
       const got = len(q[j1],q[j2]);
       const isArm = (j1 === 'shoulder' && j2 === 'elbow') || j1 === 'elbow';
+      if (isArm && q._ikClamped) continue;
       if (isArm) {
         const la = len(A[j1],A[j2]), lb = len(B[j1],B[j2]);
         if (got < Math.min(la,lb) - 0.5 || got > Math.max(la,lb) + 0.5)
@@ -181,7 +227,7 @@ export function validateInterp(A, B, { steps = 24, plumb = true } = {}) {
       }
     }
     // 支点不漂
-    const pin = { ankle: 'heel', toe: 'toe', knee: 'knee', wrist: 'wrist' }[q._root];
+    const pin = { ankle: 'heel', toe: 'toe', knee: 'knee', heel: 'heel' }[q._root];
     if (pin && q[pin] && Math.abs(q[pin][0]-A[pin][0]) + Math.abs(q[pin][1]-A[pin][1]) > 0.5)
       errs.push(`t=${t.toFixed(2)} 支点 ${pin} 漂移 ${Math.hypot(q[pin][0]-A[pin][0], q[pin][1]-A[pin][1]).toFixed(1)}px`);
     for (const k of JOINTS) if (q[k] && q[k][1] > GROUND + 3) errs.push(`t=${t.toFixed(2)} ${k} 穿地 ${(q[k][1]-GROUND).toFixed(1)}px`);

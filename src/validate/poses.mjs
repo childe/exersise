@@ -21,8 +21,9 @@ const STANDING_LOADED = new Set([
   'squat_bottom', 'squat_top', 'squat_front_bottom', 'squat_front_top',
   'squat_lowbar_top', 'squat_lowbar_bottom',
   'hinge_bottom', 'hinge_top', 'rdl_bottom',
-  'ohp_bottom', 'ohp_top', 'row_start', 'row_end',
+  'ohp_bottom', 'ohp_top',
   'carry_stance', 'carry_front', 'carry_overhead',
+  'gm_top', 'gm_bottom',    // 早安式也是站姿持械，之前漏在集合外，杠线断言对它不生效
 ]);
 
 // 这些姿态要求髋低于膝（蹲到位）
@@ -214,9 +215,18 @@ export const ELBOW_PENDING = new Map([
 export function validateJointAngles() {
   const errors = [];
   for (const [name, p] of Object.entries(POSES)) {
-    if (p.hip && p.knee && p.ankle) {
-      const k = deg(p.knee, p.hip, p.ankle);
-      if (k < KNEE_MIN) errors.push(`${name}: 膝角 ${k.toFixed(1)}° 低于解剖下限 ${KNEE_MIN}°`);
+    for (const [kj, hj, aj, label] of [['knee','hip','ankle','膝角'], ['knee2','hip','ankle2','远侧膝角']]) {
+      if (p[kj] && p[hj] && p[aj]) {
+        const k = deg(p[kj], p[hj], p[aj]);
+        if (k < KNEE_MIN) errors.push(`${name}: ${label} ${k.toFixed(1)}° 低于解剖下限 ${KNEE_MIN}°`);
+      }
+    }
+    // 远侧手臂同样要查：坐姿推举的远侧臂曾被画成折叠 32° 的全长手臂，
+    // 因为断言只看 elbow/wrist，看不见 elbow2/wrist2。
+    if (p.shoulder2 && p.elbow2 && p.wrist2 && !FORESHORTENED_ARM.has(name)) {
+      const e2 = deg(p.elbow2, p.shoulder2, p.wrist2);
+      if (e2 < ELBOW_MIN) errors.push(`${name}: 远侧肘角 ${e2.toFixed(1)}° 低于解剖下限 ${ELBOW_MIN}°`
+        + '——远侧手臂没有投影重建这条退路，画得出来就得站得住。');
     }
     if (!p.shoulder || !p.elbow || !p.wrist) continue;
     if (FORESHORTENED_ARM.has(name)) continue;   // 指向读者的手臂，投影肘角不是真肘角

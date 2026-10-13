@@ -20,7 +20,8 @@ const FORESHORTEN = 0.5;            // 投影缩短比例（= 25px）。这是�
                                     // 肩部的拥挤来自那两个大圆盘，不来自杠的长度。
 const TARGET_DEG = 62;              // 目标肘角：高于屈曲极限 35°，低于 90°，读得出是条手臂
 const GRIP_MAX = 24;                // 握点离杠心的上限 = 杠片内缘（31 - 7）。再往外就压在杠片上，看不出是只手
-const MIN_DEG = 40;                 // 钳制后仍须达到的下限
+const MIN_DEG = 40;
+const BAND_GRIP = 17;               // = skeleton.mjs 的 BAND_HALF：手落在带子边缘上                 // 钳制后仍须达到的下限
 
 export function rebuildArm(p, opts = {}) {
   const { foreshorten = FORESHORTEN, targetDeg = TARGET_DEG, gripMax = GRIP_MAX } = opts;
@@ -61,7 +62,8 @@ export function rebuildArm(p, opts = {}) {
   const H = cands.sort((a, b) => near(a) - near(b))[0];
   // 握点不能压到杠片上，否则读不出那是只手。钳制后肘角会略变，由下面的断言兜底。
   // 握点外推是为杠铃设计的（握距比肩宽，沿杠线外移）。哑铃只有 18px 宽，手就在哑铃中心。
-  const gm = (bar.type === 'hands' || bar.type === 'hands2') ? 9 : gripMax;   // 哑铃 18 宽，手在哑铃范围内
+  // 弹力带那一段带子半宽 16（BAND_HALF），走杠铃的 ±24 会让手悬在带子外；±9 把肘角压到 24°。
+  const gm = (bar.type === 'hands' || bar.type === 'hands2') ? 9 : bar.type === 'band' ? BAND_GRIP : gripMax;
   H[0] = Math.max(bar.at[0] - gm, Math.min(bar.at[0] + gm, H[0]));
   const ang = (c, a, b) => {
     const ux = a[0]-c[0], uy = a[1]-c[1], vx = b[0]-c[0], vy = b[1]-c[1];
@@ -107,6 +109,11 @@ export const ARM_OVERRIDES = {
 
 /** 按姿态名取覆盖参数再重建。renderPose 与校验都该走这个入口，保证画的和查的一致。 */
 export function rebuildArmFor(name, p) {
+  // 前架位拿哑铃时握点必须按哑铃算（±9），不能沿用杠铃的 ±24——
+  // 哑铃只有 18 宽，手画在 ±24 就悬在哑铃外面。drawnArm 把 figures.json 的
+  // load_type 覆盖传进来，就是为了让这里看到**画出来的**器械。
+  // 代价是肘角落到 35–38°：侧视里肩、哑铃、肘几乎共线，上臂与前臂投影重叠，
+  // 和窄握卧推同类，由图注说明（见 data/figures.json 的 db-front-squat/goblet-squat）。
   return rebuildArm(p, { ...(ARM_OVERRIDES[name] ?? {}), facing: facing(name, p) });
 }
 
