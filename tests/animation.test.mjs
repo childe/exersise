@@ -111,7 +111,7 @@ test('握点不压到杠片上——压上去就看不出那是只手', () => {
 
 test('重建保留原始肘朝向——它编码的是教学提示', () => {
   // 背蹲肘向后下、前架位向前下。方向丢了等于把动作要点一起丢了。
-  for (const [name, side] of [['squat_top', -1], ['ohp_bottom', -1], ['squat_front_top', 1]]) {
+  for (const [name, side] of [['squat_top', -1], ['ohp_bottom', 1], ['squat_front_top', 1]]) {
     const p = POSES[name], r = rebuildArm(p);
     const before = Math.sign(p.elbow[0] - p.shoulder[0]);
     const after = Math.sign(r.elbow[0] - p.shoulder[0]);
@@ -154,14 +154,13 @@ test('新增的超限肘角会让构建失败——棘轮只锁现状，不接�
 });
 
 test('已修好的姿态必须从棘轮表里移除', () => {
-  const saved = POSES.curl_up;
-  assert.ok(ELBOW_PENDING.has('curl_up'));
-  // 把它修到合格
-  POSES.curl_up = { ...saved, wrist: [saved.shoulder[0] + 20, saved.shoulder[1] + 4] };
+  // 棘轮表现在是空的（第二轮把 7 个都修了）。临时登记一个合格的姿态，断言必须报"应移除"。
+  assert.equal(ELBOW_PENDING.size, 0, '棘轮表应已清空；若有新登记项，这条测试要改用它');
+  ELBOW_PENDING.set('pulldown_start', 20);
   try {
-    assert.ok(validateJointAngles().some((e) => e.includes('应从 ELBOW_PENDING 移除')));
+    assert.ok(validateJointAngles().some((e) => e.includes('pulldown_start') && e.includes('应从 ELBOW_PENDING 移除')));
   } finally {
-    POSES.curl_up = saved;
+    ELBOW_PENDING.delete('pulldown_start');
   }
 });
 
@@ -265,11 +264,11 @@ test('髋更往后是约束推出来的，不是摆出来的', () => {
 test('契约文档与代码里的阈值一致', async () => {
   const doc = await readFile(path.join(root, 'docs/figure-contract.md'), 'utf8');
   // 文档写错数字比没有文档更糟——它会被当成权威
-  for (const [what, want] of [['大腿 / 小腿', '60 / 60'], ['上臂 / 前臂', '30 / 29'],
+  for (const [what, want] of [['大腿 / 小腿', '60 / 60'], ['上臂 / 前臂', '50 / 39'],
                               ['躯干 / 颈', '80 / 17']]) {
     assert.ok(doc.includes(what) && doc.includes(want), `契约里的 ${what} 应为 ${want}`);
   }
   assert.ok(doc.includes('35°') && doc.includes('38°'), '契约应记录肘/膝角下限');
-  assert.ok(doc.includes('85%'), '契约应记录投影缩短比例');
+  assert.ok(doc.includes('25px'), '契约应记录投影缩短长度');
   assert.ok(doc.includes('±24'), '契约应记录握点上限');
 });

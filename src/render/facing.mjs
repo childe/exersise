@@ -47,7 +47,11 @@ const HEAD_R = 12;
 const EYE_OFF = 5.6, EYE_R = 2.7;
 
 /** 面部标记：侧视画一只眼（朝向侧），正视画两只。底色填充，在实心头上读作缺口。 */
+/** 从正后方看的姿态（反向飞鸟：判据「正后方拍」）。画两只眼等于说人面向读者，是错的。 */
+export const BACK_VIEW = new Set(['reverse_fly_start', 'reverse_fly_end']);
+
 export function renderFace(name, p) {
+  if (BACK_VIEW.has(name)) return '';
   const [hx, hy] = p.head;
   const f = facing(name, p);
   if (!f) {

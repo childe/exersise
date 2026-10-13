@@ -138,6 +138,7 @@ figure.concept figcaption { color: var(--muted); font-size: 0.88em; }
 .sk-plate { fill: var(--equip); }
 .sk-dumbbell, .sk-handle, .sk-pad { fill: var(--equip); }
 .sk-wheel { fill: none; stroke: var(--equip); stroke-width: 3.5; }
+.sk-band { stroke: var(--equip); stroke-width: 2; stroke-dasharray: 3 3; fill: none; }
 /* 判据线：杠线与足中线是深蹲/硬拉唯一的硬性力学判据，必须最显眼。
    用 --accent 而不是 --danger——红留给主动肌，与肌肉分布图的 .m-prime 同色，
    读者在同一张卡上学一次"红=主动肌"就够了，不该在骨架上换个意思。

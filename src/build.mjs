@@ -13,7 +13,7 @@ import { loadFigures, validateFigures } from './validate/figures.mjs';
 import { scanSafety, scanSafetyReview } from './validate/safety.mjs';
 import { validatePoses, validateFigures as validatePoseFigures, validateMuscles,
   validateFrameConsistency, validateJointAngles, validateContacts, validateStraightLines,
-  validateFixedRigs, validateBarOnChest } from './validate/poses.mjs';
+  validateFixedRigs, validateBarOnChest, validateSecondHand, validateKneeStable } from './validate/poses.mjs';
 import { MUSCLE_NAMES } from './render/muscles.mjs';
 import { escapeHtml } from './render/claims.mjs';
 
@@ -48,7 +48,7 @@ async function bundleAnim(root) {
     }
     parts.push(src.replace(/^import .*?;$/gm, '').replace(/^export\s+/gm, ''));
   }
-  const js = `${parts.join('\n')}\ninitSkeletonAnimation({ POSES, interpolate, renderPose });\n`;
+  const js = `${parts.join('\n')}\ninitSkeletonAnimation({ POSES, interpolate, renderPose, drawnArm });\n`;
   const tops = [...js.matchAll(/^(?:const|let|function|class)\s+([A-Za-z_$][\w$]*)/gm)].map((m) => m[1]);
   const dup = [...new Set(tops.filter((n, i) => tops.indexOf(n) !== i))];
   if (dup.length) throw new Error(`动画脚本拼接后顶层重名声明：${dup.join('、')}`);
@@ -86,6 +86,10 @@ export async function build(root = defaultRoot) {
   if (rigErrs.length) throw new Error(`固定物校验失败:\n- ${rigErrs.join('\n- ')}`);
   const chestErrs = validateBarOnChest();
   if (chestErrs.length) throw new Error(`触胸校验失败:\n- ${chestErrs.join('\n- ')}`);
+  const handErrs = validateSecondHand();
+  if (handErrs.length) throw new Error(`远侧负荷校验失败:\n- ${handErrs.join('\n- ')}`);
+  const kneeErrs = validateKneeStable();
+  if (kneeErrs.length) throw new Error(`RDL 膝角校验失败:\n- ${kneeErrs.join('\n- ')}`);
   const renderCtx = {
     claims: new Map(data.claims.map((c) => [c.id, c])),
     exercises: new Map(data.exercises.map((e) => [e.slug, e])),

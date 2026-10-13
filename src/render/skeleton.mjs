@@ -1,7 +1,7 @@
 // 出平面手臂的重建与主动肌标注。两者都只影响画法，不改姿态数据本身。
 import { rebuildArmFor, OUT_OF_PLANE_ARM } from './arm.mjs';
 import { MUSCLE_SEG } from './muscle-segments.mjs';
-import { renderFace, facing } from './facing.mjs';
+import { renderFace, facing, PRONE_POSES } from './facing.mjs';
 
 // 动作骨架示意图。
 //
@@ -27,7 +27,7 @@ export const POSES = {
   // ── 蹲 ─────────────────────────────────────────────
   squat_bottom: P({
     head: [104, 74], shoulder: [92, 92], elbow: [74, 114], wrist: [94, 96],
-    hip: [44, 160], knee: [108, 152], ankle: [82, 216], heel: [72, 225], toe: [108, 225],
+    hip: [44, 160], knee: [108, 152], ankle: [80, 216], heel: [72, 225], toe: [108, 225],
     load: { type: 'bar', at: [90, 86] },
   }),
 
@@ -52,7 +52,7 @@ export const POSES = {
   }),
   squat_lowbar_bottom: P({
     head: [112, 86], shoulder: [100, 104], elbow: [80, 128], wrist: [100, 114],
-    hip: [38, 164], knee: [100, 154], ankle: [84, 216], heel: [72, 225], toe: [108, 225],
+    hip: [8, 170], knee: [82, 152], ankle: [80, 216], heel: [72, 225], toe: [108, 225],
     load: { type: 'bar', at: [102, 113] },
   }),
 
@@ -69,7 +69,7 @@ export const POSES = {
   }),
   squat_bw_bottom: P({
     head: [104, 74], shoulder: [92, 92], elbow: [118, 100], wrist: [146, 98],
-    hip: [44, 160], knee: [108, 152], ankle: [82, 216], heel: [72, 225], toe: [108, 225],
+    hip: [44, 160], knee: [108, 152], ankle: [80, 216], heel: [72, 225], toe: [108, 225],
   }),
   squat_top: P({
     head: [100, 34], shoulder: [88, 52], elbow: [70, 74], wrist: [88, 56],
@@ -79,7 +79,7 @@ export const POSES = {
   // 前架位（高脚杯蹲 / 前蹲）：负荷在身前，躯干更直
   squat_front_bottom: P({
     head: [100, 70], shoulder: [88, 88], elbow: [102, 112], wrist: [96, 92],
-    hip: [48, 158], knee: [106, 150], ankle: [82, 216], heel: [72, 225], toe: [108, 225],
+    hip: [48, 158], knee: [106, 150], ankle: [80, 216], heel: [72, 225], toe: [108, 225],
     load: { type: 'front', at: [92, 90] },
   }),
   squat_front_top: P({
@@ -89,46 +89,48 @@ export const POSES = {
   }),
   // 单腿（分腿蹲 / 保加利亚 / 箭步）：后腿屈膝落后方
   split_bottom: P({
-    head: [96, 54], shoulder: [86, 72], elbow: [84, 104], wrist: [84, 132],
-    hip: [84, 130], knee: [118, 168], ankle: [120, 216], heel: [112, 225], toe: [142, 225],
-    knee2: [58, 196], ankle2: [46, 220], heel2: [38, 225], toe2: [62, 225],
-    load: { type: 'hands', at: [84, 140] },
+    head: [68.9, 42], shoulder: [66.4, 58.8], elbow: [67, 108.8], wrist: [68, 147.8],
+    hip: [54.4, 137.9], knee: [111, 157.9], ankle: [96, 216], heel: [90, 225], toe: [126, 225],
+    knee2: [74.7, 194.3], ankle2: [15, 200], heel2: [23, 210], toe2: [3, 208],
+    bench: [-9, 206, 48, 8], support: ['ankle2'],
+    load: { type: 'hands', at: [68, 156] },
   }),
   split_top: P({
-    head: [96, 32], shoulder: [86, 50], elbow: [84, 84], wrist: [84, 114],
-    hip: [84, 108], knee: [112, 152], ankle: [118, 216], heel: [110, 225], toe: [140, 225],
-    knee2: [62, 160], ankle2: [50, 218], heel2: [40, 225], toe2: [64, 225],
-    load: { type: 'hands', at: [84, 122] },
+    head: [81, 3], shoulder: [81, 20.1], elbow: [82, 70], wrist: [83, 109],
+    hip: [81, 100.1], knee: [102, 156.3], ankle: [96, 216], heel: [90, 225], toe: [126, 225],
+    knee2: [45, 148.1], ankle2: [15, 200], heel2: [23, 210], toe2: [3, 208],
+    bench: [-9, 206, 48, 8], support: ['ankle2'],
+    load: { type: 'hands', at: [83, 117] },
   }),
 
   // ── 髋铰链 ─────────────────────────────────────────
   hinge_bottom: P({
-    head: [112, 94], shoulder: [96, 108], elbow: [92, 158], wrist: [90, 202],
-    hip: [58, 150], knee: [92, 160], ankle: [80, 216], heel: [72, 225], toe: [108, 225],
-    load: { type: 'bar', at: [90, 210] },
+    head: [110, 115], shoulder: [94, 121], elbow: [94, 171], wrist: [94, 210],
+    hip: [18.8, 148.4], knee: [78.3, 156], ankle: [80, 216], heel: [72, 225], toe: [108, 225],
+    load: { type: 'bar', at: [90, 218] },
   }),
   hinge_top: P({
-    head: [100, 40], shoulder: [88, 58], elbow: [88, 110], wrist: [90, 160],
+    head: [100, 40], shoulder: [88, 58], elbow: [88, 108], wrist: [90, 147],
     hip: [84, 118], knee: [86, 152], ankle: [80, 216], heel: [72, 225], toe: [108, 225],
-    load: { type: 'bar', at: [90, 168] },
+    load: { type: 'bar', at: [90, 155] },
   }),
   // 罗马尼亚 / 早安：膝角变化小，髋位移大，杠不落地
   rdl_bottom: P({
-    head: [116, 86], shoulder: [100, 100], elbow: [96, 140], wrist: [92, 178],
-    hip: [56, 136], knee: [86, 158], ankle: [80, 216], heel: [72, 225], toe: [108, 225],
-    load: { type: 'bar', at: [90, 186] },
+    head: [104, 33], shoulder: [88, 39.4], elbow: [89, 89], wrist: [90, 128.4],
+    hip: [41.6, 104.6], knee: [71.6, 156.6], ankle: [80, 216], heel: [72, 225], toe: [108, 225],
+    load: { type: 'bar', at: [90, 136] },
   }),
   // 臀桥 / 髋推：仰卧，肩支撑
   // 臀桥同样按约束构造：上背（肩）贴地、头贴地、脚平放、手臂放在体侧地面。
   // 原来肩离地 67px——那是从髋推（凳上）借来的姿态。
   // 脚跟到髋约一掌半：rigid 60/60 的腿，再近膝角就低于解剖下限 38°。
   bridge_bottom: P({
-    head: [42, 213], shoulder: [57.7, 219], elbow: [87.5, 221], wrist: [116.5, 222],
+    head: [42, 213], shoulder: [57.7, 219], elbow: [107.7, 221], wrist: [146.7, 222],
     hip: [137.5, 214], knee: [160.6, 158.5], ankle: [178, 216], heel: [174, 225], toe: [194, 225],
     load: { type: 'bar', at: [137.5, 206] },
   }),
   bridge_top: P({
-    head: [42, 213], shoulder: [57.7, 219], elbow: [87.5, 221], wrist: [116.5, 222],
+    head: [42, 213], shoulder: [57.7, 219], elbow: [107.7, 221], wrist: [146.7, 222],
     hip: [129.2, 183.1], knee: [182.8, 156.2], ankle: [178, 216], heel: [174, 225], toe: [194, 225],
     load: { type: 'bar', at: [129.2, 175] },
   }),
@@ -140,16 +142,16 @@ export const POSES = {
   // OUT_OF_PLANE_ARM 并用更短的投影比例（见 arm.mjs ARM_OVERRIDES）。
   // 负荷锚在肩（LOAD_ANCHOR），这样杠的位置不随手臂归一化变化。
   bench_bottom: P({
-    head: [54, 140], shoulder: [74, 142], elbow: [78, 161], wrist: [76, 135],
+    head: [54, 140], shoulder: [74, 142], elbow: [98, 162], wrist: [98, 134],
     hip: [112, 142], knee: [146, 176], ankle: [150, 216], heel: [142, 225], toe: [170, 225],
     bench: [48, 148, 86, 10],
-    load: { type: 'bar', at: [76, 132] },
+    load: { type: 'bar', at: [98, 132] },
   }),
   bench_top: P({
     head: [54, 140], shoulder: [74, 142], elbow: [74, 114], wrist: [74, 88],
     hip: [112, 142], knee: [146, 176], ankle: [150, 216], heel: [142, 225], toe: [170, 225],
     bench: [48, 148, 86, 10],
-    load: { type: 'bar', at: [76, 80] },
+    load: { type: 'bar', at: [76, 45] },
   }),
   // 俯卧撑 / 地面推：手撑地
   // 俯卧撑与平板支撑按约束**构造**，不是手摆：
@@ -158,19 +160,32 @@ export const POSES = {
   // 贴地修正只按回最低的那一个点。这里直接用 BONE 长度算出坐标，归一化是恒等。
   // 俯卧家族 toe 在地、heel 在上（脚尖撑地），别和站姿的 heel/toe 混。
   pushup_bottom: P({
-    head: [45, 200.7], shoulder: [62, 201], elbow: [90.7, 209.8], wrist: [66, 225],
-    hip: [142, 202.6], knee: [202, 203.8], ankle: [262, 205], heel: [260, 210], toe: [270, 225],
+    head: [37.9, 186.1], shoulder: [54.8, 187.6], elbow: [100.8, 207.3], wrist: [66, 225],
+    hip: [134.5, 194.6], knee: [194.2, 199.8], ankle: [254, 205], heel: [252, 211], toe: [262, 225],
   }),
   pushup_top: P({
-    head: [49.3, 162.7], shoulder: [66, 166], elbow: [66, 196], wrist: [66, 225],
-    hip: [144.5, 181.6], knee: [203.4, 193.3], ankle: [262.2, 205], heel: [260, 210], toe: [270, 225],
+    head: [50, 130.8], shoulder: [66, 136.6], elbow: [66, 186.6], wrist: [66, 225],
+    hip: [141.2, 164], knee: [197.6, 184.5], ankle: [254, 205], heel: [252, 211], toe: [262, 225],
+  }),
+
+  // 弹力带早安式：负荷在颈后（锚在肩），带子从脚下拉到肩，手扶在肩上握带。
+  // 原来直接借用 RDL 的姿态，画成了一张杠铃 RDL——早安式与 RDL 的唯一区别（负荷位置）被画反。
+  gm_top: P({
+    head: [100, 40], shoulder: [88, 58], elbow: [70, 78], wrist: [90, 62],
+    hip: [84, 118], knee: [86, 152], ankle: [80, 216], heel: [72, 225], toe: [108, 225],
+    load: { type: 'band', at: [82, 52], from: [90, 225] },
+  }),
+  gm_bottom: P({
+    head: [104, 33], shoulder: [88, 39.4], elbow: [70, 60], wrist: [90, 44],
+    hip: [41.6, 104.6], knee: [71.6, 156.6], ankle: [80, 216], heel: [72, 225], toe: [108, 225],
+    load: { type: 'band', at: [80, 34], from: [90, 225] },
   }),
 
   // ── 垂直推 ─────────────────────────────────────────
   ohp_bottom: P({
-    head: [98, 38], shoulder: [86, 56], elbow: [72, 76], wrist: [84, 58],
+    head: [98, 38], shoulder: [86, 56], elbow: [96, 80], wrist: [90, 58],
     hip: [84, 112], knee: [84, 150], ankle: [82, 216], heel: [72, 225], toe: [108, 225],
-    load: { type: 'bar', at: [86, 54] },
+    load: { type: 'bar', at: [92, 54] },
   }),
   ohp_top: P({
     head: [98, 44], shoulder: [86, 58], elbow: [86, 38], wrist: [88, 18],
@@ -180,14 +195,14 @@ export const POSES = {
 
   // ── 水平拉 ─────────────────────────────────────────
   row_start: P({
-    head: [116, 100], shoulder: [100, 114], elbow: [98, 152], wrist: [96, 188],
+    head: [116, 100], shoulder: [100, 114], elbow: [100, 164], wrist: [100, 203],
     hip: [58, 148], knee: [90, 158], ankle: [80, 216], heel: [72, 225], toe: [108, 225],
-    load: { type: 'bar', at: [96, 196] },
+    load: { type: 'bar', at: [100, 211] },
   }),
   row_end: P({
-    head: [116, 100], shoulder: [100, 114], elbow: [70, 148], wrist: [94, 142],
+    head: [116, 100], shoulder: [100, 114], elbow: [50.1, 116.4], wrist: [84, 144],
     hip: [58, 148], knee: [90, 158], ankle: [80, 216], heel: [72, 225], toe: [108, 225],
-    load: { type: 'bar', at: [96, 140] },
+    load: { type: 'bar', at: [84, 152] },
   }),
   // 坐姿 / 器械划船：躯干近直立
   seated_row_start: P({
@@ -197,10 +212,10 @@ export const POSES = {
     load: { type: 'handle', at: [146, 148] },
   }),
   seated_row_end: P({
-    head: [78, 110], shoulder: [86, 126], elbow: [66, 144], wrist: [96, 146],
+    head: [78, 110], shoulder: [86, 126], elbow: [80.7, 175.7], wrist: [110, 150],
     hip: [84, 182], knee: [130, 188], ankle: [160, 210], heel: [156, 218], toe: [176, 214],
     bench: [60, 190, 44, 8],
-    load: { type: 'handle', at: [102, 146] },
+    load: { type: 'handle', at: [116, 150] },
   }),
 
   // ── 垂直拉 ─────────────────────────────────────────
@@ -219,26 +234,26 @@ export const POSES = {
   }),
   // 下拉：坐姿，负荷在上
   pulldown_start: P({
-    head: [84, 104], shoulder: [86, 120], elbow: [88, 90], wrist: [90, 58],
-    hip: [84, 178], knee: [130, 184], ankle: [158, 208], heel: [154, 216], toe: [174, 212],
+    head: [84, 104], shoulder: [86, 120], elbow: [88, 70], wrist: [90, 31],
+    hip: [84, 178], knee: [130, 184], ankle: [158, 216], heel: [154, 225], toe: [174, 221],
     bench: [60, 186, 44, 8],
-    load: { type: 'handle', at: [90, 52] },
+    load: { type: 'handle', at: [90, 25] },
   }),
   pulldown_end: P({
-    head: [84, 104], shoulder: [86, 120], elbow: [66, 112], wrist: [88, 106],
-    hip: [84, 178], knee: [130, 184], ankle: [158, 208], heel: [154, 216], toe: [174, 212],
+    head: [84, 104], shoulder: [86, 120], elbow: [59, 162], wrist: [96, 150],
+    hip: [84, 178], knee: [130, 184], ankle: [158, 216], heel: [154, 225], toe: [174, 221],
     bench: [60, 186, 44, 8],
-    load: { type: 'handle', at: [92, 102] },
+    load: { type: 'handle', at: [100, 146] },
   }),
 
   // ── 搬运 ───────────────────────────────────────────
   carry_stance: P({
     head: [98, 38], shoulder: [86, 56], elbow: [84, 92], wrist: [84, 128],
     hip: [84, 114], knee: [84, 152], ankle: [82, 216], heel: [72, 225], toe: [108, 225],
-    load: { type: 'hands', at: [84, 140] },
+    load: { type: 'hands', at: [84, 136] },
   }),
   carry_front: P({
-    head: [98, 38], shoulder: [86, 56], elbow: [96, 82], wrist: [92, 60],
+    head: [98, 38], shoulder: [86, 56], elbow: [106, 72], wrist: [100, 58],
     hip: [84, 114], knee: [84, 152], ankle: [82, 216], heel: [72, 225], toe: [108, 225],
     load: { type: 'front', at: [96, 58] },
   }),
@@ -250,16 +265,18 @@ export const POSES = {
 
   // ── 核心抗阻 ───────────────────────────────────────
   plank: P({
-    head: [49, 194.1], shoulder: [66, 195], elbow: [66, 225], wrist: [37, 225],
-    hip: [145.9, 199], knee: [205.8, 203], ankle: [265.7, 207], heel: [263, 212], toe: [273, 225],
+    head: [49.2, 172.4], shoulder: [66, 175], elbow: [66, 225], wrist: [27, 225],
+    hip: [145.1, 187], knee: [204.5, 196], ankle: [263.8, 205], heel: [261.8, 211], toe: [271.8, 225],
   }),
   deadbug_start: P({
-    head: [40, 200], shoulder: [58, 206], elbow: [58, 178], wrist: [58, 152],
-    hip: [108, 210], knee: [110, 172], ankle: [136, 166], heel: [142, 170], toe: [146, 158],
+    head: [42, 213], shoulder: [57.7, 219], elbow: [57.7, 169], wrist: [57.7, 130],
+    hip: [137.5, 214], knee: [137.5, 154], ankle: [197.5, 154], heel: [195, 162], toe: [203, 144],
+    load: { type: 'hands', at: [57.7, 122] },
   }),
   deadbug_end: P({
-    head: [40, 200], shoulder: [58, 206], elbow: [72, 180], wrist: [96, 164],
-    hip: [108, 210], knee: [128, 184], ankle: [158, 196], heel: [164, 202], toe: [168, 190],
+    head: [42, 213], shoulder: [57.7, 219], elbow: [9.7, 205], wrist: [-28.9, 199.5],
+    hip: [137.5, 214], knee: [196.3, 202], ankle: [256, 196], heel: [252, 203], toe: [266, 200],
+    load: { type: 'hands', at: [-28.9, 192] },
   }),
   // 抗旋（Pallof）：正视才看得出要点
   // 帕洛夫是正视图（判据「肩线髋线不转」只有正面看得见）。推出的方向是**朝向读者**，
@@ -276,8 +293,8 @@ export const POSES = {
   }),
   pallof_out: P({
     view: 'front',
-    head: [100, 44], shoulder: [100, 64], elbow: [90, 86], wrist: [100, 80],
-    elbow2: [110, 86], wrist2: [100, 80],
+    head: [100, 44], shoulder: [100, 64], elbow: [97, 73], wrist: [100, 80],
+    elbow2: [103, 73], wrist2: [100, 80],
     hip: [100, 126], knee: [84, 172], ankle: [82, 216], heel: [78, 225], toe: [86, 225],
     knee2: [116, 172], ankle2: [118, 216], heel2: [114, 225], toe2: [122, 225],
     load: { type: 'handle', at: [100, 80] },
@@ -294,11 +311,11 @@ export const POSES = {
   }),
   lateral_raise_up: P({
     view: 'front',
-    head: [100, 40], shoulder: [100, 62], elbow: [66, 64], wrist: [34, 64],
+    head: [100, 40], shoulder: [100, 62], elbow: [66, 64], wrist: [38, 80],
     hip: [100, 124], knee: [86, 172], ankle: [84, 216], heel: [80, 225], toe: [88, 225],
     knee2: [114, 172], ankle2: [116, 216], heel2: [112, 225], toe2: [120, 225],
-    shoulder2: [100, 62], elbow2: [134, 64], wrist2: [166, 64],
-    load: { type: 'hands2', at: [30, 66], at2: [170, 66] },
+    shoulder2: [100, 62], elbow2: [134, 64], wrist2: [162, 80],
+    load: { type: 'hands2', at: [34, 82], at2: [166, 82] },
   }),
   curl_down: P({
     head: [98, 40], shoulder: [86, 58], elbow: [84, 96], wrist: [84, 132],
@@ -306,19 +323,19 @@ export const POSES = {
     load: { type: 'hands', at: [84, 140] },
   }),
   curl_up: P({
-    head: [98, 40], shoulder: [86, 58], elbow: [84, 96], wrist: [98, 68],
+    head: [98, 40], shoulder: [86, 58], elbow: [84, 96], wrist: [106, 68],
     hip: [84, 116], knee: [84, 152], ankle: [82, 216], heel: [72, 225], toe: [108, 225],
-    load: { type: 'hands', at: [102, 62] },
+    load: { type: 'hands', at: [110, 62] },
   }),
   triceps_top: P({
-    head: [98, 40], shoulder: [86, 58], elbow: [88, 92], wrist: [92, 72],
+    head: [98, 40], shoulder: [86, 58], elbow: [88, 92], wrist: [120, 86],
     hip: [84, 116], knee: [84, 152], ankle: [82, 216], heel: [72, 225], toe: [108, 225],
-    load: { type: 'handle', at: [94, 68] },
+    load: { type: 'handle', at: [126, 86] },
   }),
   triceps_bottom: P({
     head: [98, 40], shoulder: [86, 58], elbow: [88, 92], wrist: [92, 128],
     hip: [84, 116], knee: [84, 152], ankle: [82, 216], heel: [72, 225], toe: [108, 225],
-    load: { type: 'handle', at: [94, 134] },
+    load: { type: 'handle', at: [96, 142] },
   }),
   calf_down: P({
     head: [98, 38], shoulder: [86, 56], elbow: [84, 92], wrist: [84, 126],
@@ -332,16 +349,16 @@ export const POSES = {
   }),
   // ── 坐姿与器械 ─────────────────────────────────────
   leg_press_bottom: P({
-    head: [44, 150], shoulder: [60, 158], elbow: [56, 180], wrist: [74, 186],
+    head: [44, 150], shoulder: [60, 158], elbow: [70, 174], wrist: [100, 170],
     hip: [96, 186], knee: [128, 146], ankle: [150, 160], heel: [156, 166], toe: [152, 146],
     bench: [36, 188, 70, 10],
-    load: { type: 'sled', at: [158, 152] },
+    load: { type: 'plate', at: [158, 152] },
   }),
   leg_press_top: P({
-    head: [44, 150], shoulder: [60, 158], elbow: [56, 180], wrist: [74, 186],
-    hip: [96, 186], knee: [136, 168], ankle: [174, 150], heel: [180, 156], toe: [176, 136],
+    head: [44, 150], shoulder: [60, 158], elbow: [70, 174], wrist: [100, 170],
+    hip: [96, 186], knee: [136, 168], ankle: [170, 160], heel: [176, 166], toe: [172, 146],
     bench: [36, 188, 70, 10],
-    load: { type: 'sled', at: [182, 142] },
+    load: { type: 'plate', at: [178, 152] },
   }),
   leg_extension_down: P({
     // 座位高度要容得下归一化后 60px 的小腿垂下来：原来 knee.y=182，小腿一拉长脚就穿地，
@@ -349,25 +366,25 @@ export const POSES = {
     head: [78, 76], shoulder: [86, 94], elbow: [94, 122], wrist: [78, 138],
     hip: [84, 148], knee: [126, 154], ankle: [130, 182], heel: [124, 187], toe: [142, 184],
     bench: [58, 156, 46, 8],
-    load: { type: 'pad', at: [134, 180] },
+    load: { type: 'pad', at: [134.3, 170.1] },
   }),
   leg_extension_up: P({
     head: [78, 76], shoulder: [86, 94], elbow: [94, 122], wrist: [78, 138],
     hip: [84, 148], knee: [126, 154], ankle: [172, 148], heel: [178, 154], toe: [176, 134],
     bench: [58, 156, 46, 8],
-    load: { type: 'pad', at: [176, 146] },
+    load: { type: 'pad', at: [160.1, 143.6] },
   }),
   leg_curl_start: P({
-    head: [30, 182], shoulder: [50, 188], elbow: [46, 210], wrist: [68, 214],
-    hip: [106, 192], knee: [142, 196], ankle: [178, 200], heel: [184, 204], toe: [182, 190],   // 起始腿伸直，脚在凳高
-    bench: [26, 196, 104, 9],
-    load: { type: 'pad', at: [184, 202] },
+    head: [30, 182], shoulder: [50, 188], elbow: [10, 218], wrist: [-20, 193],
+    hip: [106, 192], knee: [142, 192], ankle: [178, 194], heel: [184, 198], toe: [182, 184],   // 起始腿伸直，脚在凳高
+    bench: [26, 196, 104, 9], support: ['shoulder', 'hip', 'knee'],
+    load: { type: 'pad', at: [168, 190] },
   }),
   leg_curl_end: P({
-    head: [30, 182], shoulder: [50, 188], elbow: [46, 210], wrist: [68, 214],
-    hip: [106, 192], knee: [142, 196], ankle: [152, 154], heel: [158, 150], toe: [146, 142],
-    bench: [26, 196, 104, 9],
-    load: { type: 'pad', at: [156, 150] },
+    head: [30, 182], shoulder: [50, 188], elbow: [10, 218], wrist: [-20, 193],
+    hip: [106, 192], knee: [142, 192], ankle: [130, 150], heel: [124, 148], toe: [134, 138],
+    bench: [26, 196, 104, 9], support: ['shoulder', 'hip', 'knee'],
+    load: { type: 'pad', at: [138, 162] },
   }),
   // 坐姿提踵：前脚掌是支点，两帧不动；脚跟、踝、膝（膝垫在膝上）一起升起。
   // 两帧的最低点都正好在地面（下沉=脚跟，顶峰=脚尖），归一化不做贴地平移，座位才不会
@@ -375,29 +392,29 @@ export const POSES = {
   // 已知局限：手臂 59 与躯干 80 的比例让手够不到膝垫也够不到座位，所以手只能垂着。
   seated_calf_down: P({
     head: [72.6, 56.5], shoulder: [80, 72], elbow: [88, 100], wrist: [84, 128],
-    hip: [80, 152], knee: [139.5, 160], ankle: [147.7, 221.4], heel: [142.7, 225], toe: [168, 225],
+    hip: [80, 152], knee: [139.5, 160], ankle: [147.4, 219.5], heel: [142.4, 225], toe: [168, 225],
     bench: [56, 160, 48, 8],
-    load: { type: 'pad', at: [139.5, 146] },
+    load: { type: 'pad', at: [129.5, 146] },
   }),
   seated_calf_up: P({
     head: [72.6, 56.5], shoulder: [80, 72], elbow: [88, 100], wrist: [84, 128],
     hip: [80, 152], knee: [140, 152.2], ankle: [151.1, 211.2], heel: [143.6, 214.2], toe: [168, 225],
     bench: [56, 160, 48, 8],
-    load: { type: 'pad', at: [140, 138.2] },
+    load: { type: 'pad', at: [130, 138.2] },
   }),
   // 上斜：躯干倾斜约 40°，凳面随之倾斜（normalize 按躯干方向生成 benchIncline）。
   // 底部杠在胸上（肩沿朝脸方向 10px），上臂指向读者——与平板卧推底部同一类出平面手臂。
   incline_bottom: P({
-    head: [54, 118], shoulder: [72, 126], elbow: [82, 146], wrist: [78, 120],
+    head: [28, 111.5], shoulder: [42.7, 120], elbow: [54, 149], wrist: [60, 130],
     hip: [112, 160], knee: [134, 182], ankle: [146, 216], heel: [140, 225], toe: [166, 225],
     bench: [46, 128, 84, 10],
-    load: { type: 'bar', at: [78.5, 118.4] },
+    load: { type: 'bar', at: [68.5, 123.3] },
   }),
   incline_top: P({
-    head: [54, 118], shoulder: [72, 126], elbow: [91.4, 103.1], wrist: [108, 84],
+    head: [28, 111.5], shoulder: [42.7, 120], elbow: [67.7, 76.7], wrist: [87.2, 42.9],
     hip: [112, 160], knee: [134, 182], ankle: [146, 216], heel: [140, 225], toe: [166, 225],
     bench: [46, 128, 84, 10],
-    load: { type: 'bar', at: [112, 79] },
+    load: { type: 'bar', at: [91.2, 36] },
   }),
   machine_press_start: P({
     head: [76, 106], shoulder: [86, 124], elbow: [66, 142], wrist: [92, 140],
@@ -412,46 +429,46 @@ export const POSES = {
     load: { type: 'handle', at: [148, 140] },
   }),
   seated_press_bottom: P({
-    head: [80, 70], shoulder: [86, 90], elbow: [70, 110], wrist: [84, 92],
-    hip: [84, 150], knee: [126, 158], ankle: [156, 190], heel: [152, 200], toe: [172, 196],
+    head: [80, 70], shoulder: [86, 90], elbow: [110, 100], wrist: [100, 86], elbow2: [110, 100], wrist2: [100, 86],
+    hip: [84, 150], knee: [126, 158], ankle: [156, 216], heel: [152, 225], toe: [172, 221],
     bench: [62, 158, 42, 8],
-    load: { type: 'hands2', at: [78, 88], at2: [96, 88] },
+    load: { type: 'hands2', at: [104, 82], at2: [112, 84] },
   }),
   seated_press_top: P({
-    head: [80, 76], shoulder: [86, 92], elbow: [86, 70], wrist: [88, 46],
-    hip: [84, 150], knee: [126, 158], ankle: [156, 190], heel: [152, 200], toe: [172, 196],
+    head: [80, 76], shoulder: [86, 92], elbow: [86, 70], wrist: [88, 46], elbow2: [86, 70], wrist2: [88, 46],
+    hip: [84, 150], knee: [126, 158], ankle: [156, 216], heel: [152, 225], toe: [172, 221],
     bench: [62, 158, 42, 8],
     load: { type: 'hands2', at: [78, 40], at2: [98, 40] },
   }),
   knee_pushup_bottom: P({
-    head: [48, 178], shoulder: [64, 188], elbow: [78, 206], wrist: [66, 220],
-    hip: [110, 194], knee: [140, 216], ankle: [168, 208], heel: [172, 204], toe: [174, 216],
+    head: [39.2, 175.7], shoulder: [55.5, 180.4], elbow: [103, 195.9], wrist: [77, 225],
+    hip: [132.3, 202.4], knee: [190, 219], ankle: [246.4, 198.5], heel: [240.4, 194.5], toe: [255.4, 207.5],
   }),
   knee_pushup_top: P({
-    head: [46, 158], shoulder: [64, 168], elbow: [66, 194], wrist: [66, 220],
-    hip: [110, 184], knee: [140, 214], ankle: [168, 206], heel: [172, 202], toe: [174, 214],
+    head: [63.6, 125.9], shoulder: [77.3, 136], elbow: [77, 186], wrist: [77, 225],
+    hip: [141.7, 183.4], knee: [190, 219], ankle: [246.4, 198.5], heel: [240.4, 194.5], toe: [255.4, 207.5],
   }),
   one_arm_row_start: P({
-    head: [120, 108], shoulder: [104, 120], elbow: [102, 156], wrist: [100, 192],
+    head: [120, 108], shoulder: [104, 120], elbow: [104, 170], wrist: [104, 209],
     hip: [60, 152], knee: [92, 162], ankle: [82, 216], heel: [74, 225], toe: [110, 225],
     bench: [96, 168, 56, 8], support: ['knee'],   // 一膝跪凳，另一腿站地
-    load: { type: 'hands', at: [100, 200] },
+    load: { type: 'hands', at: [104, 217] },
   }),
   one_arm_row_end: P({
-    head: [120, 108], shoulder: [104, 120], elbow: [76, 152], wrist: [98, 146],
+    head: [120, 108], shoulder: [104, 120], elbow: [54, 118], wrist: [77.9, 148.9],
     hip: [60, 152], knee: [92, 162], ankle: [82, 216], heel: [74, 225], toe: [110, 225],
     bench: [96, 168, 56, 8], support: ['knee'],
-    load: { type: 'hands', at: [100, 148] },
+    load: { type: 'hands', at: [78, 157] },
   }),
   inverted_row_start: P({
-    head: [40, 150], shoulder: [58, 156], elbow: [76, 134], wrist: [94, 112],
-    hip: [108, 164], knee: [142, 172], ankle: [172, 180], heel: [178, 186], toe: [176, 168],
-    fixed: { type: 'low_bar', at: [94, 106] },
+    head: [42.3, 177.3], shoulder: [59, 180.3], elbow: [99.9, 151.5], wrist: [105, 113],
+    hip: [137.8, 194.1], knee: [196.9, 204.6], ankle: [256, 215], heel: [260, 225], toe: [270, 212],
+    fixed: { type: 'low_bar', at: [105, 107] },
   }),
   inverted_row_end: P({
-    head: [40, 128], shoulder: [58, 134], elbow: [66, 160], wrist: [94, 112],
-    hip: [110, 148], knee: [144, 162], ankle: [174, 176], heel: [180, 182], toe: [178, 164],
-    fixed: { type: 'low_bar', at: [94, 106] },
+    head: [74, 96.7], shoulder: [88.3, 106], elbow: [108.2, 151.9], wrist: [105, 113],
+    hip: [155.4, 149.6], knee: [205.7, 182.3], ankle: [256, 215], heel: [260, 225], toe: [270, 212],
+    fixed: { type: 'low_bar', at: [105, 107] },
   }),
   face_pull_start: P({
     head: [98, 40], shoulder: [86, 58], elbow: [112, 72], wrist: [142, 70],
@@ -459,9 +476,9 @@ export const POSES = {
     load: { type: 'handle', at: [148, 70] },
   }),
   face_pull_end: P({
-    head: [98, 40], shoulder: [86, 58], elbow: [64, 56], wrist: [92, 44],
+    head: [98, 40], shoulder: [86, 58], elbow: [84, 32], wrist: [116, 46],
     hip: [84, 116], knee: [84, 152], ankle: [82, 216], heel: [72, 225], toe: [108, 225],
-    load: { type: 'handle', at: [98, 44] },
+    load: { type: 'handle', at: [122, 46] },
   }),
   reverse_fly_start: P({
     view: 'front',
@@ -473,44 +490,44 @@ export const POSES = {
   }),
   reverse_fly_end: P({
     view: 'front',
-    head: [100, 60], shoulder: [100, 82], elbow: [66, 86], wrist: [36, 86],
-    shoulder2: [100, 82], elbow2: [134, 86], wrist2: [164, 86],
+    head: [100, 60], shoulder: [100, 82], elbow: [66, 86], wrist: [34.8, 109.4],
+    shoulder2: [100, 82], elbow2: [134, 86], wrist2: [165.2, 109.4],
     hip: [100, 134], knee: [86, 174], ankle: [84, 216], heel: [80, 225], toe: [88, 225],
     knee2: [114, 174], ankle2: [116, 216], heel2: [112, 225], toe2: [120, 225],
-    load: { type: 'hands2', at: [32, 88], at2: [168, 88] },
+    load: { type: 'hands2', at: [31, 112], at2: [169, 112] },
   }),
   back_extension_down: P({
-    head: [42, 170], shoulder: [58, 158], elbow: [56, 180], wrist: [48, 164],
+    head: [20, 162], shoulder: [32, 170.4], elbow: [40, 185], wrist: [52, 178],
     hip: [104, 136], knee: [134, 170], ankle: [146, 212], heel: [140, 222], toe: [166, 220],
     bench: [92, 130, 40, 9], support: ['hip'],
-    load: { type: 'pad', at: [146, 214] },
+    load: { type: 'pad', at: [152, 208] },
   }),
   back_extension_up: P({
-    head: [48, 104], shoulder: [64, 116], elbow: [62, 140], wrist: [54, 124],
+    head: [39.7, 63.3], shoulder: [51, 76], elbow: [62, 92], wrist: [68, 86],
     hip: [104, 136], knee: [134, 170], ankle: [146, 212], heel: [140, 222], toe: [166, 220],
     bench: [92, 130, 40, 9], support: ['hip'],
-    load: { type: 'pad', at: [146, 214] },
+    load: { type: 'pad', at: [152, 208] },
   }),
   // 健腹轮：跪姿，膝是地面上的支点，两帧不动；轮在地上向**头的方向**滚
   // （这组图头朝左，所以是 −x）。原来轮朝膝盖滚、膝和轮都离地 15–40px。
   // 起始：大腿竖直、躯干水平、手臂竖直在肩正下方。最远：膝-髋-肩-手一条直线斜下。
   rollout_start: P({
-    head: [73, 152.7], shoulder: [90, 154], elbow: [90, 184], wrist: [90, 213],
+    head: [85.8, 111.5], shoulder: [100.5, 120], elbow: [100.5, 170], wrist: [100.5, 209],
     hip: [169.8, 160], knee: [174.8, 220], ankle: [234.8, 224], heel: [232, 214], toe: [244, 225],
-    load: { type: 'wheel', at: [90, 216] },
+    load: { type: 'wheel', at: [100.5, 216] },
   }),
   rollout_end: P({
-    head: [31.4, 156.1], shoulder: [46.9, 163], elbow: [31, 188.4], wrist: [15.6, 213],
+    head: [31.4, 156.2], shoulder: [46.9, 163.1], elbow: [5.5, 191.1], wrist: [-29.3, 209],
     hip: [120, 195.6], knee: [174.8, 220], ankle: [234.8, 224], heel: [232, 214], toe: [244, 225],
-    load: { type: 'wheel', at: [15.6, 216] },
+    load: { type: 'wheel', at: [-29.3, 216] },
   }),
   sled_push_stance: P({
     head: [78, 86], shoulder: [66, 102], elbow: [92, 116], wrist: [120, 124],
     hip: [44, 140], knee: [78, 176], ankle: [58, 214], heel: [50, 225], toe: [84, 225],
     // 后腿按与前腿相同的作者长度画，否则归一化把两腿各自拉到 60/60 后，
     // 原本更短的那条腿下沉得多，另一只脚就浮起来（之前前脚悬空 12px）
-    knee2: [18, 176], ankle2: [0, 211], heel2: [-8, 222], toe2: [18, 222],
-    load: { type: 'sled', at: [132, 150] },
+    knee2: [15, 180.2], ankle2: [-4.6, 218.3], heel2: [-12.6, 229.3], toe2: [21.4, 229.3],
+    load: { type: 'sled', at: [126, 124] },
   }),
 };
 
@@ -521,10 +538,13 @@ export const POSES = {
 // 所以这里只把坐标当作**方向**来用，长度一律换成下面这副固定骨骼——
 // 肢体长度于是由构造保证，不再是需要人去守的纪律。
 // 单杠的固定位置。悬垂时归一化后的身体从手到脚尖约 259px，杠必须高到脚离地。
-const PULLUP_BAR_AT = [90, -62];
+const PULLUP_BAR_AT = [90, -92];   // 手臂 89 + 躯干 80 + 腿 120 + 脚 ≈ 299
 
+// 手臂原来是 30+29=59，相对躯干 80 只有 0.74；真人上臂 0.186H、前臂到腕 0.146H、
+// 髋到肩 0.30H，手臂/躯干 ≈1.11。短了 35% 的后果遍布全库：硬拉起始杠到不了地、
+// RDL 杠停在大腿、坐姿人物够不到座位和膝垫、下压压不到大腿、健腹轮肩角打不开。
 const BONE = {
-  thigh: 60, shank: 60, upper_arm: 30, forearm: 29, torso: 80, neck: 17,
+  thigh: 60, shank: 60, upper_arm: 50, forearm: 39, torso: 80, neck: 17,
 };
 
 // 负荷挂在哪个关节上：杠在背上/前架位随肩走，其余随腕走。
@@ -534,6 +554,7 @@ const LOAD_ANCHOR = {
   squat_lowbar_top: 'shoulder', squat_lowbar_bottom: 'shoulder',
   bench_top: 'shoulder', bench_bottom: 'shoulder',   // 杠的位置不该随手臂归一化漂走
   incline_top: 'shoulder', incline_bottom: 'shoulder',
+  gm_top: 'shoulder', gm_bottom: 'shoulder',
   carry_front: 'shoulder', ohp_bottom: 'shoulder',
   // 腿部器械的阻力垫顶在踝上、腿举的踏板被脚蹬着——
   // 默认跟着手腕走会让它们浮在半空，读起来像个没来由的点。
@@ -639,15 +660,18 @@ function normalize(name, p) {
       delete q.bench;
     } else if (lying) {
       // 平卧：凳面托住整条躯干。凳端要托住头——原来按肩起算，头悬出凳端 19px
-      q.support = ['shoulder', 'hip'];
-      const x0 = Math.min(q.head ? q.head[0] - 14 : Infinity, Math.min(q.shoulder[0], q.hip[0]) - 10);
-      const x1 = Math.max(q.shoulder[0], q.hip[0]) + 12;
+      q.support = p.support ?? ['shoulder', 'hip'];
+      const sx = q.support.map((j) => q[j][0]);
+      const x0 = Math.min(q.head ? q.head[0] - 14 : Infinity, Math.min(...sx) - 10);
+      const x1 = Math.max(...sx) + 12;
       q.bench = [x0, Math.max(q.shoulder[1], q.hip[1]) + 5, x1 - x0, 9];
     } else {
       // 坐姿/跪姿器械：凳面托在声明的支撑关节下（默认髋；单臂划船是膝）
       q.support = p.support ?? ['hip'];
       const xs = q.support.map((j) => q[j][0]), ys = q.support.map((j) => q[j][1]);
-      const x0 = Math.min(...xs) - 24, x1 = Math.max(...xs) + 24;
+      // 俯卧的髋垫：前缘在髋骨（cue「髋骨上缘略高于垫子前缘」），垫子只往脚的方向延伸
+      const proneHip = PRONE_POSES.has(name) && q.support.length === 1 && q.support[0] === 'hip';
+      const x0 = proneHip ? q.hip[0] - 4 : Math.min(...xs) - 24, x1 = proneHip ? q.hip[0] + 44 : Math.max(...xs) + 24;
       q.bench = [x0, Math.max(...ys) + 6, x1 - x0, 8];
     }
   }
@@ -683,31 +707,48 @@ function normalize(name, p) {
   return q;
 }
 
-// 站姿持械：整副图横向平移，让负荷铅垂线正好落在足中线上。
-// 脚的位置本来就是相对的，平移不改变任何力学关系，却让「杠过足中线」
-// 这条判据变成构造事实而不是人工对齐的结果。
-const SHIFT_TO_MIDFOOT = new Set([
+// 站姿持械：脚钉在标准位（脚跟 72、脚尖 108，足中线 90 就是真正的足中点），
+// 然后**反解躯干角**让负荷落在足中线上——与补间用的是同一个闭式解。
+//
+// 之前的做法是平移整副图把杠对到 x=90。那让「杠过足中线」成了同义反复，代价是
+// 脚跟着杠走：同一动作两帧脚位差最多 13.5px、低杠底部的足中线标记落在脚长 76% 处、
+// 前蹲动画末帧比静态帧多倾 10°、划船动画杠漂离铅垂线。全是同一个机制。
+// 现在脚不动，躯干角是解出来的，断言「杠偏离足中线 ≤6」才真的在查东西。
+const PLUMB_SOLVED = new Set([
   'squat_bottom', 'squat_top', 'squat_front_bottom', 'squat_front_top',
   'squat_lowbar_top', 'squat_lowbar_bottom',
-  'hinge_bottom', 'hinge_top', 'rdl_bottom',
+  'hinge_bottom', 'hinge_top', 'rdl_bottom', 'gm_top', 'gm_bottom',
   'ohp_bottom', 'ohp_top', 'row_start', 'row_end',
   'carry_stance', 'carry_front', 'carry_overhead',
 ]);
 
-function shiftToMidfoot(p) {
-  if (!p.load) return p;
-  const dx = MIDFOOT - p.load.at[0];
-  if (Math.abs(dx) < 0.01) return p;
-  const move = (pt) => (pt ? [pt[0] + dx, pt[1]] : pt);
+const ALL_JOINTS = ['head', 'shoulder', 'elbow', 'wrist', 'hip', 'knee', 'ankle', 'heel', 'toe',
+                    'shoulder2', 'elbow2', 'wrist2', 'knee2', 'ankle2', 'heel2', 'toe2'];
+const UPPER_JOINTS = ['head', 'shoulder', 'elbow', 'wrist', 'shoulder2', 'elbow2', 'wrist2'];
+function shiftAll(p, dx, dy, keys = ALL_JOINTS) {
   const q = { ...p };
-  for (const k of ['head', 'shoulder', 'elbow', 'wrist', 'hip', 'knee', 'ankle', 'heel', 'toe',
-                   'shoulder2', 'elbow2', 'wrist2', 'knee2', 'ankle2', 'heel2', 'toe2']) {
-    if (q[k]) q[k] = move(q[k]);
-  }
-  q.load = { ...p.load, at: move(p.load.at), ...(p.load.at2 ? { at2: move(p.load.at2) } : {}) };
-  if (p.bench) q.bench = [p.bench[0] + dx, p.bench[1], p.bench[2], p.bench[3]];
-  if (p.fixed) q.fixed = { ...p.fixed, at: move(p.fixed.at) };
+  for (const k of keys) if (q[k]) q[k] = [q[k][0] + dx, q[k][1] + dy];
+  if (q.load) q.load = { ...q.load, at: [q.load.at[0] + dx, q.load.at[1] + dy],
+    ...(q.load.at2 ? { at2: [q.load.at2[0] + dx, q.load.at2[1] + dy] } : {}) };
   return q;
+}
+const CANON_HEEL_X = 72;
+
+function pinFeetAndSolve(name, p) {
+  if (!p.load || !p.heel) return p;
+  // 1. 脚钉标准位
+  let q = shiftAll(p, CANON_HEEL_X - p.heel[0], 0);
+  if (p.bench) q.bench = [p.bench[0] + (CANON_HEEL_X - p.heel[0]), p.bench[1], p.bench[2], p.bench[3]];
+  if (p.fixed) q.fixed = { ...p.fixed, at: [p.fixed.at[0] + (CANON_HEEL_X - p.heel[0]), p.fixed.at[1]] };
+  // 2. 反解躯干角。负荷相对肩的偏移是世界坐标下的量：手臂方向由作者给定，
+  //    躯干绕髋转动时整条手臂平移，偏移不变。于是 shoulder.x 有唯一解。
+  const off = [q.load.at[0] - q.shoulder[0], q.load.at[1] - q.shoulder[1]];
+  const c = (MIDFOOT - off[0] - q.hip[0]) / BONE.torso;
+  if (Math.abs(c) > 1) return q;                       // 解不出来：留给杠线断言去报
+  const S = [q.hip[0] + BONE.torso * c, q.hip[1] - BONE.torso * Math.sqrt(1 - c * c)];
+  const d = [S[0] - q.shoulder[0], S[1] - q.shoulder[1]];
+  const moved = shiftAll(q, d[0], d[1], UPPER_JOINTS);  // 上半身整体随肩走，含负荷
+  return moved;
 }
 
 // 归一化之前的原始坐标。接触点断言要拿它和归一化结果对照：
@@ -718,11 +759,21 @@ export const RAW_POSES = Object.fromEntries(
 // 指向读者（正视图里朝景深方向伸）的手臂，投影本来就短，归一化不得把它拉到全长。
 // 与 OUT_OF_PLANE_ARM 不同：那组是侧视里出平面、靠 rebuildArm 重画；这组是正视里
 // 出平面、作者给的投影长度就是真相。
-export const FORESHORTENED_ARM = new Set(['pallof_in', 'pallof_out']);
+export const FORESHORTENED_ARM = new Set(['pallof_in', 'pallof_out', 'back_extension_down', 'back_extension_up', 'face_pull_end']);
 
 for (const [name, p] of Object.entries(POSES)) {
   const n = normalize(name, p);
-  POSES[name] = SHIFT_TO_MIDFOOT.has(name) ? shiftToMidfoot(n) : n;
+  n.loadAnchor = LOAD_ANCHOR[name] ?? 'wrist';       // 补间要知道负荷挂在哪
+  if (PLUMB_SOLVED.has(name)) {
+    POSES[name] = pinFeetAndSolve(name, n);
+  } else if (n.view !== 'front' && !n.bench && !n.benchIncline && !n.fixed
+             && n.heel && n.toe && Math.abs(n.heel[1] - GROUND) <= 1 && Math.abs(n.toe[1] - GROUND) <= 1) {
+    // 所有站姿都把脚钉在标准位：同一动作两帧的脚位才一致（自重深蹲两帧脚跟曾差 3.3px，
+    // 动画末帧因此与静态帧差 3.2px）。正视图保持居中，不钉。
+    POSES[name] = shiftAll(n, CANON_HEEL_X - n.heel[0], 0);
+  } else {
+    POSES[name] = n;
+  }
 }
 
 export const POSE_NAMES = Object.keys(POSES);
@@ -742,6 +793,9 @@ export function contentBox(p, { plumb = false } = {}) {
     const half = (p.load.type === 'bar' || p.load.type === 'front') ? 42 : 14;
     xs.push(x - half, x + half); ys.push(y - 16, y + 16);
     if (p.load.at2) { xs.push(p.load.at2[0] - 14, p.load.at2[0] + 14); ys.push(p.load.at2[1] - 10, p.load.at2[1] + 10); }
+    if (p.load.type === 'band') { const [fx, fy] = p.load.from ?? [MIDFOOT, GROUND]; xs.push(fx - 4, fx + 4); ys.push(fy - 4, fy + 4); }
+    if (p.load.type === 'sled') { xs.push(x - 16, x + 18); ys.push(GROUND); }
+    if (p.load.type === 'plate') { ys.push(y - 24, y + 24); }
   }
   if (p.fixed) {
     const [x, y] = p.fixed.at;
@@ -776,9 +830,19 @@ function load(l) {
     case 'hands':
       return `<g class="sk-load"><rect class="sk-dumbbell" x="${x - 9}" y="${y - 5}" width="18" height="10" rx="3"/></g>`;
     case 'hands2':
+      if (!l.at2) return `<g class="sk-load"><rect class="sk-dumbbell" x="${x - 9}" y="${y - 5}" width="18" height="10" rx="3"/></g>`;
       return `<g class="sk-load">`
         + `<rect class="sk-dumbbell" x="${x - 9}" y="${y - 5}" width="18" height="10" rx="3"/>`
         + `<rect class="sk-dumbbell" x="${l.at2[0] - 9}" y="${l.at2[1] - 5}" width="18" height="10" rx="3"/></g>`;
+    case 'band': {
+      // 弹力带：一端固定（默认踩在足中线下），另一端在负荷点
+      const [fx, fy] = l.from ?? [MIDFOOT, GROUND];
+      return `<g class="sk-load"><line class="sk-band" x1="${fx}" y1="${fy}" x2="${x}" y2="${y}"/>`
+        + `<rect class="sk-handle" x="${x - 8}" y="${y - 3}" width="16" height="6" rx="3"/></g>`;
+    }
+    case 'plate':
+      // 腿举踏板：薄片，画在身体之后，不遮脚
+      return `<g class="sk-load"><rect class="sk-sled" x="${x - 3}" y="${y - 22}" width="6" height="44" rx="2"/></g>`;
     case 'handle':
       return `<g class="sk-load"><rect class="sk-handle" x="${x - 10}" y="${y - 4}" width="20" height="8" rx="4"/></g>`;
     case 'pad':
@@ -787,7 +851,10 @@ function load(l) {
       return `<g class="sk-load"><circle class="sk-wheel" cx="${x}" cy="${y}" r="9"/>`
         + `<line class="sk-bar" x1="${x - 13}" y1="${y}" x2="${x + 13}" y2="${y}"/></g>`;
     case 'sled':
-      return `<g class="sk-load"><rect class="sk-sled" x="${x - 10}" y="${y - 16}" width="20" height="32" rx="3"/></g>`;
+      // 雪橇在地上推：底座贴地，立柱到手的高度，手握在立柱顶。原来是一只悬在半空的方块。
+      return `<g class="sk-load"><rect class="sk-sled" x="${x - 14}" y="${GROUND - 8}" width="30" height="8" rx="2"/>`
+        + `<line class="sk-rig" x1="${x}" y1="${y}" x2="${x}" y2="${GROUND - 8}"/>`
+        + `<rect class="sk-handle" x="${x - 6}" y="${y - 4}" width="12" height="8" rx="4"/></g>`;
     default: return '';
   }
 }
@@ -810,13 +877,21 @@ function fixed(f) {
 }
 
 /** 一帧姿态。plumb=true 时画出杠线与足中线（站姿动作的核心判据）。 */
+/**
+ * 画出来的肘与手。出平面的手臂（杠横架在肩上、哑铃举在两侧）按投影重建，
+ * 其余用原坐标。动画不能每帧重解：解有时无解（手臂过顶后射线不与杠线相交）、
+ * 有时被握点钳制跳变——改成对两端点各求一次，中间帧在两组肘/手之间插值。
+ */
+export function drawnArm(name, p) {
+  const arm = OUT_OF_PLANE_ARM.has(name) ? rebuildArmFor(name, p) : null;
+  return arm ? { E: arm.elbow, H: arm.hand } : { E: p.elbow, H: p.wrist };
+}
+
 export function renderPose(p, opts = {}) {
   const { plumb = false, caption = '', name = '', prime = [] } = opts;
-  // 出平面的手臂（杠横架在肩上、哑铃举在两侧）按投影重建：
-  // 严格侧视下握杠的手投影回肩旁，按全长画只能折叠成贴在一起的两根线。
-  const arm = OUT_OF_PLANE_ARM.has(name) ? rebuildArmFor(name, p) : null;
-  const ELBOW = arm ? arm.elbow : p.elbow;
-  const HAND = arm ? arm.hand : p.wrist;
+  const { E: ELBOW, H: HAND } = opts.arm ?? drawnArm(name, p);
+  // 器械类型可由 figures.json 覆盖：哑铃卧推共用杠铃卧推的姿态，但画的得是哑铃
+  const LD = p.load && opts.loadType ? { ...p.load, type: opts.loadType } : p.load;
   const g = [];
   const gb = opts.box;
   g.push(`<line class="sk-ground" x1="${gb ? gb.x + 2 : 8}" y1="${GROUND}" x2="${gb ? gb.x + gb.w - 2 : FIG_W - 8}" y2="${GROUND}"/>`);
@@ -852,8 +927,8 @@ export function renderPose(p, opts = {}) {
   // 架在肩上的杠画在身体**之后**：侧视里它在头颈后方。画在前面的话，
   // 杠心到头心 14.2px 而头半径 12.5px、杠线宽 3.4px，杠必然从头颅穿过去。
   // 其余负荷（哑铃、把手、阻力垫）握在手上或顶在肢体上，仍画在前面。
-  const barBehind = p.load && (p.load.type === 'bar' || p.load.type === 'front');
-  if (barBehind) g.push(load(p.load));
+  const barBehind = LD && ['bar', 'front', 'sled', 'plate'].includes(LD.type);
+  if (barBehind) g.push(load(LD));
 
   // 远侧肢体先画（浅一档），形成前后关系
   if (p.knee2) {
@@ -885,11 +960,11 @@ export function renderPose(p, opts = {}) {
   g.push(`<circle class="sk-joint" cx="${ELBOW[0]}" cy="${ELBOW[1]}" r="3.2"/>`);
   g.push(`<circle class="sk-hand" cx="${HAND[0]}" cy="${HAND[1]}" r="4"/>`);
 
-  if (!barBehind) g.push(load(p.load));
+  if (!barBehind) g.push(load(LD));
 
-  if (plumb && p.load && p.heel && p.toe) {
-    const bx = p.load.at[0];
-    g.push(`<line class="sk-plumb" x1="${bx}" y1="${p.load.at[1]}" x2="${bx}" y2="${GROUND + 8}"/>`);
+  if (plumb && LD && p.heel && p.toe) {
+    const bx = LD.at[0];
+    g.push(`<line class="sk-plumb" x1="${bx}" y1="${LD.at[1]}" x2="${bx}" y2="${GROUND + 8}"/>`);
     g.push(`<line class="sk-midfoot" x1="${MIDFOOT}" y1="${GROUND - 4}" x2="${MIDFOOT}" y2="${GROUND + 8}"/>`);
   }
 
@@ -921,7 +996,7 @@ export function renderSkeleton(fig, nameZh, prime = []) {
     return `<svg viewBox="${box.x.toFixed(1)} ${box.y.toFixed(1)} ${box.w.toFixed(1)} ${box.h.toFixed(1)}"`
       + ` class="sk-frame${wide}" data-pose="${key}" preserveAspectRatio="xMidYMid meet"`
       + ` role="img" aria-label="${nameZh}·${cap}">`
-      + `${renderPose(p, { plumb, caption: cap, box, name: key, prime })}</svg>`;
+      + `${renderPose(p, { plumb, caption: cap, box, name: key, prime, loadType: fig.load_type })}</svg>`;
   };
   const two = fig.end && fig.end !== fig.start;
   // 动画是渐进增强：没有 JS 时这两帧静态图本身就是完整的图示。
@@ -929,7 +1004,7 @@ export function renderSkeleton(fig, nameZh, prime = []) {
   const anim = two
     ? ` data-anim="${escapeAttr(JSON.stringify({ a: fig.start, b: fig.end, plumb,
         no_load: !!fig.no_load, box: [+box.x.toFixed(1), +box.y.toFixed(1), +box.w.toFixed(1), +box.h.toFixed(1)],
-        prime }))}"`
+        prime, load_type: fig.load_type ?? null }))}"`
     : '';
   return `<figure class="skeleton" data-exercise="${nameZh}"${anim}>`
     + frame(a, fig.cap_start ?? '起始', fig.start)

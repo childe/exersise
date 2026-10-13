@@ -49,9 +49,9 @@ test('朝向与动作本身相符', () => {
     deadbug_start: '上',        // 仰卧
     incline_top: '右上',        // 上斜卧推，仰卧且躯干倾斜
     plank: '下',                // 俯撑，面朝地
-    pushup_top: '下',           // 俯撑
+    pushup_top: '左下',         // 俯撑顶部身体上倾 20°，脸朝前下（头在左端）
     leg_curl_start: '下',       // 俯卧腿弯举
-    rollout_start: '下',        // 跪姿起始躯干水平，脸朝地；头在左端
+    rollout_start: '左下',      // 跪姿起始躯干上倾（手臂竖直到轮），脸朝前下；头在左端
     seated_calf_down: '右',     // 坐姿，水平朝前
     pullup_hang: '右',          // 悬垂
   };

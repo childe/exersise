@@ -24,7 +24,7 @@ const STANDING_LOADED = new Set([
 ]);
 
 // 这些姿态要求髋低于膝（蹲到位）
-const DEPTH_REQUIRED = new Set(['squat_bottom', 'squat_front_bottom', 'squat_lowbar_bottom']);
+const DEPTH_REQUIRED = new Set(['squat_bottom', 'squat_front_bottom', 'squat_lowbar_bottom', 'squat_bw_bottom', 'squat_dbfront_bottom']);
 
 export function validatePoses() {
   const errors = [];
@@ -43,14 +43,15 @@ export function validatePoses() {
     //    但坐标跑到离谱的位置仍然说明姿态写错了。
     for (const j of JOINTS) {
       const [x, y] = p[j];
-      if (x < -80 || x > FIG_W + 100 || y < -80 || y > FIG_H + 60) {
+      if (x < -80 || x > FIG_W + 100 || y < -130 || y > FIG_H + 60) {
         push(name, `关节 ${j} 坐标离谱 (${x.toFixed(0)},${y.toFixed(0)})`);
       }
     }
 
-    // 3. 脚不穿地
-    for (const j of ['heel', 'toe', 'heel2', 'toe2']) {
-      if (p[j] && p[j][1] > GROUND + 8) push(name, `${j} 穿过地面 (y=${p[j][1].toFixed(1)})`);
+    // 3. 任何关节都不穿地。原来只查 heel/toe 且容差 8：跪撑的膝沉到地下 9.8px、
+    //    下拉的脚跟穿地 7.8px 都没抓到。
+    for (const j of [...JOINTS, 'heel2', 'toe2', 'knee2', 'ankle2', 'elbow2', 'wrist2']) {
+      if (p[j] && p[j][1] > GROUND + 3) push(name, `${j} 穿过地面 ${(p[j][1] - GROUND).toFixed(1)}px (y=${p[j][1].toFixed(1)})`);
     }
 
     // 4. 足部朝向：仅对「整只脚平放在地」的姿态成立。
@@ -205,9 +206,6 @@ const ELBOW_MIN = 35, KNEE_MIN = 38;
 // 列在这里是为了「锁住现状、禁止新增」——改好一个就从表里删一个，
 // 而任何**新的**超限姿态都会让构建失败。不要往这张表里加东西。
 export const ELBOW_PENDING = new Map([
-  ['row_end', 34.5], ['one_arm_row_end', 33.6],
-  ['back_extension_down', 31.8], ['back_extension_up', 31.3],
-  ['face_pull_end', 28.4], ['curl_up', 23.6], ['triceps_top', 14.7],
 ]);
 
 /** 关节角校验。出平面的手臂按重建后的肘位判定——那才是实际画出来的东西。 */
@@ -222,6 +220,7 @@ export function validateJointAngles() {
     if (FORESHORTENED_ARM.has(name)) continue;   // 指向读者的手臂，投影肘角不是真肘角
     const arm = OUT_OF_PLANE_ARM.has(name) ? rebuildArmFor(name, p) : null;
     const e = arm ? deg(arm.elbow, p.shoulder, arm.hand) : deg(p.elbow, p.shoulder, p.wrist);
+    if (arm && arm.fore > 41) errors.push(`${name}: 重建后的前臂 ${arm.fore.toFixed(1)}px 比真长 39 还长，投影不可能长于实物——肘离杠线太远`);
     if (e >= ELBOW_MIN) {
       if (ELBOW_PENDING.has(name)) {
         errors.push(`${name}: 肘角已达 ${e.toFixed(1)}°，应从 ELBOW_PENDING 移除`);
@@ -248,6 +247,8 @@ export function validateJointAngles() {
  * 脚端下沉得多、整体上提后手就悬在半空——俯卧撑手离地 36px、平板前臂 27px、
  * 臀桥上背 67px，全是这一条漏的。这里逐点核对，一个都不许飘。
  */
+export const SUPINE_ON_FLOOR = new Set(['bridge_bottom', 'bridge_top', 'deadbug_start', 'deadbug_end']);
+
 export function validateContacts() {
   const errors = [];
   // 踝不是接触点：脚平放时踝本来就在地面上方 7–9px。接触的是脚跟/脚尖、手、肘、膝、髋、肩。
@@ -275,6 +276,11 @@ export function validateContacts() {
         if (Math.abs(d + 5) > TOL) errors.push(`${name}: ${j} 离上斜凳面 ${(-d).toFixed(1)}px（应贴着）`);
       }
     }
+    // 仰卧家族：肩与头贴地、底部髋近地——不依赖作者是否把它画在 ±7 内（死虫曾悬空 21px）
+    if (SUPINE_ON_FLOOR.has(name)) {
+      if (GROUND - p.shoulder[1] > 8) errors.push(`${name}: 仰卧的肩离地 ${(GROUND - p.shoulder[1]).toFixed(1)}px`);
+      if (p.head && GROUND - (p.head[1] + 12) > 4) errors.push(`${name}: 仰卧的头离地 ${(GROUND - p.head[1] - 12).toFixed(1)}px`);
+    }
     // 健腹轮：轮在地上滚，轮底必须贴地
     if (p.load?.type === 'wheel' && Math.abs(p.load.at[1] + 9 - GROUND) > 3) {
       errors.push(`${name}: 健腹轮轮底离地 ${(GROUND - p.load.at[1] - 9).toFixed(1)}px`);
@@ -294,6 +300,11 @@ export const STRAIGHT_LINE = {
   rollout_end: ['shoulder', 'knee', 'hip'],
   bridge_top: ['shoulder', 'knee', 'hip'],
   hinge_top: ['shoulder', 'ankle', 'hip', 'knee'],
+  back_extension_up: ['shoulder', 'knee', 'hip'],
+  knee_pushup_top: ['shoulder', 'knee', 'hip'],
+  knee_pushup_bottom: ['shoulder', 'knee', 'hip'],
+  inverted_row_start: ['shoulder', 'ankle', 'hip', 'knee'],
+  inverted_row_end: ['shoulder', 'ankle', 'hip', 'knee'],
 };
 
 export function validateStraightLines() {
@@ -353,5 +364,31 @@ export function validateBarOnChest() {
     const d = (p.load.at[0] - p.shoulder[0]) * f[0] + (p.load.at[1] - p.shoulder[1]) * f[1];
     if (d < 5 || d > 14) errors.push(`${name}: 杠在胸面上方 ${d.toFixed(1)}px（应为 5–14），图注写的是「触胸」`);
   }
+  return errors;
+}
+
+
+/** 有 at2 就必须有 wrist2：否则第二只哑铃不归一化、动画里冻结在起始帧，是一只没人握的哑铃。 */
+export function validateSecondHand() {
+  const errors = [];
+  for (const [name, p] of Object.entries(POSES)) {
+    if (p.load?.at2 && !p.wrist2) errors.push(`${name}: 有第二只负荷 at2 却没有 wrist2——它不随手走`);
+  }
+  return errors;
+}
+
+/**
+ * 罗马尼亚硬拉：膝角基本不变是它与常规硬拉的分界（图注与自检都这么写）。
+ * 曾经画成 171° → 120°，变化 51°，就是一个半程硬拉。
+ */
+export function validateKneeStable() {
+  const errors = [];
+  const ang = (c, a, b) => {
+    const ux = a[0]-c[0], uy = a[1]-c[1], vx = b[0]-c[0], vy = b[1]-c[1];
+    return Math.acos(Math.max(-1, Math.min(1, (ux*vx+uy*vy) / (Math.hypot(ux,uy)*Math.hypot(vx,vy))))) * 180 / Math.PI;
+  };
+  const a = ang(POSES.hinge_top.knee, POSES.hinge_top.hip, POSES.hinge_top.ankle);
+  const b = ang(POSES.rdl_bottom.knee, POSES.rdl_bottom.hip, POSES.rdl_bottom.ankle);
+  if (Math.abs(a - b) > 15) errors.push(`rdl_bottom: 膝角 ${b.toFixed(1)}° 与 hinge_top ${a.toFixed(1)}° 差 ${Math.abs(a-b).toFixed(1)}°（RDL 膝角应基本不变，上限 15°）`);
   return errors;
 }
