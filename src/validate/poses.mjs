@@ -167,7 +167,8 @@ export function validateFrameConsistency(figures) {
       if (!a[j1] || !a[j2] || !b[j1] || !b[j2]) continue;
       const la = len(a[j1], a[j2]), lb = len(b[j1], b[j2]);
       const diff = Math.abs(la - lb) / Math.max(la, lb);
-      if (diff > 0.18) {
+      const cap = label.includes('脚') ? 0.12 : 0.18;   // 脚不参与屈伸，伸缩余量该比肢体小
+      if (diff > cap) {
         errors.push(`${slug}: ${label}在两帧间长度差 ${(diff * 100).toFixed(0)}%`
           + `（${f.start}=${la.toFixed(1)} vs ${f.end}=${lb.toFixed(1)}），同一个人不该换比例`);
       }

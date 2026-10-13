@@ -246,7 +246,13 @@ export function interpolate(A, B, t, opts = {}) {
     if (grounded && (f === 'heel' || f === 'toe')) { q[f] = [...A[f]]; continue; }   // 脚是刚体，踝钉死脚就不动
     if (toeRooted && f === 'toe') continue;                                        // 已钉
     if (q._pinFoot2 && (f === 'heel2' || f === 'toe2')) { q[f] = [...A[f]]; continue; }
-    q[f] = [q[src][0] + lerp(A[f][0]-A[src][0], B[f][0]-B[src][0], t), q[src][1] + lerp(A[f][1]-A[src][1], B[f][1]-B[src][1], t)];
+    // 脚相对踝的偏移插极坐标，不插直角坐标：弦比弧短，直角插值会让脚在中途缩水——
+    // 腿屈伸中段脚长比结束帧短 30%，腿弯举中段脚跟只剩离踝 1.0px（关节圆半径就是 3.2）。
+    // 这是第三轮「所有图一律拉弦」那条在脚上的残留。
+    const oa = [A[f][0]-A[src][0], A[f][1]-A[src][1]], ob = [B[f][0]-B[src][0], B[f][1]-B[src][1]];
+    const fa = alerp(Math.atan2(oa[1], oa[0]), Math.atan2(ob[1], ob[0]), t);
+    const fl = lerp(Math.hypot(oa[0], oa[1]), Math.hypot(ob[0], ob[1]), t);
+    q[f] = [q[src][0] + Math.cos(fa) * fl, q[src][1] + Math.sin(fa) * fl];
   }
   if (A.bench && B.bench) q.bench = A.bench.map((v, i) => lerp(v, B.bench[i], t));
   if (A.benchIncline) q.benchIncline = A.benchIncline;   // 凳子不动
