@@ -150,51 +150,71 @@ test('整体肌肉分布图含全部 13 个分区且可点', () => {
 });
 
 test('每张图画出来的东西都落在它自己的 viewBox 内', async () => {
-  // 这条是全仓**唯一**从产物文本回读坐标去比框的断言，必须守住。
-  // 自从渲染端与校验端共用 drawnArm/blendArm 之后，validateAnimBox 只回读框、内容是重算的——
-  // 手臂模型本身错了两边会一起错，只有「把画出来的字符串解析回坐标」这条看得见。
+  // 全仓唯一一条从产物文本回读坐标比 viewBox 的断言。
   //
-  // 旧版渲染时既不传 name 也不传 loadType，renderPose 内部 drawnArm('') 回落到链上 elbow/wrist，
-  // 框和画一起用链，恒等通过。实测 18 个姿态真实手臂与它差到 37.9px（goblet_top）。
+  // 它独立的是**元素几何**——contentBox 对某个元素外延的建模（头半径、杠半宽、BAND_HALF、
+  // 眼偏移、把手宽）与 load()/fixed()/renderFace() 真正吐出来的几何之间的分歧，历史上
+  // 咬过人的正是这一类。它**不独立于关节模型**：框也是用 drawnArm 算的，把手臂整体平移
+  // 60px 两边一起长大，这条一声不吭（由 validateJointAngles 等关节角断言兜底）。
+  // 灵敏度约 5px：排除按设计贴边画的 sk-ground 后，逐帧最小余量 5.00px。
+  //
+  // 旧版算框和渲染都不传 name/loadType，两边一起回落到链上 elbow/wrist，恒等通过；
+  // 18 个姿态真实手臂与链上差到 37.9px（goblet_top）。
   const figures = await readJson('data/figures.json');
-  // 线、圆（含半径）、矩形（含旋转）、多边形全部顶点都要算进去，不能只看 x1/x2/cx
+  const exercises = await readJson('data/exercises.json');
+  const primeOf = new Map((Array.isArray(exercises) ? exercises : exercises.exercises)
+    .map((e) => [e.slug, e.muscles?.prime ?? []]));
   const pointsOf = (svg) => {
     const pts = [];
-    for (const m of svg.matchAll(/x1="(-?[\d.]+)" y1="(-?[\d.]+)" x2="(-?[\d.]+)" y2="(-?[\d.]+)"/g))
-      pts.push([+m[1], +m[2]], [+m[3], +m[4]]);
+    let hit = 0;
+    for (const m of svg.matchAll(/x1="(-?[\d.]+)" y1="(-?[\d.]+)" x2="(-?[\d.]+)" y2="(-?[\d.]+)"/g)) {
+      pts.push([+m[1], +m[2]], [+m[3], +m[4]]); hit++;
+    }
     for (const m of svg.matchAll(/<circle[^>]*cx="(-?[\d.]+)" cy="(-?[\d.]+)" r="(-?[\d.]+)"/g)) {
       const [x, y, r] = [+m[1], +m[2], +m[3]];
-      pts.push([x - r, y - r], [x + r, y + r]);
+      pts.push([x - r, y - r], [x + r, y + r]); hit++;
     }
-    for (const m of svg.matchAll(/<rect[^>]*x="(-?[\d.]+)" y="(-?[\d.]+)" width="(-?[\d.]+)" height="(-?[\d.]+)"/g)) {
+    for (const m of svg.matchAll(/<rect[^>]*x="(-?[\d.]+)" y="(-?[\d.]+)" width="(-?[\d.]+)" height="(-?[\d.]+)"([^>]*)/g)) {
       const [x, y, w, h] = [+m[1], +m[2], +m[3], +m[4]];
-      pts.push([x, y], [x + w, y + h]);
+      const rot = /rotate\((-?[\d.]+)/.exec(m[5]);
+      if (rot) {
+        // 阻力垫是绕中心旋转的，按未旋转的四角算会漏掉转出去的那两个角
+        const t = (+rot[1]) * Math.PI / 180, cx = x + w / 2, cy = y + h / 2;
+        for (const [dx, dy] of [[-w / 2, -h / 2], [w / 2, -h / 2], [w / 2, h / 2], [-w / 2, h / 2]])
+          pts.push([cx + dx * Math.cos(t) - dy * Math.sin(t), cy + dx * Math.sin(t) + dy * Math.cos(t)]);
+      } else pts.push([x, y], [x + w, y + h]);
+      hit++;
     }
-    for (const m of svg.matchAll(/<polygon[^>]*points="([^"]+)"/g))
+    for (const m of svg.matchAll(/<polygon[^>]*points="([^"]+)"/g)) {
       for (const pair of m[1].trim().split(/\s+/)) { const [x, y] = pair.split(',').map(Number); pts.push([x, y]); }
+      hit++;
+    }
+    // 按类对账：解析命中数必须等于产物里的几何元素总数。
+    // 只断言「扫到的点数 > 某个下限」挡不住静默漏解析——把 seg() 的属性顺序换成
+    // y1 x1 y2 x2（画的位置毫无变化），1077 条线里 817 条解析不到，点数下限照样通过。
+    const total = (svg.match(/<(line|circle|rect|polygon)\b/g) ?? []).length;
+    assert.equal(hit, total, `产物里 ${total} 个几何元素，只解析到 ${hit} 个——正则与产物脱节了`);
+    // 出现没见过的几何标签也要报：把头从 circle 换成 ellipse 再挪出框 300px，按类对账仍会放行
+    const unknown = svg.match(/<(path|ellipse|polyline|image|use)\b/g);
+    assert.equal(unknown, null, `产物里出现未纳入扫描的几何元素 ${unknown?.join(',')}`);
     return pts;
   };
-  let scanned = 0;
+  let scanned = 0, frames = 0;
   for (const [slug, f] of Object.entries(figures)) {
-    for (const key of [f.start, f.end]) {
-      if (!key || !POSES[key]) continue;
-      // 和产物同一套参数：strip、name、loadType、按画出来的手臂算的框
-      const p = f.no_load ? { ...POSES[key], load: undefined } : POSES[key];
-      const plumb = f.plumb !== false && !f.no_load;
-      const arm = drawnArm(key, p, f.load_type);
-      const box = contentBox(p, { plumb, loadType: f.load_type, arm });
-      const svg = renderPose(p, { name: key, plumb, box, loadType: f.load_type });
-      const pts = pointsOf(svg);
-      assert.ok(pts.length > 0, `${slug}/${key}: 产物里一个坐标都没解析到`);
-      for (const [x, y] of pts) {
-        assert.ok(x >= box.x - 1 && x <= box.x + box.w + 1, `${slug}/${key}: x=${x} 落在 viewBox 外`);
-        assert.ok(y >= box.y - 1 && y <= box.y + box.h + 1, `${slug}/${key}: y=${y} 落在 viewBox 外`);
+    // 照 build 的口径渲染：带 prime（158 条 sk-muscle 段）和 caption（104 个标题）
+    const html = renderSkeleton(f, slug, primeOf.get(slug) ?? [], slug);
+    for (const m of html.matchAll(/viewBox="([-0-9. ]+)"[^>]*class="sk-frame[^"]*"[\s\S]*?<\/svg>/g)) {
+      const [bx, by, bw, bh] = m[1].split(' ').map(Number);
+      for (const [x, y] of pointsOf(m[0])) {
+        assert.ok(x >= bx - 1 && x <= bx + bw + 1, `${slug}: x=${x} 落在 viewBox 外`);
+        assert.ok(y >= by - 1 && y <= by + bh + 1, `${slug}: y=${y} 落在 viewBox 外`);
+        scanned++;
       }
-      scanned += pts.length;
+      frames++;
     }
   }
-  // 解析不到就「通过」是假的通过
-  assert.ok(scanned > 2000, `只扫到 ${scanned} 个坐标，产物解析大概率漏了`);
+  assert.equal(frames, 104, `应扫 104 张帧，实际 ${frames}`);
+  assert.ok(scanned > 4000, `只扫到 ${scanned} 个坐标`);
 });
 
 test('分区定义不与肌肉词表脱节', () => {

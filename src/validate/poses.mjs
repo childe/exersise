@@ -640,7 +640,9 @@ export function validateRackSide() {
  * SVG 就把超出的部分裁掉——实测 49 个动画里 20 个被裁，下拉最多 23px、弯举 13.5px。
  * renderSkeleton 按 16 等分采样算动画框，这里用 24 等分复查。注意独立性只剩采样密度：
  * 两端现在共用 drawnArm/armSidePlan/blendArm，手臂模型本身错了会一起错。
- * 真正独立的口径是「从产物文本回读坐标比 viewBox」，见 tests/poses.test.mjs 的产物扫描。
+ * tests/poses.test.mjs 的产物扫描独立的是**元素几何**（器械半宽、头半径这类建模分歧），
+ * 不是**关节模型**——它的框同样出自 drawnArm，手臂整体平移 60px 它也不报。
+ * 关节模型那一侧由 validateJointAngles 等关节角断言兜底。
  */
 export function validateAnimBox(figures, box4Of) {
   const errors = [];
