@@ -8,7 +8,7 @@ import { POSES, RAW_POSES, FORESHORTENED_ARM, GROUND, MIDFOOT, FIG_W, FIG_H, dra
 import { interpolate } from '../render/interp.mjs';
 import { armDescriptor, blendArm } from '../assets/anim.js';
 import { rebuildArmFor, OUT_OF_PLANE_ARM } from '../render/arm.mjs';
-import { facing } from '../render/facing.mjs';
+import { facing, FACE_GEOMETRY } from '../render/facing.mjs';
 
 const JOINTS = ['head', 'shoulder', 'elbow', 'wrist', 'hip', 'knee', 'ankle', 'heel', 'toe'];
 
@@ -507,6 +507,12 @@ export function validateDrawnAnimation(figures, { steps = 24 } = {}) {
         if (e < ELBOW_MIN) errors.push(`${at}: 画出的肘角 ${e.toFixed(1)}° 低于解剖下限 ${ELBOW_MIN}°`
           + '——前臂折回贴在上臂上。两端静态帧合格不代表中间帧合格，扫掠方向可能绕错边');
       }
+      // 肘角上限：手钉在器械上、投影骨长又够不到时，手臂会被拉成一条直线——
+      // 推举动画曾有 14/25 帧肘角钉在 178°，而同一手位用真骨解只有 137°。
+      const eMax = Math.max(deg(dA.E, A.shoulder, dA.H), deg(dB.E, B.shoulder, dB.H));
+      if (deg(arm.E, p.shoulder, arm.H) > eMax + 5)
+        errors.push(`${at}: 画出的肘角 ${deg(arm.E, p.shoulder, arm.H).toFixed(1)}° 超过两端最大值 ${eMax.toFixed(1)}°`
+          + '——手够不到器械时被拉直了，应放长投影到真骨为止，而不是把骨头拉长');
       // 器械不许撞进头里：静态终点帧早有这条断言，动画里复发过（下拉把手离头心 12.2px）
       // 只豁免**画在身体之后**的负荷（架在后颈的杠/带被头挡住，贴着是对的）。
       // 原来按 loadAnchor 豁免：下拉为了稳住把手把锚点改成了 shoulder，
@@ -615,6 +621,35 @@ export function validateCoronal() {
       const dx = Math.abs((p[a][0] + p[b][0]) / 2 - mid), dy = Math.abs(p[a][1] - p[b][1]);
       if (dx > 2 || dy > 1) errors.push(`${name}: ${a}/${b} 不是左右镜像（中线偏 ${dx.toFixed(1)}、高差 ${dy.toFixed(1)}）`);
     }
+  }
+  return errors;
+}
+
+/**
+ * 画出来的肢体不得穿过头颅。
+ *
+ * 肘与手是实心圆（r=3.2 / 4），上臂与前臂是 6px 宽的线。它们落进头圆里就是「肘长在脸上」。
+ * 这条缺口让两处错误连着两轮漏网：引体顶部的肘心离头心 3.4px、杠铃前架位 5.3px，
+ * 两者都是「只改了手、没重解肘」或「把肘抬过了头」的后果，而当时所有断言查的都是
+ * 负荷与头的距离，没有一条查肢体。
+ */
+const FACE_LEVEL_ARM = new Set(['face_pull_end']);   // 「从脸前拉」的既定画法
+export function validateLimbVsHead(figures) {
+  const errors = [];
+  const lt = new Map();
+  for (const f of Object.values(figures)) {
+    if (!f.load_type) continue;
+    for (const k of ['start', 'end']) if (f[k]) lt.set(f[k], f.load_type);
+  }
+  const R = FACE_GEOMETRY.HEAD_R;
+  for (const [name, p] of Object.entries(POSES)) {
+    if (!p.head || !p.shoulder || FACE_LEVEL_ARM.has(name)) continue;
+    const d = drawnArm(name, p, lt.get(name));
+    // 只查肘。手本来就会靠近脸——前架位的手托在锁骨前、引体顶部的手与头同高，
+    // 那是动作本身；而肘落进头圆里没有任何动作能解释。
+    const dist = Math.hypot(d.E[0] - p.head[0], d.E[1] - p.head[1]);
+    if (dist < R + 3.2) errors.push(`${name}: 画出的肘离头心 ${dist.toFixed(1)}px，`
+      + `小于头半径 ${R} + 肘半径 3.2——肘画进脸里了`);
   }
   return errors;
 }

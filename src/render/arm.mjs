@@ -150,6 +150,8 @@ export const ARM_OVERRIDES = {
   // 引体顶部：肘在后下方（cue「肘往下往后拉」）。链上的肘够不到这个方向——
   // 手钉在杠上、肩在杠下 18px，50+39 的链只能把肘甩到身体前上方。
   pullup_top: { elbowDir: [-0.6, 0.8], foreshorten: 0.32 },
+  // 反向划船终点同样「肘往后下方拉」
+  inverted_row_end: { elbowDir: [-0.5, 0.87] },
   // 下拉终点：肘朝下、手在锁骨前。肘投影太长的话前臂要跨过去就超真长。
   pulldown_end: { foreshorten: 0.3 },
   // 高脚杯：手托在哑铃上端，肘指向地面。握点被哑铃定死，走等分投影。
@@ -157,7 +159,9 @@ export const ARM_OVERRIDES = {
   goblet_bottom: { equalSplit: true },
   // 杠铃前架位搬运同理：原来上臂固定 25、剩下的全给前臂，前臂只剩 6.6px，
   // 肘圆与手圆直接相交，cue 的「肘抬起形成平台」在图上读不出来。
-  carry_front: { equalSplit: true, elbowUp: true, targetDeg: 100 },
+  // 「肘抬起形成平台」= 上臂大致水平前指，侧视里肘与杠齐高、明显在前；
+  // 不是把肘抬到下巴以上（头心离杠只有 16px，再高上臂线就横穿头颅）。
+  carry_front: { equalSplit: true, targetDeg: 130 },
 };
 
 /** 按姿态名取覆盖参数再重建。renderPose 与校验都该走这个入口，保证画的和查的一致。 */

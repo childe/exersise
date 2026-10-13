@@ -10,6 +10,7 @@
 const REP = 4.2;                       // 一次完整起落的秒数
 import { ik2 } from '../render/interp.mjs';
 const ARM_TAU = Math.PI * 2;
+const ARM_TRUE_UPPER = 50, ARM_TRUE_FORE = 39;   // 与 BONE 一致：投影不可能超过真骨
 // 最短弧：跨 ±π 时走近路
 const armAngMix = (a, b, t) => { let d = b - a; while (d > Math.PI) d -= ARM_TAU; while (d < -Math.PI) d += ARM_TAU; return a + d * t; };
 const armPolar = (base, a, l) => [base[0] + Math.cos(a) * l, base[1] + Math.sin(a) * l];
@@ -42,11 +43,21 @@ export function blendArm(a, b, u, p) {
   if (!(anc && a.grip && b.grip)) {
     return { E: guess, H: armPolar(guess, armAngMix(a.hAng, b.hAng, u), hLen) };
   }
-  const H = [anc[0] + a.grip[0] + (b.grip[0] - a.grip[0]) * u,
-             anc[1] + a.grip[1] + (b.grip[1] - a.grip[1]) * u];
+  let H = [anc[0] + a.grip[0] + (b.grip[0] - a.grip[0]) * u,
+           anc[1] + a.grip[1] + (b.grip[1] - a.grip[1]) * u];
   const d = Math.hypot(H[0] - p.shoulder[0], H[1] - p.shoulder[1]);
   let l1 = eLen, l2 = hLen;
-  if (d > l1 + l2) { const k = d / (l1 + l2) * 1.0001; l1 *= k; l2 *= k; }
+  if (d > l1 + l2) {
+    // 够不到器械，说明这一帧的手臂没那么「斜指画面外」——投影该放长，上限是真骨。
+    // 原来按比例放大到**正好等于 d**：那和刚好伸直是一回事，推举动画因此有 14/25 帧
+    // 肘角钉在 178°（同一手位用真骨解只有 137°），前臂还涨到 39.9 > 真骨 39。
+    l1 = ARM_TRUE_UPPER; l2 = ARM_TRUE_FORE;
+    if (d > l1 + l2) {
+      // 连真骨都够不到：把手拉回可达集，而不是把骨头拉长
+      const k = (l1 + l2) / d * 0.9999;
+      H = [p.shoulder[0] + (H[0] - p.shoulder[0]) * k, p.shoulder[1] + (H[1] - p.shoulder[1]) * k];
+    }
+  }
   return { E: ik2(p.shoulder, H, l1, l2, guess), H };
 }
 

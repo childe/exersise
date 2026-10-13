@@ -15,7 +15,7 @@ import { validatePoses, validateFigures as validatePoseFigures, validateMuscles,
   validateFrameConsistency, validateJointAngles, validateContacts, validateStraightLines,
   validateFixedRigs, validateBarOnChest, validateSecondHand, validateKneeStable,
   validateDrawnAnimation, validateRackSide, validateAnimBox, validateHeldLoad,
-  validateCoronal } from './validate/poses.mjs';
+  validateCoronal, validateLimbVsHead } from './validate/poses.mjs';
 import { MUSCLE_NAMES } from './render/muscles.mjs';
 import { escapeHtml } from './render/claims.mjs';
 
@@ -92,6 +92,8 @@ export async function build(root = defaultRoot, { outDir } = {}) {
   if (handErrs.length) throw new Error(`远侧负荷校验失败:\n- ${handErrs.join('\n- ')}`);
   const kneeErrs = validateKneeStable();
   if (kneeErrs.length) throw new Error(`RDL 膝角校验失败:\n- ${kneeErrs.join('\n- ')}`);
+  const limbHeadErrs = validateLimbVsHead(data.poseFigures);
+  if (limbHeadErrs.length) throw new Error(`肢体与头部重叠校验失败:\n- ${limbHeadErrs.join('\n- ')}`);
   const coronalErrs = validateCoronal();
   if (coronalErrs.length) throw new Error(`冠状面校验失败:\n- ${coronalErrs.join('\n- ')}`);
   const heldErrs = validateHeldLoad(data.poseFigures);

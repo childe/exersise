@@ -1,5 +1,5 @@
 // 出平面手臂的重建与主动肌标注。两者都只影响画法，不改姿态数据本身。
-import { rebuildArmFor, OUT_OF_PLANE_ARM } from './arm.mjs';
+import { rebuildArmFor, OUT_OF_PLANE_ARM, ARM_OVERRIDES } from './arm.mjs';
 import { MUSCLE_SEG } from './muscle-segments.mjs';
 import { renderFace, facing, PRONE_POSES, FACE_GEOMETRY } from './facing.mjs';
 // 循环依赖：interp 需要 POSES/GROUND/MIDFOOT，这里只在 renderSkeleton 运行时调 interpolate，
@@ -1144,7 +1144,13 @@ export function drawnArm(name, p, loadType) {
     // 投影再长也不能超过真骨（50 / 39），够不到就成一条接近伸直的手臂——悬垂正是如此。
     const L = d / Math.sqrt(2 * (1 - Math.cos(FIXED_TARGET)));
     const u = Math.min(L, BONE.upper_arm), f = Math.min(L, BONE.forearm);
-    const hint = p.elbow ?? [p.shoulder[0], p.shoulder[1] + 40];
+    // 选边提示必须是**姿态声明的肘朝向**，不能用链上的肘：链够不到后下方
+    // （这正是 ARM_OVERRIDES.elbowDir 存在的理由），拿它当提示会选到镜像的那一支，
+    // 引体顶部的肘因此翻到肩的上前方、整个埋进头圆里（肘心离头心 3.4px）。
+    const dirHint = ARM_OVERRIDES[name]?.elbowDir;
+    const hint = dirHint
+      ? [p.shoulder[0] + dirHint[0] * 40, p.shoulder[1] + dirHint[1] * 40]
+      : (p.elbow ?? [p.shoulder[0], p.shoulder[1] + 40]);
     return { E: ik2Local(p.shoulder, H, u, f, hint), H, rebuilt: true };
   }
   // 器械类型由 figures.json 覆盖时（高脚杯深蹲借用前蹲姿态但拿的是哑铃），
