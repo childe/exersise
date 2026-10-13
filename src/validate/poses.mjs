@@ -651,9 +651,14 @@ export function validateAnimBox(figures, box4Of) {
     const strip = (p) => (f.no_load ? { ...p, load: undefined } : p);
     const A = strip(POSES[f.start]), B = strip(POSES[f.end]);
     const plumb = f.plumb !== false && !f.no_load;
+    // 和 renderSkeleton 一样按画出来的手臂算——它画的是 blendArm，不是链上的 elbow/wrist
+    const dA = drawnArm(f.start, A, f.load_type), dB = drawnArm(f.end, B, f.load_type);
+    const a = armDescriptor(dA, A), b = armDescriptor(dB, B);
+    const iopts = { plumb: f.plumb, handPath: !!f.hand_path };
+    const plan = armSidePlan(a, b, A, B, dA, dB, interpolate, iopts);
     for (let i = 0; i <= 24; i++) {
       const q = interpolate(A, B, i / 24, { plumb: f.plumb, handPath: !!f.hand_path });
-      const c = contentBox(q, { plumb, loadType: f.load_type });
+      const c = contentBox(q, { plumb, loadType: f.load_type, arm: blendArm(a, b, i / 24, q, plan) });
       const over = Math.max(x0 - c.x, y0 - c.y, (c.x + c.w) - x1, (c.y + c.h) - y1);
       if (over > 1.5) {
         errors.push(`${slug} t=${(i / 24).toFixed(2)}: 内容超出动画框 ${over.toFixed(1)}px，会被 viewBox 裁掉`);
@@ -800,7 +805,7 @@ export function validateMuscleOnBone(figures, exercises) {
   // 量「离最近的骨头」会放过真错位——侧平举手臂抬平时肩线与上臂几乎共线，
   // 把中束起点错设成 shoulderMid（16px）离正确上臂只有 0.58px，照样通过。
   const boned = (svg, cls) => [...svg.matchAll(new RegExp(
-    `class="${cls}[^"]*" data-bone="([a-z-]+)" x1="([-0-9.]+)" y1="([-0-9.]+)" x2="([-0-9.]+)" y2="([-0-9.]+)"`, 'g'))]
+    `class="${cls}[^"]*" data-bone="([^"]+)" x1="([-0-9.]+)" y1="([-0-9.]+)" x2="([-0-9.]+)" y2="([-0-9.]+)"`, 'g'))]
     .map((m) => [m[1], [+m[2], +m[3]], [+m[4], +m[5]]]);
   let checked = 0, expected = 0;
   for (const [slug, f] of Object.entries(figures)) {
@@ -808,7 +813,9 @@ export function validateMuscleOnBone(figures, exercises) {
     if (!prime.length) continue;
     for (const key of [f.start, f.end]) {
       if (!key || !POSES[key]) continue;
-      const svg = renderPose(POSES[key], { name: key, prime, loadType: f.load_type });
+      // 和产物同一条路径：renderSkeleton 对 no_load 先摘负荷再画
+      const pose = f.no_load ? { ...POSES[key], load: undefined } : POSES[key];
+      const svg = renderPose(pose, { name: key, prime, loadType: f.load_type });
       const bones = new Map();
       for (const [bone, a, b] of [...boned(svg, 'sk-trunk'), ...boned(svg, 'sk-limb')]) bones.set(bone, [a, b]);
       if (!bones.size) { errors.push(`${slug}/${key}: 渲染产物里一根骨头都没解析到`); continue; }
@@ -825,9 +832,11 @@ export function validateMuscleOnBone(figures, exercises) {
       }
     }
   }
-  // 一条肌肉段都没量到就「通过」是假的通过——这个文件里已经栽过一次无声空转。
-  if (expected > 0 && checked === 0) {
-    throw new Error(`validateMuscleOnBone 空转：MUSCLE_SEG 给出 ${expected} 段，渲染产物里一段都没解析到`);
+  // 必须**全等**，不能只防「一段都没量到」。只防全空时，正则看不懂的骨名（比如将来加
+  // elbow2/shoulderMid 这类带数字或大写的）会让那几段从结果里悄悄消失，checked > 0 照样放行——
+  // 实测同时制造 16px 错位并把骨名改成 shoulder-elbow2，上一版返回 0 条错误。
+  if (checked !== expected) {
+    throw new Error(`validateMuscleOnBone 漏段：MUSCLE_SEG 给出 ${expected} 段，产物里只解析到 ${checked} 段`);
   }
   return errors;
 }

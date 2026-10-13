@@ -5,6 +5,7 @@ import { renderFace, facing, PRONE_POSES, FACE_GEOMETRY } from './facing.mjs';
 // 循环依赖：interp 需要 POSES/GROUND/MIDFOOT，这里只在 renderSkeleton 运行时调 interpolate，
 // 两个模块都求值完毕之后才会用到，函数声明又会提升，所以可以这么引。
 import { interpolate } from './interp.mjs';
+import { armDescriptor, armSidePlan, blendArm } from '../assets/anim.js';
 const HEAD_RADIUS = FACE_GEOMETRY.HEAD_R;
 // 弹力带那一段「被手握住的带子」的半宽。握点钳制用同一个数（arm.mjs 的 BAND_GRIP），
 // 手才正好落在带子上：±9 会把肘角压到 24°，±24 则让手悬在带子外 8px。
@@ -1029,13 +1030,17 @@ export const POSE_NAMES = Object.keys(POSES);
 
 // 固定 200×240 的画布上，人只占中间一小条，缩到卡片宽度后就糊成一团。
 // 按内容算包围盒再留边，同样的显示宽度下人形能大一倍，是可读性最便宜的一次改进。
-export function contentBox(p, { plumb = false, loadType } = {}) {
+export function contentBox(p, { plumb = false, loadType, arm } = {}) {
   // 画框要按**画出来的**器械算：高脚杯深蹲借用前蹲姿态，按杠铃的半宽 42 留位，
   // 框比实际内容宽 27%，人形被挤小。
   if (loadType && p.load) p = { ...p, load: { ...p.load, type: loadType } };
   const xs = [], ys = [];
   const add = (pt) => { if (pt) { xs.push(pt[0]); ys.push(pt[1]); } };
-  for (const k of ['head','shoulder','elbow','wrist','hip','knee','ankle','heel','toe',
+  // 画框要按**画出来的**肘手算。链上的 p.elbow/p.wrist 不是画出来的那一对：
+  // 出平面手臂走 rebuildArm、手钉在器械上时肘由 IK 解出，引体顶端两者差 60.9px。
+  // 目前余量够（实测最近边 31.5px），但那是 padX/器械半宽凑出来的，不是算对了。
+  if (arm) { add(arm.E); add(arm.H); }
+  for (const k of ['head','shoulder',...(arm ? [] : ['elbow','wrist']),'hip','knee','ankle','heel','toe',
                    'shoulder2','elbow2','wrist2','knee2','ankle2','heel2','toe2']) add(p[k]);
   if (p.load) {
     const [x, y] = p.load.at;
@@ -1303,8 +1308,11 @@ export function renderSkeleton(fig, nameZh, prime = [], slug = '') {
   const a = strip(POSES[fig.start]);
   const b = strip(POSES[fig.end ?? fig.start]);
   const plumb = fig.plumb !== false && !fig.no_load;
-  const boxes = [contentBox(a, { plumb, loadType: fig.load_type })];
-  if (b && b !== a) boxes.push(contentBox(b, { plumb, loadType: fig.load_type }));
+  const lt = fig.load_type;
+  const dA = drawnArm(fig.start, a, lt);
+  const dB = b && b !== a ? drawnArm(fig.end, b, lt) : dA;
+  const boxes = [contentBox(a, { plumb, loadType: lt, arm: dA })];
+  if (b && b !== a) boxes.push(contentBox(b, { plumb, loadType: lt, arm: dB }));
   const x0 = Math.min(...boxes.map((x) => x.x));
   const y0 = Math.min(...boxes.map((x) => x.y));
   const x1 = Math.max(...boxes.map((x) => x.x + x.w));
@@ -1316,11 +1324,15 @@ export function renderSkeleton(fig, nameZh, prime = [], slug = '') {
   let animBox = box;
   if (fig.end && fig.end !== fig.start) {
     const ab = [box];
+    // 中间帧也按画出来的手臂算：动画里画的是 blendArm，不是链上的肘手。
+    const da = armDescriptor(dA, a), db = armDescriptor(dB, b);
+    const iopts = { plumb: fig.plumb, handPath: !!fig.hand_path };
+    const plan = armSidePlan(da, db, a, b, dA, dB, interpolate, iopts);
     // i 取到 16（含）：补间的 t=1 与静态结束帧可以差一两像素（俯撑家族末帧还要绕支点转一下），
     // 只并静态帧会把这点差额漏掉。
     for (let i = 1; i <= 16; i++) {
       const q = interpolate(a, b, i / 16, { plumb: fig.plumb, handPath: !!fig.hand_path });
-      ab.push(contentBox(q, { plumb, loadType: fig.load_type }));
+      ab.push(contentBox(q, { plumb, loadType: lt, arm: blendArm(da, db, i / 16, q, plan) }));
     }
     const ax0 = Math.min(...ab.map((x) => x.x)), ay0 = Math.min(...ab.map((x) => x.y));
     const ax1 = Math.max(...ab.map((x) => x.x + x.w)), ay1 = Math.max(...ab.map((x) => x.y + x.h));
