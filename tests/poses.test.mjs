@@ -176,12 +176,15 @@ test('每张图画出来的东西都落在它自己的 viewBox 内', async () =>
     }
     for (const m of svg.matchAll(/<rect[^>]*x="(-?[\d.]+)" y="(-?[\d.]+)" width="(-?[\d.]+)" height="(-?[\d.]+)"([^>]*)/g)) {
       const [x, y, w, h] = [+m[1], +m[2], +m[3], +m[4]];
-      const rot = /rotate\((-?[\d.]+)/.exec(m[5]);
+      const rot = /rotate\((-?[\d.]+)[\s,]+(-?[\d.]+)[\s,]+(-?[\d.]+)\)/.exec(m[5]);
       if (rot) {
-        // 阻力垫是绕中心旋转的，按未旋转的四角算会漏掉转出去的那两个角
-        const t = (+rot[1]) * Math.PI / 180, cx = x + w / 2, cy = y + h / 2;
-        for (const [dx, dy] of [[-w / 2, -h / 2], [w / 2, -h / 2], [w / 2, h / 2], [-w / 2, h / 2]])
+        // 阻力垫按未旋转的四角算会漏掉转出去的那两个角。pivot 从 transform 里读，
+        // 不要假定它等于矩形中心——今天 sk-pad 恰好相等，换个元素就不是了。
+        const t = (+rot[1]) * Math.PI / 180, cx = +rot[2], cy = +rot[3];
+        for (const [qx, qy] of [[x, y], [x + w, y], [x + w, y + h], [x, y + h]]) {
+          const dx = qx - cx, dy = qy - cy;
           pts.push([cx + dx * Math.cos(t) - dy * Math.sin(t), cy + dx * Math.sin(t) + dy * Math.cos(t)]);
+        }
       } else pts.push([x, y], [x + w, y + h]);
       hit++;
     }
@@ -189,14 +192,23 @@ test('每张图画出来的东西都落在它自己的 viewBox 内', async () =>
       for (const pair of m[1].trim().split(/\s+/)) { const [x, y] = pair.split(',').map(Number); pts.push([x, y]); }
       hit++;
     }
+    // 帧标题也是画出来的东西。它过去一个点都没被扫到，而 <text> 既不在解析器里
+    // 也不在禁用名单里——「有个没扫的标签」连报都不会报。
+    for (const m of svg.matchAll(/<text[^>]*x="(-?[\d.]+)" y="(-?[\d.]+)"/g)) { pts.push([+m[1], +m[2]]); hit++; }
     // 按类对账：解析命中数必须等于产物里的几何元素总数。
     // 只断言「扫到的点数 > 某个下限」挡不住静默漏解析——把 seg() 的属性顺序换成
     // y1 x1 y2 x2（画的位置毫无变化），1077 条线里 817 条解析不到，点数下限照样通过。
-    const total = (svg.match(/<(line|circle|rect|polygon)\b/g) ?? []).length;
+    const total = (svg.match(/<(line|circle|rect|polygon|text)\b/g) ?? []).length;
     assert.equal(hit, total, `产物里 ${total} 个几何元素，只解析到 ${hit} 个——正则与产物脱节了`);
-    // 出现没见过的几何标签也要报：把头从 circle 换成 ellipse 再挪出框 300px，按类对账仍会放行
-    const unknown = svg.match(/<(path|ellipse|polyline|image|use)\b/g);
-    assert.equal(unknown, null, `产物里出现未纳入扫描的几何元素 ${unknown?.join(',')}`);
+    // 标签必须是白名单：黑名单挡不住没想到的标签。把头从 circle 换成 ellipse（曾放行）、
+    // 或换成一个挪出框 300px 的 <text>（也曾放行），白名单都会立刻报。
+    const DRAWN = new Set(['svg', 'g', 'line', 'circle', 'rect', 'polygon', 'text']);
+    for (const m of svg.matchAll(/<([a-z]+)\b/g))
+      assert.ok(DRAWN.has(m[1]), `产物里出现未纳入扫描的元素 <${m[1]}>`);
+    // transform 同样是白名单：只允许绕自身中心的 rotate。translate 被忽略的话，
+    // 元素可以整个平移出框而扫描毫无反应（实测给 sk-bench 加 translate(0,300) 放行）。
+    for (const m of svg.matchAll(/transform="([^"]+)"/g))
+      assert.match(m[1], /^rotate\(-?[\d.]+ -?[\d.]+ -?[\d.]+\)$/, `只允许 rotate(a cx cy)，见到 ${m[1]}`);
     return pts;
   };
   let scanned = 0, frames = 0;
@@ -205,7 +217,14 @@ test('每张图画出来的东西都落在它自己的 viewBox 内', async () =>
     const html = renderSkeleton(f, slug, primeOf.get(slug) ?? [], slug);
     for (const m of html.matchAll(/viewBox="([-0-9. ]+)"[^>]*class="sk-frame[^"]*"[\s\S]*?<\/svg>/g)) {
       const [bx, by, bw, bh] = m[1].split(' ').map(Number);
-      for (const [x, y] of pointsOf(m[0])) {
+      const pts = pointsOf(m[0]);
+      // 「该画的东西被整类删掉」对账看不见——hit 与 total 一起减，恒等成立。
+      // 实测把 sk-head / sk-foot / sk-bench / sk-bar 整类删掉，全仓 241 条测试无一报警。
+      // 所以这里逐帧查该出现的 class：骨架件永远要有，器械件按这一帧真画了什么推导。
+      for (const c of ['sk-trunk', 'sk-limb', 'sk-foot', 'sk-head', 'sk-ground', 'sk-caption'])
+        assert.ok(m[0].includes(`"${c}`) || m[0].includes(` ${c}`), `${slug}: 这一帧没有 ${c}`);
+      assert.ok(pts.length >= 20, `${slug}: 这一帧只有 ${pts.length} 个点，画空了`);
+      for (const [x, y] of pts) {
         assert.ok(x >= bx - 1 && x <= bx + bw + 1, `${slug}: x=${x} 落在 viewBox 外`);
         assert.ok(y >= by - 1 && y <= by + bh + 1, `${slug}: y=${y} 落在 viewBox 外`);
         scanned++;
@@ -213,8 +232,11 @@ test('每张图画出来的东西都落在它自己的 viewBox 内', async () =>
       frames++;
     }
   }
-  assert.equal(frames, 104, `应扫 104 张帧，实际 ${frames}`);
-  assert.ok(scanned > 4000, `只扫到 ${scanned} 个坐标`);
+  // 帧数由 figures 自己推导，不写死 104——写死的数字在正常增删动作时误报，
+  // 而「把数字改大」这个动作没有任何信息量，正是会被当橡皮图章盖掉的那种断言。
+  const expect = Object.values(figures)
+    .reduce((n, f) => n + (f.end && f.end !== f.start ? 2 : 1), 0);
+  assert.equal(frames, expect, `${expect} 张帧里只扫到 ${frames}——有帧没被正则捞到`);
 });
 
 test('分区定义不与肌肉词表脱节', () => {
