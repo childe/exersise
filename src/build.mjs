@@ -16,7 +16,7 @@ import { validatePoses, validateFigures as validatePoseFigures, validateMuscles,
   validateFixedRigs, validateBarOnChest, validateSecondHand, validateKneeStable,
   validateDrawnAnimation, validateRackSide, validateAnimBox, validateHeldLoad,
   validateCoronal, validateLimbVsHead, validateAnimEndpoints,
-  validateArmFixedToTorso } from './validate/poses.mjs';
+  validateArmFixedToTorso, validateMuscleOnBone } from './validate/poses.mjs';
 import { MUSCLE_NAMES } from './render/muscles.mjs';
 import { escapeHtml } from './render/claims.mjs';
 
@@ -101,6 +101,8 @@ export async function build(root = defaultRoot, { outDir } = {}) {
   if (heldErrs.length) throw new Error(`手持器械校验失败:\n- ${heldErrs.join('\n- ')}`);
   const rackErrs = validateRackSide();
   if (rackErrs.length) throw new Error(`架位校验失败:\n- ${rackErrs.join('\n- ')}`);
+  const muscleBoneErrs = validateMuscleOnBone(data.poseFigures, data.exercises);
+  if (muscleBoneErrs.length) throw new Error(`主动肌标注校验失败:\n- ${muscleBoneErrs.join('\n- ')}`);
   const armFixErrs = validateArmFixedToTorso();
   if (armFixErrs.length) throw new Error(`抱胸手臂校验失败:\n- ${armFixErrs.join('\n- ')}`);
   const endErrs = validateAnimEndpoints(data.poseFigures);

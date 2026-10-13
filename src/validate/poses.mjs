@@ -4,11 +4,13 @@
 // 前提是它必须可核验——而可核验的意思不是"我看了一眼觉得对"，是**写成断言、构建期跑**。
 // 这个文件就是那个前提。断言失败 = 构建失败，画错的图进不了页面。
 
+import { renderPose } from '../render/skeleton.mjs';
 import { POSES, RAW_POSES, FORESHORTENED_ARM, GROUND, MIDFOOT, FIG_W, FIG_H, drawnArm, contentBox, torsoCoords, RACKED_POSES, BEHIND_POSES, BAND_HALF, BENCH_GAP } from '../render/skeleton.mjs';
 import { interpolate } from '../render/interp.mjs';
 import { armDescriptor, blendArm, armSidePlan } from '../assets/anim.js';
 import { rebuildArmFor, OUT_OF_PLANE_ARM } from '../render/arm.mjs';
 import { facing, FACE_GEOMETRY } from '../render/facing.mjs';
+import { MUSCLE_SEG } from '../render/muscle-segments.mjs';
 
 const JOINTS = ['head', 'shoulder', 'elbow', 'wrist', 'hip', 'knee', 'ankle', 'heel', 'toe'];
 
@@ -771,6 +773,55 @@ export function validateArmFixedToTorso() {
       const d = Math.hypot(oa[0] - ob[0], oa[1] - ob[1]);
       if (d > 2) errors.push(`${a}/${b}: 画出的${label}在躯干系里两帧差 ${d.toFixed(2)}px——cue 要求手臂贴着躯干不动`);
     }
+  }
+  return errors;
+}
+
+/**
+ * 主动肌的高亮段必须落在**画出来的**骨头上。
+ *
+ * 契约 §6 说「主动肌标注画在骨头上」，但一直没有断言。躯干改用两肩中点作顶端之后，
+ * 肌肉段的 shoulder 端还取近侧肩，正视图里「核心」那条斜着偏出躯干线 11.2px，
+ * 画出来是一道独立斜条而不是骨头上的荧光笔。
+ *
+ * 这条断言必须从**渲染产物**里读两类线段再比对：用姿态对象重算一遍是同义反复
+ * （肌肉段本来就定义成那两个关节的插值点，对着同一组关节量永远是 0）。
+ */
+export function validateMuscleOnBone(figures, exercises) {
+  const errors = [];
+  const primeOf = new Map((exercises ?? []).map((e) => [e.slug, e.muscles?.prime ?? []]));
+  if (primeOf.size === 0) throw new Error('validateMuscleOnBone 需要 exercises 才能拿到 prime');
+  const segDist = (pt, a, b) => {
+    const vx = b[0] - a[0], vy = b[1] - a[1], L2 = vx * vx + vy * vy || 1;
+    const t = Math.max(0, Math.min(1, ((pt[0] - a[0]) * vx + (pt[1] - a[1]) * vy) / L2));
+    return Math.hypot(pt[0] - (a[0] + vx * t), pt[1] - (a[1] + vy * t));
+  };
+  const lines = (svg, cls) => [...svg.matchAll(
+    new RegExp(`class="${cls}[^"]*" x1="([-0-9.]+)" y1="([-0-9.]+)" x2="([-0-9.]+)" y2="([-0-9.]+)"`, 'g'))]
+    .map((m) => [[+m[1], +m[2]], [+m[3], +m[4]]]);
+  let checked = 0, expected = 0;
+  for (const [slug, f] of Object.entries(figures)) {
+    const prime = primeOf.get(slug) ?? [];
+    if (!prime.length) continue;
+    for (const key of [f.start, f.end]) {
+      if (!key || !POSES[key]) continue;
+      const svg = renderPose(POSES[key], { name: key, prime, loadType: f.load_type });
+      const bones = [...lines(svg, 'sk-trunk'), ...lines(svg, 'sk-limb'), ...lines(svg, 'sk-neck')];
+      if (!bones.length) { errors.push(`${slug}/${key}: 渲染产物里一根骨头都没解析到`); continue; }
+      expected += prime.reduce((n, m) => n + (MUSCLE_SEG[m]?.length ?? 0), 0);
+      for (const [ma, mb] of lines(svg, 'sk-muscle')) {
+        checked++;
+        // 高亮段的两端都要贴在某一根画出来的骨头上
+        for (const [pt, which] of [[ma, '起点'], [mb, '终点']]) {
+          const best = Math.min(...bones.map(([a, b]) => segDist(pt, a, b)));
+          if (best > 2) errors.push(`${slug}/${key}: 肌肉段${which}离最近的骨头 ${best.toFixed(1)}px——没画在骨头上`);
+        }
+      }
+    }
+  }
+  // 一条肌肉段都没量到就「通过」是假的通过——这个文件里已经栽过一次无声空转。
+  if (expected > 0 && checked === 0) {
+    throw new Error(`validateMuscleOnBone 空转：MUSCLE_SEG 给出 ${expected} 段，渲染产物里一段都没解析到`);
   }
   return errors;
 }

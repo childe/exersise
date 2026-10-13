@@ -1216,16 +1216,23 @@ export function renderPose(p, opts = {}) {
   }
   g.push(fixed(p.fixed));
 
+  // 躯干顶端：正视图是两肩中点，侧视图就是肩。躯干线、颈线、肌肉段都以它为准。
+  const trunkTop = p.shoulderMid ?? p.shoulder;
   // 主动肌：骨架之下的一层"荧光笔"。火柴人没有体积，肌肉只能标在它附着的骨头上，
   // 所以 MUSCLE_SEG 把每块肌肉映射成某根骨头的一段（比例区间）。
   if (prime.length) {
+    // 肩这个端点有两种含义，必须分开：躯干段（肩→髋）画的是 shoulderMid→hip，
+    // 而手臂段（肩→肘）画的是真正的近侧肩。一律用 trunkTop 会让正视图的三角肌段
+    // 离手臂 9.6px；一律用 p.shoulder 会让核心段斜着偏出躯干线 11.2px。
     const J = { shoulder: p.shoulder, hip: p.hip, knee: p.knee, ankle: p.ankle,
                 elbow: ELBOW, wrist: HAND };
+    const originFor = (a, b) => (a === 'shoulder' && b === 'hip' ? trunkTop : J[a]);
     const at = (a, b, t) => [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t];
     for (const m of prime) {
       for (const [a, b, t0, t1] of MUSCLE_SEG[m] ?? []) {
         if (!J[a] || !J[b]) continue;
-        g.push(seg(at(J[a], J[b], t0), at(J[a], J[b], t1), 'sk-muscle'));
+        const A = originFor(a, b), B = J[b];
+        g.push(seg(at(A, B, t0), at(A, B, t1), 'sk-muscle'));
       }
     }
   }
@@ -1251,7 +1258,6 @@ export function renderPose(p, opts = {}) {
   }
 
   // 躯干与近侧肢体
-  const trunkTop = p.shoulderMid ?? p.shoulder;
   g.push(seg(trunkTop, p.hip, 'sk-trunk'));
   if (p.shoulderMid && p.shoulder2) g.push(seg(p.shoulder, p.shoulder2, 'sk-trunk'));
   g.push(seg(p.hip, p.knee));
