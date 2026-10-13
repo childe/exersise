@@ -19,7 +19,7 @@ const PLUMB_TOL = 6;
 // 这些姿态是站姿且持械，杠线断言对它们生效
 const STANDING_LOADED = new Set([
   'squat_bottom', 'squat_top', 'squat_front_bottom', 'squat_front_top',
-  'squat_lowbar_top', 'squat_lowbar_bottom',
+  'squat_lowbar_top', 'squat_lowbar_bottom', 'goblet_top', 'goblet_bottom',
   'hinge_bottom', 'hinge_top', 'rdl_bottom',
   'ohp_bottom', 'ohp_top',
   'carry_stance', 'carry_front', 'carry_overhead',
@@ -27,7 +27,8 @@ const STANDING_LOADED = new Set([
 ]);
 
 // 这些姿态要求髋低于膝（蹲到位）
-const DEPTH_REQUIRED = new Set(['squat_bottom', 'squat_front_bottom', 'squat_lowbar_bottom', 'squat_bw_bottom', 'squat_dbfront_bottom']);
+// 名字必须真实存在于 POSES，否则这条保护是空的（曾经有个 'squat_dbfront_bottom' 从来没命中过）
+const DEPTH_REQUIRED = new Set(['squat_bottom', 'squat_front_bottom', 'squat_lowbar_bottom', 'squat_bw_bottom', 'goblet_bottom']);
 
 export function validatePoses() {
   const errors = [];
@@ -518,7 +519,7 @@ export function validateDrawnAnimation(figures, { steps = 24 } = {}) {
  * 这类错误用肉眼看侧视图很难察觉（杠就在肩附近），但它把动作讲反了。
  */
 const BACK_RACK = new Set(['squat_top', 'squat_bottom', 'squat_lowbar_top', 'squat_lowbar_bottom', 'gm_top', 'gm_bottom']);
-const FRONT_RACK = new Set(['squat_front_top', 'squat_front_bottom', 'carry_front']);
+const FRONT_RACK = new Set(['squat_front_top', 'squat_front_bottom', 'goblet_top', 'goblet_bottom', 'carry_front']);
 export function validateRackSide() {
   const errors = [];
   // 同一动作两帧的躯干系偏移必须一致：杠压在同一块肌肉上，不会在背上滑。

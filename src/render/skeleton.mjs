@@ -17,7 +17,16 @@ export const BAND_HALF = 17;
  */
 export const RACKED_POSES = new Set([
   'squat_top', 'squat_bottom', 'squat_lowbar_top', 'squat_lowbar_bottom',
-  'squat_front_top', 'squat_front_bottom', 'carry_front', 'gm_top', 'gm_bottom',
+  'squat_front_top', 'squat_front_bottom', 'goblet_top', 'goblet_bottom',
+  'carry_front', 'gm_top', 'gm_bottom',
+]);
+
+/**
+ * 其中**画在身体之后**的那几个：杠压在后颈/后三角上，或带子绕过后颈，侧视里被身体挡住。
+ * 前架位（锁骨前）虽然也架在身上，但它在身体**前面**，画在身后就成了「杠从背后穿过来」。
+ */
+export const BEHIND_POSES = new Set([
+  'squat_top', 'squat_bottom', 'squat_lowbar_top', 'squat_lowbar_bottom', 'gm_top', 'gm_bottom',
 ]);   // 头圆半径：画、贴地判定与断言共用同一个数
 
 // 动作骨架示意图。
@@ -73,6 +82,21 @@ export const POSES = {
     // 大腿上翘 39°，躯干与大腿几乎共线——那正是「早安式深蹲」这个错误本身。
     hip: [41.8, 167], knee: [100, 152], ankle: [80, 216], heel: [72, 225], toe: [108, 225],
     load: { type: 'bar', at: [90.9, 106.5] },   // 躯干系 (−8, −5)，与顶部同值
+  }),
+
+  // 高脚杯深蹲用自己的一对姿态：哑铃抱在**胸前**（躯干系 −18，即肩下 18px 的胸骨中段），
+  // 而不是前架位的锁骨高度。原来它与哑铃前蹲共用一对姿态，哑铃中心落在肩之上 2px，
+  // 对哑铃前蹲（「靠住肩与锁骨之间」）是对的，对高脚杯（「抱在胸前贴住躯干」）差 22.9px——
+  // 正是契约 §7 要防的「两个动作共用一对姿态，只有一个成立」。
+  goblet_top: P({
+    head: [98, 32], shoulder: [86, 50], elbow: [99, 74], wrist: [92, 54],
+    hip: [82, 110], knee: [84, 150], ankle: [80, 216], heel: [72, 225], toe: [108, 225],
+    load: { type: 'hands', at: [90.8, 68.4] },
+  }),
+  goblet_bottom: P({
+    head: [100, 70], shoulder: [88, 88], elbow: [103, 111], wrist: [96, 92],
+    hip: [54, 172], knee: [114, 167], ankle: [80, 216], heel: [72, 225], toe: [108, 225],
+    load: { type: 'hands', at: [86.8, 106.9] },
   }),
 
   // 自重深蹲用自己的一套手臂：两臂前伸配重。
@@ -639,6 +663,7 @@ const BONE = {
 const LOAD_ANCHOR = {
   squat_bottom: 'shoulder', squat_top: 'shoulder',
   squat_front_bottom: 'shoulder', squat_front_top: 'shoulder',
+  goblet_top: 'shoulder', goblet_bottom: 'shoulder',
   squat_lowbar_top: 'shoulder', squat_lowbar_bottom: 'shoulder',
   bench_top: 'shoulder', bench_bottom: 'shoulder',   // 杠的位置不该随手臂归一化漂走
   incline_top: 'shoulder', incline_bottom: 'shoulder',
@@ -845,7 +870,7 @@ function normalize(name, p) {
 // 现在脚不动，躯干角是解出来的，断言「杠偏离足中线 ≤6」才真的在查东西。
 const PLUMB_SOLVED = new Set([
   'squat_bottom', 'squat_top', 'squat_front_bottom', 'squat_front_top',
-  'squat_lowbar_top', 'squat_lowbar_bottom',
+  'squat_lowbar_top', 'squat_lowbar_bottom', 'goblet_top', 'goblet_bottom',
   'hinge_bottom', 'hinge_top', 'rdl_bottom', 'gm_top', 'gm_bottom',
   'ohp_bottom', 'ohp_top',
   'carry_stance', 'carry_front', 'carry_overhead',
@@ -1126,7 +1151,7 @@ export function renderPose(p, opts = {}) {
   // 画在身体之后还是之前，取决于负荷**架在身上还是握在手里**，不是取决于它画成什么形状。
   // 按类型枚举的后果：figures.json 的 load_type 覆盖会悄悄改变前后关系——
   // 高脚杯深蹲把 front 覆盖成 hands，哑铃就从头后翻到头前，矩形盖在下巴上。
-  const barBehind = LD && (RACKED_POSES.has(name) || ['sled', 'plate'].includes(LD.type));
+  const barBehind = LD && (BEHIND_POSES.has(name) || ['sled', 'plate'].includes(LD.type));
   if (barBehind) g.push(load(LD));
 
   // 远侧肢体先画（浅一档），形成前后关系

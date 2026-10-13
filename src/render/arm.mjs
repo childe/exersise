@@ -99,7 +99,7 @@ export function rebuildArm(p, opts = {}) {
  */
 export const OUT_OF_PLANE_ARM = new Set([
   'squat_top', 'squat_bottom',
-  'squat_front_top', 'squat_front_bottom',
+  'squat_front_top', 'squat_front_bottom', 'goblet_top', 'goblet_bottom',
   'squat_lowbar_top', 'squat_lowbar_bottom',
   'carry_front', 'ohp_bottom', 'seated_press_bottom',
   // 卧推底部：肘向两侧张开，上臂指向读者；引体顶部：握距比肩宽，肘在后下方。
