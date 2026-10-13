@@ -306,17 +306,18 @@ export const POSES = {
   }),
   // 下拉：坐姿，负荷在上
   pulldown_start: P({
-    head: [84, 104], shoulder: [86, 120], elbow: [84.8, 70], wrist: [104, 36],
+    // 躯干略后倾（cue 原文）：原来肩在髋的朝向侧 2.8px，画出来是前倾 2°。
+    head: [76, 104], shoulder: [78, 120], elbow: [76.8, 70], wrist: [96, 36],
     hip: [84, 178], knee: [130, 184], ankle: [158, 216], heel: [154, 225], toe: [174, 221],
     bench: [60, 186, 44, 8],
     // 把手在头前：横杆从脸前拉到锁骨前，不是从头颅里穿过去
-    load: { type: 'handle', at: [106, 30] },
+    load: { type: 'handle', at: [100, 30] },
   }),
   pulldown_end: P({
     // 终点把手在锁骨前（肩前 10、下 5），不是中胸——cue 与判据都写「拉到锁骨前」。
     // 把手贴到锁骨之后，肩到手只剩约 11px，50+39 的手臂在矢状面内必然折成发卡；
     // 真实下拉的握距比肩宽、肘向两侧下方走，侧视本就是出平面，所以登记进 OUT_OF_PLANE_ARM 重建。
-    head: [84, 104], shoulder: [86, 120], elbow: [86, 170], wrist: [110, 160],
+    head: [76, 104], shoulder: [78, 120], elbow: [78, 170], wrist: [102, 160],
     hip: [84, 178], knee: [130, 184], ankle: [158, 216], heel: [154, 225], toe: [174, 221],
     bench: [60, 186, 44, 8],
     load: { type: 'handle', at: [106, 125] },
@@ -404,6 +405,9 @@ export const POSES = {
     hip: [84, 116], knee: [84, 152], ankle: [82, 216], heel: [72, 225], toe: [108, 225],
     load: { type: 'hands', at: [84, 140] },
   }),
+  // 顶峰肘角 36.3°，确实贴着 35° 下限——但这是弯举顶峰该有的样子：
+  // 真人完全屈肘时上臂与前臂的夹角本来就在 30–40°，把手再往外挪只会让它看起来没拉到顶。
+  // （第四轮的提交信息写成「抬到 45°」是错的，实际只从 35.1° 抬到 36.3°。）
   curl_up: P({
     head: [98, 40], shoulder: [86, 58], elbow: [84, 96], wrist: [102, 74],
     hip: [84, 116], knee: [84, 152], ankle: [82, 216], heel: [72, 225], toe: [108, 225],
@@ -506,25 +510,25 @@ export const POSES = {
   }),
   machine_press_start: P({
     head: [76, 106], shoulder: [86, 124], elbow: [66, 142], wrist: [92, 140],
-    hip: [84, 180], knee: [128, 186], ankle: [158, 210], heel: [154, 218], toe: [174, 214],
+    hip: [84, 180], knee: [128, 186], ankle: [158, 214], heel: [154, 225], toe: [174, 225],
     bench: [60, 188, 44, 8],
     load: { type: 'handle', at: [98, 140] },
   }),
   machine_press_end: P({
     head: [76, 106], shoulder: [86, 124], elbow: [112, 136], wrist: [142, 140],
-    hip: [84, 180], knee: [128, 186], ankle: [158, 210], heel: [154, 218], toe: [174, 214],
+    hip: [84, 180], knee: [128, 186], ankle: [158, 214], heel: [154, 225], toe: [174, 225],
     bench: [60, 188, 44, 8],
     load: { type: 'handle', at: [148, 140] },
   }),
   seated_press_bottom: P({
     head: [80, 70], shoulder: [86, 90], elbow: [110, 100], wrist: [100, 86],
-    hip: [84, 150], knee: [126, 158], ankle: [156, 216], heel: [152, 225], toe: [172, 221],
+    hip: [84, 150], knee: [126, 158], ankle: [156, 216], heel: [152, 225], toe: [172, 225],
     bench: [62, 158, 42, 8],
     load: { type: 'hands', at: [104, 82] },
   }),
   seated_press_top: P({
     head: [80, 76], shoulder: [86, 92], elbow: [86, 70], wrist: [88, 46],
-    hip: [84, 150], knee: [126, 158], ankle: [156, 216], heel: [152, 225], toe: [172, 221],
+    hip: [84, 150], knee: [126, 158], ankle: [156, 216], heel: [152, 225], toe: [172, 225],
     bench: [62, 158, 42, 8],
     load: { type: 'hands', at: [88, 38] },
   }),
