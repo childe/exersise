@@ -141,15 +141,17 @@ test('关节角校验通过', () => {
 });
 
 test('新增的超限肘角会让构建失败——棘轮只锁现状，不接纳新债', () => {
-  const saved = POSES.pulldown_end;
+  // 用矢状面内的姿态做靶子：出平面的那些（含现在的 pulldown_end）走投影重建，
+  // 改原始 wrist 不会改变画出来的肘角，拿它们试探等于什么都没试。
+  const saved = POSES.curl_up;
   // 把手腕拉到肩旁边，制造一个折叠的肘
-  POSES.pulldown_end = { ...saved, wrist: [saved.shoulder[0] + 1, saved.shoulder[1] + 1] };
+  POSES.curl_up = { ...saved, wrist: [saved.shoulder[0] + 1, saved.shoulder[1] + 1] };
   try {
     const errs = validateJointAngles();
-    assert.ok(errs.some((e) => e.includes('pulldown_end') && e.includes('低于解剖下限')),
+    assert.ok(errs.some((e) => e.includes('curl_up') && e.includes('低于解剖下限')),
       `应当报出肘角超限，实际: ${errs.join(' | ')}`);
   } finally {
-    POSES.pulldown_end = saved;
+    POSES.curl_up = saved;
   }
 });
 

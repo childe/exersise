@@ -14,7 +14,7 @@ import { scanSafety, scanSafetyReview } from './validate/safety.mjs';
 import { validatePoses, validateFigures as validatePoseFigures, validateMuscles,
   validateFrameConsistency, validateJointAngles, validateContacts, validateStraightLines,
   validateFixedRigs, validateBarOnChest, validateSecondHand, validateKneeStable,
-  validateDrawnAnimation, validateRackSide } from './validate/poses.mjs';
+  validateDrawnAnimation, validateRackSide, validateAnimBox } from './validate/poses.mjs';
 import { MUSCLE_NAMES } from './render/muscles.mjs';
 import { escapeHtml } from './render/claims.mjs';
 
@@ -106,10 +106,20 @@ export async function build(root = defaultRoot) {
     safetyCanon: data.safetyCanon,
     poseFigures: data.poseFigures,
   };
+  const exerciseHtml = renderExercises(data.exercises, renderCtx);
+  // 从**渲染产物**里把框读回来，而不是在校验器里重算一遍——重算等于同义反复。
+  const animBoxes = new Map();
+  for (const m of exerciseHtml.matchAll(/data-anim="([^"]*)"/g)) {
+    const cfg = JSON.parse(m[1].replace(/&quot;/g, '"').replace(/&amp;/g, '&'));
+    if (cfg.slug) animBoxes.set(cfg.slug, cfg.box);
+  }
+  if (animBoxes.size === 0) throw new Error('动画框校验：一个 data-anim 都没解析到，断言会静默放行');
+  const animBoxErrs = validateAnimBox(data.poseFigures, (slug) => animBoxes.get(slug) ?? null);
+  if (animBoxErrs.length) throw new Error(`动画框校验失败:\n- ${animBoxErrs.join('\n- ')}`);
   const html = renderPage(data, {
     css, js, animJs,
     chapterHtml: renderChapters(loaded, renderCtx),
-    exerciseHtml: renderExercises(data.exercises, renderCtx),
+    exerciseHtml,
     planHtml: renderPlans(data.plans, renderCtx),
     claimHtml: renderClaimRegistry(data.claims),
     quizHtml: renderQuiz(data.quiz, renderCtx),

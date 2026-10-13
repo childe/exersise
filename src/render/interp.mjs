@@ -27,7 +27,7 @@ const from = (base, a, l) => [base[0] + Math.cos(a) * l, base[1] + Math.sin(a) *
  * 两骨 IK：肩 S、手 H 已定，求肘。l1/l2 是上臂/前臂长，near 用来在两个镜像解里选边。
  * 握在固定杠上的姿态用它：手钉在杠上、肩由身体决定，肘是解出来的，不是插出来的。
  */
-function ik2(S, H, l1, l2, near) {
+export function ik2(S, H, l1, l2, near) {
   const dx = H[0]-S[0], dy = H[1]-S[1], d = Math.hypot(dx, dy) || 1e-6;
   const dc = Math.min(Math.max(d, Math.abs(l1-l2) + 1e-6), l1 + l2 - 1e-6);
   const a = (l1*l1 - l2*l2 + dc*dc) / (2*dc), h = Math.sqrt(Math.max(0, l1*l1 - a*a));
@@ -157,6 +157,25 @@ export function interpolate(A, B, t, opts = {}) {
     const pa = A[p] ?? A.shoulder, pb = B[p] ?? B.shoulder, pn = q[p] ?? q.shoulder;
     // 手臂的投影长度在两端之间插值（出平面/指向读者的手臂两端投影不同）；腿与躯干两端等长，插值等于取 A
     q[c] = from(pn, alerp(ang(pa,A[c]), ang(pb,B[c]), t), lerp(len(pa,A[c]), len(pb,B[c]), t));
+  }
+  // 坐姿器械：身体被凳子固定，动的是把手。把手走的是器械定的一条路径，
+  // 所以直接插值手的位置、再用 IK 解肘——而不是插值两段的极角。
+  // 插极角会出事：下拉的上臂极角两端差 210°，alerp 取最短弧就从头顶往**身后**扫，
+  // 与前臂在中途重合，肘角折到 4.4°、把手撞进头里，而两端静态帧都合格。
+  if (opts.handPath && A.wrist && B.wrist && A.elbow && B.elbow) {
+    const rel = (p) => [p.wrist[0] - p.shoulder[0], p.wrist[1] - p.shoulder[1]];
+    const ra = rel(A), rb = rel(B);
+    q.wrist = [q.shoulder[0] + lerp(ra[0], rb[0], t), q.shoulder[1] + lerp(ra[1], rb[1], t)];
+    q.elbow = ik2(q.shoulder, q.wrist,
+      lerp(len(A.shoulder, A.elbow), len(B.shoulder, B.elbow), t),
+      lerp(len(A.elbow, A.wrist), len(B.elbow, B.wrist), t),
+      lerp2(A.elbow, B.elbow, t));
+    if (A.wrist2 && B.wrist2 && A.elbow2 && B.elbow2) {
+      const s2 = q.shoulder2 ?? q.shoulder, a2 = A.shoulder2 ?? A.shoulder, b2 = B.shoulder2 ?? B.shoulder;
+      q.wrist2 = [s2[0] + lerp(A.wrist2[0]-a2[0], B.wrist2[0]-b2[0], t), s2[1] + lerp(A.wrist2[1]-a2[1], B.wrist2[1]-b2[1], t)];
+      q.elbow2 = ik2(s2, q.wrist2, lerp(len(a2,A.elbow2), len(b2,B.elbow2), t),
+        lerp(len(A.elbow2,A.wrist2), len(B.elbow2,B.wrist2), t), lerp2(A.elbow2, B.elbow2, t));
+    }
   }
   // 俯撑家族（手与脚尖/膝都在地上）：手臂与身体各自插值后手会离地几像素。
   // 真实动作是身体绕脚尖/膝这个支点转动、手始终按在地上，所以这里对整条链

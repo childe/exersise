@@ -4,7 +4,7 @@
 // 前提是它必须可核验——而可核验的意思不是"我看了一眼觉得对"，是**写成断言、构建期跑**。
 // 这个文件就是那个前提。断言失败 = 构建失败，画错的图进不了页面。
 
-import { POSES, RAW_POSES, FORESHORTENED_ARM, GROUND, MIDFOOT, FIG_W, FIG_H, drawnArm } from '../render/skeleton.mjs';
+import { POSES, RAW_POSES, FORESHORTENED_ARM, GROUND, MIDFOOT, FIG_W, FIG_H, drawnArm, contentBox } from '../render/skeleton.mjs';
 import { interpolate } from '../render/interp.mjs';
 import { armDescriptor, blendArm } from '../assets/anim.js';
 import { rebuildArmFor, OUT_OF_PLANE_ARM } from '../render/arm.mjs';
@@ -415,6 +415,7 @@ export function validateKneeStable() {
  * 这条断言把那个修复钉住：以后谁改回去，构建就红。
  */
 const HELD_LOAD = new Set(['bar', 'front', 'hands', 'hands2', 'handle', 'band']);
+const HEAD_CLEAR = 16;   // 头半径 12 + 把手半高 4
 export function validateDrawnAnimation(figures, { steps = 24 } = {}) {
   const errors = [];
   const L = (a, b) => Math.hypot(a[0] - b[0], a[1] - b[1]);
@@ -434,13 +435,25 @@ export function validateDrawnAnimation(figures, { steps = 24 } = {}) {
     const handGrounded = onGround(A) && onGround(B);
     for (let i = 0; i <= steps; i++) {
       const u = i / steps;
-      const p = interpolate(A, B, u, { plumb: f.plumb });
+      const p = interpolate(A, B, u, { plumb: f.plumb, handPath: !!f.hand_path });
       const arm = blendArm(a, b, u, p) ?? { E: p.elbow, H: p.wrist };
       const at = `${slug} t=${u.toFixed(2)}`;
       if (L(p.shoulder, arm.E) > upMax + 1)
         errors.push(`${at}: 画出的上臂 ${L(p.shoulder, arm.E).toFixed(1)} 超出两端最大值 ${upMax.toFixed(1)}`);
-      if (L(arm.E, arm.H) > foreMax + 9)
-        errors.push(`${at}: 画出的前臂 ${L(arm.E, arm.H).toFixed(1)} 超出两端最大值 ${foreMax.toFixed(1)} 逾 9px`);
+      if (L(arm.E, arm.H) > foreMax + 1)
+        errors.push(`${at}: 画出的前臂 ${L(arm.E, arm.H).toFixed(1)} 超出两端最大值 ${foreMax.toFixed(1)}`
+          + '——投影不可能长于真骨，手钉在器械上时肘必须由 IK 解出，不能独立插值');
+      // 肘角：矢状面手臂逐帧都要像条胳膊。下拉曾在 t=0.8 折到 4.4°——
+      // 上臂极角走最短弧从头顶扫到身后，与前臂在中途重合，而两端静态帧都合格。
+      if (!a.rebuilt && !b.rebuilt && !FORESHORTENED_ARM.has(f.start) && !FORESHORTENED_ARM.has(f.end)) {
+        const e = deg(arm.E, p.shoulder, arm.H);
+        if (e < ELBOW_MIN) errors.push(`${at}: 画出的肘角 ${e.toFixed(1)}° 低于解剖下限 ${ELBOW_MIN}°`
+          + '——前臂折回贴在上臂上。两端静态帧合格不代表中间帧合格，扫掠方向可能绕错边');
+      }
+      // 器械不许撞进头里：静态终点帧早有这条断言，动画里复发过（下拉把手离头心 12.2px）
+      // 架在肩上的杠本来就贴着后颈（画在身体之后），这条只查手里拿着、会从脸前经过的器械
+      if (handMax !== null && A.loadAnchor !== 'shoulder' && p.load && p.head && L(p.load.at, p.head) < HEAD_CLEAR)
+        errors.push(`${at}: 器械离头心 ${L(p.load.at, p.head).toFixed(1)}px，小于 ${HEAD_CLEAR}（头半径 + 器械半高）`);
       if (handMax !== null && p.load && L(arm.H, p.load.at) > handMax + 1)
         errors.push(`${at}: 画出的手离器械 ${L(arm.H, p.load.at).toFixed(1)}px（两端只有 ${handMax.toFixed(1)}）——手脱离了负荷`);
       if (handGrounded && Math.abs(arm.H[1] - GROUND) > 4)
@@ -468,6 +481,37 @@ export function validateRackSide() {
       errors.push(`${name}: 背部架位的杠却在躯干线前方 ${d.toFixed(1)}px——图注说「杠更靠后」，图画的是更靠前`);
     if (FRONT_RACK.has(name) && d < 1)
       errors.push(`${name}: 前部架位的杠却在躯干线后方 ${(-d).toFixed(1)}px`);
+  }
+  return errors;
+}
+
+/**
+ * 动画格的 viewBox 必须装得下全程，不只是两个端点。
+ *
+ * 中间帧的肢体会摆到两端点连线之外（弧在弦之外），用两张静态图的并集当 viewBox，
+ * SVG 就把超出的部分裁掉——实测 49 个动画里 20 个被裁，下拉最多 23px、弯举 13.5px。
+ * renderSkeleton 现在按 8 等分采样算动画框；这里用 24 等分复查，不是同义反复。
+ */
+export function validateAnimBox(figures, box4Of) {
+  const errors = [];
+  for (const [slug, f] of Object.entries(figures)) {
+    if (!f.end || f.end === f.start) continue;
+    if (!POSES[f.start] || !POSES[f.end]) continue;
+    const bx = box4Of(slug);
+    if (!bx) continue;
+    const [x0, y0, w, h] = bx, x1 = x0 + w, y1 = y0 + h;
+    const strip = (p) => (f.no_load ? { ...p, load: undefined } : p);
+    const A = strip(POSES[f.start]), B = strip(POSES[f.end]);
+    const plumb = f.plumb !== false && !f.no_load;
+    for (let i = 0; i <= 24; i++) {
+      const q = interpolate(A, B, i / 24, { plumb: f.plumb, handPath: !!f.hand_path });
+      const c = contentBox(q, { plumb });
+      const over = Math.max(x0 - c.x, y0 - c.y, (c.x + c.w) - x1, (c.y + c.h) - y1);
+      if (over > 1.5) {
+        errors.push(`${slug} t=${(i / 24).toFixed(2)}: 内容超出动画框 ${over.toFixed(1)}px，会被 viewBox 裁掉`);
+        break;
+      }
+    }
   }
   return errors;
 }

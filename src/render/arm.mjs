@@ -63,7 +63,8 @@ export function rebuildArm(p, opts = {}) {
   // 握点不能压到杠片上，否则读不出那是只手。钳制后肘角会略变，由下面的断言兜底。
   // 握点外推是为杠铃设计的（握距比肩宽，沿杠线外移）。哑铃只有 18px 宽，手就在哑铃中心。
   // 弹力带那一段带子半宽 16（BAND_HALF），走杠铃的 ±24 会让手悬在带子外；±9 把肘角压到 24°。
-  const gm = (bar.type === 'hands' || bar.type === 'hands2') ? 9 : bar.type === 'band' ? BAND_GRIP : gripMax;
+  const gm = (bar.type === 'hands' || bar.type === 'hands2') ? 9
+    : bar.type === 'band' ? BAND_GRIP : bar.type === 'handle' ? 10 : gripMax;   // 把手只有 20 宽
   H[0] = Math.max(bar.at[0] - gm, Math.min(bar.at[0] + gm, H[0]));
   const ang = (c, a, b) => {
     const ux = a[0]-c[0], uy = a[1]-c[1], vx = b[0]-c[0], vy = b[1]-c[1];
@@ -93,6 +94,8 @@ export const OUT_OF_PLANE_ARM = new Set([
   // 卧推底部：肘向两侧张开，上臂指向读者；引体顶部：握距比肩宽，肘在后下方。
   // 两者的上臂与前臂在侧视里都投影重叠，和背蹲是同一类。
   'bench_bottom', 'incline_bottom', 'pullup_top', 'inverted_row_end',
+  // 下拉终点：握距比肩宽、肘向两侧下方，把手贴到锁骨时侧视里手几乎落在肩上
+  'pulldown_end',
   // 早安式手扶肩上握带：握距沿 Z 轴展开
   'gm_top', 'gm_bottom',
 ]);

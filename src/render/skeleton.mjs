@@ -2,6 +2,9 @@
 import { rebuildArmFor, OUT_OF_PLANE_ARM } from './arm.mjs';
 import { MUSCLE_SEG } from './muscle-segments.mjs';
 import { renderFace, facing, PRONE_POSES, FACE_GEOMETRY } from './facing.mjs';
+// 循环依赖：interp 需要 POSES/GROUND/MIDFOOT，这里只在 renderSkeleton 运行时调 interpolate，
+// 两个模块都求值完毕之后才会用到，函数声明又会提升，所以可以这么引。
+import { interpolate } from './interp.mjs';
 const HEAD_RADIUS = FACE_GEOMETRY.HEAD_R;
 // 弹力带那一段「被手握住的带子」的半宽。握点钳制用同一个数（arm.mjs 的 BAND_GRIP），
 // 手才正好落在带子上：±9 会把肘角压到 24°，±24 则让手悬在带子外 8px。
@@ -152,7 +155,7 @@ export const POSES = {
     load: { type: 'hands', at: [137.5, 206] },
   }),
   hipthrust_top: P({
-    head: [42, 213], shoulder: [57.7, 219], elbow: [88.3, 179.4], wrist: [127, 185],
+    head: [42, 213], shoulder: [57.7, 219], elbow: [86, 176], wrist: [124, 178],
     hip: [129.2, 183.1], knee: [182.8, 156.2], ankle: [178, 216], heel: [174, 225], toe: [194, 225],
     load: { type: 'hands', at: [129.2, 175] },
   }),
@@ -205,7 +208,7 @@ export const POSES = {
 
   // ── 垂直推 ─────────────────────────────────────────
   ohp_bottom: P({
-    head: [98, 38], shoulder: [86, 56], elbow: [96, 80], wrist: [90, 58],
+    head: [90, 38], shoulder: [86, 56], elbow: [96, 80], wrist: [90, 58],
     hip: [84, 112], knee: [84, 150], ankle: [82, 216], heel: [72, 225], toe: [108, 225],
     load: { type: 'bar', at: [92, 54] },
   }),
@@ -264,10 +267,13 @@ export const POSES = {
     load: { type: 'handle', at: [90, 25] },
   }),
   pulldown_end: P({
-    head: [84, 104], shoulder: [86, 120], elbow: [59, 162], wrist: [96, 150],
+    // 终点把手在锁骨前（肩前 10、下 5），不是中胸——cue 与判据都写「拉到锁骨前」。
+    // 把手贴到锁骨之后，肩到手只剩约 11px，50+39 的手臂在矢状面内必然折成发卡；
+    // 真实下拉的握距比肩宽、肘向两侧下方走，侧视本就是出平面，所以登记进 OUT_OF_PLANE_ARM 重建。
+    head: [84, 104], shoulder: [86, 120], elbow: [86, 170], wrist: [110, 160],
     hip: [84, 178], knee: [130, 184], ankle: [158, 216], heel: [154, 225], toe: [174, 221],
     bench: [60, 186, 44, 8],
-    load: { type: 'handle', at: [100, 146] },
+    load: { type: 'handle', at: [96, 125] },
   }),
 
   // ── 搬运 ───────────────────────────────────────────
@@ -347,9 +353,9 @@ export const POSES = {
     load: { type: 'hands', at: [84, 140] },
   }),
   curl_up: P({
-    head: [98, 40], shoulder: [86, 58], elbow: [84, 96], wrist: [106, 68],
+    head: [98, 40], shoulder: [86, 58], elbow: [84, 96], wrist: [102, 74],
     hip: [84, 116], knee: [84, 152], ankle: [82, 216], heel: [72, 225], toe: [108, 225],
-    load: { type: 'hands', at: [110, 62] },
+    load: { type: 'hands', at: [106, 68] },
   }),
   triceps_top: P({
     head: [98, 40], shoulder: [86, 58], elbow: [88, 92], wrist: [120, 86],
@@ -359,7 +365,7 @@ export const POSES = {
   triceps_bottom: P({
     head: [98, 40], shoulder: [86, 58], elbow: [88, 92], wrist: [92, 128],
     hip: [84, 116], knee: [84, 152], ankle: [82, 216], heel: [72, 225], toe: [108, 225],
-    load: { type: 'handle', at: [96, 142] },
+    load: { type: 'handle', at: [96, 132] },
   }),
   calf_down: P({
     head: [98, 38], shoulder: [86, 56], elbow: [84, 92], wrist: [84, 126],
@@ -398,14 +404,16 @@ export const POSES = {
     bench: [58, 156, 46, 8],
     load: { type: 'pad', at: [160.1, 143.6] },
   }),
+  // 肘不能画进「离地 ≤7」的窗口：那会让 normalize 把肘当成接触点、整副图被下压 5.75px，
+  // 画出来是趴在凳上的人把肘杵在地板上。
   leg_curl_start: P({
-    head: [30, 186], shoulder: [50, 192], elbow: [10, 218], wrist: [-20, 193],
+    head: [30, 186], shoulder: [50, 192], elbow: [12, 210], wrist: [-18, 186],
     hip: [106, 192], knee: [142, 192], ankle: [178, 194], heel: [184, 198], toe: [182, 184],   // 起始腿伸直，脚在凳高
     bench: [26, 196, 104, 9], support: ['shoulder', 'hip', 'knee'],
     load: { type: 'pad', at: [168, 190] },
   }),
   leg_curl_end: P({
-    head: [30, 186], shoulder: [50, 192], elbow: [10, 218], wrist: [-20, 193],
+    head: [30, 186], shoulder: [50, 192], elbow: [12, 210], wrist: [-18, 186],
     hip: [106, 192], knee: [142, 192], ankle: [130, 150], heel: [124, 148], toe: [134, 138],
     bench: [26, 196, 104, 9], support: ['shoulder', 'hip', 'knee'],
     load: { type: 'pad', at: [138, 162] },
@@ -464,13 +472,16 @@ export const POSES = {
     bench: [62, 158, 42, 8],
     load: { type: 'hands', at: [88, 38] },
   }),
+  // 跪姿俯卧撑整副按 BONE 构造：膝是支点，两帧必须落在同一点。
+  // 原来两帧的「膝→髋→肩」跨度 143.6 > 60+80，normalize 够不到就自己改了膝位，
+  // 两帧的膝因此差 2px，动画末帧回不到静态帧。现在跨度取 138（身体接近一条直线）。
   knee_pushup_bottom: P({
-    head: [39.2, 175.7], shoulder: [55.5, 180.4], elbow: [103, 195.9], wrist: [77, 225],
-    hip: [132.3, 202.4], knee: [190, 219], ankle: [246.4, 198.5], heel: [240.4, 194.5], toe: [255.4, 207.5],
+    head: [48.3, 159.4], shoulder: [65, 166.6], elbow: [104.07, 197.86], wrist: [76.95, 225.86],
+    hip: [135.6, 199.6], knee: [190, 225], ankle: [246.4, 204.5], heel: [240.4, 200.5], toe: [255.4, 213.5],
   }),
   knee_pushup_top: P({
-    head: [63.6, 125.9], shoulder: [77.3, 136], elbow: [77, 186], wrist: [77, 225],
-    hip: [141.7, 183.4], knee: [190, 219], ankle: [246.4, 198.5], heel: [240.4, 194.5], toe: [255.4, 207.5],
+    head: [68.4, 128.9], shoulder: [81.7, 139.4], elbow: [91.45, 188.41], wrist: [81.72, 226.21],
+    hip: [142.9, 187.8], knee: [190, 225], ankle: [246.4, 204.5], heel: [240.4, 200.5], toe: [255.4, 213.5],
   }),
   // 单臂划船：原来「一膝跪凳」和「同一条腿的脚踩地」写在同一条腿上——
   // 小腿因此从凳面里穿过去，而远侧腿和撑凳的手根本没画。
@@ -597,6 +608,8 @@ const LOAD_ANCHOR = {
   // 默认跟着手腕走会让它们浮在半空，读起来像个没来由的点。
   leg_extension_down: 'ankle', leg_extension_up: 'ankle',
   leg_curl_start: 'ankle', leg_curl_end: 'ankle',
+  // 把手的位置由器械与身体决定，不该跟着火柴人的手臂长度漂
+  pulldown_start: 'shoulder', pulldown_end: 'shoulder',
   back_extension_down: 'ankle', back_extension_up: 'ankle',
   leg_press_bottom: 'ankle', leg_press_top: 'ankle',
   seated_calf_down: 'knee', seated_calf_up: 'knee',
@@ -1064,7 +1077,7 @@ export function renderPose(p, opts = {}) {
 }
 
 /** 一个动作的两帧（起止位置）。 */
-export function renderSkeleton(fig, nameZh, prime = []) {
+export function renderSkeleton(fig, nameZh, prime = [], slug = '') {
   // 自重动作把模板里的负荷摘掉——照着画一副不存在的杠铃，就是在教错东西
   const strip = (p) => (fig.no_load && p ? { ...p, load: undefined } : p);
   const a = strip(POSES[fig.start]);
@@ -1077,6 +1090,22 @@ export function renderSkeleton(fig, nameZh, prime = []) {
   const x1 = Math.max(...boxes.map((x) => x.x + x.w));
   const y1 = Math.max(...boxes.map((x) => x.y + x.h));
   const box = { x: x0, y: y0, w: x1 - x0, h: y1 - y0 };
+  // 动画格的框不等于两张静态图的并集：中间帧的肢体会摆到两端点之外（弧在弦之外）。
+  // 用静态并集当 viewBox 的结果是中间帧被裁——实测 49 个动画里 20 个被裁，
+  // 下拉最多 23px。所以动画框另算一遍，把若干中间帧也并进去。
+  let animBox = box;
+  if (fig.end && fig.end !== fig.start) {
+    const ab = [box];
+    // i 取到 16（含）：补间的 t=1 与静态结束帧可以差一两像素（俯撑家族末帧还要绕支点转一下），
+    // 只并静态帧会把这点差额漏掉。
+    for (let i = 1; i <= 16; i++) {
+      const q = interpolate(a, b, i / 16, { plumb: fig.plumb, handPath: !!fig.hand_path });
+      ab.push(contentBox(q, { plumb }));
+    }
+    const ax0 = Math.min(...ab.map((x) => x.x)), ay0 = Math.min(...ab.map((x) => x.y));
+    const ax1 = Math.max(...ab.map((x) => x.x + x.w)), ay1 = Math.max(...ab.map((x) => x.y + x.h));
+    animBox = { x: ax0, y: ay0, w: ax1 - ax0, h: ay1 - ay0 };
+  }
   const frame = (p, cap, key) => {
     // 横向姿态（平板、俯卧撑、臀桥、健腹轮）的包围盒宽高比接近 5:1，塞进 168px 的格子里
     // 只剩一条小横线。给宽图一个更宽的格子，不然几何对了也读不出来。
@@ -1090,8 +1119,8 @@ export function renderSkeleton(fig, nameZh, prime = []) {
   // 动画是渐进增强：没有 JS 时这两帧静态图本身就是完整的图示。
   // data-anim 只登记"用哪两个姿态、画在哪个框里"，补间在客户端算。
   const anim = two
-    ? ` data-anim="${escapeAttr(JSON.stringify({ a: fig.start, b: fig.end, plumb,
-        no_load: !!fig.no_load, box: [+box.x.toFixed(1), +box.y.toFixed(1), +box.w.toFixed(1), +box.h.toFixed(1)],
+    ? ` data-anim="${escapeAttr(JSON.stringify({ slug, a: fig.start, b: fig.end, plumb,
+        no_load: !!fig.no_load, handPath: !!fig.hand_path, box: [+animBox.x.toFixed(1), +animBox.y.toFixed(1), +animBox.w.toFixed(1), +animBox.h.toFixed(1)],
         prime, load_type: fig.load_type ?? null }))}"`
     : '';
   return `<figure class="skeleton" data-exercise="${nameZh}"${anim}>`

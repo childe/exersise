@@ -8,6 +8,7 @@
 // 只重绘当前在视口里的那几格；标签页切走时整个停掉。
 
 const REP = 4.2;                       // 一次完整起落的秒数
+import { ik2 } from '../render/interp.mjs';
 const ARM_TAU = Math.PI * 2;
 // 最短弧：跨 ±π 时走近路
 const armAngMix = (a, b, t) => { let d = b - a; while (d > Math.PI) d -= ARM_TAU; while (d < -Math.PI) d += ARM_TAU; return a + d * t; };
@@ -24,15 +25,29 @@ export function armDescriptor(d, p) {
     grip: anc ? [d.H[0] - anc[0], d.H[1] - anc[1]] : null };
 }
 
-/** 两端都在矢状面内 → 回 undefined，让 renderPose 用补间链的 elbow/wrist。 */
+/**
+ * 两端都在矢状面内 → 回 undefined，让 renderPose 用补间链的 elbow/wrist。
+ *
+ * 手钉在器械上之后，肘**不能**再独立按极坐标插值：两者不协调时差额全落在前臂上，
+ * 画出的前臂一度到 47px——而真骨只有 39，投影不可能比实物长。
+ * 改成：手由握点偏移定，肘由两骨 IK 从肩解出，骨长用两端投影长插值。
+ * 够不到时（混合端点：一端重建成 25px 投影、另一端是全长 50）按比例放大两段，
+ * 宁可两段一起略长，也不让其中一段单独超过真长。
+ */
 export function blendArm(a, b, u, p) {
   if (!a.rebuilt && !b.rebuilt) return undefined;
-  const E = armPolar(p.shoulder, armAngMix(a.eAng, b.eAng, u), a.eLen + (b.eLen - a.eLen) * u);
+  const eLen = a.eLen + (b.eLen - a.eLen) * u, hLen = a.hLen + (b.hLen - a.hLen) * u;
+  const guess = armPolar(p.shoulder, armAngMix(a.eAng, b.eAng, u), eLen);
   const anc = p.load?.at ?? p.fixed?.at ?? null;
-  const H = (anc && a.grip && b.grip)
-    ? [anc[0] + a.grip[0] + (b.grip[0] - a.grip[0]) * u, anc[1] + a.grip[1] + (b.grip[1] - a.grip[1]) * u]
-    : armPolar(E, armAngMix(a.hAng, b.hAng, u), a.hLen + (b.hLen - a.hLen) * u);
-  return { E, H };
+  if (!(anc && a.grip && b.grip)) {
+    return { E: guess, H: armPolar(guess, armAngMix(a.hAng, b.hAng, u), hLen) };
+  }
+  const H = [anc[0] + a.grip[0] + (b.grip[0] - a.grip[0]) * u,
+             anc[1] + a.grip[1] + (b.grip[1] - a.grip[1]) * u];
+  const d = Math.hypot(H[0] - p.shoulder[0], H[1] - p.shoulder[1]);
+  let l1 = eLen, l2 = hLen;
+  if (d > l1 + l2) { const k = d / (l1 + l2) * 1.0001; l1 *= k; l2 *= k; }
+  return { E: ik2(p.shoulder, H, l1, l2, guess), H };
 }
 
 const SVG_NS = 'http://www.w3.org/2000/svg';
@@ -82,7 +97,7 @@ export function initSkeletonAnimation({ POSES, interpolate, renderPose, drawnArm
   const draw = (it) => {
     const ph = it.t / REP;
     const u = ease(ph < 0.5 ? ph * 2 : (1 - ph) * 2);
-    const p = interpolate(it.A, it.B, u, { plumb: it.cfg.plumb });
+    const p = interpolate(it.A, it.B, u, { plumb: it.cfg.plumb, handPath: it.cfg.handPath });
     const arm = blendArm(it.armA, it.armB, u, p);
     it.svg.innerHTML = renderPose(p, { plumb: it.cfg.plumb, box: it.box, arm,
       caption: '循环演示', name: it.cfg.a, prime: it.cfg.prime, loadType: it.cfg.load_type ?? undefined });
