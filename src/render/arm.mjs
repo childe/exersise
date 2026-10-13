@@ -145,7 +145,8 @@ export const OUT_OF_PLANE_ARM = new Set([
 export const ARM_OVERRIDES = {
   // 卧推底部：肘在杠正下方，前臂沿朝脸方向竖直到杠（自检判据「前臂接近垂直」）
   bench_bottom: { foreshorten: 0.45, handAlongFacing: true },
-  incline_bottom: { foreshorten: 0.45, handAlongVertical: true },
+  // 上斜底部的触点在胸上段，比平板高：肘要再往下一点，竖直的前臂才有长度可画。
+  incline_bottom: { foreshorten: 0.51, handAlongVertical: true },
   // 引体顶部：肘在后下方（cue「肘往下往后拉」）。链上的肘够不到这个方向——
   // 手钉在杠上、肩在杠下 18px，50+39 的链只能把肘甩到身体前上方。
   pullup_top: { elbowDir: [-0.6, 0.8], foreshorten: 0.32 },
