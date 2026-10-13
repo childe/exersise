@@ -51,7 +51,7 @@ test('朝向与动作本身相符', () => {
     plank: '下',                // 俯撑，面朝地
     pushup_top: '下',           // 俯撑
     leg_curl_start: '下',       // 俯卧腿弯举
-    rollout_start: '左下',      // 俯身跪姿，头在左端
+    rollout_start: '下',        // 跪姿起始躯干水平，脸朝地；头在左端
     seated_calf_down: '右',     // 坐姿，水平朝前
     pullup_hang: '右',          // 悬垂
   };

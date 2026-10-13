@@ -39,7 +39,7 @@ const UPPER         = [['elbow','shoulder'],['wrist','elbow'],['head','shoulder'
  */
 export function interpolate(A, B, t, opts = {}) {
   const { plumb = true } = opts;
-  const q = {};
+  const q = { view: A.view };   // 正视/侧视是姿态属性，丢了 facing() 会按侧视画一只眼
   const grounded = flatOnGround(A) && flatOnGround(B);
   const barOnShoulder = A.load?.anchor === 'shoulder'
     || (A.load && Math.abs(A.load.at[1] - A.shoulder[1]) < 14);
@@ -49,6 +49,11 @@ export function interpolate(A, B, t, opts = {}) {
     // （两端点的脚位若本就不同，那是姿态数据的分歧，不该由补间来抹平。）
     q.ankle = [...A.ankle];
     for (const [c, p] of UP_FROM_ANKLE) q[c] = from(q[p], alerp(ang(A[p],A[c]), ang(B[p],B[c]), t), len(A[p],A[c]));
+    // 远侧腿从髋往下建（两条腿共用一个髋）。原来这一分支只建近侧腿，
+    // 正视图（帕洛夫）的动画帧里远侧腿、远侧脚全部消失。
+    for (const [c, p] of [['knee2','hip'],['ankle2','knee2']]) {
+      if (A[c] && B[c]) q[c] = from(q[p], alerp(ang(A[p],A[c]), ang(B[p],B[c]), t), len(A[p],A[c]));
+    }
   } else {
     q.hip = [lerp(A.hip[0],B.hip[0],t), lerp(A.hip[1],B.hip[1],t)];
     for (const [c, p] of FROM_HIP) { if (A[c] && B[c]) q[c] = from(q[p], alerp(ang(A[p],A[c]), ang(B[p],B[c]), t), len(A[p],A[c])); }
@@ -74,7 +79,10 @@ export function interpolate(A, B, t, opts = {}) {
   for (const [c, p] of UPPER) {
     if (!A[c] || !B[c]) continue;
     const pa = A[p] ?? A.shoulder, pb = B[p] ?? B.shoulder, pn = q[p] ?? q.shoulder;
-    q[c] = from(pn, alerp(ang(pa,A[c]), ang(pb,B[c]), t), len(pa, A[c]));
+    // 手臂的投影长度在两端之间插值。腿与躯干两端等长（归一化保证），插值等于取 A；
+    // 出平面 / 指向读者的手臂两端投影不同，必须随动作变——帕洛夫推出时前臂从 19.7 缩到 11.7。
+    const l = lerp(len(pa, A[c]), len(pb, B[c]), t);
+    q[c] = from(pn, alerp(ang(pa,A[c]), ang(pb,B[c]), t), l);
   }
   for (const [f, src] of [['heel','ankle'],['toe','ankle'],['heel2','ankle2'],['toe2','ankle2']]) {
     if (!A[f] || !B[f] || !q[src]) continue;
@@ -91,11 +99,19 @@ export function interpolate(A, B, t, opts = {}) {
     const anc = A.load.anchor ?? (barOnShoulder ? 'shoulder' : 'wrist');
     const base = q[anc] ?? q.wrist ?? q.shoulder;
     const ba = A[anc] ?? A.wrist ?? A.shoulder, bb = B[anc] ?? B.wrist ?? B.shoulder;
-    q.load = { at: [base[0] + lerp(A.load.at[0]-ba[0], B.load.at[0]-bb[0], t),
+    q.load = { ...A.load, at: [base[0] + lerp(A.load.at[0]-ba[0], B.load.at[0]-bb[0], t),
                     base[1] + lerp(A.load.at[1]-ba[1], B.load.at[1]-bb[1], t)] };
+    // 只回 at 不回 type 的话，load() 按 type 分发会落到 default 返回空串——
+    // 动画里卧推变成空手上下挥、健腹轮没有轮。at2（第二只哑铃）跟着 wrist2 走。
+    if (A.load.at2 && B.load.at2 && q.wrist2 && A.wrist2 && B.wrist2) {
+      q.load.at2 = [q.wrist2[0] + lerp(A.load.at2[0]-A.wrist2[0], B.load.at2[0]-B.wrist2[0], t),
+                    q.wrist2[1] + lerp(A.load.at2[1]-A.wrist2[1], B.load.at2[1]-B.wrist2[1], t)];
+    }
   }
   if (A.bench && B.bench) q.bench = A.bench.map((v,i)=>lerp(v,B.bench[i],t));
-  if (A.fixed && B.fixed) q.fixed = { ...A.fixed, at: [lerp(A.fixed.at[0],B.fixed.at[0],t), lerp(A.fixed.at[1],B.fixed.at[1],t)] };
+  if (A.benchIncline) q.benchIncline = A.benchIncline;   // 凳子不动
+  // 固定物（单杠、低杠）两帧必须相同（validateFixedRigs 断言），这里直接取 A，不插值
+  if (A.fixed) q.fixed = { ...A.fixed, at: [...A.fixed.at] };
   return q;
 }
 
@@ -112,6 +128,15 @@ export function validateInterp(A, B, { steps = 24, plumb = true } = {}) {
       // 永远相等，这条断言会变成装饰。比 B 才能发现两帧骨长本身不一致：
       // 那种情况下动画的末帧对不上原始姿态，而画面上看不出来。
       const got = len(q[j1],q[j2]);
+      const isArm = j1 === 'shoulder' && j2 === 'elbow' || j1 === 'elbow';
+      if (isArm) {
+        // 手臂投影长度允许随动作变，但只能在两端之间单调过渡
+        const la = len(A[j1],A[j2]), lb = len(B[j1],B[j2]);
+        if (got < Math.min(la,lb) - 0.5 || got > Math.max(la,lb) + 0.5) {
+          errs.push(`t=${t.toFixed(2)} ${label}长度 ${got.toFixed(1)} 跑出两端范围 [${Math.min(la,lb).toFixed(1)}, ${Math.max(la,lb).toFixed(1)}]`);
+        }
+        continue;
+      }
       for (const [ref, which] of [[len(A[j1],A[j2]),'起始'], [len(B[j1],B[j2]),'结束']]) {
         if (Math.abs(got-ref)/ref > 0.01) {
           errs.push(`t=${t.toFixed(2)} ${label}骨长与${which}帧不符 ${(Math.abs(got-ref)/ref*100).toFixed(1)}%`

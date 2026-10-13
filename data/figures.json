@@ -57,6 +57,6 @@
   "ab-wheel-rollout":             { "start": "rollout_start", "end": "rollout_end", "cap_start": "起始", "cap_end": "最远点", "plumb": false },
   "barbell-rollout":              { "start": "rollout_start", "end": "rollout_end", "cap_start": "起始", "cap_end": "最远点", "plumb": false },
   "db-dead-bug":                  { "start": "deadbug_start", "end": "deadbug_end", "cap_start": "起始", "cap_end": "对侧伸展", "no_load": true },
-  "band-pallof-press":            { "start": "pallof_in", "end": "pallof_out", "cap_start": "收于胸前", "cap_end": "推出", "plumb": false },
-  "cable-pallof-press":           { "start": "pallof_in", "end": "pallof_out", "cap_start": "收于胸前", "cap_end": "推出", "plumb": false }
+  "band-pallof-press":            { "start": "pallof_in", "end": "pallof_out", "cap_start": "收于胸前", "cap_end": "推出", "plumb": false, "note": "正视图：判据「肩线髋线不转」只有正面看得见。推出的方向朝向读者，正面投影里表现为两肘向中线收，手始终在胸高合握。" },
+  "cable-pallof-press":           { "start": "pallof_in", "end": "pallof_out", "cap_start": "收于胸前", "cap_end": "推出", "plumb": false, "note": "正视图：判据「肩线髋线不转」只有正面看得见。推出的方向朝向读者，正面投影里表现为两肘向中线收，手始终在胸高合握。" }
 }

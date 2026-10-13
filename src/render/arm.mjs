@@ -23,9 +23,10 @@ const MIN_DEG = 40;                 // 钳制后仍须达到的下限
 
 export function rebuildArm(p, opts = {}) {
   const { foreshorten = FORESHORTEN, targetDeg = TARGET_DEG, gripMax = GRIP_MAX } = opts;
-  if (!p.load || !p.shoulder || !p.elbow) return null;
+  const bar = p.load ?? p.fixed;          // 引体的杠是 fixed，不是 load
+  if (!bar || !p.shoulder || !p.elbow) return null;
   const S = [...p.shoulder];
-  const barY = p.load.at[1];
+  const barY = bar.at[1];
 
   // 1. 肘：照抄原始方向，长度按投影缩短
   const d0 = Math.hypot(p.elbow[0] - S[0], p.elbow[1] - S[1]) || 1;
@@ -50,7 +51,7 @@ export function rebuildArm(p, opts = {}) {
   const near = (h) => Math.hypot(h[0] - p.wrist[0], h[1] - p.wrist[1]);
   const H = cands.sort((a, b) => near(a) - near(b))[0];
   // 握点不能压到杠片上，否则读不出那是只手。钳制后肘角会略变，由下面的断言兜底。
-  H[0] = Math.max(p.load.at[0] - gripMax, Math.min(p.load.at[0] + gripMax, H[0]));
+  H[0] = Math.max(bar.at[0] - gripMax, Math.min(bar.at[0] + gripMax, H[0]));
   const ang = (c, a, b) => {
     const ux = a[0]-c[0], uy = a[1]-c[1], vx = b[0]-c[0], vy = b[1]-c[1];
     return Math.acos(Math.max(-1, Math.min(1,
@@ -76,7 +77,24 @@ export const OUT_OF_PLANE_ARM = new Set([
   'squat_front_top', 'squat_front_bottom',
   'squat_lowbar_top', 'squat_lowbar_bottom',
   'carry_front', 'ohp_bottom', 'seated_press_bottom',
+  // 卧推底部：肘向两侧张开，上臂指向读者；引体顶部：握距比肩宽，肘在后下方。
+  // 两者的上臂与前臂在侧视里都投影重叠，和背蹲是同一类。
+  'bench_bottom', 'incline_bottom', 'pullup_top',
 ]);
+
+/**
+ * 个别姿态的重建参数覆盖。卧推底部的上臂几乎正对读者，投影比 85% 还要短得多——
+ * 不缩到 45% 的话，肘离杠太远，解出来的前臂会比全长还长。
+ */
+export const ARM_OVERRIDES = {
+  bench_bottom: { foreshorten: 0.45 },
+  incline_bottom: { foreshorten: 0.45 },
+};
+
+/** 按姿态名取覆盖参数再重建。renderPose 与校验都该走这个入口，保证画的和查的一致。 */
+export function rebuildArmFor(name, p) {
+  return rebuildArm(p, ARM_OVERRIDES[name] ?? {});
+}
 
 /**
  * 注意：手臂的投影长度在一次重复内**本来就会变**，不要对它套帧间一致性断言。
@@ -84,4 +102,4 @@ export const OUT_OF_PLANE_ARM = new Set([
  * 这与腿骨、躯干必须全程等长是两回事——那些始终在矢状面内，长度变化只可能是画错。
  */
 export const needsRebuild = (name, p) =>
-  OUT_OF_PLANE_ARM.has(name) && !!p.load && p.shoulder && p.elbow && p.wrist;
+  OUT_OF_PLANE_ARM.has(name) && !!(p.load ?? p.fixed) && p.shoulder && p.elbow && p.wrist;

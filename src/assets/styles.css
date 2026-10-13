@@ -107,6 +107,8 @@ figure.concept figcaption { color: var(--muted); font-size: 0.88em; }
 .ex-visual figure { margin: 0; }
 
 .skeleton { display: flex; flex-wrap: wrap; gap: 8px; align-items: flex-start; }
+/* 横向姿态的格子放宽，否则 5:1 的图在 168px 里只剩一条线 */
+.sk-frame.sk-wide { width: 100%; max-width: 360px; }
 .skeleton figcaption {
   flex-basis: 100%; font-size: .78rem; color: var(--muted); line-height: 1.5;
 }

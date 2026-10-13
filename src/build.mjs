@@ -12,7 +12,8 @@ import { validateInternalLinks } from './validate/links.mjs';
 import { loadFigures, validateFigures } from './validate/figures.mjs';
 import { scanSafety, scanSafetyReview } from './validate/safety.mjs';
 import { validatePoses, validateFigures as validatePoseFigures, validateMuscles,
-  validateFrameConsistency, validateJointAngles } from './validate/poses.mjs';
+  validateFrameConsistency, validateJointAngles, validateContacts, validateStraightLines,
+  validateFixedRigs, validateBarOnChest } from './validate/poses.mjs';
 import { MUSCLE_NAMES } from './render/muscles.mjs';
 import { escapeHtml } from './render/claims.mjs';
 
@@ -77,6 +78,14 @@ export async function build(root = defaultRoot) {
   if (muscleErrs.length) throw new Error(`肌肉分区校验失败:\n- ${muscleErrs.join('\n- ')}`);
   const angleErrs = validateJointAngles();
   if (angleErrs.length) throw new Error(`关节角校验失败:\n- ${angleErrs.join('\n- ')}`);
+  const contactErrs = validateContacts();
+  if (contactErrs.length) throw new Error(`支撑关系校验失败:\n- ${contactErrs.join('\n- ')}`);
+  const lineErrs = validateStraightLines();
+  if (lineErrs.length) throw new Error(`直线校验失败:\n- ${lineErrs.join('\n- ')}`);
+  const rigErrs = validateFixedRigs(data.poseFigures);
+  if (rigErrs.length) throw new Error(`固定物校验失败:\n- ${rigErrs.join('\n- ')}`);
+  const chestErrs = validateBarOnChest();
+  if (chestErrs.length) throw new Error(`触胸校验失败:\n- ${chestErrs.join('\n- ')}`);
   const renderCtx = {
     claims: new Map(data.claims.map((c) => [c.id, c])),
     exercises: new Map(data.exercises.map((e) => [e.slug, e])),

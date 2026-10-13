@@ -103,7 +103,8 @@ test('握点不压到杠片上——压上去就看不出那是只手', () => {
   const PLATE_INNER = 31 - 7;   // 与 skeleton.mjs 的 load() 保持一致
   for (const name of OUT_OF_PLANE_ARM) {
     const p = POSES[name];
-    const off = Math.abs(rebuildArm(p).hand[0] - p.load.at[0]);
+    const bar = p.load ?? p.fixed;   // 引体的杠是 fixed
+    const off = Math.abs(rebuildArm(p).hand[0] - bar.at[0]);
     assert.ok(off <= PLATE_INNER + 0.01, `${name}: 握点偏移 ${off.toFixed(1)} > ${PLATE_INNER}`);
   }
 });

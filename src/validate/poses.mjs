@@ -4,8 +4,9 @@
 // 前提是它必须可核验——而可核验的意思不是"我看了一眼觉得对"，是**写成断言、构建期跑**。
 // 这个文件就是那个前提。断言失败 = 构建失败，画错的图进不了页面。
 
-import { POSES, GROUND, MIDFOOT, FIG_W, FIG_H } from '../render/skeleton.mjs';
-import { rebuildArm, OUT_OF_PLANE_ARM } from '../render/arm.mjs';
+import { POSES, RAW_POSES, FORESHORTENED_ARM, GROUND, MIDFOOT, FIG_W, FIG_H } from '../render/skeleton.mjs';
+import { rebuildArmFor, OUT_OF_PLANE_ARM } from '../render/arm.mjs';
+import { facing } from '../render/facing.mjs';
 
 const JOINTS = ['head', 'shoulder', 'elbow', 'wrist', 'hip', 'knee', 'ankle', 'heel', 'toe'];
 
@@ -149,7 +150,11 @@ export function validateFrameConsistency(figures) {
     if (!f.end || f.end === f.start) continue;
     const a = POSES[f.start], b = POSES[f.end];
     if (!a || !b) continue;
+    // 契约 §4：手臂的投影长度在一次重复内本来就会变（推举底部出平面、顶部回矢状面），
+    // 对出平面与指向读者的手臂不套等长断言。腿与躯干始终在矢状面内，照查。
+    const armFree = [f.start, f.end].some((n) => OUT_OF_PLANE_ARM.has(n) || FORESHORTENED_ARM.has(n));
     for (const [j1, j2, label] of LIMBS) {
+      if (armFree && (j1 === 'shoulder' || j1 === 'elbow')) continue;
       const la = len(a[j1], a[j2]), lb = len(b[j1], b[j2]);
       const diff = Math.abs(la - lb) / Math.max(la, lb);
       if (diff > 0.18) {
@@ -214,7 +219,8 @@ export function validateJointAngles() {
       if (k < KNEE_MIN) errors.push(`${name}: 膝角 ${k.toFixed(1)}° 低于解剖下限 ${KNEE_MIN}°`);
     }
     if (!p.shoulder || !p.elbow || !p.wrist) continue;
-    const arm = OUT_OF_PLANE_ARM.has(name) ? rebuildArm(p) : null;
+    if (FORESHORTENED_ARM.has(name)) continue;   // 指向读者的手臂，投影肘角不是真肘角
+    const arm = OUT_OF_PLANE_ARM.has(name) ? rebuildArmFor(name, p) : null;
     const e = arm ? deg(arm.elbow, p.shoulder, arm.hand) : deg(p.elbow, p.shoulder, p.wrist);
     if (e >= ELBOW_MIN) {
       if (ELBOW_PENDING.has(name)) {
@@ -227,6 +233,125 @@ export function validateJointAngles() {
         + '（前臂折回贴在上臂上）。出平面的手臂应登记进 OUT_OF_PLANE_ARM 走投影重建；'
         + '矢状面内的应调 wrist/elbow 坐标——不要往 ELBOW_PENDING 里加。');
     }
+  }
+  return errors;
+}
+
+
+// ── 支撑关系 ───────────────────────────────────────────
+
+/**
+ * 作者画在地面/凳面上的点，归一化之后必须还贴着。
+ *
+ * normalize 把肢体拉到固定骨长，再把"原本贴地的点里最低的那个"按回地面。
+ * 只按一个点：当手臂和腿的放大倍数不同（俯卧撑：腿 ×1.8、手臂 ×1.07），
+ * 脚端下沉得多、整体上提后手就悬在半空——俯卧撑手离地 36px、平板前臂 27px、
+ * 臀桥上背 67px，全是这一条漏的。这里逐点核对，一个都不许飘。
+ */
+export function validateContacts() {
+  const errors = [];
+  // 踝不是接触点：脚平放时踝本来就在地面上方 7–9px。接触的是脚跟/脚尖、手、肘、膝、髋、肩。
+  const GROUND_JOINTS = ['shoulder', 'elbow', 'wrist', 'hip', 'knee', 'heel', 'toe',
+                         'shoulder2', 'elbow2', 'wrist2', 'knee2', 'heel2', 'toe2'];
+  const TOL = 6.5;
+  for (const [name, raw] of Object.entries(RAW_POSES)) {
+    const p = POSES[name];
+    for (const j of GROUND_JOINTS) {
+      if (!raw[j] || !p[j]) continue;
+      if (Math.abs(raw[j][1] - GROUND) <= 7 && Math.abs(p[j][1] - GROUND) > TOL) {
+        errors.push(`${name}: ${j} 作者画在地面上（y=${raw[j][1]}），归一化后离地 ${(GROUND - p[j][1]).toFixed(1)}px`);
+      }
+    }
+    // 凳面：只查 normalize 登记的支撑关节（卧姿是肩与髋，坐姿是髋，单臂划船是膝）。
+    // 手扶把手、脚踩踏板不是"贴凳"，不在此列。
+    for (const j of p.support ?? []) {
+      if (!p[j]) continue;
+      if (p.bench) {
+        const d = p.bench[1] - p[j][1];
+        if (Math.abs(d - 5.5) > TOL) errors.push(`${name}: ${j} 离凳面 ${d.toFixed(1)}px（应贴着）`);
+      } else if (p.benchIncline) {
+        const { from, n } = p.benchIncline;
+        const d = (p[j][0] - from[0]) * n[0] + (p[j][1] - from[1]) * n[1];   // 沿凳面法线
+        if (Math.abs(d + 5) > TOL) errors.push(`${name}: ${j} 离上斜凳面 ${(-d).toFixed(1)}px（应贴着）`);
+      }
+    }
+    // 健腹轮：轮在地上滚，轮底必须贴地
+    if (p.load?.type === 'wheel' && Math.abs(p.load.at[1] + 9 - GROUND) > 3) {
+      errors.push(`${name}: 健腹轮轮底离地 ${(GROUND - p.load.at[1] - 9).toFixed(1)}px`);
+    }
+  }
+  return errors;
+}
+
+/**
+ * 该成直线的地方必须成直线——这几张卡的第一条自检判据就是「从头到脚跟一条线」。
+ * 值：[起点, 终点, 必须落在连线上的关节...]，垂距容差 8px。
+ */
+export const STRAIGHT_LINE = {
+  plank: ['shoulder', 'ankle', 'hip', 'knee'],
+  pushup_top: ['shoulder', 'ankle', 'hip', 'knee'],
+  pushup_bottom: ['shoulder', 'ankle', 'hip', 'knee'],
+  rollout_end: ['shoulder', 'knee', 'hip'],
+  bridge_top: ['shoulder', 'knee', 'hip'],
+  hinge_top: ['shoulder', 'ankle', 'hip', 'knee'],
+};
+
+export function validateStraightLines() {
+  const errors = [];
+  for (const [name, [a, b, ...mids]] of Object.entries(STRAIGHT_LINE)) {
+    const p = POSES[name];
+    if (!p) { errors.push(`STRAIGHT_LINE 引用了不存在的姿态 ${name}`); continue; }
+    const A = p[a], B = p[b];
+    const L = Math.hypot(B[0] - A[0], B[1] - A[1]) || 1;
+    for (const m of mids) {
+      const M = p[m];
+      const d = Math.abs((B[0] - A[0]) * (A[1] - M[1]) - (A[0] - M[0]) * (B[1] - A[1])) / L;
+      if (d > 8) errors.push(`${name}: ${m} 偏离 ${a}–${b} 连线 ${d.toFixed(1)}px（上限 8），身体没成直线`);
+    }
+  }
+  return errors;
+}
+
+/**
+ * 固定物两帧必须相同：单杠、低杠、凳子都不会跟着人动。
+ * 引体曾经是"杠下降 33px，人没动"——正是 fixed 跟着手走的结果。
+ */
+export function validateFixedRigs(figures) {
+  const errors = [];
+  for (const [slug, f] of Object.entries(figures)) {
+    if (!f.end || f.end === f.start) continue;
+    const a = POSES[f.start], b = POSES[f.end];
+    if (!a || !b) continue;
+    if (a.fixed || b.fixed) {
+      if (!a.fixed || !b.fixed) { errors.push(`${slug}: 只有一帧有固定物`); continue; }
+      const d = Math.hypot(a.fixed.at[0] - b.fixed.at[0], a.fixed.at[1] - b.fixed.at[1]);
+      if (d > 0.5) errors.push(`${slug}: 固定物两帧位移 ${d.toFixed(1)}px（${f.start} → ${f.end}），固定物不该动`);
+    }
+    if (a.bench && b.bench) {
+      const d = Math.max(...a.bench.map((v, i) => Math.abs(v - b.bench[i])));
+      if (d > 2) errors.push(`${slug}: 凳子两帧不同（最大差 ${d.toFixed(1)}px）`);
+    }
+    if (a.benchIncline && b.benchIncline) {
+      const d = Math.max(...['from', 'to'].flatMap((k) => [0, 1].map((i) => Math.abs(a.benchIncline[k][i] - b.benchIncline[k][i]))));
+      if (d > 2) errors.push(`${slug}: 上斜凳两帧不同（最大差 ${d.toFixed(1)}px）`);
+    }
+  }
+  return errors;
+}
+
+/**
+ * 卧推类「触胸」：杠停在胸面上，即躯干线朝脸那一侧 5–14px 处。
+ * 用 facing() 取"朝上"方向，所以上斜卧推躯干倾斜也照查。
+ */
+export const BAR_ON_CHEST = ['bench_bottom', 'incline_bottom'];
+export function validateBarOnChest() {
+  const errors = [];
+  for (const name of BAR_ON_CHEST) {
+    const p = POSES[name];
+    if (!p?.load) { errors.push(`${name}: 缺少负荷`); continue; }
+    const f = facing(name, p);
+    const d = (p.load.at[0] - p.shoulder[0]) * f[0] + (p.load.at[1] - p.shoulder[1]) * f[1];
+    if (d < 5 || d > 14) errors.push(`${name}: 杠在胸面上方 ${d.toFixed(1)}px（应为 5–14），图注写的是「触胸」`);
   }
   return errors;
 }

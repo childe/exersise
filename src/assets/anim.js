@@ -23,7 +23,7 @@ export function initSkeletonAnimation({ POSES, interpolate, renderPose }) {
     const [x, y, w, h] = cfg.box;
     const svg = document.createElementNS(SVG_NS, 'svg');
     svg.setAttribute('viewBox', `${x} ${y} ${w} ${h}`);
-    svg.setAttribute('class', 'sk-frame sk-anim');
+    svg.setAttribute('class', 'sk-frame sk-anim' + (w / h > 1.6 ? ' sk-wide' : ''));
     svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
     svg.setAttribute('role', 'img');
     svg.setAttribute('aria-label', `${fig.dataset.exercise}·循环演示`);
