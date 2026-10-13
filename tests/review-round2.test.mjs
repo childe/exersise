@@ -124,7 +124,11 @@ test('死虫仰卧贴地，对侧伸展：手向头后、腿伸直', () => {
   assert.deepEqual(validateContacts().filter((e) => e.includes('deadbug')), []);
   const e = POSES.deadbug_end;
   assert.ok(e.wrist[0] < e.shoulder[0] - 30, '伸展的手应在头的方向');
-  assert.ok(deg(e.knee, e.hip, e.ankle) > 150, `伸展腿膝角 ${deg(e.knee,e.hip,e.ankle).toFixed(1)}° 应接近伸直`);
+  // 对侧：伸展的是近侧手 + **远侧**腿；近侧腿与远侧手保持 90-90。
+  // 原来只画了同侧的一只手一条腿，两者一起伸出去，读起来正好是动作要避免的样子。
+  assert.ok(deg(e.knee2, e.hip, e.ankle2) > 150, `伸展腿（远侧）膝角 ${deg(e.knee2,e.hip,e.ankle2).toFixed(1)}° 应接近伸直`);
+  assert.ok(Math.abs(deg(e.knee, e.hip, e.ankle) - 90) < 15, `保持的那条腿（近侧）膝角 ${deg(e.knee,e.hip,e.ankle).toFixed(1)}° 应约 90°`);
+  assert.ok(e.wrist2[1] < e.shoulder2[1] - 60, '保持的那只手（远侧）应仍指向天花板');
   assert.ok(SUPINE_ON_FLOOR.has('deadbug_start'));
 });
 

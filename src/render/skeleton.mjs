@@ -347,15 +347,22 @@ export const POSES = {
     head: [49.2, 172.4], shoulder: [66, 175], elbow: [66, 225], wrist: [27, 225],
     hip: [145.1, 187], knee: [204.5, 196], ankle: [263.8, 205], heel: [261.8, 211], toe: [271.8, 225],
   }),
+  // 死虫是**对侧**手脚同时伸出，另一组保持 90-90。原来图上只有同侧的一只手和一条腿，
+  // 两者在动画里一起伸出去，读起来正好是动作要避免的那个样子。
+  // 现在近侧手臂与远侧腿一起伸展（深色），远侧手臂与近侧腿保持 90-90（浅色）。
   deadbug_start: P({
     head: [42, 213], shoulder: [57.7, 219], elbow: [57.7, 169], wrist: [57.7, 130],
+    shoulder2: [57.7, 219], elbow2: [62, 169], wrist2: [62, 130],
     hip: [137.5, 214], knee: [137.5, 154], ankle: [197.5, 154], heel: [195, 162], toe: [203, 144],
-    load: { type: 'hands', at: [57.7, 122] },
+    knee2: [137.5, 158], ankle2: [197.5, 158], heel2: [195, 166], toe2: [203, 148],
+    load: { type: 'hands', at: [57.7, 122], at2: [62, 122] },
   }),
   deadbug_end: P({
     head: [42, 213], shoulder: [57.7, 219], elbow: [9.7, 205], wrist: [-28.9, 199.5],
-    hip: [137.5, 214], knee: [196.3, 202], ankle: [256, 196], heel: [252, 203], toe: [266, 200],
-    load: { type: 'hands', at: [-28.9, 192] },
+    shoulder2: [57.7, 219], elbow2: [62, 169], wrist2: [62, 130],
+    hip: [137.5, 214], knee: [137.5, 154], ankle: [197.5, 154], heel: [195, 162], toe: [203, 144],
+    knee2: [196.3, 206], ankle2: [256, 200], heel2: [252, 207], toe2: [266, 204],
+    load: { type: 'hands', at: [-28.9, 192], at2: [62, 122] },
   }),
   // 抗旋（Pallof）：正视才看得出要点
   // 帕洛夫是正视图（判据「肩线髋线不转」只有正面看得见）。推出的方向是**朝向读者**，
@@ -1051,7 +1058,9 @@ function load(l) {
       // 腿举踏板：薄片，画在身体之后，不遮脚
       return `<g class="sk-load"><rect class="sk-sled" x="${x - 3}" y="${y - 22}" width="6" height="44" rx="2"/></g>`;
     case 'handle':
-      return `<g class="sk-load"><rect class="sk-handle" x="${x - 10}" y="${y - 4}" width="20" height="8" rx="4"/></g>`;
+      return `<g class="sk-load"><rect class="sk-handle" x="${x - 10}" y="${y - 4}" width="20" height="8" rx="4"/>`
+        + (l.at2 ? `<rect class="sk-handle" x="${l.at2[0] - 10}" y="${l.at2[1] - 4}" width="20" height="8" rx="4"/>` : '')
+        + '</g>';
     case 'pad': {
       // 滚轮垫是绕着一根轴的圆柱：它的长轴永远**垂直于**被压的肢体，不是永远竖直。
       // 固定竖直的后果：腿屈伸起始帧小腿水平，垫子像一根立柱横在小腿上。

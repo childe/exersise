@@ -154,6 +154,8 @@ export function interpolate(A, B, t, opts = {}) {
   const ankle2Pinned = A.ankle2 && B.ankle2 && Math.hypot(A.ankle2[0]-B.ankle2[0], A.ankle2[1]-B.ankle2[1]) < 1;
   if (ankle2Pinned) {
     q.ankle2 = [...A.ankle2];
+    // 脚背搭在凳上：脚是刚体且贴着凳面，不跟着小腿一起转（原来末帧整条脚线陷进凳板 5.2px）
+    if (A.heel2 && B.heel2) q._pinFoot2 = true;
     q.knee2 = ik2(q.hip, q.ankle2, lerp(len(A.hip,A.knee2), len(B.hip,B.knee2), t),
       lerp(len(A.knee2,A.ankle2), len(B.knee2,B.ankle2), t), lerp2(A.knee2, B.knee2, t));
   } else {
@@ -239,6 +241,7 @@ export function interpolate(A, B, t, opts = {}) {
     if (!A[f] || !B[f] || !q[src]) continue;
     if (grounded && (f === 'heel' || f === 'toe')) { q[f] = [...A[f]]; continue; }   // 脚是刚体，踝钉死脚就不动
     if (toeRooted && f === 'toe') continue;                                        // 已钉
+    if (q._pinFoot2 && (f === 'heel2' || f === 'toe2')) { q[f] = [...A[f]]; continue; }
     q[f] = [q[src][0] + lerp(A[f][0]-A[src][0], B[f][0]-B[src][0], t), q[src][1] + lerp(A[f][1]-A[src][1], B[f][1]-B[src][1], t)];
   }
   if (A.bench && B.bench) q.bench = A.bench.map((v, i) => lerp(v, B.bench[i], t));
