@@ -253,8 +253,21 @@ test('低杠的两处差别可量：杠位更低、躯干更倾', () => {
 test('髋更往后是约束推出来的，不是摆出来的', () => {
   // 杠位更低 + 躯干更倾，而「杠过足中线」对两者都不变 → 髋必须更往后走。
   // 这条断言的意义：如果哪天有人"顺手"把低杠的髋挪回去，图就不再演示这个力学关系了。
+  // 「杠过足中线」把躯干角和髋位绑在一起：髋越靠后，躯干反而越立。
+  // 真正由杠位推出来的是**同一髋位下躯干更倾**（高杠 35° → 低杠 48°），髋随之略往后约 5px。
+  // 早先写成 >8px 是把这条关系的量级猜大了，逼出来的姿态大腿上翘 39°、与躯干近共线——
+  // 那正是「早安式深蹲」这个错误本身。
+  const lean = (p) => Math.abs(Math.atan2(p.shoulder[0] - p.hip[0], p.hip[1] - p.shoulder[1]) * 180 / Math.PI);
   const back = POSES.squat_bottom.hip[0] - POSES.squat_lowbar_bottom.hip[0];
-  assert.ok(back > 8, `低杠底部的髋应明显更靠后，实际只多 ${back.toFixed(1)}px`);
+  assert.ok(back > 3, `低杠底部的髋应更靠后，实际只多 ${back.toFixed(1)}px`);
+  assert.ok(lean(POSES.squat_lowbar_bottom) - lean(POSES.squat_bottom) > 10,
+    '低杠底部的躯干应比高杠明显更倾');
+  // 大腿不能和躯干共线，膝要真的前移
+  const thigh = (p) => Math.atan2(p.knee[1] - p.hip[1], p.knee[0] - p.hip[0]) * 180 / Math.PI;
+  for (const n of ['squat_bottom', 'squat_lowbar_bottom', 'squat_front_bottom']) {
+    assert.ok(Math.abs(thigh(POSES[n])) < 25, `${n}: 大腿上翘 ${Math.abs(thigh(POSES[n])).toFixed(1)}°，接近躯干方向`);
+    assert.ok(POSES[n].knee[0] - POSES[n].ankle[0] > 10, `${n}: 膝只在踝前 ${(POSES[n].knee[0] - POSES[n].ankle[0]).toFixed(1)}px`);
+  }
   for (const n of ['squat_bottom', 'squat_lowbar_bottom']) {
     assert.ok(Math.abs(POSES[n].load.at[0] - MIDFOOT) < 0.5,
       `${n}: 杠未落在足中线上，上面那条推理的前提就不成立`);
