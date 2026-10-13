@@ -1310,7 +1310,10 @@ export function renderSkeleton(fig, nameZh, prime = [], slug = '') {
   const plumb = fig.plumb !== false && !fig.no_load;
   const lt = fig.load_type;
   const dA = drawnArm(fig.start, a, lt);
-  const dB = b && b !== a ? drawnArm(fig.end, b, lt) : dA;
+  // fig.end 缺失时（单帧动作）仍要给 drawnArm 一个真姿态名：strip 每次都新建对象，
+  // 所以 b !== a 恒成立，名字丢了就会落到 OUT_OF_PLANE_ARM / ARM_OVERRIDES 的默认分支，
+  // 将来某个单帧动作一旦用出平面或带 fixed 的姿态，框就按另一条手臂算了。
+  const dB = b && b !== a ? drawnArm(fig.end ?? fig.start, b, lt) : dA;
   const boxes = [contentBox(a, { plumb, loadType: lt, arm: dA })];
   if (b && b !== a) boxes.push(contentBox(b, { plumb, loadType: lt, arm: dB }));
   const x0 = Math.min(...boxes.map((x) => x.x));

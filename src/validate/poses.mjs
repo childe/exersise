@@ -638,7 +638,9 @@ export function validateRackSide() {
  *
  * 中间帧的肢体会摆到两端点连线之外（弧在弦之外），用两张静态图的并集当 viewBox，
  * SVG 就把超出的部分裁掉——实测 49 个动画里 20 个被裁，下拉最多 23px、弯举 13.5px。
- * renderSkeleton 现在按 8 等分采样算动画框；这里用 24 等分复查，不是同义反复。
+ * renderSkeleton 按 16 等分采样算动画框，这里用 24 等分复查。注意独立性只剩采样密度：
+ * 两端现在共用 drawnArm/armSidePlan/blendArm，手臂模型本身错了会一起错。
+ * 真正独立的口径是「从产物文本回读坐标比 viewBox」，见 tests/poses.test.mjs 的产物扫描。
  */
 export function validateAnimBox(figures, box4Of) {
   const errors = [];

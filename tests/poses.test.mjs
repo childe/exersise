@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';
-import { POSES, POSE_NAMES, renderSkeleton, renderPose, contentBox, MIDFOOT, GROUND, FIG_W, FIG_H } from '../src/render/skeleton.mjs';
+import { POSES, POSE_NAMES, renderSkeleton, renderPose, contentBox, drawnArm, MIDFOOT, GROUND, FIG_W, FIG_H } from '../src/render/skeleton.mjs';
 import { validatePoses, validateFigures, validateMuscles, validateFrameConsistency } from '../src/validate/poses.mjs';
 import { MUSCLE_NAMES, MUSCLE_REGIONS, renderCardMuscleMap, renderFullMuscleMap } from '../src/render/muscles.mjs';
 
@@ -149,21 +149,52 @@ test('整体肌肉分布图含全部 13 个分区且可点', () => {
   assert.equal(MUSCLE_NAMES.length, 13);
 });
 
-test('每个姿态画出来的东西都落在它自己的 viewBox 内', () => {
-  // viewBox 按内容算，所以这条测的是包围盒算对了没有——
-  // 算漏一项（比如杠片半径、凳面、单杠立柱），图就会被裁掉一块。
-  for (const name of POSE_NAMES) {
-    const box = contentBox(POSES[name], { plumb: true });
-    const svg = renderPose(POSES[name], { plumb: true, box });
-    for (const m of svg.matchAll(/(?:cx|x1|x2)="(-?[\d.]+)"/g)) {
-      const v = Number(m[1]);
-      assert.ok(v >= box.x - 1 && v <= box.x + box.w + 1, `${name}: x=${v} 落在 viewBox 外`);
+test('每张图画出来的东西都落在它自己的 viewBox 内', async () => {
+  // 这条是全仓**唯一**从产物文本回读坐标去比框的断言，必须守住。
+  // 自从渲染端与校验端共用 drawnArm/blendArm 之后，validateAnimBox 只回读框、内容是重算的——
+  // 手臂模型本身错了两边会一起错，只有「把画出来的字符串解析回坐标」这条看得见。
+  //
+  // 旧版渲染时既不传 name 也不传 loadType，renderPose 内部 drawnArm('') 回落到链上 elbow/wrist，
+  // 框和画一起用链，恒等通过。实测 18 个姿态真实手臂与它差到 37.9px（goblet_top）。
+  const figures = await readJson('data/figures.json');
+  // 线、圆（含半径）、矩形（含旋转）、多边形全部顶点都要算进去，不能只看 x1/x2/cx
+  const pointsOf = (svg) => {
+    const pts = [];
+    for (const m of svg.matchAll(/x1="(-?[\d.]+)" y1="(-?[\d.]+)" x2="(-?[\d.]+)" y2="(-?[\d.]+)"/g))
+      pts.push([+m[1], +m[2]], [+m[3], +m[4]]);
+    for (const m of svg.matchAll(/<circle[^>]*cx="(-?[\d.]+)" cy="(-?[\d.]+)" r="(-?[\d.]+)"/g)) {
+      const [x, y, r] = [+m[1], +m[2], +m[3]];
+      pts.push([x - r, y - r], [x + r, y + r]);
     }
-    for (const m of svg.matchAll(/(?:cy|y1|y2)="(-?[\d.]+)"/g)) {
-      const v = Number(m[1]);
-      assert.ok(v >= box.y - 1 && v <= box.y + box.h + 1, `${name}: y=${v} 落在 viewBox 外`);
+    for (const m of svg.matchAll(/<rect[^>]*x="(-?[\d.]+)" y="(-?[\d.]+)" width="(-?[\d.]+)" height="(-?[\d.]+)"/g)) {
+      const [x, y, w, h] = [+m[1], +m[2], +m[3], +m[4]];
+      pts.push([x, y], [x + w, y + h]);
+    }
+    for (const m of svg.matchAll(/<polygon[^>]*points="([^"]+)"/g))
+      for (const pair of m[1].trim().split(/\s+/)) { const [x, y] = pair.split(',').map(Number); pts.push([x, y]); }
+    return pts;
+  };
+  let scanned = 0;
+  for (const [slug, f] of Object.entries(figures)) {
+    for (const key of [f.start, f.end]) {
+      if (!key || !POSES[key]) continue;
+      // 和产物同一套参数：strip、name、loadType、按画出来的手臂算的框
+      const p = f.no_load ? { ...POSES[key], load: undefined } : POSES[key];
+      const plumb = f.plumb !== false && !f.no_load;
+      const arm = drawnArm(key, p, f.load_type);
+      const box = contentBox(p, { plumb, loadType: f.load_type, arm });
+      const svg = renderPose(p, { name: key, plumb, box, loadType: f.load_type });
+      const pts = pointsOf(svg);
+      assert.ok(pts.length > 0, `${slug}/${key}: 产物里一个坐标都没解析到`);
+      for (const [x, y] of pts) {
+        assert.ok(x >= box.x - 1 && x <= box.x + box.w + 1, `${slug}/${key}: x=${x} 落在 viewBox 外`);
+        assert.ok(y >= box.y - 1 && y <= box.y + box.h + 1, `${slug}/${key}: y=${y} 落在 viewBox 外`);
+      }
+      scanned += pts.length;
     }
   }
+  // 解析不到就「通过」是假的通过
+  assert.ok(scanned > 2000, `只扫到 ${scanned} 个坐标，产物解析大概率漏了`);
 });
 
 test('分区定义不与肌肉词表脱节', () => {
