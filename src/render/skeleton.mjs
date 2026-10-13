@@ -684,6 +684,15 @@ function normalize(name, p) {
     const anchorName = LOAD_ANCHOR[name] ?? 'wrist';
     const off = [p.load.at[0] - p[anchorName][0], p.load.at[1] - p[anchorName][1]];
     q.load = { ...p.load, at: [q[anchorName][0] + off[0], q[anchorName][1] + off[1]] };
+    // 带子的固定端：踩在脚下的锚点永远留在地面（只跟着横向走），
+    // 其余锚点（器械上的滑轮/挂点）相对把手不动，跟着把手一起搬。
+    // 踩在脚下的锚点按定义就在足中线的地面上（脚钉在标准位，它也就钉死了）；
+    // 器械上的挂点相对把手不动，跟着把手一起搬。
+    if (p.load.from && Math.abs(p.load.from[1] - GROUND) <= 2) q.load.from = [MIDFOOT, GROUND];
+    if (p.load.from && Math.abs(p.load.from[1] - GROUND) > 2) {
+      q.load.from = [q.load.at[0] + (p.load.from[0] - p.load.at[0]),
+                     q.load.at[1] + (p.load.from[1] - p.load.at[1])];
+    }
     // 压在小腿上的滚轮垫：偏移写在小腿局部坐标里，归一化改了小腿方向它才跟着转。
     // 用世界偏移的后果是腿屈伸顶峰时垫子翻到胫骨侧——那一侧它要穿过小腿才能存在。
     if (p.load.type === 'pad' && anchorName === 'ankle' && p.knee && q.knee) {
@@ -719,7 +728,9 @@ function normalize(name, p) {
       }
       if (q.load) {
         q.load = { ...q.load, at: [q.load.at[0], q.load.at[1] + dy],
-          ...(q.load.at2 ? { at2: [q.load.at2[0], q.load.at2[1] + dy] } : {}) };
+          ...(q.load.at2 ? { at2: [q.load.at2[0], q.load.at2[1] + dy] } : {}),
+          ...(q.load.from && Math.abs(q.load.from[1] - GROUND) > 2
+            ? { from: [q.load.from[0], q.load.from[1] + dy] } : {}) };
       }
     }
   }
@@ -817,7 +828,10 @@ function shiftAll(p, dx, dy, keys = ALL_JOINTS) {
   const q = { ...p };
   for (const k of keys) if (q[k]) q[k] = [q[k][0] + dx, q[k][1] + dy];
   if (q.load) q.load = { ...q.load, at: [q.load.at[0] + dx, q.load.at[1] + dy],
-    ...(q.load.at2 ? { at2: [q.load.at2[0] + dx, q.load.at2[1] + dy] } : {}) };
+    ...(q.load.at2 ? { at2: [q.load.at2[0] + dx, q.load.at2[1] + dy] } : {}),
+    // 地面锚点不跟着平移：它钉在足中线上
+    ...(q.load.from && Math.abs(q.load.from[1] - GROUND) > 2
+      ? { from: [q.load.from[0] + dx, q.load.from[1] + dy] } : {}) };
   return q;
 }
 const unit = (v) => { const L = Math.hypot(v[0], v[1]) || 1; return [v[0] / L, v[1] / L]; };
