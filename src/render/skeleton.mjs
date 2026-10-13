@@ -331,7 +331,9 @@ export const POSES = {
     elbow2: [118, 88], wrist2: [100, 80],
     hip: [100, 126], knee: [84, 172], ankle: [82, 216], heel: [78, 225], toe: [86, 225],
     knee2: [116, 172], ankle2: [118, 216], heel2: [114, 225], toe2: [122, 225],
-    load: { type: 'handle', at: [100, 80] },
+    // 阻力来自画面右侧（正视图里带子水平指向一侧）。抗旋转动作的全部内容就是这个方向，
+    // 原来图上只有一个把手，看不出力往哪边拉。
+    load: { type: 'band', at: [100, 80], from: [146, 80] },
   }),
   pallof_out: P({
     view: 'front',
@@ -339,7 +341,9 @@ export const POSES = {
     elbow2: [103, 73], wrist2: [100, 80],
     hip: [100, 126], knee: [84, 172], ankle: [82, 216], heel: [78, 225], toe: [86, 225],
     knee2: [116, 172], ankle2: [118, 216], heel2: [114, 225], toe2: [122, 225],
-    load: { type: 'handle', at: [100, 80] },
+    // 阻力来自画面右侧（正视图里带子水平指向一侧）。抗旋转动作的全部内容就是这个方向，
+    // 原来图上只有一个把手，看不出力往哪边拉。
+    load: { type: 'band', at: [100, 80], from: [146, 80] },
   }),
 
   // ── 单关节 / 正视要点 ─────────────────────────────
@@ -428,7 +432,7 @@ export const POSES = {
     head: [30, 186], shoulder: [50, 192], elbow: [12, 210], wrist: [-18, 186],
     hip: [106, 192], knee: [142, 192], ankle: [130, 150], heel: [124, 148], toe: [134, 138],
     bench: [26, 196, 104, 9], support: ['shoulder', 'hip', 'knee'],
-    load: { type: 'pad', at: [138, 162] },
+    load: { type: 'pad', at: [129.5, 160.7] },   // 小腿局部 (−10.2, −3.4)：与起始帧同侧（腓肠肌侧）
   }),
   // 坐姿提踵：前脚掌是支点，两帧不动；脚跟、踝、膝（膝垫在膝上）一起升起。
   // 两帧的最低点都正好在地面（下沉=脚跟，顶峰=脚尖），归一化不做贴地平移，座位才不会
@@ -586,8 +590,10 @@ export const POSES = {
     head: [78, 86], shoulder: [66, 102], elbow: [92, 116], wrist: [120, 124],
     hip: [44, 140], knee: [78, 176], ankle: [58, 214], heel: [50, 225], toe: [84, 225],
     // 后腿按与前腿相同的作者长度画，否则归一化把两腿各自拉到 60/60 后，
-    // 原本更短的那条腿下沉得多，另一只脚就浮起来（之前前脚悬空 12px）
-    knee2: [15, 180.2], ankle2: [-4.6, 218.3], heel2: [-12.6, 229.3], toe2: [21.4, 229.3],
+    // 原本更短的那条腿下沉得多，另一只脚就浮起来（之前前脚悬空 12px）。
+    // 后脚不能画到地面以下：normalize 的贴地修正只按最低点整体上提，
+    // 画到 229.3 的后脚会把前脚一起顶起 5.3px。
+    knee2: [15, 171.19], ankle2: [-4.6, 209.19], heel2: [-12.6, 220.19], toe2: [21.4, 220.19],
     load: { type: 'sled', at: [126, 124] },
   }),
 };
@@ -678,6 +684,17 @@ function normalize(name, p) {
     const anchorName = LOAD_ANCHOR[name] ?? 'wrist';
     const off = [p.load.at[0] - p[anchorName][0], p.load.at[1] - p[anchorName][1]];
     q.load = { ...p.load, at: [q[anchorName][0] + off[0], q[anchorName][1] + off[1]] };
+    // 压在小腿上的滚轮垫：偏移写在小腿局部坐标里，归一化改了小腿方向它才跟着转。
+    // 用世界偏移的后果是腿屈伸顶峰时垫子翻到胫骨侧——那一侧它要穿过小腿才能存在。
+    if (p.load.type === 'pad' && anchorName === 'ankle' && p.knee && q.knee) {
+      const ru = unit([p.ankle[0] - p.knee[0], p.ankle[1] - p.knee[1]]);
+      const rn = [-ru[1], ru[0]];
+      const a = off[0] * ru[0] + off[1] * ru[1], b = off[0] * rn[0] + off[1] * rn[1];
+      const nu = unit([q.ankle[0] - q.knee[0], q.ankle[1] - q.knee[1]]);
+      const nn = [-nu[1], nu[0]];
+      q.load.at = [q.ankle[0] + a * nu[0] + b * nn[0], q.ankle[1] + a * nu[1] + b * nn[1]];
+      q.load.padAngle = Math.atan2(nu[1], nu[0]);     // 长轴垂直于小腿 → 与小腿同向旋转
+    }
     if (p.load.at2 && p.wrist2) {
       const off2 = [p.load.at2[0] - p.wrist2[0], p.load.at2[1] - p.wrist2[1]];
       q.load.at2 = [q.wrist2[0] + off2[0], q.wrist2[1] + off2[1]];
@@ -803,6 +820,7 @@ function shiftAll(p, dx, dy, keys = ALL_JOINTS) {
     ...(q.load.at2 ? { at2: [q.load.at2[0] + dx, q.load.at2[1] + dy] } : {}) };
   return q;
 }
+const unit = (v) => { const L = Math.hypot(v[0], v[1]) || 1; return [v[0] / L, v[1] / L]; };
 const CANON_HEEL_X = 72;
 
 // 躯干坐标系：u 沿髋→肩，n 是它的法向。架在肩上的杠必须用这个系描述——
@@ -958,8 +976,13 @@ function load(l) {
       return `<g class="sk-load"><rect class="sk-sled" x="${x - 3}" y="${y - 22}" width="6" height="44" rx="2"/></g>`;
     case 'handle':
       return `<g class="sk-load"><rect class="sk-handle" x="${x - 10}" y="${y - 4}" width="20" height="8" rx="4"/></g>`;
-    case 'pad':
-      return `<g class="sk-load"><rect class="sk-pad" x="${x - 6}" y="${y - 13}" width="12" height="26" rx="6"/></g>`;
+    case 'pad': {
+      // 滚轮垫是绕着一根轴的圆柱：它的长轴永远**垂直于**被压的肢体，不是永远竖直。
+      // 固定竖直的后果：腿屈伸起始帧小腿水平，垫子像一根立柱横在小腿上。
+      const a = (l.padAngle ?? Math.PI / 2) * 180 / Math.PI;
+      return `<g class="sk-load"><rect class="sk-pad" x="${x - 6}" y="${y - 13}" width="12" height="26" rx="6"`
+        + ` transform="rotate(${a.toFixed(1)} ${x} ${y})"/></g>`;
+    }
     case 'wheel':
       return `<g class="sk-load"><circle class="sk-wheel" cx="${x}" cy="${y}" r="9"/>`
         + `<line class="sk-bar" x1="${x - 13}" y1="${y}" x2="${x + 13}" y2="${y}"/></g>`;
