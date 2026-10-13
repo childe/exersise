@@ -186,10 +186,10 @@ export const POSES = {
     load: { type: 'bar', at: [98, 132] },
   }),
   bench_top: P({
-    head: [54, 140], shoulder: [74, 142], elbow: [74, 114], wrist: [74, 88],
+    head: [54, 140], shoulder: [74, 142], elbow: [74, 92], wrist: [74, 53],
     hip: [112, 142], knee: [146, 176], ankle: [150, 216], heel: [142, 225], toe: [170, 225],
     bench: [48, 148, 86, 10],
-    load: { type: 'bar', at: [76, 45] },
+    load: { type: 'bar', at: [74, 51] },
   }),
   // 俯卧撑 / 地面推：手撑地
   // 俯卧撑与平板支撑按约束**构造**，不是手摆：
@@ -339,8 +339,8 @@ export const POSES = {
   // 指向读者的手臂投影本来就短，这两帧登记在 FORESHORTENED_ARM，归一化不改手臂长度。
   pallof_in: P({
     view: 'front',
-    head: [100, 44], shoulder: [100, 64], elbow: [82, 88], wrist: [100, 80],
-    elbow2: [118, 88], wrist2: [100, 80],
+    head: [100, 44], shoulder: [84, 64], elbow: [66, 88], wrist: [100, 80],
+    shoulder2: [116, 64], elbow2: [134, 88], wrist2: [100, 80],
     hip: [100, 126], knee: [84, 172], ankle: [82, 216], heel: [78, 225], toe: [86, 225],
     knee2: [116, 172], ankle2: [118, 216], heel2: [114, 225], toe2: [122, 225],
     // 阻力来自画面右侧（正视图里带子水平指向一侧）。抗旋转动作的全部内容就是这个方向，
@@ -349,8 +349,8 @@ export const POSES = {
   }),
   pallof_out: P({
     view: 'front',
-    head: [100, 44], shoulder: [100, 64], elbow: [97, 73], wrist: [100, 80],
-    elbow2: [103, 73], wrist2: [100, 80],
+    head: [100, 44], shoulder: [84, 64], elbow: [89, 73], wrist: [100, 80],
+    shoulder2: [116, 64], elbow2: [111, 73], wrist2: [100, 80],
     hip: [100, 126], knee: [84, 172], ankle: [82, 216], heel: [78, 225], toe: [86, 225],
     knee2: [116, 172], ankle2: [118, 216], heel2: [114, 225], toe2: [122, 225],
     // 阻力来自画面右侧（正视图里带子水平指向一侧）。抗旋转动作的全部内容就是这个方向，
@@ -361,19 +361,19 @@ export const POSES = {
   // ── 单关节 / 正视要点 ─────────────────────────────
   lateral_raise_down: P({
     view: 'front',
-    head: [100, 40], shoulder: [100, 62], elbow: [78, 92], wrist: [74, 124],
+    head: [100, 40], shoulder: [84, 62], elbow: [80, 112], wrist: [94.5, 148.2],
     hip: [100, 124], knee: [86, 172], ankle: [84, 216], heel: [80, 225], toe: [88, 225],
     knee2: [114, 172], ankle2: [116, 216], heel2: [112, 225], toe2: [120, 225],
-    shoulder2: [100, 62], elbow2: [122, 92], wrist2: [126, 124],
-    load: { type: 'hands2', at: [74, 130], at2: [126, 130] },
+    shoulder2: [116, 62], elbow2: [120, 112], wrist2: [105.5, 148.2],
+    load: { type: 'hands2', at: [94.5, 154.2], at2: [105.5, 154.2] },
   }),
   lateral_raise_up: P({
     view: 'front',
-    head: [100, 40], shoulder: [100, 62], elbow: [66, 64], wrist: [38, 80],
+    head: [100, 40], shoulder: [84, 62], elbow: [50, 64], wrist: [22, 80],
     hip: [100, 124], knee: [86, 172], ankle: [84, 216], heel: [80, 225], toe: [88, 225],
     knee2: [114, 172], ankle2: [116, 216], heel2: [112, 225], toe2: [120, 225],
-    shoulder2: [100, 62], elbow2: [134, 64], wrist2: [162, 80],
-    load: { type: 'hands2', at: [34, 82], at2: [166, 82] },
+    shoulder2: [116, 62], elbow2: [150, 64], wrist2: [178, 80],
+    load: { type: 'hands2', at: [18, 82], at2: [182, 82] },
   }),
   curl_down: P({
     head: [98, 40], shoulder: [86, 58], elbow: [84, 96], wrist: [84, 132],
@@ -465,16 +465,20 @@ export const POSES = {
   // 上斜：躯干倾斜约 40°，凳面随之倾斜（normalize 按躯干方向生成 benchIncline）。
   // 底部杠在胸上（肩沿朝脸方向 10px），上臂指向读者——与平板卧推底部同一类出平面手臂。
   incline_bottom: P({
-    head: [28, 111.5], shoulder: [42.7, 120], elbow: [54, 149], wrist: [60, 130],
+    // 肘向两侧下方张开（与地面竖直成 ~55°）：前臂竖直时肘角才打得开，
+    // 原来肘离竖直只有 21°，解出来的肘角 21.3°。
+    head: [28, 111.5], shoulder: [42.7, 120], elbow: [67.3, 137.2], wrist: [60, 130],
     hip: [112, 160], knee: [134, 182], ankle: [146, 216], heel: [140, 225], toe: [166, 225],
     bench: [46, 128, 84, 10],
     load: { type: 'bar', at: [68.5, 123.3] },
   }),
   incline_top: P({
-    head: [28, 111.5], shoulder: [42.7, 120], elbow: [67.7, 76.7], wrist: [87.2, 42.9],
+    // 锁定：手臂垂直于**地面**。原来垂直于躯干，30° 斜凳上就把负荷推到肩前 48px，
+    // 肩上挂着一个端不住的静态力矩，而且与底部帧不在同一条轨迹上。
+    head: [28, 111.5], shoulder: [42.7, 120], elbow: [42.7, 70], wrist: [42.7, 31],
     hip: [112, 160], knee: [134, 182], ankle: [146, 216], heel: [140, 225], toe: [166, 225],
     bench: [46, 128, 84, 10],
-    load: { type: 'bar', at: [91.2, 36] },
+    load: { type: 'bar', at: [42.7, 29] },
   }),
   machine_press_start: P({
     head: [76, 106], shoulder: [86, 124], elbow: [66, 142], wrist: [92, 140],
@@ -504,8 +508,10 @@ export const POSES = {
   // 原来两帧的「膝→髋→肩」跨度 143.6 > 60+80，normalize 够不到就自己改了膝位，
   // 两帧的膝因此差 2px，动画末帧回不到静态帧。现在跨度取 138（身体接近一条直线）。
   knee_pushup_bottom: P({
-    head: [48.3, 159.4], shoulder: [65, 166.6], elbow: [104.07, 197.86], wrist: [76.95, 225.86],
-    hip: [135.6, 199.6], knee: [190, 225], ankle: [246.4, 204.5], heel: [240.4, 200.5], toe: [255.4, 213.5],
+    // 底部要下到「胸接近地面」（cue 原文）：原来行程只有俯卧撑的 53%、底部肘角 84.6°，
+    // 深的那张反而是俯卧撑，和两张卡的 cue 正好反了。
+    head: [43.4, 174.5], shoulder: [59.5, 180], elbow: [105.8, 198.9], wrist: [76.95, 225.96],
+    hip: [133.3, 205.4], knee: [190, 225], ankle: [246.4, 204.5], heel: [240.4, 200.5], toe: [255.4, 213.5],
   }),
   knee_pushup_top: P({
     head: [68.4, 128.9], shoulder: [81.7, 139.4], elbow: [91.45, 188.41], wrist: [81.72, 226.21],
@@ -560,19 +566,19 @@ export const POSES = {
   }),
   reverse_fly_start: P({
     view: 'front',
-    head: [100, 60], shoulder: [100, 82], elbow: [78, 108], wrist: [74, 136],
-    shoulder2: [100, 82], elbow2: [122, 108], wrist2: [126, 136],
+    head: [100, 60], shoulder: [84, 82], elbow: [62, 108], wrist: [58, 136],
+    shoulder2: [116, 82], elbow2: [138, 108], wrist2: [142, 136],
     hip: [100, 134], knee: [86, 174], ankle: [84, 216], heel: [80, 225], toe: [88, 225],
     knee2: [114, 174], ankle2: [116, 216], heel2: [112, 225], toe2: [120, 225],
-    load: { type: 'hands2', at: [74, 142], at2: [126, 142] },
+    load: { type: 'hands2', at: [58, 142], at2: [142, 142] },
   }),
   reverse_fly_end: P({
     view: 'front',
-    head: [100, 60], shoulder: [100, 82], elbow: [66, 86], wrist: [34.8, 109.4],
-    shoulder2: [100, 82], elbow2: [134, 86], wrist2: [165.2, 109.4],
+    head: [100, 60], shoulder: [84, 82], elbow: [50, 86], wrist: [18.8, 109.4],
+    shoulder2: [116, 82], elbow2: [150, 86], wrist2: [181.2, 109.4],
     hip: [100, 134], knee: [86, 174], ankle: [84, 216], heel: [80, 225], toe: [88, 225],
     knee2: [114, 174], ankle2: [116, 216], heel2: [112, 225], toe2: [120, 225],
-    load: { type: 'hands2', at: [31, 112], at2: [169, 112] },
+    load: { type: 'hands2', at: [15, 112], at2: [185, 112] },
   }),
   back_extension_down: P({
     head: [16.7, 177.7], shoulder: [32, 170.4], elbow: [40, 185], wrist: [52, 178],
@@ -666,6 +672,16 @@ function normalize(name, p) {
   q.knee = place(p.hip, p.hip, p.knee, BONE.thigh);
   q.ankle = place(q.knee, p.knee, p.ankle, BONE.shank);
   q.shoulder = place(p.hip, p.hip, p.shoulder, BONE.torso);
+  // 正视图有肩宽：躯干顶端是两肩的中点，两肩各自从中点横向展开。
+  // 原来两肩重合（肩宽 0），于是「肩线保持水平/不转」这条判据在图上没有线可看，
+  // 侧平举的手臂也只能从同一点岔开 36° 才不压在躯干上。
+  const frontMid = p.view === 'front' && p.shoulder2
+    ? [(p.shoulder[0] + p.shoulder2[0]) / 2, (p.shoulder[1] + p.shoulder2[1]) / 2] : null;
+  if (frontMid) {
+    const M = place(p.hip, p.hip, frontMid, BONE.torso);
+    q.shoulderMid = M;
+    q.shoulder = [M[0] + (p.shoulder[0] - frontMid[0]), M[1] + (p.shoulder[1] - frontMid[1])];
+  }
   if (FORESHORTENED_ARM.has(name)) {
     // 保留作者给的投影长度，只跟着肩平移
     q.elbow = [p.elbow[0] + (q.shoulder[0] - p.shoulder[0]), p.elbow[1] + (q.shoulder[1] - p.shoulder[1])];
@@ -674,14 +690,16 @@ function normalize(name, p) {
     q.elbow = place(q.shoulder, p.shoulder, p.elbow, BONE.upper_arm);
     q.wrist = place(q.elbow, p.elbow, p.wrist, BONE.forearm);
   }
-  q.head = place(q.shoulder, p.shoulder, p.head, BONE.neck);
+  q.head = place(q.shoulderMid ?? q.shoulder, p.shoulder, p.head, BONE.neck);
   if (p.knee2) {
     q.knee2 = place(p.hip, p.hip, p.knee2, BONE.thigh);
     q.ankle2 = place(q.knee2, p.knee2, p.ankle2, BONE.shank);
   }
   if (p.elbow2) {
     const os2 = p.shoulder2 ?? p.shoulder;
-    q.shoulder2 = p.shoulder2 ? place(p.hip, p.hip, p.shoulder2, BONE.torso) : q.shoulder;
+    q.shoulder2 = frontMid
+      ? [q.shoulderMid[0] + (p.shoulder2[0] - frontMid[0]), q.shoulderMid[1] + (p.shoulder2[1] - frontMid[1])]
+      : (p.shoulder2 ? place(p.hip, p.hip, p.shoulder2, BONE.torso) : q.shoulder);
     if (FORESHORTENED_ARM.has(name)) {
       q.elbow2 = [p.elbow2[0] + (q.shoulder2[0] - os2[0]), p.elbow2[1] + (q.shoulder2[1] - os2[1])];
       q.wrist2 = [p.wrist2[0] + (q.shoulder2[0] - os2[0]), p.wrist2[1] + (q.shoulder2[1] - os2[1])];
@@ -1047,7 +1065,17 @@ function fixed(f) {
  * 其余用原坐标。动画不能每帧重解：解有时无解（手臂过顶后射线不与杠线相交）、
  * 有时被握点钳制跳变——改成对两端点各求一次，中间帧在两组肘/手之间插值。
  */
+// 握在固定杠上的手不会沿杠滑动。两帧各自解握点的后果：悬垂帧（未重建）落在杠心、
+// 顶部帧（重建后被 GRIP_MAX 钳制）落在杠心左 24px，动画里手就沿杠平移 24.7px——
+// 和当初要修的「杠在动」是同一类叙事错误。握点对同一根固定杠取常量。
+const FIXED_GRIP = [-12, 6];   // 相对杠心：略偏近侧、在杠下缘
+
 export function drawnArm(name, p, loadType) {
+  if (p.fixed && p.shoulder) {
+    const H = [p.fixed.at[0] + FIXED_GRIP[0], p.fixed.at[1] + FIXED_GRIP[1]];
+    const arm = OUT_OF_PLANE_ARM.has(name) ? rebuildArmFor(name, p) : null;
+    return { E: arm ? arm.elbow : p.elbow, H, rebuilt: !!arm };
+  }
   // 器械类型由 figures.json 覆盖时（高脚杯深蹲借用前蹲姿态但拿的是哑铃），
   // 握点钳制必须按**画出来的**器械算：杠铃 ±24 是沿杠线外移的握距，哑铃只有 ±9。
   const q = loadType && p.load ? { ...p, load: { ...p.load, type: loadType } } : p;
@@ -1113,7 +1141,9 @@ export function renderPose(p, opts = {}) {
   }
 
   // 躯干与近侧肢体
-  g.push(seg(p.shoulder, p.hip, 'sk-trunk'));
+  const trunkTop = p.shoulderMid ?? p.shoulder;
+  g.push(seg(trunkTop, p.hip, 'sk-trunk'));
+  if (p.shoulderMid && p.shoulder2) g.push(seg(p.shoulder, p.shoulder2, 'sk-trunk'));
   g.push(seg(p.hip, p.knee));
   g.push(seg(p.knee, p.ankle));
   g.push(seg(p.heel, p.toe, 'sk-foot'));

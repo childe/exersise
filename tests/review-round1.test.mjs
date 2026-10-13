@@ -72,7 +72,9 @@ test('帕洛夫：手全程在胸高合握，推出不是向下', () => {
     const p = POSES[n];
     const chest = p.shoulder[1] + (p.hip[1] - p.shoulder[1]) * 0.25;
     assert.ok(Math.abs(p.wrist[1] - chest) <= 6, `${n}: 手离胸线 ${Math.abs(p.wrist[1] - chest).toFixed(1)}px`);
-    assert.equal(p.wrist[0], p.shoulder[0], `${n}: 正视图里合握的手应在中线上`);
+    // 正视图现在有肩宽，中线是两肩的中点，不再等于 shoulder[0]
+    const mid = (p.shoulder[0] + p.shoulder2[0]) / 2;
+    assert.ok(Math.abs(p.wrist[0] - mid) < 1, `${n}: 正视图里合握的手应在中线上（手 ${p.wrist[0]}、中线 ${mid}）`);
   }
   // 推出 = 肘向中线收（景深方向在正视图里只能这样表现）
   assert.ok(POSES.pallof_out.elbow[0] > POSES.pallof_in.elbow[0], '推出时肘应向中线收');

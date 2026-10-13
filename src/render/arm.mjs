@@ -41,6 +41,14 @@ export function rebuildArm(p, opts = {}) {
 
   // 2. 握点：在 y = barY 这条线上，取使 ∠SEH = targetDeg 的那个点。
   //    从 E→S 方向转 ±targetDeg 得两条射线，与杠线求交，取离原 wrist 近的一支。
+  // 前臂沿**世界竖直**到杠线：上斜凳的 facing 随凳面倾斜 30°，
+  // 复用它会把本该竖直的前臂也转 30°，而判据写的是「前臂接近垂直」（对地面而言）。
+  if (opts.handAlongVertical) {
+    const H = [E[0], barY];
+    const ang3 = (c, a, b) => { const ux=a[0]-c[0], uy=a[1]-c[1], vx=b[0]-c[0], vy=b[1]-c[1];
+      return Math.acos(Math.max(-1, Math.min(1, (ux*vx+uy*vy)/(Math.hypot(ux,uy)*Math.hypot(vx,vy))))) * 180 / Math.PI; };
+    return { hand: H, elbow: E, upper: u, fore: Math.abs(E[1] - barY), deg: ang3(E, S, H), minDeg: MIN_DEG };
+  }
   if (opts.handAlongFacing && opts.facing) {
     // 前臂沿朝脸方向竖直到杠：H = E + k·facing，k 使 H 落在杠线上
     const f = opts.facing, k = Math.abs(f[1]) > 1e-6 ? (barY - E[1]) / f[1] : 0;
@@ -112,7 +120,7 @@ export const OUT_OF_PLANE_ARM = new Set([
 export const ARM_OVERRIDES = {
   // 卧推底部：肘在杠正下方，前臂沿朝脸方向竖直到杠（自检判据「前臂接近垂直」）
   bench_bottom: { foreshorten: 0.45, handAlongFacing: true },
-  incline_bottom: { foreshorten: 0.45, handAlongFacing: true },
+  incline_bottom: { foreshorten: 0.45, handAlongVertical: true },
   // 引体顶部：肘在后下方（cue「肘往下往后拉」）。链上的肘够不到这个方向——
   // 手钉在杠上、肩在杠下 18px，50+39 的链只能把肘甩到身体前上方。
   pullup_top: { elbowDir: [-0.6, 0.8], foreshorten: 0.32 },

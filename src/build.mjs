@@ -14,7 +14,8 @@ import { scanSafety, scanSafetyReview } from './validate/safety.mjs';
 import { validatePoses, validateFigures as validatePoseFigures, validateMuscles,
   validateFrameConsistency, validateJointAngles, validateContacts, validateStraightLines,
   validateFixedRigs, validateBarOnChest, validateSecondHand, validateKneeStable,
-  validateDrawnAnimation, validateRackSide, validateAnimBox, validateHeldLoad } from './validate/poses.mjs';
+  validateDrawnAnimation, validateRackSide, validateAnimBox, validateHeldLoad,
+  validateCoronal } from './validate/poses.mjs';
 import { MUSCLE_NAMES } from './render/muscles.mjs';
 import { escapeHtml } from './render/claims.mjs';
 
@@ -91,6 +92,8 @@ export async function build(root = defaultRoot, { outDir } = {}) {
   if (handErrs.length) throw new Error(`远侧负荷校验失败:\n- ${handErrs.join('\n- ')}`);
   const kneeErrs = validateKneeStable();
   if (kneeErrs.length) throw new Error(`RDL 膝角校验失败:\n- ${kneeErrs.join('\n- ')}`);
+  const coronalErrs = validateCoronal();
+  if (coronalErrs.length) throw new Error(`冠状面校验失败:\n- ${coronalErrs.join('\n- ')}`);
   const heldErrs = validateHeldLoad(data.poseFigures);
   if (heldErrs.length) throw new Error(`手持器械校验失败:\n- ${heldErrs.join('\n- ')}`);
   const rackErrs = validateRackSide();

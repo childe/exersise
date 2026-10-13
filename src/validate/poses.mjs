@@ -489,7 +489,9 @@ export function validateDrawnAnimation(figures, { steps = 24 } = {}) {
           + '——投影不可能长于真骨，手钉在器械上时肘必须由 IK 解出，不能独立插值');
       // 肘角：矢状面手臂逐帧都要像条胳膊。下拉曾在 t=0.8 折到 4.4°——
       // 上臂极角走最短弧从头顶扫到身后，与前臂在中途重合，而两端静态帧都合格。
-      if (!FORESHORTENED_ARM.has(f.start) && !FORESHORTENED_ARM.has(f.end)) {
+      // 只对两端都在矢状面内的手臂查肘角：任一端出平面时画出来的是投影，
+      // 投影角不是真肘角（反向划船从悬垂到胸触杠，肩一路靠近杠，投影里必然越折越紧）。
+      if (!a.rebuilt && !b.rebuilt && !FORESHORTENED_ARM.has(f.start) && !FORESHORTENED_ARM.has(f.end)) {
         const e = deg(arm.E, p.shoulder, arm.H);
         if (e < ELBOW_MIN) errors.push(`${at}: 画出的肘角 ${e.toFixed(1)}° 低于解剖下限 ${ELBOW_MIN}°`
           + '——前臂折回贴在上臂上。两端静态帧合格不代表中间帧合格，扫掠方向可能绕错边');
@@ -574,6 +576,33 @@ export function validateAnimBox(figures, box4Of) {
         errors.push(`${slug} t=${(i / 24).toFixed(2)}: 内容超出动画框 ${over.toFixed(1)}px，会被 viewBox 裁掉`);
         break;
       }
+    }
+  }
+  return errors;
+}
+
+/**
+ * 冠状面断言——契约 §8 长期记着「正视姿态没有任何专属断言」，这里补上。
+ *
+ * 判据里反复要求「肩线保持水平」「骨盆与肩不转」「两侧等高」，而这些话要成立，
+ * 图上得先有一条肩线。六个正视姿态原来两肩重合（肩宽 0），判据无从对照，
+ * 侧平举的手臂也只能从同一点岔开 36° 才不压在躯干上。
+ */
+export function validateCoronal() {
+  const errors = [];
+  for (const [name, p] of Object.entries(POSES)) {
+    if (p.view !== 'front') continue;
+    if (!p.shoulder2) { errors.push(`${name}: 正视姿态缺少 shoulder2，画不出肩线`); continue; }
+    const w = Math.abs(p.shoulder2[0] - p.shoulder[0]);
+    if (w < 24) errors.push(`${name}: 肩宽只有 ${w.toFixed(1)}px——正视图的肩线要能看出是一条线`);
+    if (Math.abs(p.shoulder2[1] - p.shoulder[1]) > 1)
+      errors.push(`${name}: 两肩高度差 ${Math.abs(p.shoulder2[1] - p.shoulder[1]).toFixed(1)}px，肩线不水平`);
+    // 左右对称：两侧对应点关于躯干中线镜像
+    const mid = (p.shoulder[0] + p.shoulder2[0]) / 2;
+    for (const [a, b] of [['elbow', 'elbow2'], ['wrist', 'wrist2'], ['knee', 'knee2'], ['ankle', 'ankle2']]) {
+      if (!p[a] || !p[b]) { errors.push(`${name}: 正视图缺少 ${b}，画不出两侧对照`); continue; }
+      const dx = Math.abs((p[a][0] + p[b][0]) / 2 - mid), dy = Math.abs(p[a][1] - p[b][1]);
+      if (dx > 2 || dy > 1) errors.push(`${name}: ${a}/${b} 不是左右镜像（中线偏 ${dx.toFixed(1)}、高差 ${dy.toFixed(1)}）`);
     }
   }
   return errors;
