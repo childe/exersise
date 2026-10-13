@@ -212,8 +212,18 @@ export const ELBOW_PENDING = new Map([
 ]);
 
 /** 关节角校验。出平面的手臂按重建后的肘位判定——那才是实际画出来的东西。 */
-export function validateJointAngles() {
+/**
+ * @param {object} figures data/figures.json——肘角要查**画出来的**那条手臂，
+ * 而画出来的手臂取决于 figures 的 load_type 覆盖（高脚杯深蹲借用前蹲姿态但拿的是哑铃，
+ * 握点钳制从杠铃的 ±24 变成 ±9，肘角随之从 61° 掉到 36°）。不传 figures 就是在查另一条臂。
+ */
+export function validateJointAngles(figures = {}) {
   const errors = [];
+  const loadTypeOf = new Map();
+  for (const f of Object.values(figures)) {
+    if (!f.load_type) continue;
+    for (const k of ['start', 'end']) if (f[k]) loadTypeOf.set(f[k], f.load_type);
+  }
   for (const [name, p] of Object.entries(POSES)) {
     for (const [kj, hj, aj, label] of [['knee','hip','ankle','膝角'], ['knee2','hip','ankle2','远侧膝角']]) {
       if (p[kj] && p[hj] && p[aj]) {
@@ -230,7 +240,9 @@ export function validateJointAngles() {
     }
     if (!p.shoulder || !p.elbow || !p.wrist) continue;
     if (FORESHORTENED_ARM.has(name)) continue;   // 指向读者的手臂，投影肘角不是真肘角
-    const arm = OUT_OF_PLANE_ARM.has(name) ? rebuildArmFor(name, p) : null;
+    const lt = loadTypeOf.get(name);
+    const q = lt && p.load ? { ...p, load: { ...p.load, type: lt } } : p;
+    const arm = OUT_OF_PLANE_ARM.has(name) ? rebuildArmFor(name, q) : null;
     const e = arm ? deg(arm.elbow, p.shoulder, arm.hand) : deg(p.elbow, p.shoulder, p.wrist);
     if (arm && arm.fore > 41) errors.push(`${name}: 重建后的前臂 ${arm.fore.toFixed(1)}px 比真长 39 还长，投影不可能长于实物——肘离杠线太远`);
     if (e >= ELBOW_MIN) {
@@ -505,7 +517,7 @@ export function validateAnimBox(figures, box4Of) {
     const plumb = f.plumb !== false && !f.no_load;
     for (let i = 0; i <= 24; i++) {
       const q = interpolate(A, B, i / 24, { plumb: f.plumb, handPath: !!f.hand_path });
-      const c = contentBox(q, { plumb });
+      const c = contentBox(q, { plumb, loadType: f.load_type });
       const over = Math.max(x0 - c.x, y0 - c.y, (c.x + c.w) - x1, (c.y + c.h) - y1);
       if (over > 1.5) {
         errors.push(`${slug} t=${(i / 24).toFixed(2)}: 内容超出动画框 ${over.toFixed(1)}px，会被 viewBox 裁掉`);

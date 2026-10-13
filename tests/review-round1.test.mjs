@@ -41,11 +41,17 @@ test('正视图的补间帧保留远侧腿与 view——动画不会变成单腿
 
 // ── 维度 2 / 5：引体是人动杠不动 ──────────────────────
 
-test('引体向上：杠两帧同位，人向上移动，顶部下巴过杠', async () => {
+test('引体向上：杠两帧同位，人向上移动，顶部肩在杠下、头过杠', async () => {
   const a = POSES.pullup_hang, b = POSES.pullup_top;
   assert.deepEqual(a.fixed.at, b.fixed.at, '单杠两帧必须在同一位置');
   assert.ok(a.hip[1] - b.hip[1] > 20, `髋应明显上移，实际 ${(a.hip[1] - b.hip[1]).toFixed(1)}px`);
-  assert.ok(b.head[1] + 12 <= b.fixed.at[1] + 0.5, `顶部下巴 y=${(b.head[1] + 12).toFixed(1)} 应不低于杠 y=${b.fixed.at[1]}`);
+  // 手握在杠上，肩必然在手**之下**——原来归一化后肩跑到杠上方 8.7px，人悬在自己的手之上。
+  assert.ok(b.shoulder[1] - b.fixed.at[1] > 10,
+    `顶部肩 y=${b.shoulder[1].toFixed(1)} 必须明显低于杠 y=${b.fixed.at[1]}`);
+  // 「下巴过杠」在这副骨架上只能表现为头心与杠齐平：颈 17、头半径 12，
+  // 下巴最多比肩高 5px，而肩必须在杠下 18px。头顶露出杠上方 10px 是它能画出的最接近的样子。
+  assert.ok(b.head[1] - b.fixed.at[1] < 4, `顶部头心 y=${b.head[1].toFixed(1)} 应与杠 y=${b.fixed.at[1]} 大致齐平`);
+  assert.ok(b.head[1] - 12 < b.fixed.at[1] - 5, '头顶应露在杠上方');
   assert.ok(a.toe[1] < GROUND - 5, '悬垂时脚应离地');
   assert.deepEqual(validateFixedRigs(await readJson('data/figures.json')), []);
 });

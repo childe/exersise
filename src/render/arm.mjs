@@ -30,9 +30,12 @@ export function rebuildArm(p, opts = {}) {
   const S = [...p.shoulder];
   const barY = bar.at[1];
 
-  // 1. 肘：照抄原始方向，长度按投影缩短
-  const d0 = Math.hypot(p.elbow[0] - S[0], p.elbow[1] - S[1]) || 1;
-  const eu = [(p.elbow[0] - S[0]) / d0, (p.elbow[1] - S[1]) / d0];
+  // 1. 肘：照抄原始方向，长度按投影缩短。
+  //    opts.elbowDir 用于链上的肘位被别的约束占住的姿态（引体顶部的链要够到杠，
+  //    肘只能甩到身体前上方；而画出来的肘必须在后下方）。
+  const ed = opts.elbowDir ?? [p.elbow[0] - S[0], p.elbow[1] - S[1]];
+  const d0 = Math.hypot(ed[0], ed[1]) || 1;
+  const eu = [ed[0] / d0, ed[1] / d0];
   const u = UPPER_ARM * foreshorten;
   const E = [S[0] + eu[0] * u, S[1] + eu[1] * u];
 
@@ -96,6 +99,8 @@ export const OUT_OF_PLANE_ARM = new Set([
   'bench_bottom', 'incline_bottom', 'pullup_top', 'inverted_row_end',
   // 下拉终点：握距比肩宽、肘向两侧下方，把手贴到锁骨时侧视里手几乎落在肩上
   'pulldown_end',
+  // 坐姿推胸起始：肘向两侧张开（与卧推底部同类），原来画成满长向后伸进靠背里
+  'machine_press_start',
   // 早安式手扶肩上握带：握距沿 Z 轴展开
   'gm_top', 'gm_bottom',
 ]);
@@ -108,6 +113,9 @@ export const ARM_OVERRIDES = {
   // 卧推底部：肘在杠正下方，前臂沿朝脸方向竖直到杠（自检判据「前臂接近垂直」）
   bench_bottom: { foreshorten: 0.45, handAlongFacing: true },
   incline_bottom: { foreshorten: 0.45, handAlongFacing: true },
+  // 引体顶部：肘在后下方（cue「肘往下往后拉」）。链上的肘够不到这个方向——
+  // 手钉在杠上、肩在杠下 18px，50+39 的链只能把肘甩到身体前上方。
+  pullup_top: { elbowDir: [-0.6, 0.8], foreshorten: 0.32 },
 };
 
 /** 按姿态名取覆盖参数再重建。renderPose 与校验都该走这个入口，保证画的和查的一致。 */

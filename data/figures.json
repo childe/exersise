@@ -189,7 +189,8 @@
     "cap_start": "起始",
     "cap_end": "锁定",
     "load_type": "band",
-    "note": "弹力带踩在脚下、从足中线拉到手；身体姿态与杠铃推举共用。"
+    "note": "弹力带踩在脚下、从足中线拉到手；身体姿态与杠铃推举共用。",
+    "plumb": false
   },
   "db-shoulder-press": {
     "start": "seated_press_bottom",
@@ -203,7 +204,8 @@
     "end": "seated_press_top",
     "cap_start": "起始",
     "cap_end": "锁定",
-    "plumb": false
+    "plumb": false,
+    "load_type": "handle"
   },
   "db-lateral-raise": {
     "start": "lateral_raise_down",
@@ -219,7 +221,8 @@
     "cap_start": "起始",
     "cap_end": "肩高",
     "plumb": false,
-    "note": "单臂执行，图示为双侧对照，便于看两侧是否等高。"
+    "note": "单臂执行，图示为双侧对照，便于看两侧是否等高。",
+    "load_type": "handle"
   },
   "cable-pushdown": {
     "start": "triceps_top",
@@ -254,7 +257,8 @@
     "end": "seated_row_end",
     "cap_start": "起始",
     "cap_end": "拉到躯干",
-    "plumb": false
+    "plumb": false,
+    "note": "图与坐姿器械划船共用：侧视下两者的躯干、肘与把手轨迹一致，带子与固定点未画出。"
   },
   "seated-cable-row": {
     "start": "seated_row_start",
@@ -274,8 +278,9 @@
     "start": "pullup_hang",
     "end": "pullup_top",
     "cap_start": "悬垂",
-    "cap_end": "下巴过杠",
-    "plumb": false
+    "cap_end": "最高点",
+    "plumb": false,
+    "note": "「下巴过杠」在这副骨架上只能画到头心与杠齐平：颈 17px、头半径 12px，下巴最多比肩高 5px，而手握在杠上时肩必然在杠下约 18px。真人的头颈比例比火柴人长得多，下巴确实能过杠。"
   },
   "cable-face-pull": {
     "start": "face_pull_start",
@@ -312,7 +317,8 @@
     "end": "curl_up",
     "cap_start": "起始",
     "cap_end": "顶峰",
-    "plumb": false
+    "plumb": false,
+    "load_type": "handle"
   },
   "barbell-front-rack-carry": {
     "start": "carry_front",

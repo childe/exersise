@@ -87,12 +87,12 @@ export const POSES = {
   }),
   // 前架位（高脚杯蹲 / 前蹲）：负荷在身前，躯干更直
   squat_front_bottom: P({
-    head: [100, 70], shoulder: [88, 88], elbow: [102, 112], wrist: [96, 92],
+    head: [100, 70], shoulder: [88, 88], elbow: [103, 111], wrist: [96, 92],
     hip: [48, 158], knee: [106, 150], ankle: [80, 216], heel: [72, 225], toe: [108, 225],
     load: { type: 'front', at: [94.2, 89.2] },
   }),
   squat_front_top: P({
-    head: [98, 32], shoulder: [86, 50], elbow: [96, 76], wrist: [92, 54],
+    head: [98, 32], shoulder: [86, 50], elbow: [99, 74], wrist: [92, 54],
     hip: [82, 110], knee: [84, 150], ankle: [80, 216], heel: [72, 225], toe: [108, 225],
     load: { type: 'front', at: [92.1, 48.4] },   // 躯干系 (+2, +6)：前架位在锁骨前
   }),
@@ -219,15 +219,18 @@ export const POSES = {
   }),
 
   // ── 水平拉 ─────────────────────────────────────────
+  // 俯身划船的膝是「微屈」：原来髋被摆到脚跟后 39px，膝角只有 97.6°，
+  // 画的是硬拉起始的下肢，而 cue 写「屈髋到躯干与地面 15–45 度，膝微屈」。
+  // 现在膝角 ~150°、大腿与水平 ~70°、躯干 39°。
   row_start: P({
-    head: [116, 100], shoulder: [100, 114], elbow: [100, 164], wrist: [100, 203],
-    hip: [58, 148], knee: [90, 158], ankle: [80, 216], heel: [72, 225], toe: [108, 225],
-    load: { type: 'bar', at: [100, 211] },
+    head: [144.9, 39.6], shoulder: [131.7, 50.3], elbow: [131.7, 100.3], wrist: [131.7, 139.3],
+    hip: [69.5, 100.6], knee: [90, 158], ankle: [80, 216], heel: [72, 225], toe: [108, 225],
+    load: { type: 'bar', at: [131.7, 147.3] },
   }),
   row_end: P({
-    head: [116, 100], shoulder: [100, 114], elbow: [50.1, 116.4], wrist: [84, 144],
-    hip: [58, 148], knee: [90, 158], ankle: [80, 216], heel: [72, 225], toe: [108, 225],
-    load: { type: 'bar', at: [84, 152] },
+    head: [144.9, 39.6], shoulder: [131.7, 50.3], elbow: [82.4, 58.4], wrist: [103.2, 91.4],
+    hip: [69.5, 100.6], knee: [90, 158], ankle: [80, 216], heel: [72, 225], toe: [108, 225],
+    load: { type: 'bar', at: [103.2, 99.4] },
   }),
   // 坐姿 / 器械划船：躯干近直立
   seated_row_start: P({
@@ -254,9 +257,13 @@ export const POSES = {
   // 顶部：下巴过杠 → 头心至少在杠上 12px，肩与杠齐平。此时肘在后下方、手在杠上，
   // 侧视里上臂与前臂投影重叠——与背蹲同一类出平面手臂，登记在 OUT_OF_PLANE_ARM。
   // 原来头心在杠下 10px，画出来是"下巴在杠下 35px"。
+  // 顶部：手在杠上，肩必然在手**之下**——原来归一化后肩跑到杠上方 8.7px，
+  // 等于人悬在自己的手之上，任何视角都不成立。现在肩在杠下 18px。
+  // 代价：这副骨架的头颈比例（颈 17、头半径 12）让下巴只能比肩高 5px，
+  // 所以「下巴过杠」在图上表现为头心与杠齐平、头顶露出杠上方，图注已改。
   pullup_top: P({
-    head: [92, 16], shoulder: [86, 32], elbow: [70, 52], wrist: [90, 36],
-    hip: [88, 112], knee: [92, 158], ankle: [94, 190], heel: [88, 196], toe: [108, 192],
+    head: [92, 35], shoulder: [86, 52], elbow: [120.7, 15.8], wrist: [90, 40],
+    hip: [88, 132], knee: [92, 178], ankle: [94, 210], heel: [88, 216], toe: [108, 212],
     fixed: { type: 'pullup_bar', at: [90, 30] },
   }),
   // 下拉：坐姿，负荷在上
@@ -283,7 +290,9 @@ export const POSES = {
     load: { type: 'hands', at: [84, 136] },
   }),
   carry_front: P({
-    head: [98, 38], shoulder: [86, 56], elbow: [106, 72], wrist: [100, 58],
+    // 肘抬到与杠齐平：卡片把「肘往下掉→杠往前滚、压住气管」列为常见错误，
+    // 原来却把肘画成整条手臂的最低点（低于杠 13.8px）。
+    head: [98, 38], shoulder: [86, 56], elbow: [108, 52], wrist: [100, 58],
     hip: [84, 114], knee: [84, 152], ankle: [82, 216], heel: [72, 225], toe: [108, 225],
     load: { type: 'front', at: [93.9, 58.3] },
   }),
@@ -880,7 +889,10 @@ export const POSE_NAMES = Object.keys(POSES);
 
 // 固定 200×240 的画布上，人只占中间一小条，缩到卡片宽度后就糊成一团。
 // 按内容算包围盒再留边，同样的显示宽度下人形能大一倍，是可读性最便宜的一次改进。
-export function contentBox(p, { plumb = false } = {}) {
+export function contentBox(p, { plumb = false, loadType } = {}) {
+  // 画框要按**画出来的**器械算：高脚杯深蹲借用前蹲姿态，按杠铃的半宽 42 留位，
+  // 框比实际内容宽 27%，人形被挤小。
+  if (loadType && p.load) p = { ...p, load: { ...p.load, type: loadType } };
   const xs = [], ys = [];
   const add = (pt) => { if (pt) { xs.push(pt[0]); ys.push(pt[1]); } };
   for (const k of ['head','shoulder','elbow','wrist','hip','knee','ankle','heel','toe',
@@ -1083,8 +1095,8 @@ export function renderSkeleton(fig, nameZh, prime = [], slug = '') {
   const a = strip(POSES[fig.start]);
   const b = strip(POSES[fig.end ?? fig.start]);
   const plumb = fig.plumb !== false && !fig.no_load;
-  const boxes = [contentBox(a, { plumb })];
-  if (b && b !== a) boxes.push(contentBox(b, { plumb }));
+  const boxes = [contentBox(a, { plumb, loadType: fig.load_type })];
+  if (b && b !== a) boxes.push(contentBox(b, { plumb, loadType: fig.load_type }));
   const x0 = Math.min(...boxes.map((x) => x.x));
   const y0 = Math.min(...boxes.map((x) => x.y));
   const x1 = Math.max(...boxes.map((x) => x.x + x.w));
@@ -1100,7 +1112,7 @@ export function renderSkeleton(fig, nameZh, prime = [], slug = '') {
     // 只并静态帧会把这点差额漏掉。
     for (let i = 1; i <= 16; i++) {
       const q = interpolate(a, b, i / 16, { plumb: fig.plumb, handPath: !!fig.hand_path });
-      ab.push(contentBox(q, { plumb }));
+      ab.push(contentBox(q, { plumb, loadType: fig.load_type }));
     }
     const ax0 = Math.min(...ab.map((x) => x.x)), ay0 = Math.min(...ab.map((x) => x.y));
     const ax1 = Math.max(...ab.map((x) => x.x + x.w)), ay1 = Math.max(...ab.map((x) => x.y + x.h));

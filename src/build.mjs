@@ -57,7 +57,7 @@ async function bundleAnim(root) {
   return js;
 }
 
-export async function build(root = defaultRoot) {
+export async function build(root = defaultRoot, { outDir } = {}) {
   const data = await loadData(root);
   const css = await readFile(path.join(root, 'src/assets/styles.css'), 'utf8');
   const js = await readFile(path.join(root, 'src/assets/app.js'), 'utf8');
@@ -77,7 +77,7 @@ export async function build(root = defaultRoot) {
   if (frameErrs.length) throw new Error(`骨架两帧一致性校验失败:\n- ${frameErrs.join('\n- ')}`);
   const muscleErrs = validateMuscles(data.exercises, MUSCLE_NAMES);
   if (muscleErrs.length) throw new Error(`肌肉分区校验失败:\n- ${muscleErrs.join('\n- ')}`);
-  const angleErrs = validateJointAngles();
+  const angleErrs = validateJointAngles(data.poseFigures);
   if (angleErrs.length) throw new Error(`关节角校验失败:\n- ${angleErrs.join('\n- ')}`);
   const contactErrs = validateContacts();
   if (contactErrs.length) throw new Error(`支撑关系校验失败:\n- ${contactErrs.join('\n- ')}`);
@@ -132,15 +132,16 @@ export async function build(root = defaultRoot) {
   }
   const linkErrs = validateInternalLinks(html);
   if (linkErrs.length) throw new Error(`内部锚点校验失败:\n- ${linkErrs.join('\n- ')}`);
-  await mkdir(path.join(root, 'dist'), { recursive: true });
-  await writeFile(path.join(root, 'dist/index.html'), html, 'utf8');
+  const out = outDir ?? path.join(root, 'dist');
+  await mkdir(out, { recursive: true });
+  await writeFile(path.join(out, 'index.html'), html, 'utf8');
   // 发布用的同一份内容：Artifact 发布时由平台补 <!doctype>/<html>/<head>/<body> 外壳，
   // 所以这里去掉文档外壳，只留 <title>/<style>/正文/<script>。两份内容完全同源。
   const inner = html
     .replace(/^[\s\S]*?<title>/, '<title>')
     .replace(/<\/head>\s*<body>/, '')
     .replace(/<\/body>\s*<\/html>\s*$/, '');
-  await writeFile(path.join(root, 'dist/artifact.html'), inner, 'utf8');
+  await writeFile(path.join(out, 'artifact.html'), inner, 'utf8');
   return html;
 }
 

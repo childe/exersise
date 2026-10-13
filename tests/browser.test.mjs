@@ -4,6 +4,8 @@
 import test, { before, after } from 'node:test';
 import assert from 'node:assert/strict';
 import path from 'node:path';
+import { mkdtemp } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
 import { pathToFileURL } from 'node:url';
 import { build } from '../src/build.mjs';
 import { launch, findBrowser } from './helpers/browser.mjs';
@@ -16,8 +18,10 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 before(async () => {
   if (skip) return;
-  await build();
-  B = await launch(pathToFileURL(path.join(root, 'dist/index.html')).href);
+  // 自己的输出目录：并行跑的其他测试文件也在 build()，共用 dist/ 会互相覆盖
+  const outDir = await mkdtemp(path.join(tmpdir(), 'fitguide-browser-'));
+  await build(root, { outDir });
+  B = await launch(pathToFileURL(path.join(outDir, 'index.html')).href);
 }, { timeout: 90000 });
 
 after(async () => { if (B) await B.close(); });
