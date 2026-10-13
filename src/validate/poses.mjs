@@ -4,7 +4,7 @@
 // 前提是它必须可核验——而可核验的意思不是"我看了一眼觉得对"，是**写成断言、构建期跑**。
 // 这个文件就是那个前提。断言失败 = 构建失败，画错的图进不了页面。
 
-import { POSES, RAW_POSES, FORESHORTENED_ARM, GROUND, MIDFOOT, FIG_W, FIG_H, drawnArm, contentBox, torsoCoords } from '../render/skeleton.mjs';
+import { POSES, RAW_POSES, FORESHORTENED_ARM, GROUND, MIDFOOT, FIG_W, FIG_H, drawnArm, contentBox, torsoCoords, RACKED_POSES, BAND_HALF } from '../render/skeleton.mjs';
 import { interpolate } from '../render/interp.mjs';
 import { armDescriptor, blendArm } from '../assets/anim.js';
 import { rebuildArmFor, OUT_OF_PLANE_ARM } from '../render/arm.mjs';
@@ -431,6 +431,8 @@ export function validateKneeStable() {
  */
 const HELD_LOAD = new Set(['bar', 'front', 'hands', 'hands2', 'handle', 'band']);
 const HEAD_CLEAR = 16;   // 头半径 12 + 把手半高 4
+// 与 renderPose 的 barBehind 同口径：架在身上的负荷画在身体之后，被身体挡住。
+const DRAWN_BEHIND = (name, p) => RACKED_POSES.has(name) || ['sled', 'plate'].includes(p.load?.type);
 /**
  * 静态帧：手持类器械的手必须真的握在器械上。
  *
@@ -449,9 +451,11 @@ export function validateHeldLoad(figures) {
     if (!p.load) continue;
     const type = lt.get(name) ?? p.load.type;
     if (!HELD_LOAD.has(type)) continue;
-    if (p.loadAnchor === 'shoulder') continue;      // 架在身上的杠不是握在手里
+    if (DRAWN_BEHIND(name, p)) continue;      // 架在身上、画在身后的杠不是握在手里
+    // 上限按器械自己的半宽给：杠铃握点可沿杠线外移到杠片内缘，哑铃只有 9，带子 17。
+    const max = { bar: 26, front: 26, hands: 11, hands2: 11, handle: 12, band: BAND_HALF + 2 }[type] ?? 12;
     const d = L(drawnArm(name, p, lt.get(name)).H, p.load.at);
-    if (d > 12) errors.push(`${name}: 画出的手离器械 ${d.toFixed(1)}px——${type} 是手持器械，手该握在上面`);
+    if (d > max) errors.push(`${name}: 画出的手离器械 ${d.toFixed(1)}px（${type} 的上限 ${max}）——手该握在上面`);
   }
   return errors;
 }
@@ -485,14 +489,16 @@ export function validateDrawnAnimation(figures, { steps = 24 } = {}) {
           + '——投影不可能长于真骨，手钉在器械上时肘必须由 IK 解出，不能独立插值');
       // 肘角：矢状面手臂逐帧都要像条胳膊。下拉曾在 t=0.8 折到 4.4°——
       // 上臂极角走最短弧从头顶扫到身后，与前臂在中途重合，而两端静态帧都合格。
-      if (!a.rebuilt && !b.rebuilt && !FORESHORTENED_ARM.has(f.start) && !FORESHORTENED_ARM.has(f.end)) {
+      if (!FORESHORTENED_ARM.has(f.start) && !FORESHORTENED_ARM.has(f.end)) {
         const e = deg(arm.E, p.shoulder, arm.H);
         if (e < ELBOW_MIN) errors.push(`${at}: 画出的肘角 ${e.toFixed(1)}° 低于解剖下限 ${ELBOW_MIN}°`
           + '——前臂折回贴在上臂上。两端静态帧合格不代表中间帧合格，扫掠方向可能绕错边');
       }
       // 器械不许撞进头里：静态终点帧早有这条断言，动画里复发过（下拉把手离头心 12.2px）
-      // 架在肩上的杠本来就贴着后颈（画在身体之后），这条只查手里拿着、会从脸前经过的器械
-      if (handMax !== null && A.loadAnchor !== 'shoulder' && p.load && p.head && L(p.load.at, p.head) < HEAD_CLEAR)
+      // 只豁免**画在身体之后**的负荷（架在后颈的杠/带被头挡住，贴着是对的）。
+      // 原来按 loadAnchor 豁免：下拉为了稳住把手把锚点改成了 shoulder，
+      // 这条专为下拉写的断言当场对下拉失效，把手照旧压在脸上。
+      if (handMax !== null && !DRAWN_BEHIND(f.start, A) && p.load && p.head && L(p.load.at, p.head) < HEAD_CLEAR)
         errors.push(`${at}: 器械离头心 ${L(p.load.at, p.head).toFixed(1)}px，小于 ${HEAD_CLEAR}（头半径 + 器械半高）`);
       if (handMax !== null && p.load && L(arm.H, p.load.at) > handMax + 1)
         errors.push(`${at}: 画出的手离器械 ${L(arm.H, p.load.at).toFixed(1)}px（两端只有 ${handMax.toFixed(1)}）——手脱离了负荷`);

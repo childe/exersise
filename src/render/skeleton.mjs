@@ -8,7 +8,17 @@ import { interpolate } from './interp.mjs';
 const HEAD_RADIUS = FACE_GEOMETRY.HEAD_R;
 // 弹力带那一段「被手握住的带子」的半宽。握点钳制用同一个数（arm.mjs 的 BAND_GRIP），
 // 手才正好落在带子上：±9 会把肘角压到 24°，±24 则让手悬在带子外 8px。
-export const BAND_HALF = 17;   // 头圆半径：画、贴地判定与断言共用同一个数
+export const BAND_HALF = 17;
+/**
+ * 负荷**架在身上**的姿态：杠压在斜方肌/后三角/锁骨上，或带子绕过后颈。
+ * 这些负荷画在身体之后（被身体挡住是对的），也因此豁免「器械不许撞进头里」。
+ * 推举、下拉、划船这些**握在手里**的负荷不在此列——它们本来就该从脸前经过，
+ * 该让路的是头，不是断言。
+ */
+export const RACKED_POSES = new Set([
+  'squat_top', 'squat_bottom', 'squat_lowbar_top', 'squat_lowbar_bottom',
+  'squat_front_top', 'squat_front_bottom', 'carry_front', 'gm_top', 'gm_bottom',
+]);   // 头圆半径：画、贴地判定与断言共用同一个数
 
 // 动作骨架示意图。
 //
@@ -211,7 +221,8 @@ export const POSES = {
 
   // ── 垂直推 ─────────────────────────────────────────
   ohp_bottom: P({
-    head: [90, 38], shoulder: [86, 56], elbow: [96, 80], wrist: [90, 58],
+    // 推起时头略后让路（cue 原文）：原来头反而前移，杠有 6 帧从头圆正中穿过。
+    head: [60, 42], shoulder: [86, 56], elbow: [96, 80], wrist: [90, 58],
     hip: [84, 112], knee: [84, 150], ankle: [82, 216], heel: [72, 225], toe: [108, 225],
     load: { type: 'bar', at: [92, 54] },
   }),
@@ -271,10 +282,11 @@ export const POSES = {
   }),
   // 下拉：坐姿，负荷在上
   pulldown_start: P({
-    head: [84, 104], shoulder: [86, 120], elbow: [88, 70], wrist: [90, 31],
+    head: [84, 104], shoulder: [86, 120], elbow: [84.8, 70], wrist: [104, 36],
     hip: [84, 178], knee: [130, 184], ankle: [158, 216], heel: [154, 225], toe: [174, 221],
     bench: [60, 186, 44, 8],
-    load: { type: 'handle', at: [90, 25] },
+    // 把手在头前：横杆从脸前拉到锁骨前，不是从头颅里穿过去
+    load: { type: 'handle', at: [106, 30] },
   }),
   pulldown_end: P({
     // 终点把手在锁骨前（肩前 10、下 5），不是中胸——cue 与判据都写「拉到锁骨前」。
@@ -283,7 +295,7 @@ export const POSES = {
     head: [84, 104], shoulder: [86, 120], elbow: [86, 170], wrist: [110, 160],
     hip: [84, 178], knee: [130, 184], ankle: [158, 216], heel: [154, 225], toe: [174, 221],
     bench: [60, 186, 44, 8],
-    load: { type: 'handle', at: [96, 125] },
+    load: { type: 'handle', at: [106, 125] },
   }),
 
   // ── 搬运 ───────────────────────────────────────────
@@ -1083,8 +1095,10 @@ export function renderPose(p, opts = {}) {
   // 架在肩上的杠画在身体**之后**：侧视里它在头颈后方。画在前面的话，
   // 杠心到头心 14.2px 而头半径 12.5px、杠线宽 3.4px，杠必然从头颅穿过去。
   // 其余负荷（哑铃、把手、阻力垫）握在手上或顶在肢体上，仍画在前面。
-  // 弹力带同理：它从脚下拉到肩上，画在前面时那条线从脸上横过去。
-  const barBehind = LD && ['bar', 'front', 'sled', 'plate', 'band'].includes(LD.type);
+  // 画在身体之后还是之前，取决于负荷**架在身上还是握在手里**，不是取决于它画成什么形状。
+  // 按类型枚举的后果：figures.json 的 load_type 覆盖会悄悄改变前后关系——
+  // 高脚杯深蹲把 front 覆盖成 hands，哑铃就从头后翻到头前，矩形盖在下巴上。
+  const barBehind = LD && (RACKED_POSES.has(name) || ['sled', 'plate'].includes(LD.type));
   if (barBehind) g.push(load(LD));
 
   // 远侧肢体先画（浅一档），形成前后关系
