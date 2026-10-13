@@ -6,7 +6,7 @@
 
 import { POSES, RAW_POSES, FORESHORTENED_ARM, GROUND, MIDFOOT, FIG_W, FIG_H, drawnArm, contentBox, torsoCoords, RACKED_POSES, BEHIND_POSES, BAND_HALF, BENCH_GAP } from '../render/skeleton.mjs';
 import { interpolate } from '../render/interp.mjs';
-import { armDescriptor, blendArm } from '../assets/anim.js';
+import { armDescriptor, blendArm, armSidePlan } from '../assets/anim.js';
 import { rebuildArmFor, OUT_OF_PLANE_ARM } from '../render/arm.mjs';
 import { facing, FACE_GEOMETRY } from '../render/facing.mjs';
 
@@ -490,7 +490,10 @@ export function validateHeldLoad(figures) {
     for (const ov of (variants.get(name) ?? new Set([undefined]))) {
     const type = ov ?? p.load.type;
     if (!HELD_LOAD.has(type)) continue;
-    if (DRAWN_BEHIND(name, p)) continue;      // 架在身上、画在身后的杠不是握在手里
+    // 架在身上的负荷不是握在手里。注意这里的豁免**只用于**手—器械距离这一条：
+    // 第十轮核对过，11 个 RACKED 姿态即使不豁免也全部通过（最紧的是背蹲 24.0 ≤ 26），
+    // 所以这条豁免其实可以更窄；留着是为了语义清楚，不是为了放过谁。
+    if (DRAWN_BEHIND(name, p)) continue;
     // 上限按器械自己的半宽给：杠铃握点可沿杠线外移到杠片内缘，哑铃只有 9，带子 17。
     const max = { bar: 26, front: 26, hands: 11, hands2: 11, handle: 12, band: BAND_HALF + 2 }[type] ?? 12;
     const d = L(drawnArm(name, p, ov).H, p.load.at);
@@ -511,6 +514,10 @@ export function validateDrawnAnimation(figures, { steps = 24 } = {}) {
     const lt = f.load_type ?? undefined;
     const dA = drawnArm(f.start, A, lt), dB = drawnArm(f.end, B, lt);
     const a = armDescriptor(dA, A), b = armDescriptor(dB, B);
+    // 必须和 anim.js 用同一条代码路径：少传 plan，blendArm 就退回「每帧各自就近选边」，
+    // 断言核验的是另一条路径——第九轮刚修掉的那条。两端异侧的 6 个动作分歧最大 18.5px。
+    const iopts = { plumb: f.plumb, handPath: !!f.hand_path };
+    const plan = armSidePlan(a, b, A, B, dA, dB, interpolate, iopts);
     const upMax = Math.max(L(A.shoulder, dA.E), L(B.shoulder, dB.E));
     const foreMax = Math.max(L(dA.E, dA.H), L(dB.E, dB.H));
     const held = HELD_LOAD.has((lt ?? A.load?.type));
@@ -520,7 +527,7 @@ export function validateDrawnAnimation(figures, { steps = 24 } = {}) {
     for (let i = 0; i <= steps; i++) {
       const u = i / steps;
       const p = interpolate(A, B, u, { plumb: f.plumb, handPath: !!f.hand_path });
-      const arm = blendArm(a, b, u, p) ?? { E: p.elbow, H: p.wrist };
+      const arm = blendArm(a, b, u, p, plan) ?? { E: p.elbow, H: p.wrist };
       const at = `${slug} t=${u.toFixed(2)}`;
       if (L(p.shoulder, arm.E) > upMax + 1)
         errors.push(`${at}: 画出的上臂 ${L(p.shoulder, arm.E).toFixed(1)} 超出两端最大值 ${upMax.toFixed(1)}`);
@@ -544,6 +551,13 @@ export function validateDrawnAnimation(figures, { steps = 24 } = {}) {
       if (deg(arm.E, p.shoulder, arm.H) > eMax + 8)
         errors.push(`${at}: 画出的肘角 ${deg(arm.E, p.shoulder, arm.H).toFixed(1)}° 超过两端最大值 ${eMax.toFixed(1)}°`
           + '——手够不到器械时被拉直了，应放长投影到真骨为止，而不是把骨头拉长');
+      // 端点必须回到静态帧——画出来的手臂也算。原来只有 validateInterp 查链上的肩/髋/膝。
+      if (i === 0 || i === steps) {
+        const ref = i === 0 ? dA : dB;
+        for (const [got, want, label] of [[arm.E, ref.E, '肘'], [arm.H, ref.H, '手']]) {
+          if (L(got, want) > 3) errors.push(`${at}: 画出的${label}与静态帧差 ${L(got, want).toFixed(2)}px`);
+        }
+      }
       // 肢体不穿头：静态帧有 validateLimbVsHead，动画帧原来没有——
       // 下拉的肘曾在 t=0.73 整个落进头圆（离头心 8.1px），下一帧就是 41.7px 的瞬移。
       if (p.head && !FACE_LEVEL_ARM.has(f.start) && !FACE_LEVEL_ARM.has(f.end)) {

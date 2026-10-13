@@ -860,7 +860,12 @@ function normalize(name, p) {
       const xs = q.support.map((j) => q[j][0]), ys = q.support.map((j) => q[j][1]);
       // 俯卧的髋垫：前缘在髋骨（cue「髋骨上缘略高于垫子前缘」），垫子只往脚的方向延伸
       const proneHip = PRONE_POSES.has(name) && q.support.length === 1 && q.support[0] === 'hip';
-      const x0 = proneHip ? q.hip[0] - 4 : Math.min(...xs) - 24, x1 = proneHip ? q.hip[0] + 44 : Math.max(...xs) + 24;
+      // 后脚搭凳（保加利亚）：凳面只向**脚后**延伸，前缘停在踝上。
+      // 两侧各 +24 的话凳子伸到膝那一侧，后侧小腿要从 8px 厚的凳板里穿过去 3.95px——
+      // 那是这一类重叠里唯一物理上讲不通的一处（其余几处是手臂/腿在凳侧面，侧视本就重叠）。
+      const footOnBench = q.support.length === 1 && q.support[0] === 'ankle2';
+      const x0 = proneHip ? q.hip[0] - 4 : footOnBench ? Math.min(...xs) - 44 : Math.min(...xs) - 24;
+      const x1 = proneHip ? q.hip[0] + 44 : footOnBench ? Math.max(...xs) + 4 : Math.max(...xs) + 24;
       q.bench = [x0, Math.max(...ys) + BENCH_GAP, x1 - x0, 8];
     }
   }

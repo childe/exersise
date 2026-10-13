@@ -106,7 +106,11 @@ export function blendArm(a, b, u, p, plan) {
     return { E: guess, H: armPolar(guess, armAngMix(a.hAng, b.hAng, u), hLen) };
   }
   if (plan && plan.side) {
-    const want = plan.uCross === null ? plan.side : (u <= plan.uCross ? plan.side : plan.side2);
+    // u <= uCross 在 uCross 落在端点时会退化：uCross=1 时整段都用 side（末帧回不到静态帧，
+    // 推举曾差 4.37px、肘落在手臂线的另一侧）；uCross=0 时只有 u=0 用 side。
+    // 加上 u < 1 让两个方向都成立——换边总是发生在两支解最接近的那一帧。
+    const want = plan.uCross === null ? plan.side
+      : ((u <= plan.uCross && u < 1) ? plan.side : plan.side2);
     return { E: ik2Side(p.shoulder, fr.H, fr.l1, fr.l2, want, guess), H: fr.H };
   }
   return { E: ik2(p.shoulder, fr.H, fr.l1, fr.l2, guess), H: fr.H };
