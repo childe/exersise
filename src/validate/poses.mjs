@@ -734,17 +734,42 @@ export function validateAnimEndpoints(figures) {
     const A = strip(POSES[f.start]), B = strip(POSES[f.end]);
     const lt = f.load_type ?? undefined;
     const dA = drawnArm(f.start, A, lt), dB = drawnArm(f.end, B, lt);
-    if (!dA.rebuilt && !dB.rebuilt) continue;
     const a = armDescriptor(dA, A), b = armDescriptor(dB, B);
     const iopts = { plumb: f.plumb, handPath: !!f.hand_path };
     const plan = armSidePlan(a, b, A, B, dA, dB, interpolate, iopts);
     for (const [u, ref, tag] of [[1e-9, dA, 't=0+'], [1 - 1e-9, dB, 't=1−']]) {
-      const arm = blendArm(a, b, u, interpolate(A, B, u, iopts), plan);
-      if (!arm) continue;
+      const q = interpolate(A, B, u, iopts);
+      // 矢状面动作（两端都没重建）画的是补间链的 elbow/wrist，一样要回到静态帧——
+      // 原来这里 continue 掉了 32 个动作，等于没有任何断言查它们画出来的手臂。
+      const arm = blendArm(a, b, u, q, plan) ?? { E: q.elbow, H: q.wrist };
       for (const [got, want, label] of [[arm.E, ref.E, '肘'], [arm.H, ref.H, '手']]) {
         if (L(got, want) > 3)
           errors.push(`${slug} ${tag}: 画出的${label}与静态帧差 ${L(got, want).toFixed(2)}px`);
       }
+    }
+  }
+  return errors;
+}
+
+/**
+ * cue 明说手臂相对躯干不动的动作，两帧在躯干系里必须同位。
+ *
+ * 背屈伸的「双手交叉抱胸」原来两帧的前臂在躯干系里整整反了 180°（肘与手对调），
+ * 动画中 56% 的帧肘角低于解剖下限、u=0.712 时前臂精确压在上臂上。
+ * 而 back_extension_* 在 FORESHORTENED_ARM 里，肘角断言对它整体豁免——
+ * 豁免的本意是「投影角不是真角」，不是「随便画」。
+ */
+const ARM_FIXED_TO_TORSO = [['back_extension_down', 'back_extension_up']];
+export function validateArmFixedToTorso() {
+  const errors = [];
+  for (const [a, b] of ARM_FIXED_TO_TORSO) {
+    const pa = POSES[a], pb = POSES[b];
+    if (!pa || !pb) { errors.push(`${a}/${b}: 姿态不存在`); continue; }
+    const da = drawnArm(a, pa), db = drawnArm(b, pb);
+    for (const [ka, kb, label] of [[da.E, db.E, '肘'], [da.H, db.H, '手']]) {
+      const oa = torsoCoords(pa.hip, pa.shoulder, ka), ob = torsoCoords(pb.hip, pb.shoulder, kb);
+      const d = Math.hypot(oa[0] - ob[0], oa[1] - ob[1]);
+      if (d > 2) errors.push(`${a}/${b}: 画出的${label}在躯干系里两帧差 ${d.toFixed(2)}px——cue 要求手臂贴着躯干不动`);
     }
   }
   return errors;
