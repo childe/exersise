@@ -224,13 +224,30 @@ export const ELBOW_PENDING = new Map([
  * 而画出来的手臂取决于 figures 的 load_type 覆盖（高脚杯深蹲借用前蹲姿态但拿的是哑铃，
  * 握点钳制从杠铃的 ±24 变成 ±9，肘角随之从 61° 掉到 36°）。不传 figures 就是在查另一条臂。
  */
+
+/**
+ * 姿态 → 它实际被画成的器械类型集合。
+ *
+ * 原来三条断言各自建表，写法是「一姿态一值、后写覆盖、没有 load_type 的那一支根本不入表」：
+ * ohp_bottom 被记成 band（弹力带推举），于是杠铃站姿推举画出的那条手臂从来没被查过；
+ * bench_bottom 被记成 hands，杠铃卧推那条也没查过。12 个姿态被 2–3 种器械画，只查了一种。
+ * 这正是「断言查的不是画出来的东西」那一类，所以改成枚举全部组合。
+ */
+export function loadTypeVariants(figures) {
+  const m = new Map();
+  for (const f of Object.values(figures)) {
+    for (const k of ['start', 'end']) {
+      if (!f[k]) continue;
+      if (!m.has(f[k])) m.set(f[k], new Set());
+      m.get(f[k]).add(f.load_type ?? undefined);
+    }
+  }
+  return m;
+}
+
 export function validateJointAngles(figures = {}) {
   const errors = [];
-  const loadTypeOf = new Map();
-  for (const f of Object.values(figures)) {
-    if (!f.load_type) continue;
-    for (const k of ['start', 'end']) if (f[k]) loadTypeOf.set(f[k], f.load_type);
-  }
+  const variants = loadTypeVariants(figures);
   for (const [name, p] of Object.entries(POSES)) {
     for (const [kj, hj, aj, label] of [['knee','hip','ankle','膝角'], ['knee2','hip','ankle2','远侧膝角']]) {
       if (p[kj] && p[hj] && p[aj]) {
@@ -249,14 +266,17 @@ export function validateJointAngles(figures = {}) {
     if (FORESHORTENED_ARM.has(name)) continue;   // 指向读者的手臂，投影肘角不是真肘角
     // 量**画出来的**那只手臂：重建器内部解出的 (elbow, hand) 不一定就是最终画上去的
     // （握在固定杠上的姿态会把手换成常量握点）。反向划船终点画出 5.2°，而内部解是 62°。
-    const lt = loadTypeOf.get(name);
-    const d = drawnArm(name, p, lt);
-    const e = deg(d.E, p.shoulder, d.H);
-    const fore = Math.hypot(d.H[0] - d.E[0], d.H[1] - d.E[1]);
-    if (d.rebuilt && fore > 41) errors.push(`${name}: 画出的前臂 ${fore.toFixed(1)}px 比真长 39 还长，投影不可能长于实物`);
-    // 下限：只有上限的话投影可以塌成一个点——高脚杯曾被挤到 4.2px，整条前臂藏在哑铃矩形里。
-    // 关节圆半径 3.2 + 手圆 4，低于 8px 就两个圆相交、读不出中间有一段。
-    if (d.rebuilt && fore < 8) errors.push(`${name}: 画出的前臂只有 ${fore.toFixed(1)}px，肘与手两个圆会叠在一起，读不出是条手臂`);
+    let e = Infinity;
+    for (const lt of (variants.get(name) ?? new Set([undefined]))) {
+      const d = drawnArm(name, p, lt);
+      const tag = lt ? `（画成 ${lt}）` : '';
+      const fore = Math.hypot(d.H[0] - d.E[0], d.H[1] - d.E[1]);
+      if (d.rebuilt && fore > 41) errors.push(`${name}${tag}: 画出的前臂 ${fore.toFixed(1)}px 比真长 39 还长，投影不可能长于实物`);
+      // 下限：只有上限的话投影可以塌成一个点——高脚杯曾被挤到 4.2px，整条前臂藏在哑铃矩形里。
+      // 关节圆半径 3.2 + 手圆 4，低于 8px 就两个圆相交、读不出中间有一段。
+      if (d.rebuilt && fore < 8) errors.push(`${name}${tag}: 画出的前臂只有 ${fore.toFixed(1)}px，肘与手两个圆会叠在一起，读不出是条手臂`);
+      e = Math.min(e, deg(d.E, p.shoulder, d.H));
+    }
     if (e >= ELBOW_MIN) {
       if (ELBOW_PENDING.has(name)) {
         errors.push(`${name}: 肘角已达 ${e.toFixed(1)}°，应从 ELBOW_PENDING 移除`);
@@ -454,20 +474,18 @@ const DRAWN_BEHIND = (name, p) => RACKED_POSES.has(name) || ['sled', 'plate'].in
 export function validateHeldLoad(figures) {
   const errors = [];
   const L = (a, b) => Math.hypot(a[0] - b[0], a[1] - b[1]);
-  const lt = new Map();
-  for (const f of Object.values(figures)) {
-    if (!f.load_type) continue;
-    for (const k of ['start', 'end']) if (f[k]) lt.set(f[k], f.load_type);
-  }
+  const variants = loadTypeVariants(figures);
   for (const [name, p] of Object.entries(POSES)) {
     if (!p.load) continue;
-    const type = lt.get(name) ?? p.load.type;
+    for (const ov of (variants.get(name) ?? new Set([undefined]))) {
+    const type = ov ?? p.load.type;
     if (!HELD_LOAD.has(type)) continue;
     if (DRAWN_BEHIND(name, p)) continue;      // 架在身上、画在身后的杠不是握在手里
     // 上限按器械自己的半宽给：杠铃握点可沿杠线外移到杠片内缘，哑铃只有 9，带子 17。
     const max = { bar: 26, front: 26, hands: 11, hands2: 11, handle: 12, band: BAND_HALF + 2 }[type] ?? 12;
-    const d = L(drawnArm(name, p, lt.get(name)).H, p.load.at);
-    if (d > max) errors.push(`${name}: 画出的手离器械 ${d.toFixed(1)}px（${type} 的上限 ${max}）——手该握在上面`);
+    const d = L(drawnArm(name, p, ov).H, p.load.at);
+    if (d > max) errors.push(`${name}（画成 ${type}）: 画出的手离器械 ${d.toFixed(1)}px（上限 ${max}）——手该握在上面`);
+    }
   }
   return errors;
 }
@@ -548,6 +566,24 @@ export function validateRackSide() {
     const ob = torsoCoords(POSES[b].hip, POSES[b].shoulder, POSES[b].load.at);
     const d = Math.hypot(oa[0] - ob[0], oa[1] - ob[1]);
     if (d > 0.5) errors.push(`${a}/${b}: 躯干系的负荷偏移两帧差 ${d.toFixed(2)}px——杠在背上滑`);
+  }
+  // 跪姿俯卧撑的 cue 是「胸接近地面」，俯卧撑是「离地一拳」：跪姿底部必须更低。
+  // 这条关系被修过一次、注释也声称修好了，实际没翻过来——钉成断言，别再靠注释。
+  if (POSES.knee_pushup_bottom && POSES.pushup_bottom
+      && POSES.knee_pushup_bottom.shoulder[1] <= POSES.pushup_bottom.shoulder[1])
+    errors.push(`跪姿俯卧撑底部的肩离地 ${(GROUND - POSES.knee_pushup_bottom.shoulder[1]).toFixed(1)}，`
+      + `不低于俯卧撑的 ${(GROUND - POSES.pushup_bottom.shoulder[1]).toFixed(1)}——cue 要求前者更深`);
+  // 压在肢体上的阻力垫：两帧在该肢体的局部系里不该滑动（与肩上杠同一条规矩）。
+  // 原来只枚举了四对深蹲/早安式姿态，pad 一个都没覆盖，坐姿提踵的垫两帧滑 5.1px。
+  for (const [a, b, joint] of [['seated_calf_down', 'seated_calf_up', 'knee'],
+                               ['leg_extension_down', 'leg_extension_up', 'ankle'],
+                               ['leg_curl_start', 'leg_curl_end', 'ankle']]) {
+    const pa = POSES[a], pb = POSES[b];
+    if (!pa?.load || !pb?.load) continue;
+    const base = joint === 'knee' ? 'hip' : 'knee';
+    const oa = torsoCoords(pa[base], pa[joint], pa.load.at), ob = torsoCoords(pb[base], pb[joint], pb.load.at);
+    const d = Math.hypot(oa[0] - ob[0], oa[1] - ob[1]);
+    if (d > 2) errors.push(`${a}/${b}: 阻力垫在肢体局部系里两帧滑 ${d.toFixed(2)}px——垫子压的位置不该变`);
   }
   // 前架位比背蹲直、低杠比高杠倾：这是杠位推出来的，不是摆出来的
   const lean = (n) => Math.abs(Math.atan2(POSES[n].shoulder[0] - POSES[n].hip[0],
@@ -637,20 +673,18 @@ export function validateCoronal() {
 const FACE_LEVEL_ARM = new Set(['face_pull_end']);   // 「从脸前拉」的既定画法
 export function validateLimbVsHead(figures) {
   const errors = [];
-  const lt = new Map();
-  for (const f of Object.values(figures)) {
-    if (!f.load_type) continue;
-    for (const k of ['start', 'end']) if (f[k]) lt.set(f[k], f.load_type);
-  }
+  const variants = loadTypeVariants(figures);
   const R = FACE_GEOMETRY.HEAD_R;
   for (const [name, p] of Object.entries(POSES)) {
     if (!p.head || !p.shoulder || FACE_LEVEL_ARM.has(name)) continue;
-    const d = drawnArm(name, p, lt.get(name));
+    for (const ov of (variants.get(name) ?? new Set([undefined]))) {
+    const d = drawnArm(name, p, ov);
     // 只查肘。手本来就会靠近脸——前架位的手托在锁骨前、引体顶部的手与头同高，
     // 那是动作本身；而肘落进头圆里没有任何动作能解释。
     const dist = Math.hypot(d.E[0] - p.head[0], d.E[1] - p.head[1]);
     if (dist < R + 3.2) errors.push(`${name}: 画出的肘离头心 ${dist.toFixed(1)}px，`
       + `小于头半径 ${R} + 肘半径 3.2——肘画进脸里了`);
+    }
   }
   return errors;
 }

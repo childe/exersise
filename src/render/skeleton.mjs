@@ -504,7 +504,7 @@ export const POSES = {
     head: [72.6, 56.5], shoulder: [80, 72], elbow: [88, 100], wrist: [84, 128],
     hip: [80, 152], knee: [140, 152.2], ankle: [151.1, 211.2], heel: [143.6, 214.2], toe: [168, 225],
     bench: [56, 160, 48, 8],
-    load: { type: 'pad', at: [130, 138.2] },
+    load: { type: 'pad', at: [128.7, 143.1] },   // 与起始帧的大腿局部偏移相同：垫子压的位置不该变
   }),
   // 上斜：躯干倾斜约 40°，凳面随之倾斜（normalize 按躯干方向生成 benchIncline）。
   // 底部杠在胸上（肩沿朝脸方向 10px），上臂指向读者——与平板卧推底部同一类出平面手臂。
@@ -554,10 +554,10 @@ export const POSES = {
   // 原来两帧的「膝→髋→肩」跨度 143.6 > 60+80，normalize 够不到就自己改了膝位，
   // 两帧的膝因此差 2px，动画末帧回不到静态帧。现在跨度取 138（身体接近一条直线）。
   knee_pushup_bottom: P({
-    // 底部要下到「胸接近地面」（cue 原文）：原来行程只有俯卧撑的 53%、底部肘角 84.6°，
-    // 深的那张反而是俯卧撑，和两张卡的 cue 正好反了。
-    head: [43.4, 174.5], shoulder: [59.5, 180], elbow: [105.8, 198.9], wrist: [76.95, 225.96],
-    hip: [133.3, 205.4], knee: [190, 225], ankle: [246.4, 204.5], heel: [240.4, 200.5], toe: [255.4, 213.5],
+    // 「胸接近地面」比俯卧撑的「离地一拳」更深，所以跪姿底部的肩必须比俯卧撑**更低**。
+    // 第六轮只把行程从 53% 提到 80%，顺序仍然是反的（45.6 vs 37.4），注释却已声称修好。
+    head: [39.5, 187.9], shoulder: [56, 192], elbow: [105.5, 198.6], wrist: [76.95, 225.96],
+    hip: [131.7, 210.7], knee: [190, 225], ankle: [246.4, 204.5], heel: [240.4, 200.5], toe: [255.4, 213.5],
   }),
   knee_pushup_top: P({
     head: [68.4, 128.9], shoulder: [81.7, 139.4], elbow: [91.45, 188.41], wrist: [81.72, 226.21],
@@ -1019,7 +1019,9 @@ export function contentBox(p, { plumb = false, loadType } = {}) {
                    'shoulder2','elbow2','wrist2','knee2','ankle2','heel2','toe2']) add(p[k]);
   if (p.load) {
     const [x, y] = p.load.at;
-    const half = (p.load.type === 'bar' || p.load.type === 'front') ? 42 : 14;
+    // 带子的把手半宽是 BAND_HALF，不是默认的 14——框和画必须用同一个数
+    const half = (p.load.type === 'bar' || p.load.type === 'front') ? 42
+      : p.load.type === 'band' ? BAND_HALF + 2 : 14;
     xs.push(x - half, x + half); ys.push(y - 16, y + 16);
     if (p.load.at2) { xs.push(p.load.at2[0] - 14, p.load.at2[0] + 14); ys.push(p.load.at2[1] - 10, p.load.at2[1] + 10); }
     if (p.load.type === 'band') { const [fx, fy] = p.load.from ?? [MIDFOOT, GROUND]; xs.push(fx - 4, fx + 4); ys.push(fy - 4, fy + 4); }

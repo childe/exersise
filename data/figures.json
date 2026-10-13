@@ -43,10 +43,10 @@
     "plumb": false
   },
   "leg-press": {
-    "start": "leg_press_top",
-    "end": "leg_press_bottom",
-    "cap_start": "伸展位",
-    "cap_end": "屈曲位",
+    "start": "leg_press_bottom",
+    "end": "leg_press_top",
+    "cap_start": "屈曲位",
+    "cap_end": "伸展位",
     "plumb": false
   },
   "seated-leg-extension": {
