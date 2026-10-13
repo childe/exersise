@@ -13,7 +13,13 @@ const ARM_TAU = Math.PI * 2;
 const ARM_TRUE_UPPER = 50, ARM_TRUE_FORE = 39;   // 与 BONE 一致：投影不可能超过真骨
 // 最短弧：跨 ±π 时走近路
 const armAngMix = (a, b, t) => { let d = b - a; while (d > Math.PI) d -= ARM_TAU; while (d < -Math.PI) d += ARM_TAU; return a + d * t; };
-const armSide = (S, H, E) => Math.sign((H[0]-S[0])*(E[1]-S[1]) - (H[1]-S[1])*(E[0]-S[0]));
+// 肘在「肩—手」连线的哪一侧。手臂伸直时叉积只是浮点噪声，必须判成 0（无歧义）——
+// 否则 ±1e-13 的符号会被当成真的「异侧」，逼出一次根本不需要的换边。
+const armSide = (S, H, E) => {
+  const c = (H[0]-S[0])*(E[1]-S[1]) - (H[1]-S[1])*(E[0]-S[0]);
+  const scale = Math.hypot(H[0]-S[0], H[1]-S[1]) * Math.hypot(E[0]-S[0], E[1]-S[1]);
+  return Math.abs(c) < scale * 1e-3 ? 0 : Math.sign(c);
+};
 
 /** 按「肘在连线哪一侧」选 IK 解；该侧无解（手臂伸直）时回落到就近。 */
 function ik2Side(S, H, l1, l2, want, near) {
@@ -65,6 +71,11 @@ function armFrame(a, b, u, p) {
  * 两端同侧 → 整段用那一侧。两端异侧 → 肘必须穿过连线，让它在**手臂最伸直的那一帧**穿，
  * 那里两支解重合，换边不产生跳变。
  */
+function ratioAt(a, b, u, A, B, interp, opts) {
+  const fr = armFrame(a, b, u, interp(A, B, u, opts));
+  return fr ? fr.d / Math.max(fr.l1 + fr.l2, 1e-6) : -1;
+}
+
 export function armSidePlan(a, b, A, B, dA, dB, interp, opts) {
   const sA = armSide(A.shoulder, dA.H, dA.E), sB = armSide(B.shoulder, dB.H, dB.E);
   if (sA === sB || sA === 0 || sB === 0) return { side: sA || sB, side2: sA || sB, uCross: null };
@@ -76,7 +87,15 @@ export function armSidePlan(a, b, A, B, dA, dB, interp, opts) {
     const r = fr.d / Math.max(fr.l1 + fr.l2, 1e-6);
     if (r > best) { best = r; bestU = u; }
   }
-  return { side: sA, side2: sB, uCross: bestU };
+  // 粗扫只精确到 1/64，而换边点必须正好落在两支解重合处，否则还是会跳（推举曾残留 1.25px）。
+  // 在粗扫邻域内二分细化。
+  let lo = Math.max(0, bestU - 1/64), hi = Math.min(1, bestU + 1/64);
+  for (let i = 0; i < 24; i++) {
+    const m1 = lo + (hi - lo) / 3, m2 = hi - (hi - lo) / 3;
+    const r1 = ratioAt(a, b, m1, A, B, interp, opts), r2 = ratioAt(a, b, m2, A, B, interp, opts);
+    if (r1 < r2) lo = m1; else hi = m2;
+  }
+  return { side: sA, side2: sB, uCross: (lo + hi) / 2 };
 }
 
 /** 把一端的「画出来的手臂」拆成可插值的极坐标描述。 */
@@ -106,11 +125,10 @@ export function blendArm(a, b, u, p, plan) {
     return { E: guess, H: armPolar(guess, armAngMix(a.hAng, b.hAng, u), hLen) };
   }
   if (plan && plan.side) {
-    // u <= uCross 在 uCross 落在端点时会退化：uCross=1 时整段都用 side（末帧回不到静态帧，
-    // 推举曾差 4.37px、肘落在手臂线的另一侧）；uCross=0 时只有 u=0 用 side。
-    // 加上 u < 1 让两个方向都成立——换边总是发生在两支解最接近的那一帧。
-    const want = plan.uCross === null ? plan.side
-      : ((u <= plan.uCross && u < 1) ? plan.side : plan.side2);
+    // 换边点落在端点意味着「两端异侧且中间没有伸直帧」——那种构型在上游就该消掉
+    // （把那一端的手臂画成精确伸直），这里不做端点特判：特判会让断言采到的 u=1
+    // 与浏览器实际画的 u=1−ε 走不同的支。
+    const want = plan.uCross === null ? plan.side : (u <= plan.uCross ? plan.side : plan.side2);
     return { E: ik2Side(p.shoulder, fr.H, fr.l1, fr.l2, want, guess), H: fr.H };
   }
   return { E: ik2(p.shoulder, fr.H, fr.l1, fr.l2, guess), H: fr.H };

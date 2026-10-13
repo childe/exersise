@@ -257,9 +257,11 @@ export const POSES = {
     load: { type: 'bar', at: [92, 54] },
   }),
   ohp_top: P({
-    head: [98, 44], shoulder: [86, 58], elbow: [86, 38], wrist: [88, 18],
+    // 锁定位手臂精确伸直：差 0.1px 的「几乎伸直」会让两支镜像解相距 4.4px，
+    // 动画末帧因此回不到静态帧。
+    head: [98, 44], shoulder: [86, 58], elbow: [86, 38], wrist: [86, 18],
     hip: [84, 112], knee: [84, 150], ankle: [82, 216], heel: [72, 225], toe: [108, 225],
-    load: { type: 'bar', at: [90, 12] },
+    load: { type: 'bar', at: [88, 12] },
   }),
 
   // ── 水平拉 ─────────────────────────────────────────
@@ -345,9 +347,11 @@ export const POSES = {
     load: { type: 'front', at: [93.9, 58.3] },
   }),
   carry_overhead: P({
-    head: [98, 44], shoulder: [86, 58], elbow: [86, 38], wrist: [88, 18],
+    // 锁定位手臂精确伸直：差 0.1px 的「几乎伸直」会让两支镜像解相距 4.4px，
+    // 动画末帧因此回不到静态帧。
+    head: [98, 44], shoulder: [86, 58], elbow: [86, 38], wrist: [86, 18],
     hip: [84, 114], knee: [84, 152], ankle: [82, 216], heel: [72, 225], toe: [108, 225],
-    load: { type: 'bar', at: [90, 12] },
+    load: { type: 'bar', at: [88, 12] },
   }),
 
   // ── 核心抗阻 ───────────────────────────────────────
@@ -1172,6 +1176,12 @@ export function drawnArm(name, p, loadType) {
     const hint = dirHint
       ? [p.shoulder[0] + dirHint[0] * 40, p.shoulder[1] + dirHint[1] * 40]
       : (p.elbow ?? [p.shoulder[0], p.shoulder[1] + 40]);
+    // 几乎伸直时把肘精确放到「肩—手」连线上：差 0.1px 的「几乎」会让两支镜像解相距 4.4px，
+    // 动画必须在某处选一支，端点就回不到静态帧。悬垂本来就是伸直的，画成伸直即可。
+    if (d >= u + f - 0.5) {
+      return { E: [p.shoulder[0] + (H[0]-p.shoulder[0]) * u / d, p.shoulder[1] + (H[1]-p.shoulder[1]) * u / d],
+               H, rebuilt: true };
+    }
     return { E: ik2Local(p.shoulder, H, u, f, hint), H, rebuilt: true };
   }
   // 器械类型由 figures.json 覆盖时（高脚杯深蹲借用前蹲姿态但拿的是哑铃），

@@ -551,13 +551,7 @@ export function validateDrawnAnimation(figures, { steps = 24 } = {}) {
       if (deg(arm.E, p.shoulder, arm.H) > eMax + 8)
         errors.push(`${at}: 画出的肘角 ${deg(arm.E, p.shoulder, arm.H).toFixed(1)}° 超过两端最大值 ${eMax.toFixed(1)}°`
           + '——手够不到器械时被拉直了，应放长投影到真骨为止，而不是把骨头拉长');
-      // 端点必须回到静态帧——画出来的手臂也算。原来只有 validateInterp 查链上的肩/髋/膝。
-      if (i === 0 || i === steps) {
-        const ref = i === 0 ? dA : dB;
-        for (const [got, want, label] of [[arm.E, ref.E, '肘'], [arm.H, ref.H, '手']]) {
-          if (L(got, want) > 3) errors.push(`${at}: 画出的${label}与静态帧差 ${L(got, want).toFixed(2)}px`);
-        }
-      }
+
       // 肢体不穿头：静态帧有 validateLimbVsHead，动画帧原来没有——
       // 下拉的肘曾在 t=0.73 整个落进头圆（离头心 8.1px），下一帧就是 41.7px 的瞬移。
       if (p.head && !FACE_LEVEL_ARM.has(f.start) && !FACE_LEVEL_ARM.has(f.end)) {
@@ -717,6 +711,40 @@ export function validateLimbVsHead(figures) {
     const dist = Math.hypot(d.E[0] - p.head[0], d.E[1] - p.head[1]);
     if (dist < R + 3.2) errors.push(`${name}: 画出的肘离头心 ${dist.toFixed(1)}px，`
       + `小于头半径 ${R} + 肘半径 3.2——肘画进脸里了`);
+    }
+  }
+  return errors;
+}
+
+/**
+ * 端点必须回到静态帧——查的是**画出来的**肘与手，而且在 ε 邻域上查。
+ *
+ * 为什么不查 u=0/1 这两个精确值：浏览器里 u = ease(t/REP)，几乎永远取不到精确的 0 或 1，
+ * 画的是 0+ε 与 1−ε。我曾在换边判据里加过一个 `u < 1` 的端点特判，断言采到的 u=1
+ * 走特判支、浏览器画的 u=1−ε 走另一支，于是 4.37px 的偏差对断言完全不可见。
+ * 所以这条断言一律取 ε 邻域。
+ */
+export function validateAnimEndpoints(figures) {
+  const errors = [];
+  const L = (a, b) => Math.hypot(a[0] - b[0], a[1] - b[1]);
+  for (const [slug, f] of Object.entries(figures)) {
+    if (!f.end || f.end === f.start) continue;
+    if (!POSES[f.start] || !POSES[f.end]) continue;
+    const strip = (p) => (f.no_load ? { ...p, load: undefined } : p);
+    const A = strip(POSES[f.start]), B = strip(POSES[f.end]);
+    const lt = f.load_type ?? undefined;
+    const dA = drawnArm(f.start, A, lt), dB = drawnArm(f.end, B, lt);
+    if (!dA.rebuilt && !dB.rebuilt) continue;
+    const a = armDescriptor(dA, A), b = armDescriptor(dB, B);
+    const iopts = { plumb: f.plumb, handPath: !!f.hand_path };
+    const plan = armSidePlan(a, b, A, B, dA, dB, interpolate, iopts);
+    for (const [u, ref, tag] of [[1e-9, dA, 't=0+'], [1 - 1e-9, dB, 't=1−']]) {
+      const arm = blendArm(a, b, u, interpolate(A, B, u, iopts), plan);
+      if (!arm) continue;
+      for (const [got, want, label] of [[arm.E, ref.E, '肘'], [arm.H, ref.H, '手']]) {
+        if (L(got, want) > 3)
+          errors.push(`${slug} ${tag}: 画出的${label}与静态帧差 ${L(got, want).toFixed(2)}px`);
+      }
     }
   }
   return errors;

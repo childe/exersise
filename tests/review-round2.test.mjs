@@ -174,25 +174,9 @@ test('俯卧撑动画全程手在地上（身体绕脚尖转动）', () => {
   }
 });
 
-test('动画画出来的手臂在两端点之间连续，末帧与静态帧相同', async () => {
-  const figs = await readJson('data/figures.json');
-  for (const [slug, f] of Object.entries(figs)) {
-    if (!f.end || f.end === f.start) continue;
-    const A = POSES[f.start], B = POSES[f.end];
-    if (!A.shoulder || !B.shoulder) continue;
-    const rel = (arm, p) => ({ E: [arm.E[0]-p.shoulder[0], arm.E[1]-p.shoulder[1]], H: [arm.H[0]-p.shoulder[0], arm.H[1]-p.shoulder[1]] });
-    const a = rel(drawnArm(f.start, A), A), b = rel(drawnArm(f.end, B), B);
-    let prev = null;
-    for (let i = 0; i <= 48; i++) {
-      const u = i/48, q = interpolate(A, B, u, { plumb: f.plumb !== false && !f.no_load });
-      const H = [q.shoulder[0] + a.H[0] + (b.H[0]-a.H[0])*u, q.shoulder[1] + a.H[1] + (b.H[1]-a.H[1])*u];
-      if (prev) assert.ok(len(H, prev) < 6, `${slug}: 手在相邻帧跳 ${len(H,prev).toFixed(1)}px`);
-      prev = H;
-    }
-    const endH = drawnArm(f.end, B).H;
-    assert.ok(len(prev, endH) < 1, `${slug}: 动画末帧的手与静态帧差 ${len(prev,endH).toFixed(1)}px`);
-  }
-});
+// 「动画画出来的手臂」这条测试原来自己写了一套相对肩的线性混合，既不调 blendArm 也不碰肘，
+// 名字却声称查的是画出来的手臂——它对第十轮那次 4.37px 的端点偏差完全无感。
+// 覆盖已由 validateAnimEndpoints + validateDrawnAnimation 承担（两者都走渲染同一条路径）。
 
 test('动画末帧骨架与静态结束帧一致（两帧脚位一致的前提下）', async () => {
   const figs = await readJson('data/figures.json');
