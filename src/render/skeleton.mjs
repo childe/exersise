@@ -313,7 +313,9 @@ export const POSES = {
   // 下拉：坐姿，负荷在上
   pulldown_start: P({
     // 躯干略后倾（cue 原文）：原来肩在髋的朝向侧 2.8px，画出来是前倾 2°。
-    head: [76, 104], shoulder: [78, 120], elbow: [76.8, 70], wrist: [96, 36],
+    // 顶部手臂**伸直**：肘落在肩—手连线上。不伸直时「肘在连线哪一侧」是有歧义的，
+    // 而终点帧的肘在另一侧，动画必须在某一帧换边——只有手臂伸直的那一帧换边才不跳。
+    head: [76, 104], shoulder: [78, 120], elbow: [89.9, 71.4], wrist: [99.1, 33.5],
     hip: [84, 178], knee: [130, 184], ankle: [158, 216], heel: [154, 225], toe: [174, 221],
     bench: [60, 186, 44, 8],
     // 把手在头前：横杆从脸前拉到锁骨前，不是从头颅里穿过去
@@ -782,14 +784,18 @@ function normalize(name, p) {
     }
     // 压在小腿上的滚轮垫：偏移写在小腿局部坐标里，归一化改了小腿方向它才跟着转。
     // 用世界偏移的后果是腿屈伸顶峰时垫子翻到胫骨侧——那一侧它要穿过小腿才能存在。
-    if (p.load.type === 'pad' && anchorName === 'ankle' && p.knee && q.knee) {
-      const ru = unit([p.ankle[0] - p.knee[0], p.ankle[1] - p.knee[1]]);
+    // 压在肢体上的滚轮垫：踝锚用小腿、膝锚用大腿。两者口径必须一致，
+    // 否则坐姿提踵的静态帧没有 padAngle 而补间有，末帧与静态帧的垫子朝向对不上。
+    const padBase = p.load.type === 'pad'
+      ? (anchorName === 'ankle' ? 'knee' : anchorName === 'knee' ? 'hip' : null) : null;
+    if (padBase && p[padBase] && q[padBase]) {
+      const ru = unit([p[anchorName][0] - p[padBase][0], p[anchorName][1] - p[padBase][1]]);
       const rn = [-ru[1], ru[0]];
       const a = off[0] * ru[0] + off[1] * ru[1], b = off[0] * rn[0] + off[1] * rn[1];
-      const nu = unit([q.ankle[0] - q.knee[0], q.ankle[1] - q.knee[1]]);
+      const nu = unit([q[anchorName][0] - q[padBase][0], q[anchorName][1] - q[padBase][1]]);
       const nn = [-nu[1], nu[0]];
-      q.load.at = [q.ankle[0] + a * nu[0] + b * nn[0], q.ankle[1] + a * nu[1] + b * nn[1]];
-      q.load.padAngle = Math.atan2(nu[1], nu[0]);     // 长轴垂直于小腿 → 与小腿同向旋转
+      q.load.at = [q[anchorName][0] + a * nu[0] + b * nn[0], q[anchorName][1] + a * nu[1] + b * nn[1]];
+      q.load.padAngle = Math.atan2(nu[1], nu[0]);     // 长轴垂直于肢体 → 与肢体同向旋转
     }
     if (p.load.at2 && p.wrist2) {
       const off2 = [p.load.at2[0] - p.wrist2[0], p.load.at2[1] - p.wrist2[1]];

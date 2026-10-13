@@ -74,11 +74,9 @@ export function rebuildArm(p, opts = {}) {
     const a0 = dc/2, h0 = Math.sqrt(Math.max(0, L*L - a0*a0));
     const ux = dx/dd, uy = dy/dd, M = [S[0]+ux*a0, S[1]+uy*a0];
     const cands = [[M[0]-uy*h0, M[1]+ux*h0], [M[0]+uy*h0, M[1]-ux*h0]];
-    // 选边由动作要点定：高脚杯「手肘指向地面」取低的那支；
-    // 杠铃前架位「肘抬起形成平台」取高的那支（卡片把「肘往下掉」列为常见错误）。
-    const lower = cands[0][1] >= cands[1][1] ? cands[0] : cands[1];
-    const upper = cands[0][1] >= cands[1][1] ? cands[1] : cands[0];
-    const E2 = opts.elbowUp ? upper : lower;
+    // 取肘朝下的那一支（高脚杯 cue「手肘指向地面」；杠铃前架位取上支会让肘离头心只有
+    // 7.8px，撞 validateLimbVsHead——侧视里抬平的上臂画不出「平台」，由图注说明）。
+    const E2 = cands[0][1] >= cands[1][1] ? cands[0] : cands[1];
     return { hand: H, elbow: E2, upper: L, fore: Math.hypot(E2[0]-H[0], E2[1]-H[1]),
              deg: ang4(E2, S, H), minDeg: MIN_DEG };
   }

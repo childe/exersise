@@ -13,7 +13,71 @@ const ARM_TAU = Math.PI * 2;
 const ARM_TRUE_UPPER = 50, ARM_TRUE_FORE = 39;   // 与 BONE 一致：投影不可能超过真骨
 // 最短弧：跨 ±π 时走近路
 const armAngMix = (a, b, t) => { let d = b - a; while (d > Math.PI) d -= ARM_TAU; while (d < -Math.PI) d += ARM_TAU; return a + d * t; };
+const armSide = (S, H, E) => Math.sign((H[0]-S[0])*(E[1]-S[1]) - (H[1]-S[1])*(E[0]-S[0]));
+
+/** 按「肘在连线哪一侧」选 IK 解；该侧无解（手臂伸直）时回落到就近。 */
+function ik2Side(S, H, l1, l2, want, near) {
+  const dx = H[0]-S[0], dy = H[1]-S[1], d = Math.hypot(dx, dy) || 1e-6;
+  const dc = Math.min(Math.max(d, Math.abs(l1-l2) + 1e-6), l1 + l2 - 1e-6);
+  const a = (l1*l1 - l2*l2 + dc*dc) / (2*dc), h = Math.sqrt(Math.max(0, l1*l1 - a*a));
+  const ux = dx/d, uy = dy/d, M = [S[0] + ux*a, S[1] + uy*a];
+  const c1 = [M[0] - uy*h, M[1] + ux*h], c2 = [M[0] + uy*h, M[1] - ux*h];
+  const s1 = armSide(S, H, c1);
+  if (s1 === want) return c1;
+  if (armSide(S, H, c2) === want) return c2;
+  return Math.hypot(c1[0]-near[0], c1[1]-near[1]) <= Math.hypot(c2[0]-near[0], c2[1]-near[1]) ? c1 : c2;
+}
+
 const armPolar = (base, a, l) => [base[0] + Math.cos(a) * l, base[1] + Math.sin(a) * l];
+
+
+/** 这一帧实际用的投影骨长与手位——选边扫描与绘制必须用同一组，否则扫出来的穿越点是假的。 */
+function armFrame(a, b, u, p) {
+  const anc = p.load?.at ?? p.fixed?.at ?? null;
+  if (!(anc && a.grip && b.grip)) return null;
+  let l1 = a.eLen + (b.eLen - a.eLen) * u, l2 = a.hLen + (b.hLen - a.hLen) * u;
+  let H = [anc[0] + a.grip[0] + (b.grip[0] - a.grip[0]) * u,
+           anc[1] + a.grip[1] + (b.grip[1] - a.grip[1]) * u];
+  const d = Math.hypot(H[0] - p.shoulder[0], H[1] - p.shoulder[1]);
+  // 够不到器械时投影该放长（手臂没那么「斜指画面外」），上限是真骨。两条都要满足：
+  //   · 放长到**正好等于 d** 等于把手臂拉成直线（推举曾有 14/25 帧肘角钉在 178°）——留 25% 余量；
+  //   · 一步跳到真骨长会让肘位瞬移（画出的肘单帧跳 29.5px）——所以按比例连续放大。
+  const need = d * 1.25, sum = l1 + l2;
+  if (sum < need) {
+    const k = Math.min(need, ARM_TRUE_UPPER + ARM_TRUE_FORE) / sum;
+    l1 = Math.min(l1 * k, ARM_TRUE_UPPER); l2 = Math.min(l2 * k, ARM_TRUE_FORE);
+  }
+  if (l1 + l2 <= d) {
+    // 连真骨都够不到：把手拉回可达集，而不是把骨头拉长
+    const k = (l1 + l2) / d * 0.9999;
+    H = [p.shoulder[0] + (H[0] - p.shoulder[0]) * k, p.shoulder[1] + (H[1] - p.shoulder[1]) * k];
+  }
+  return { H, l1, l2, d: Math.hypot(H[0] - p.shoulder[0], H[1] - p.shoulder[1]) };
+}
+
+/**
+ * 肘该落在「肩—手」连线的哪一侧——整段动画一次定好，不能每帧各自就近选。
+ *
+ * 原来 ik2 的选边提示是极坐标插出来的肘；它一越过连线，IK 就换到镜像那一支，
+ * 画出的肘单帧瞬移最多 41.7px（下拉 t=0.7475）。而镜像解的上臂长、前臂长、肘角、
+ * 手到器械全部相等，所有逐帧断言都碰不到它。
+ *
+ * 两端同侧 → 整段用那一侧。两端异侧 → 肘必须穿过连线，让它在**手臂最伸直的那一帧**穿，
+ * 那里两支解重合，换边不产生跳变。
+ */
+export function armSidePlan(a, b, A, B, dA, dB, interp, opts) {
+  const sA = armSide(A.shoulder, dA.H, dA.E), sB = armSide(B.shoulder, dB.H, dB.E);
+  if (sA === sB || sA === 0 || sB === 0) return { side: sA || sB, side2: sA || sB, uCross: null };
+  let best = -1, bestU = 1;
+  for (let i = 0; i <= 64; i++) {
+    const u = i / 64, p = interp(A, B, u, opts);
+    const fr = armFrame(a, b, u, p);
+    if (!fr) continue;
+    const r = fr.d / Math.max(fr.l1 + fr.l2, 1e-6);
+    if (r > best) { best = r; bestU = u; }
+  }
+  return { side: sA, side2: sB, uCross: bestU };
+}
 
 /** 把一端的「画出来的手臂」拆成可插值的极坐标描述。 */
 export function armDescriptor(d, p) {
@@ -32,33 +96,20 @@ export function armDescriptor(d, p) {
  * 手钉在器械上之后，肘**不能**再独立按极坐标插值：两者不协调时差额全落在前臂上，
  * 画出的前臂一度到 47px——而真骨只有 39，投影不可能比实物长。
  * 改成：手由握点偏移定，肘由两骨 IK 从肩解出，骨长用两端投影长插值。
- * 够不到时（混合端点：一端重建成 25px 投影、另一端是全长 50）按比例放大两段，
- * 宁可两段一起略长，也不让其中一段单独超过真长。
  */
-export function blendArm(a, b, u, p) {
+export function blendArm(a, b, u, p, plan) {
   if (!a.rebuilt && !b.rebuilt) return undefined;
   const eLen = a.eLen + (b.eLen - a.eLen) * u, hLen = a.hLen + (b.hLen - a.hLen) * u;
   const guess = armPolar(p.shoulder, armAngMix(a.eAng, b.eAng, u), eLen);
-  const anc = p.load?.at ?? p.fixed?.at ?? null;
-  if (!(anc && a.grip && b.grip)) {
+  const fr = armFrame(a, b, u, p);
+  if (!fr) {
     return { E: guess, H: armPolar(guess, armAngMix(a.hAng, b.hAng, u), hLen) };
   }
-  let H = [anc[0] + a.grip[0] + (b.grip[0] - a.grip[0]) * u,
-           anc[1] + a.grip[1] + (b.grip[1] - a.grip[1]) * u];
-  const d = Math.hypot(H[0] - p.shoulder[0], H[1] - p.shoulder[1]);
-  let l1 = eLen, l2 = hLen;
-  if (d > l1 + l2) {
-    // 够不到器械，说明这一帧的手臂没那么「斜指画面外」——投影该放长，上限是真骨。
-    // 原来按比例放大到**正好等于 d**：那和刚好伸直是一回事，推举动画因此有 14/25 帧
-    // 肘角钉在 178°（同一手位用真骨解只有 137°），前臂还涨到 39.9 > 真骨 39。
-    l1 = ARM_TRUE_UPPER; l2 = ARM_TRUE_FORE;
-    if (d > l1 + l2) {
-      // 连真骨都够不到：把手拉回可达集，而不是把骨头拉长
-      const k = (l1 + l2) / d * 0.9999;
-      H = [p.shoulder[0] + (H[0] - p.shoulder[0]) * k, p.shoulder[1] + (H[1] - p.shoulder[1]) * k];
-    }
+  if (plan && plan.side) {
+    const want = plan.uCross === null ? plan.side : (u <= plan.uCross ? plan.side : plan.side2);
+    return { E: ik2Side(p.shoulder, fr.H, fr.l1, fr.l2, want, guess), H: fr.H };
   }
-  return { E: ik2(p.shoulder, H, l1, l2, guess), H };
+  return { E: ik2(p.shoulder, fr.H, fr.l1, fr.l2, guess), H: fr.H };
 }
 
 const SVG_NS = 'http://www.w3.org/2000/svg';
@@ -91,9 +142,12 @@ export function initSkeletonAnimation({ POSES, interpolate, renderPose, drawnArm
     //   出平面（重建过）：解不能每帧重求（过顶无解、握点钳制处跳 36px），
     //     所以仍在两端之间插值，但插极坐标不插直角坐标：肘按「相对肩的方向+投影长」，
     //     手按「相对器械的握点偏移」——手因此全程贴在杠/哑铃上，不会脱手。
-    const desc = (key, p) => armDescriptor(drawnArm(key, p, cfg.load_type ?? undefined), p);
-    items.push({ svg, cfg, box: { x, y, w, h }, A, B, visible: false, t: 0,
-      armA: desc(cfg.a, A), armB: desc(cfg.b, B) });
+    const dA = drawnArm(cfg.a, A, cfg.load_type ?? undefined);
+    const dB = drawnArm(cfg.b, B, cfg.load_type ?? undefined);
+    const armA = armDescriptor(dA, A), armB = armDescriptor(dB, B);
+    const opts = { plumb: cfg.plumb, handPath: cfg.handPath };
+    items.push({ svg, cfg, box: { x, y, w, h }, A, B, visible: false, t: 0, armA, armB,
+      plan: armSidePlan(armA, armB, A, B, dA, dB, interpolate, opts) });
   }
   if (!items.length) return null;
 
@@ -109,7 +163,7 @@ export function initSkeletonAnimation({ POSES, interpolate, renderPose, drawnArm
     const ph = it.t / REP;
     const u = ease(ph < 0.5 ? ph * 2 : (1 - ph) * 2);
     const p = interpolate(it.A, it.B, u, { plumb: it.cfg.plumb, handPath: it.cfg.handPath });
-    const arm = blendArm(it.armA, it.armB, u, p);
+    const arm = blendArm(it.armA, it.armB, u, p, it.plan);
     it.svg.innerHTML = renderPose(p, { plumb: it.cfg.plumb, box: it.box, arm,
       caption: '循环演示', name: it.cfg.a, prime: it.cfg.prime, loadType: it.cfg.load_type ?? undefined });
   };

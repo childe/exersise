@@ -4,7 +4,7 @@
 // 前提是它必须可核验——而可核验的意思不是"我看了一眼觉得对"，是**写成断言、构建期跑**。
 // 这个文件就是那个前提。断言失败 = 构建失败，画错的图进不了页面。
 
-import { POSES, RAW_POSES, FORESHORTENED_ARM, GROUND, MIDFOOT, FIG_W, FIG_H, drawnArm, contentBox, torsoCoords, RACKED_POSES, BAND_HALF, BENCH_GAP } from '../render/skeleton.mjs';
+import { POSES, RAW_POSES, FORESHORTENED_ARM, GROUND, MIDFOOT, FIG_W, FIG_H, drawnArm, contentBox, torsoCoords, RACKED_POSES, BEHIND_POSES, BAND_HALF, BENCH_GAP } from '../render/skeleton.mjs';
 import { interpolate } from '../render/interp.mjs';
 import { armDescriptor, blendArm } from '../assets/anim.js';
 import { rebuildArmFor, OUT_OF_PLANE_ARM } from '../render/arm.mjs';
@@ -466,7 +466,15 @@ export function validateKneeStable() {
 const HELD_LOAD = new Set(['bar', 'front', 'hands', 'hands2', 'handle', 'band']);
 const HEAD_CLEAR = 16;   // 头半径 12 + 把手半高 4
 // 与 renderPose 的 barBehind 同口径：架在身上的负荷画在身体之后，被身体挡住。
-const DRAWN_BEHIND = (name, p) => RACKED_POSES.has(name) || ['sled', 'plate'].includes(p.load?.type);
+/**
+ * 「负荷架在身上」——用来豁免两条断言：手握在器械上（架着的不是握着的）、
+ * 器械不许撞进头里（架在锁骨上的杠本来就贴着下巴）。
+ *
+ * 注意它**不是**渲染端的 `barBehind`（那个用 BEHIND_POSES）：前架位架在身上但画在身体
+ * **前面**，两件事的集合本来就不同。第九轮建议合并，核对后判定不合并——合并会把
+ * 前架位的哑铃贴下巴误报成错误，而那正是前架位该有的样子。两处各自带注释说明口径。
+ */
+const DRAWN_BEHIND = (name, p) => RACKED_POSES.has(name) || ['sled', 'plate', 'band'].includes(p.load?.type);
 /**
  * 静态帧：手持类器械的手必须真的握在器械上。
  *
@@ -531,9 +539,18 @@ export function validateDrawnAnimation(figures, { steps = 24 } = {}) {
       // 肘角上限：手钉在器械上、投影骨长又够不到时，手臂会被拉成一条直线——
       // 推举动画曾有 14/25 帧肘角钉在 178°，而同一手位用真骨解只有 137°。
       const eMax = Math.max(deg(dA.E, A.shoulder, dA.H), deg(dB.E, B.shoulder, dB.H));
-      if (deg(arm.E, p.shoulder, arm.H) > eMax + 5)
+      // +8：手位与投影骨长各自插值，中途略微超过两端是构造上不可避免的；
+      // 真正要拦的是「被拉成直线」那种 67° 的误差。
+      if (deg(arm.E, p.shoulder, arm.H) > eMax + 8)
         errors.push(`${at}: 画出的肘角 ${deg(arm.E, p.shoulder, arm.H).toFixed(1)}° 超过两端最大值 ${eMax.toFixed(1)}°`
           + '——手够不到器械时被拉直了，应放长投影到真骨为止，而不是把骨头拉长');
+      // 肢体不穿头：静态帧有 validateLimbVsHead，动画帧原来没有——
+      // 下拉的肘曾在 t=0.73 整个落进头圆（离头心 8.1px），下一帧就是 41.7px 的瞬移。
+      if (p.head && !FACE_LEVEL_ARM.has(f.start) && !FACE_LEVEL_ARM.has(f.end)) {
+        const dh = L(arm.E, p.head);
+        if (dh < FACE_GEOMETRY.HEAD_R + 3.2)
+          errors.push(`${at}: 画出的肘离头心 ${dh.toFixed(1)}px，肘画进脸里了`);
+      }
       // 器械不许撞进头里：静态终点帧早有这条断言，动画里复发过（下拉把手离头心 12.2px）
       // 只豁免**画在身体之后**的负荷（架在后颈的杠/带被头挡住，贴着是对的）。
       // 原来按 loadAnchor 豁免：下拉为了稳住把手把锚点改成了 shoulder，

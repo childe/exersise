@@ -202,6 +202,24 @@ export function interpolate(A, B, t, opts = {}) {
     const uu = [Math.cos(dth), Math.sin(dth)], nn = [-uu[1], uu[0]];
     const [a, b2] = q._torsoOff;
     q.load = { ...A.load, at: [q.shoulder[0] + a*uu[0] + b2*nn[0], q.shoulder[1] + a*uu[1] + b2*nn[1]] };
+  } else if (A.load && B.load && A.load.type === 'pad' && (A.loadAnchor === 'ankle' || A.loadAnchor === 'knee')) {
+    // 压在肢体上的滚轮垫：位置写在该肢体的局部系里、长轴垂直于肢体。
+    // 从 A 帧原样抄 padAngle 的后果是动画末帧的垫子与静态结束帧差 89–109°——
+    // 从「横压在小腿上」翻成「顺着小腿立起来」。
+    const joint = A.loadAnchor, base = joint === 'ankle' ? 'knee' : 'hip';
+    const loc = (p) => {
+      const d = [p[joint][0] - p[base][0], p[joint][1] - p[base][1]], L = Math.hypot(d[0], d[1]) || 1;
+      const u = [d[0] / L, d[1] / L], n = [-u[1], u[0]];
+      const v = [p.load.at[0] - p[joint][0], p.load.at[1] - p[joint][1]];
+      return [v[0] * u[0] + v[1] * u[1], v[0] * n[0] + v[1] * n[1]];
+    };
+    const la = loc(A), lb = loc(B);
+    const aa = lerp(la[0], lb[0], t), bb = lerp(la[1], lb[1], t);
+    const d = [q[joint][0] - q[base][0], q[joint][1] - q[base][1]], L = Math.hypot(d[0], d[1]) || 1;
+    const u = [d[0] / L, d[1] / L], n = [-u[1], u[0]];
+    q.load = { ...A.load,
+      at: [q[joint][0] + aa * u[0] + bb * n[0], q[joint][1] + aa * u[1] + bb * n[1]],
+      padAngle: Math.atan2(u[1], u[0]) };
   } else if (A.load && B.load) {
     const anc = A.loadAnchor ?? 'wrist';
     const base = q[anc] ?? q.wrist ?? q.shoulder, ba = A[anc] ?? A.wrist ?? A.shoulder, bb = B[anc] ?? B.wrist ?? B.shoulder;

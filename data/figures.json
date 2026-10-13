@@ -322,7 +322,8 @@
   },
   "barbell-front-rack-carry": {
     "start": "carry_front",
-    "cap_start": "行进姿态"
+    "cap_start": "行进姿态",
+    "note": "前架位的「肘抬起形成平台」是上臂向前抬平，而侧视下抬平的上臂与前臂投影重叠——画出来的肘只能落在杠附近而不是明显高过杠。这与窄握卧推同类，是投影的限制，不是动作该有的样子。"
   },
   "db-farmer-carry": {
     "start": "carry_stance",
