@@ -139,7 +139,10 @@ export const POSES = {
   split_bottom: P({
     head: [68.9, 42], shoulder: [66.4, 58.8], elbow: [67, 108.8], wrist: [68, 147.8],
     hip: [54.4, 137.9], knee: [111, 158], ankle: [96, 216], heel: [90, 225], toe: [126, 225],
-    knee2: [56.6, 197.9], ankle2: [5.53, 163.52], heel2: [14.4, 175], toe2: [-5.6, 173],
+    // heel2/toe2 相对 ankle2 的偏移必须与顶部帧相同——脚是刚体，而它是全程唯一不动的支撑点。
+    // 原来两帧 raw heel2/toe2 相同而 ankle2 不同，归一化后偏移一帧 7.97、一帧 11.48，
+    // 底部整条脚线落进 8px 厚的凳板里 5.5px。
+    knee2: [56.6, 197.9], ankle2: [5.53, 163.52], heel2: [13.97, 171.49], toe2: [-6.03, 169.49],
     bench: [-9, 206, 48, 8], support: ['ankle2'],
     load: { type: 'hands', at: [68, 156] },
   }),
@@ -437,7 +440,9 @@ export const POSES = {
   }),
   calf_up: P({
     head: [98, 24], shoulder: [86, 42], elbow: [84, 78], wrist: [84, 112],
-    hip: [84, 100], knee: [84, 140], ankle: [82, 202], heel: [74, 210], toe: [108, 225],
+    // 顶峰的脚 = 起始的脚绕**脚尖**刚体旋转 24.6°。原来三点各自手写，
+    // 踝—脚尖拉长 23%、踝—脚跟缩短 25%——而这张图的全部内容就是踝的屈伸，脚不该伸缩。
+    hip: [84, 100], knee: [84, 140], ankle: [88.98, 204.2], heel: [75.27, 210], toe: [108, 225],
     load: { type: 'hands', at: [84, 122] },
   }),
   // ── 坐姿与器械 ─────────────────────────────────────
@@ -726,7 +731,9 @@ function normalize(name, p) {
     q.elbow = place(q.shoulder, p.shoulder, p.elbow, BONE.upper_arm);
     q.wrist = place(q.elbow, p.elbow, p.wrist, BONE.forearm);
   }
-  q.head = place(q.shoulderMid ?? q.shoulder, p.shoulder, p.head, BONE.neck);
+  // 正视图的头要长在肩线中点上：原来落点用中点、方向却取自近侧肩，
+  // 画出来是个恒定歪向一边的头——而正视图存在的理由正是「看两肩等不等高、有没有侧倾」。
+  q.head = place(q.shoulderMid ?? q.shoulder, frontMid ?? p.shoulder, p.head, BONE.neck);
   if (p.knee2) {
     q.knee2 = place(p.hip, p.hip, p.knee2, BONE.thigh);
     q.ankle2 = place(q.knee2, p.knee2, p.ankle2, BONE.shank);
@@ -791,7 +798,7 @@ function normalize(name, p) {
     const nowLowest = Math.max(...lows);
     const dy = GROUND - nowLowest;
     if (Math.abs(dy) > 0.01) {
-      for (const k of ['head', 'shoulder', 'elbow', 'wrist', 'hip', 'knee', 'ankle', 'heel', 'toe',
+      for (const k of ['head', 'shoulder', 'shoulderMid', 'elbow', 'wrist', 'hip', 'knee', 'ankle', 'heel', 'toe',
                        'shoulder2', 'elbow2', 'wrist2', 'knee2', 'ankle2', 'heel2', 'toe2']) {
         if (q[k]) q[k] = [q[k][0], q[k][1] + dy];
       }
@@ -890,9 +897,9 @@ const PLUMB_SOLVED = new Set([
 // 身体前倾支撑，杠在脚跟上方而不是足中线。硬套这条会把起始帧的躯干压到 16°（作者写 39°），
 // 两帧差 28°，动画看上去像一边划船一边起身。
 
-const ALL_JOINTS = ['head', 'shoulder', 'elbow', 'wrist', 'hip', 'knee', 'ankle', 'heel', 'toe',
+const ALL_JOINTS = ['head', 'shoulder', 'shoulderMid', 'elbow', 'wrist', 'hip', 'knee', 'ankle', 'heel', 'toe',
                     'shoulder2', 'elbow2', 'wrist2', 'knee2', 'ankle2', 'heel2', 'toe2'];
-const UPPER_JOINTS = ['head', 'shoulder', 'elbow', 'wrist', 'shoulder2', 'elbow2', 'wrist2'];
+const UPPER_JOINTS = ['head', 'shoulder', 'shoulderMid', 'elbow', 'wrist', 'shoulder2', 'elbow2', 'wrist2'];
 function shiftAll(p, dx, dy, keys = ALL_JOINTS) {
   const q = { ...p };
   for (const k of keys) if (q[k]) q[k] = [q[k][0] + dx, q[k][1] + dy];
@@ -1042,7 +1049,11 @@ function load(l) {
         + `<circle class="sk-plate" cx="${x - 31}" cy="${y}" r="7"/>`
         + `<circle class="sk-plate" cx="${x + 31}" cy="${y}" r="7"/></g>`;
     case 'hands':
-      return `<g class="sk-load"><rect class="sk-dumbbell" x="${x - 9}" y="${y - 5}" width="18" height="10" rx="3"/></g>`;
+      // 有 at2 就画两只：死虫是「双手各持一只轻哑铃」，原来只画了近侧那只，
+      // 远侧手空着，读起来像单侧负重。
+      return `<g class="sk-load"><rect class="sk-dumbbell" x="${x - 9}" y="${y - 5}" width="18" height="10" rx="3"/>`
+        + (l.at2 ? `<rect class="sk-dumbbell" x="${l.at2[0] - 9}" y="${l.at2[1] - 5}" width="18" height="10" rx="3"/>` : '')
+        + '</g>';
     case 'hands2':
       if (!l.at2) return `<g class="sk-load"><rect class="sk-dumbbell" x="${x - 9}" y="${y - 5}" width="18" height="10" rx="3"/></g>`;
       return `<g class="sk-load">`
@@ -1107,12 +1118,31 @@ function fixed(f) {
 // 顶部帧（重建后被 GRIP_MAX 钳制）落在杠心左 24px，动画里手就沿杠平移 24.7px——
 // 和当初要修的「杠在动」是同一类叙事错误。握点对同一根固定杠取常量。
 const FIXED_GRIP = [-12, 6];   // 相对杠心：略偏近侧、在杠下缘
+const FIXED_TARGET = 62 * Math.PI / 180;   // 与 arm.mjs 的 TARGET_DEG 同口径
+/** 两骨 IK（与 interp.mjs 的 ik2 同式，这里本地实现以免形成取值期循环依赖）。 */
+function ik2Local(S, H, l1, l2, near) {
+  const dx = H[0] - S[0], dy = H[1] - S[1], d = Math.hypot(dx, dy) || 1e-6;
+  const dc = Math.min(Math.max(d, Math.abs(l1 - l2) + 1e-6), l1 + l2 - 1e-6);
+  const a = (l1 * l1 - l2 * l2 + dc * dc) / (2 * dc), h = Math.sqrt(Math.max(0, l1 * l1 - a * a));
+  const ux = dx / d, uy = dy / d, M = [S[0] + ux * a, S[1] + uy * a];
+  const c1 = [M[0] - uy * h, M[1] + ux * h], c2 = [M[0] + uy * h, M[1] - ux * h];
+  const dist = (c) => Math.hypot(c[0] - near[0], c[1] - near[1]);
+  return dist(c1) <= dist(c2) ? c1 : c2;
+}
 
 export function drawnArm(name, p, loadType) {
   if (p.fixed && p.shoulder) {
+    // 手钉在杠上的常量握点；肘必须跟着这个握点重解，不能沿用各自为政的那个。
+    // 只换手不换肘的后果：反向划船终点画出的肘角 5.2°、前臂 16.8px——
+    // 「手不滑」换来了「手臂折成发卡」，而两条肘角断言量的都不是画出来的那只手。
     const H = [p.fixed.at[0] + FIXED_GRIP[0], p.fixed.at[1] + FIXED_GRIP[1]];
-    const arm = OUT_OF_PLANE_ARM.has(name) ? rebuildArmFor(name, p) : null;
-    return { E: arm ? arm.elbow : p.elbow, H, rebuilt: !!arm };
+    const d = Math.hypot(H[0] - p.shoulder[0], H[1] - p.shoulder[1]);
+    // 肩与手之间只有 d：两段等长时张开 TARGET 角需要 L = d / √(2(1−cos θ))。
+    // 投影再长也不能超过真骨（50 / 39），够不到就成一条接近伸直的手臂——悬垂正是如此。
+    const L = d / Math.sqrt(2 * (1 - Math.cos(FIXED_TARGET)));
+    const u = Math.min(L, BONE.upper_arm), f = Math.min(L, BONE.forearm);
+    const hint = p.elbow ?? [p.shoulder[0], p.shoulder[1] + 40];
+    return { E: ik2Local(p.shoulder, H, u, f, hint), H, rebuilt: true };
   }
   // 器械类型由 figures.json 覆盖时（高脚杯深蹲借用前蹲姿态但拿的是哑铃），
   // 握点钳制必须按**画出来的**器械算：杠铃 ±24 是沿杠线外移的握距，哑铃只有 ±9。
@@ -1164,7 +1194,7 @@ export function renderPose(p, opts = {}) {
   // 画在身体之后还是之前，取决于负荷**架在身上还是握在手里**，不是取决于它画成什么形状。
   // 按类型枚举的后果：figures.json 的 load_type 覆盖会悄悄改变前后关系——
   // 高脚杯深蹲把 front 覆盖成 hands，哑铃就从头后翻到头前，矩形盖在下巴上。
-  const barBehind = LD && (BEHIND_POSES.has(name) || ['sled', 'plate'].includes(LD.type));
+  const barBehind = LD && (BEHIND_POSES.has(name) || ['sled', 'plate', 'band'].includes(LD.type));
   if (barBehind) g.push(load(LD));
 
   // 远侧肢体先画（浅一档），形成前后关系
@@ -1191,7 +1221,7 @@ export function renderPose(p, opts = {}) {
   // 面部标记。没有它，实心圆的头不带任何朝向信息，读者判断不了人面向哪边——
   // 站姿还能靠脚的形状反推，坐姿和卧姿里脚被器械挡着就完全看不出来。
   g.push(renderFace(name, p));
-  g.push(seg(p.shoulder, [p.head[0] - 5, p.head[1] + 9], 'sk-neck'));
+  g.push(seg(trunkTop, [p.head[0] - 5, p.head[1] + 9], 'sk-neck'));
 
   for (const j of ['shoulder', 'hip', 'knee', 'ankle']) {
     g.push(`<circle class="sk-joint" cx="${p[j][0]}" cy="${p[j][1]}" r="3.2"/>`);

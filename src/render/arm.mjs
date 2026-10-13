@@ -57,6 +57,31 @@ export function rebuildArm(p, opts = {}) {
       return Math.acos(Math.max(-1, Math.min(1, (ux*vx+uy*vy)/(Math.hypot(ux,uy)*Math.hypot(vx,vy))))) * 180 / Math.PI; };
     return { hand: H, elbow: E, upper: u, fore: Math.hypot(E[0]-H[0], E[1]-H[1]), deg: ang2(E, S, H), minDeg: MIN_DEG };
   }
+  // 等分投影：握点已经被器械定死（高脚杯的手托在哑铃上），肩到手只剩 d，
+  // 这时把 d 平分成两段、张开 targetDeg，比「上臂固定 25、剩下的全给前臂」好得多——
+  // 后者在 d 小的时候把前臂挤到 4.2px，整条前臂被哑铃矩形盖住。
+  if (opts.equalSplit) {
+    const gm0 = (bar.type === 'hands' || bar.type === 'hands2') ? 9
+      : bar.type === 'band' ? BAND_GRIP : bar.type === 'handle' ? 10 : gripMax;
+    const H = [bar.at[0] + (p.wrist[0] >= bar.at[0] ? gm0 : -gm0), bar.at[1] - 5];
+    const d = Math.hypot(H[0] - S[0], H[1] - S[1]);
+    const th0 = targetDeg * Math.PI / 180;
+    const L = Math.min(d / Math.sqrt(2 * (1 - Math.cos(th0))), UPPER_ARM);
+    const ang4 = (c, a, b) => { const ux=a[0]-c[0], uy=a[1]-c[1], vx=b[0]-c[0], vy=b[1]-c[1];
+      return Math.acos(Math.max(-1, Math.min(1, (ux*vx+uy*vy)/(Math.hypot(ux,uy)*Math.hypot(vx,vy))))) * 180 / Math.PI; };
+    const dx = H[0]-S[0], dy = H[1]-S[1], dd = Math.hypot(dx,dy) || 1e-6;
+    const dc = Math.min(dd, 2*L - 1e-6);
+    const a0 = dc/2, h0 = Math.sqrt(Math.max(0, L*L - a0*a0));
+    const ux = dx/dd, uy = dy/dd, M = [S[0]+ux*a0, S[1]+uy*a0];
+    const cands = [[M[0]-uy*h0, M[1]+ux*h0], [M[0]+uy*h0, M[1]-ux*h0]];
+    // 选边由动作要点定：高脚杯「手肘指向地面」取低的那支；
+    // 杠铃前架位「肘抬起形成平台」取高的那支（卡片把「肘往下掉」列为常见错误）。
+    const lower = cands[0][1] >= cands[1][1] ? cands[0] : cands[1];
+    const upper = cands[0][1] >= cands[1][1] ? cands[1] : cands[0];
+    const E2 = opts.elbowUp ? upper : lower;
+    return { hand: H, elbow: E2, upper: L, fore: Math.hypot(E2[0]-H[0], E2[1]-H[1]),
+             deg: ang4(E2, S, H), minDeg: MIN_DEG };
+  }
   const th = targetDeg * Math.PI / 180;
   const aSE = Math.atan2(S[1] - E[1], S[0] - E[0]);
   const cands = [];
@@ -126,6 +151,12 @@ export const ARM_OVERRIDES = {
   pullup_top: { elbowDir: [-0.6, 0.8], foreshorten: 0.32 },
   // 下拉终点：肘朝下、手在锁骨前。肘投影太长的话前臂要跨过去就超真长。
   pulldown_end: { foreshorten: 0.3 },
+  // 高脚杯：手托在哑铃上端，肘指向地面。握点被哑铃定死，走等分投影。
+  goblet_top: { equalSplit: true },
+  goblet_bottom: { equalSplit: true },
+  // 杠铃前架位搬运同理：原来上臂固定 25、剩下的全给前臂，前臂只剩 6.6px，
+  // 肘圆与手圆直接相交，cue 的「肘抬起形成平台」在图上读不出来。
+  carry_front: { equalSplit: true, elbowUp: true, targetDeg: 100 },
 };
 
 /** 按姿态名取覆盖参数再重建。renderPose 与校验都该走这个入口，保证画的和查的一致。 */

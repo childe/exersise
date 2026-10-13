@@ -150,7 +150,11 @@ export function validateFrameConsistency(figures) {
   const errors = [];
   const len = (a, b) => Math.hypot(a[0] - b[0], a[1] - b[1]);
   const LIMBS = [['hip', 'knee', '大腿'], ['knee', 'ankle', '小腿'],
-                 ['shoulder', 'elbow', '上臂'], ['elbow', 'wrist', '前臂']];
+                 ['shoulder', 'elbow', '上臂'], ['elbow', 'wrist', '前臂'],
+                 // 脚也是刚体。站姿提踵把踝—脚尖画成会伸缩（+23%），而那张图的全部内容
+                 // 就是踝的屈伸；脚不在这张表里，所以四轮都没人拦得住。
+                 ['ankle', 'heel', '脚跟段'], ['ankle', 'toe', '前脚段'], ['heel', 'toe', '脚长'],
+                 ['ankle2', 'heel2', '远侧脚跟段'], ['ankle2', 'toe2', '远侧前脚段']];
   for (const [slug, f] of Object.entries(figures)) {
     if (!f.end || f.end === f.start) continue;
     const a = POSES[f.start], b = POSES[f.end];
@@ -160,6 +164,7 @@ export function validateFrameConsistency(figures) {
     const armFree = [f.start, f.end].some((n) => OUT_OF_PLANE_ARM.has(n) || FORESHORTENED_ARM.has(n));
     for (const [j1, j2, label] of LIMBS) {
       if (armFree && (j1 === 'shoulder' || j1 === 'elbow')) continue;
+      if (!a[j1] || !a[j2] || !b[j1] || !b[j2]) continue;
       const la = len(a[j1], a[j2]), lb = len(b[j1], b[j2]);
       const diff = Math.abs(la - lb) / Math.max(la, lb);
       if (diff > 0.18) {
@@ -241,11 +246,16 @@ export function validateJointAngles(figures = {}) {
     }
     if (!p.shoulder || !p.elbow || !p.wrist) continue;
     if (FORESHORTENED_ARM.has(name)) continue;   // 指向读者的手臂，投影肘角不是真肘角
+    // 量**画出来的**那只手臂：重建器内部解出的 (elbow, hand) 不一定就是最终画上去的
+    // （握在固定杠上的姿态会把手换成常量握点）。反向划船终点画出 5.2°，而内部解是 62°。
     const lt = loadTypeOf.get(name);
-    const q = lt && p.load ? { ...p, load: { ...p.load, type: lt } } : p;
-    const arm = OUT_OF_PLANE_ARM.has(name) ? rebuildArmFor(name, q) : null;
-    const e = arm ? deg(arm.elbow, p.shoulder, arm.hand) : deg(p.elbow, p.shoulder, p.wrist);
-    if (arm && arm.fore > 41) errors.push(`${name}: 重建后的前臂 ${arm.fore.toFixed(1)}px 比真长 39 还长，投影不可能长于实物——肘离杠线太远`);
+    const d = drawnArm(name, p, lt);
+    const e = deg(d.E, p.shoulder, d.H);
+    const fore = Math.hypot(d.H[0] - d.E[0], d.H[1] - d.E[1]);
+    if (d.rebuilt && fore > 41) errors.push(`${name}: 画出的前臂 ${fore.toFixed(1)}px 比真长 39 还长，投影不可能长于实物`);
+    // 下限：只有上限的话投影可以塌成一个点——高脚杯曾被挤到 4.2px，整条前臂藏在哑铃矩形里。
+    // 关节圆半径 3.2 + 手圆 4，低于 8px 就两个圆相交、读不出中间有一段。
+    if (d.rebuilt && fore < 8) errors.push(`${name}: 画出的前臂只有 ${fore.toFixed(1)}px，肘与手两个圆会叠在一起，读不出是条手臂`);
     if (e >= ELBOW_MIN) {
       if (ELBOW_PENDING.has(name)) {
         errors.push(`${name}: 肘角已达 ${e.toFixed(1)}°，应从 ELBOW_PENDING 移除`);

@@ -162,6 +162,10 @@ export function interpolate(A, B, t, opts = {}) {
     for (const [c, p] of [['knee2','hip'],['ankle2','knee2']]) if (A[c] && B[c]) q[c] = seg(p, c);
   }
   if (A.shoulder2 && B.shoulder2) q.shoulder2 = from(q.hip, alerp(ang(A.hip,A.shoulder2), ang(B.hip,B.shoulder2), t), len(A.hip,A.shoulder2));
+  // 正视图的肩线中点：不透传的话补间帧没有 shoulderMid，躯干改接在近侧肩上、
+  // 肩线整条消失——动画一开播躯干就横跳 16px。
+  if (A.shoulderMid && B.shoulderMid && q.shoulder && q.shoulder2)
+    q.shoulderMid = [(q.shoulder[0] + q.shoulder2[0]) / 2, (q.shoulder[1] + q.shoulder2[1]) / 2];
   for (const [c, p] of UPPER) {
     if (!A[c] || !B[c]) continue;
     if (wristRooted && (c === 'elbow' || c === 'wrist' || c === 'head')) continue;   // 手钉在杠上，肘已由 IK 解出
