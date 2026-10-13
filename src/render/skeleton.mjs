@@ -9,6 +9,9 @@ const HEAD_RADIUS = FACE_GEOMETRY.HEAD_R;
 // 弹力带那一段「被手握住的带子」的半宽。握点钳制用同一个数（arm.mjs 的 BAND_GRIP），
 // 手才正好落在带子上：±9 会把肘角压到 24°，±24 则让手悬在带子外 8px。
 export const BAND_HALF = 17;
+// 身体与支撑面之间的名义间隙。原来平卧 5、坐姿 6、上斜 5 三种口径，
+// 断言窗口只好开到 ±6.5——宽到只能抓「完全离面」。统一成一个数，窗口才收得紧。
+export const BENCH_GAP = 6;
 /**
  * 负荷**架在身上**的姿态：杠压在斜方肌/后三角/锁骨上，或带子绕过后颈。
  * 这些负荷画在身体之后（被身体挡住是对的），也因此豁免「器械不许撞进头里」。
@@ -323,7 +326,7 @@ export const POSES = {
     head: [76, 104], shoulder: [78, 120], elbow: [78, 170], wrist: [102, 160],
     hip: [84, 178], knee: [130, 184], ankle: [158, 216], heel: [154, 225], toe: [174, 221],
     bench: [60, 186, 44, 8],
-    load: { type: 'handle', at: [106, 125] },
+    load: { type: 'handle', at: [96.7, 126] },   // 躯干系 (−7.9, +18)：锁骨前
   }),
 
   // ── 搬运 ───────────────────────────────────────────
@@ -575,7 +578,7 @@ export const POSES = {
     head: [136, 78], shoulder: [120, 82], elbow: [120, 132], wrist: [120, 171],
     hip: [40, 102], knee: [65.7, 156.3], ankle: [60, 216], heel: [52, 225], toe: [88, 225],
     shoulder2: [120, 82], elbow2: [92.6, 123.8], wrist2: [102, 159],
-    knee2: [28, 160.8], ankle2: [-32, 160.8], heel2: [-38, 168.8], toe2: [-24, 168.8],
+    knee2: [28, 165.73], ankle2: [-32, 165.73], heel2: [-38, 173.73], toe2: [-24, 173.73],
     support: ['knee2', 'ankle2', 'wrist2'],
     bench: [-56, 167, 180, 8],
     load: { type: 'hands', at: [120, 179] },
@@ -584,7 +587,7 @@ export const POSES = {
     head: [136, 78], shoulder: [120, 82], elbow: [72.3, 67.1], wrist: [72, 106],
     hip: [40, 102], knee: [65.7, 156.3], ankle: [60, 216], heel: [52, 225], toe: [88, 225],
     shoulder2: [120, 82], elbow2: [92.6, 123.8], wrist2: [102, 159],
-    knee2: [28, 160.8], ankle2: [-32, 160.8], heel2: [-38, 168.8], toe2: [-24, 168.8],
+    knee2: [28, 165.73], ankle2: [-32, 165.73], heel2: [-38, 173.73], toe2: [-24, 173.73],
     support: ['knee2', 'ankle2', 'wrist2'],
     bench: [-56, 167, 180, 8],
     load: { type: 'hands', at: [72, 114] },
@@ -834,8 +837,8 @@ function normalize(name, p) {
       const ux = (q.shoulder[0] - q.hip[0]) / 80, uy = (q.shoulder[1] - q.hip[1]) / 80;
       const f = facing(name, q);
       const nx = -f[0], ny = -f[1];                  // 指向凳子内部
-      const from = [q.hip[0] - ux * 12 + nx * 5, q.hip[1] - uy * 12 + ny * 5];
-      const to = [q.shoulder[0] + ux * 30 + nx * 5, q.shoulder[1] + uy * 30 + ny * 5];
+      const from = [q.hip[0] - ux * 12 + nx * BENCH_GAP, q.hip[1] - uy * 12 + ny * BENCH_GAP];
+      const to = [q.shoulder[0] + ux * 30 + nx * BENCH_GAP, q.shoulder[1] + uy * 30 + ny * BENCH_GAP];
       q.benchIncline = { from, to, n: [nx, ny], h: 9 };
       delete q.bench;
     } else if (lying) {
@@ -844,7 +847,7 @@ function normalize(name, p) {
       const sx = q.support.map((j) => q[j][0]);
       const x0 = Math.min(q.head ? q.head[0] - 14 : Infinity, Math.min(...sx) - 10);
       const x1 = Math.max(...sx) + 12;
-      q.bench = [x0, Math.max(q.shoulder[1], q.hip[1]) + 5, x1 - x0, 9];
+      q.bench = [x0, Math.max(q.shoulder[1], q.hip[1]) + BENCH_GAP, x1 - x0, 9];
     } else {
       // 坐姿/跪姿器械：凳面托在声明的支撑关节下（默认髋；单臂划船是膝）
       q.support = p.support ?? ['hip'];
@@ -852,7 +855,7 @@ function normalize(name, p) {
       // 俯卧的髋垫：前缘在髋骨（cue「髋骨上缘略高于垫子前缘」），垫子只往脚的方向延伸
       const proneHip = PRONE_POSES.has(name) && q.support.length === 1 && q.support[0] === 'hip';
       const x0 = proneHip ? q.hip[0] - 4 : Math.min(...xs) - 24, x1 = proneHip ? q.hip[0] + 44 : Math.max(...xs) + 24;
-      q.bench = [x0, Math.max(...ys) + 6, x1 - x0, 8];
+      q.bench = [x0, Math.max(...ys) + BENCH_GAP, x1 - x0, 8];
     }
   }
 

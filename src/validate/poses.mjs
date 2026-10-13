@@ -4,7 +4,7 @@
 // 前提是它必须可核验——而可核验的意思不是"我看了一眼觉得对"，是**写成断言、构建期跑**。
 // 这个文件就是那个前提。断言失败 = 构建失败，画错的图进不了页面。
 
-import { POSES, RAW_POSES, FORESHORTENED_ARM, GROUND, MIDFOOT, FIG_W, FIG_H, drawnArm, contentBox, torsoCoords, RACKED_POSES, BAND_HALF } from '../render/skeleton.mjs';
+import { POSES, RAW_POSES, FORESHORTENED_ARM, GROUND, MIDFOOT, FIG_W, FIG_H, drawnArm, contentBox, torsoCoords, RACKED_POSES, BAND_HALF, BENCH_GAP } from '../render/skeleton.mjs';
 import { interpolate } from '../render/interp.mjs';
 import { armDescriptor, blendArm } from '../assets/anim.js';
 import { rebuildArmFor, OUT_OF_PLANE_ARM } from '../render/arm.mjs';
@@ -312,12 +312,14 @@ export function validateContacts() {
   // 踝不是接触点：脚平放时踝本来就在地面上方 7–9px。接触的是脚跟/脚尖、手、肘、膝、髋、肩。
   const GROUND_JOINTS = ['shoulder', 'elbow', 'wrist', 'hip', 'knee', 'heel', 'toe',
                          'shoulder2', 'elbow2', 'wrist2', 'knee2', 'heel2', 'toe2'];
-  const TOL = 6.5;
+  // 贴地与贴凳两套容差：贴地点的「间隙」是身体厚度（仰卧的肩关节本来就在地面上方几 px），
+  // 贴凳的间隙是 normalize 统一生成的 BENCH_GAP，没有理由散开——所以后者收得紧得多。
+  const GROUND_TOL = 6.5, BENCH_TOL = 1.5;
   for (const [name, raw] of Object.entries(RAW_POSES)) {
     const p = POSES[name];
     for (const j of GROUND_JOINTS) {
       if (!raw[j] || !p[j]) continue;
-      if (Math.abs(raw[j][1] - GROUND) <= 7 && Math.abs(p[j][1] - GROUND) > TOL) {
+      if (Math.abs(raw[j][1] - GROUND) <= 7 && Math.abs(p[j][1] - GROUND) > GROUND_TOL) {
         errors.push(`${name}: ${j} 作者画在地面上（y=${raw[j][1]}），归一化后离地 ${(GROUND - p[j][1]).toFixed(1)}px`);
       }
     }
@@ -327,11 +329,11 @@ export function validateContacts() {
       if (!p[j]) continue;
       if (p.bench) {
         const d = p.bench[1] - p[j][1];
-        if (Math.abs(d - 5.5) > TOL) errors.push(`${name}: ${j} 离凳面 ${d.toFixed(1)}px（应贴着）`);
+        if (Math.abs(d - BENCH_GAP) > BENCH_TOL) errors.push(`${name}: ${j} 离凳面 ${d.toFixed(1)}px（应为 ${BENCH_GAP}）`);
       } else if (p.benchIncline) {
         const { from, n } = p.benchIncline;
         const d = (p[j][0] - from[0]) * n[0] + (p[j][1] - from[1]) * n[1];   // 沿凳面法线
-        if (Math.abs(d + 5) > TOL) errors.push(`${name}: ${j} 离上斜凳面 ${(-d).toFixed(1)}px（应贴着）`);
+        if (Math.abs(d + BENCH_GAP) > BENCH_TOL) errors.push(`${name}: ${j} 离上斜凳面 ${(-d).toFixed(1)}px（应为 ${BENCH_GAP}）`);
       }
     }
     // 仰卧家族：肩与头贴地、底部髋近地——不依赖作者是否把它画在 ±7 内（死虫曾悬空 21px）
