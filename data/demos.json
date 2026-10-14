@@ -613,14 +613,14 @@
     "coverage": "逐条核验",
     "verification": [
       {
-        "criterion": "全程掌心相对、拳眼朝前",
+        "criterion": "全程掌心相对、手腕不翻转",
         "status": "符合",
-        "result": "步骤 1 写「neutral grip (palms facing each other)」，要点里专门提醒「Keep your grip neutral during the movement」、不要在举起时转腕；示范动图全程掌心相对。"
+        "result": "步骤 1 写「neutral grip (palms facing each other)」，要点里专门提醒「Keep your grip neutral during the movement」、不要在举起时转腕；示范动图全程掌心相对，哑铃随前臂转、始终竖在身体前后—上下平面里。"
       },
       {
-        "criterion": "上臂贴住躯干不前后移",
+        "criterion": "上臂贴住躯干，不往后跑、最多略向前",
         "status": "符合",
-        "result": "步骤 3 写「Don't let your upper arms travel back during the curl. Keep them at your sides, or move them slightly forward」——不许后移，允许略前移；示范动图里上臂始终贴在体侧。"
+        "result": "步骤 3 写「Don't let your upper arms travel back during the curl. Keep them at your sides, or move them slightly forward」——不许后移，允许略前移，与本判据一致；示范动图里上臂始终贴在体侧。"
       }
     ],
     "visual_check": "2026-10-15 实查该页示范动图 Hammer-curl.gif（600×600，37 帧，斜前方机位），取第 0／9／18 帧：起始手臂伸直垂在体侧、拳眼朝前；前臂水平时哑铃竖直（长轴垂直于前臂）；顶点哑铃举到肩前、掌心仍相对，上臂全程贴体侧。"
@@ -646,9 +646,9 @@
         "result": "正文没有单独写手腕，但示范动图里前臂举到水平时手背与前臂成一条直线、没有往下折——这一条由画面支持。"
       },
       {
-        "criterion": "上臂全程贴住躯干不前移",
+        "criterion": "上臂贴住躯干，不往后跑、最多略向前",
         "status": "符合",
-        "result": "步骤 3 写「Don't let your upper arm travel back during the curl. Keep it at your side or move it slightly forward」；示范动图里上臂基本贴在体侧，只在顶点略前移，与本卡「不前移」的口径一致到「明显前移」为止。"
+        "result": "步骤 3 写「Don't let your upper arm travel back during the curl. Keep it at your side or move it slightly forward」——不许后移，允许略前移，与本判据一致；示范动图里上臂基本贴在体侧，只在顶点略前移。"
       }
     ],
     "visual_check": "2026-10-15 实查该页示范动图 reverse-barbell-curl.gif（22 帧，斜前方机位），取第 0／5／11 帧：正握（掌心朝下）、握距约与肩同宽的杠铃；起始杠垂在大腿前、手臂伸直；前臂水平时手腕与前臂成一线；顶点杠到胸前，上臂基本贴体侧。"

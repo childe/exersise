@@ -510,7 +510,7 @@ test('窄距俯卧撑动画：手钉在地上、脚尖贴地、顶部手臂后�
     assert.ok(Math.hypot(POSES[n][k][0] - RAW_POSES[n][k][0], POSES[n][k][1] - RAW_POSES[n][k][1]) < 0.05, `${n}.${k} 归一化后移动了`);
   // 手臂在矢状面内（不是投影）：2D 就是真骨长
   for (const n of [f.start, f.end]) {
-    assert.ok(Math.abs(Math.hypot(A.elbow[0] - A.shoulder[0], A.elbow[1] - A.shoulder[1]) - 50) < 0.1);
+    assert.ok(Math.abs(Math.hypot(POSES[n].elbow[0] - POSES[n].shoulder[0], POSES[n].elbow[1] - POSES[n].shoulder[1]) - 50) < 0.1, `${n} 上臂不是 50`);
     assert.ok(Math.abs(Math.hypot(POSES[n].wrist[0] - POSES[n].elbow[0], POSES[n].wrist[1] - POSES[n].elbow[1]) - 39) < 0.1, `${n} 前臂不是 39`);
   }
   const tilt = Math.atan2(A.wrist[0] - A.shoulder[0], A.wrist[1] - A.shoulder[1]) * 180 / Math.PI;
