@@ -411,3 +411,14 @@ test('保加利亚分腿蹲：凳高约到膝（setup 文字与图一致）', ()
   const benchH = GROUND - A.bench[1], kneeH = GROUND - A.knee[1];
   assert.ok(benchH >= 0.6 * kneeH && benchH <= 1.05 * kneeH, `凳高 ${benchH.toFixed(0)}px，站立膝高 ${kneeH.toFixed(0)}px`);
 });
+
+test('卡片文字提到靠背的坐姿动作，图上要有靠背', async () => {
+  // 五张卡的 cue / 自检点名「背贴靠背」「看腰与靠背之间有没有空隙」，图上原来只有座面，没有对照物。
+  const ex = JSON.parse(await readFile(path.join(root, 'data/exercises.json'), 'utf8'));
+  const list = Array.isArray(ex) ? ex : ex.exercises;
+  const need = list.filter((e) => /靠背/.test(JSON.stringify([e.cues, e.self_checks, e.mistakes, e.safety]))
+    && figures[e.slug] && (POSES[figures[e.slug].start]?.bench || POSES[figures[e.slug].start]?.benchIncline)).map((e) => e.slug);
+  assert.ok(need.length >= 5, `应找到至少 5 张提到靠背的坐姿卡，实际 ${need.join(',')}`);
+  // 斜躺座（腿举）沿躯干铺开，本身就是靠背；平座面要另画一块
+  for (const slug of need) assert.ok(ORBIT_PARAMS[slug].backrest || POSES[figures[slug].start].benchIncline, `${slug}: 文字提到靠背，图上没有`);
+});

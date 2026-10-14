@@ -104,6 +104,7 @@
 | 2026-10-14 | 弹力带早安 | 把颈后的带子当杠铃反解到足中线：底部躯干只到高于水平 53°（比 RDL 浅），身体质心落在脚跟之后（会后倒） | [ExRx Good Morning](https://exrx.net/WeightExercises/Hamstrings/BBGoodMorning)（躯干前倾到接近水平）；力学：带子两端在人身上，是内力 | 底部移出 PLUMB_SOLVED，按身体质心构造：髋同 RDL、躯干高于水平 25°、质心约 79（在脚上）；断言全程质心在脚上、底部不比 RDL 浅；手臂重建测试改走 rebuildArmFor（暴露反向划船一处旧问题）。figure-reviewer APPROVE | fix/good-morning-depth |
 | 2026-10-14 | 坐姿推胸机 | 握把随腕归一化落到肩下 30px（约剑突），cue「握把在胸骨中段」；评审又查出推出早段手前冲 14px 再退回（重建手换支，旧问题被放大） | [ACE Seated Chest Press](https://www.acefitness.org/resources/everyone/exercise-library/188/seated-chest-press/)（handles level with mid-chest / nipple） | 握把锚在肩上、肩下 18px（s≈0.22），起始在胸前；3D 手直接取握把（线性），hand_path；握距 46；肘角 39°→154°；断言高度、胸前、肘角、不锁死、不跳。figure-reviewer 两轮后 APPROVE | fix/chest-press-handle-height |
 | 2026-10-14 | 保加利亚分腿蹲 | setup「凳高约到小腿中段」——图里凳约到膝（站立膝高 81%），资料也是约到膝：**文字错** | [Gymshark](https://central.gymshark.com/article/how-to-bulgarian-split-squat)；[Sweat](https://sweat.com/blogs/fitness/bulgarian-split-squat)（约到膝，新手更低） | setup 改「凳高约到膝或略低（新手从更低的台阶起步）」；断言凳高在站立膝高 60–105%。纯文字修改，未送 figure-reviewer。「垂直下沉」与骨盆后移 26px：顶部前腿近竖直所致，属提示语而非字面路径，未改 | fix/split-squat-bench-text |
+| 2026-10-14 | 坐姿器械靠背（哑铃推举、器械推举、伸膝、推胸） | 四张卡的 cue / 自检点名「背贴靠背」「看腰与靠背之间有没有空隙」，图上只有座面（契约 §8 已知缺口） | 卡片自身文字；ACE 各器械条目（back against the pad） | 环绕视角画靠背（贴躯干背侧 BENCH_GAP，到肩高；相机在板后时撤掉「永远在后」偏置，避免躯干画在板上）；断言：文字提到靠背的坐姿卡必须有靠背。遗留见契约 §8。figure-reviewer APPROVE | fix/seated-backrest |
 
 ## 5. 待查候选
 
@@ -130,4 +131,4 @@
 | 7 | 坐姿推胸机 | 「握把大致在胸骨中段」 | 握把在 s=0.38（约剑突） | 中低 | **已修** |
 | 8 | 保加利亚分腿蹲 | setup「凳高约到小腿中段」 | 图中凳约到膝（资料也是到膝）——**文字错**；骨盆后移 26px | 中低 | **已修**（文字） |
 
-小偏差：哑铃推举无靠背（setup 写靠背后仰 5–10°）；下压躯干未前倾、肘漂 8px；反向飞鸟顶点上臂越过背面 6.5°；面拉握把离面部偏远。
+小偏差：哑铃推举躯干前倾 2°（setup 写靠背后仰 5–10°，靠背已补）；下压躯干未前倾、肘漂 8px；反向飞鸟顶点上臂越过背面 6.5°；面拉握把离面部偏远。

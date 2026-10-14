@@ -19,7 +19,7 @@
 //
 // 所有图元先组成一个 3D 场景（orbitScene），渲染与画框都从同一个场景出，
 // 不存在「框按一套几何算、画按另一套几何画」的分歧。
-import { GROUND, MIDFOOT, POSES, drawnArm } from './skeleton.mjs';
+import { GROUND, MIDFOOT, POSES, drawnArm, BENCH_GAP } from './skeleton.mjs';
 import { MUSCLE_SEG } from './muscle-segments.mjs';
 import { facing, FACE_GEOMETRY } from './facing.mjs';
 
@@ -54,6 +54,7 @@ const ST_TOGETHER = { hip: 12, knee: 11, ankle: 10, heel: 10, toe: 12 };  // 俯
  *   view    'side'（默认）、'front'
  *   band    弹力带下端的半宽（踩在脚下的带子分两股）
  *   benchHalf 凳在 z 方向的半宽（默认 16；臀推横靠长凳 60）
+ *   backrest  画靠背（贴在躯干背侧，从髋下到肩高）
  *   handOff   [前, 上]：握点相对肩的偏移（躯干系），取代 2D 的手位
  *   plateR    杠铃片半径（默认 16；硬拉用标准片 31，起始帧片着地）
  *   foreVertical  按「端点处前臂竖直」反解握距、解肘（取代 grip/out）
@@ -73,8 +74,8 @@ export const ORBIT_PARAMS = {
   'goblet-squat': { stance: ST_SQUAT, grip: 8, out: 0.3, db: 'y', dbMode: 'single' },
   // 凳心挪到 z=−12：后脚在远侧（z −15 … −19），凳面 ±16 居中时脚尖在凳外 3px
   'db-bulgarian-split-squat': { stance: ST_HIP, grip: 34, out: 0.05, db: 'x', dbMode: 'each', benchZ: -12 },
-  'leg-press': { stance: ST_SEAT, grip: 34, out: 0.1 },
-  'seated-leg-extension': { stance: ST_SEAT, grip: 32, out: 0.1 },
+  'leg-press': { stance: ST_SEAT, grip: 34, out: 0.1 },   // 斜躺座（benchIncline）本身就是靠背
+  'seated-leg-extension': { stance: ST_SEAT, grip: 32, out: 0.1, backrest: true },
   'seated-calf-raise': { stance: ST_SEAT, grip: 22, out: 0.1 },
   'standing-calf-raise-bodyweight': { stance: ST_HIP, grip: 31, out: 0.05 },
   // 硬拉从地上拉起：标准片直径 45cm，按腿的比例半径 31px，起始帧片着地、杠心离地 31px
@@ -95,7 +96,7 @@ export const ORBIT_PARAMS = {
   'close-grip-bench-press': { stance: ST_LYING, grip: 30, out: 0.2 },
   'db-bench-press': { stance: ST_LYING, foreVertical: true, db: 'z', dbMode: 'each' },
   'db-incline-bench-press': { stance: ST_LYING, foreVertical: true, db: 'z', dbMode: 'each' },
-  'machine-chest-press': { stance: ST_SEAT, grip: 46, out: 0.6, handle: 6, perHand: true },   // 握把间距约 57cm，起始肘角约 38°
+  'machine-chest-press': { stance: ST_SEAT, grip: 46, out: 0.6, handle: 6, perHand: true, backrest: true },   // 握把间距约 57cm，起始肘角约 38°
   // 俯卧撑：底部前臂在矢状面内竖直（肘在腕正上方），从正面看外倾 foreTilt°——
   // 完全竖直的话肘外展 40° 要配两倍肩宽的手距。握距按这个约束从底部反解。
   'push-up': { stance: ST_TOGETHER, foreVertical: true, foreTilt: 15 },
@@ -103,8 +104,8 @@ export const ORBIT_PARAMS = {
   // 推举起始杠在锁骨前、离肩只有 7px：cue「握距略比肩宽」，握点外移到肘角 ≥25° 的最窄处
   'overhead-press': { stance: ST_HIP, grip: 50, out: 0.3 },
   'band-overhead-press': { stance: ST_HIP, grip: 50, out: 0.3, band: 14 },
-  'db-shoulder-press': { stance: ST_SEAT, foreVertical: true, db: 'z', dbMode: 'each' },
-  'machine-shoulder-press': { stance: ST_SEAT, foreVertical: true, handle: 6, perHand: true },
+  'db-shoulder-press': { stance: ST_SEAT, foreVertical: true, db: 'z', dbMode: 'each', backrest: true },
+  'machine-shoulder-press': { stance: ST_SEAT, foreVertical: true, handle: 6, perHand: true, backrest: true },
   'db-lateral-raise': { view: 'front', db: 'x', dbMode: 'each' },
   'cable-lateral-raise': { view: 'front', handle: 6, perHand: true, oneArm: true, dbMode: 'near' },   // cue：单臂，做完换边
   'cable-pushdown': { stance: ST_HIP, grip: 10, out: 0.05, handle: 14 },
@@ -431,6 +432,27 @@ function equipment(S, slug, p, J, lt) {
     for (const lx of [x + 8, x + w - 8]) for (const lz of [-(bh - 5), bh - 5]) {
       S.push({ t: 'line', a: [lx, y + h, bz + lz], b: [lx, GROUND, bz + lz], cls: 'sk-rig', bias: ORB_BEHIND });
     }
+  }
+  if (P.backrest && p.hip && p.shoulder && p.knee) {
+    // 靠背：一块贴在躯干背侧的板（间隙 BENCH_GAP，同凳面）。原来坐姿器械只画了座面，
+    // 而五张卡的 cue / 自检都点名「背贴靠背」「看腰与靠背之间有没有空隙」——图上没有对照物。
+    // 坐姿动作躯干不动，板按当前帧的躯干放即两帧同位。板只到肩高：这些坐姿的头心在躯干线后约 6px，
+    // 板再往上就从头里穿过去（推胸 cue「头贴住靠背」因此没有画出来）。
+    const tv = [p.shoulder[0] - p.hip[0], p.shoulder[1] - p.hip[1]], tl = Math.hypot(tv[0], tv[1]) || 1;
+    const u = [tv[0] / tl, tv[1] / tl];
+    let n = [-u[1], u[0]];
+    if (n[0] * (p.knee[0] - p.hip[0]) + n[1] * (p.knee[1] - p.hip[1]) > 0) n = [-n[0], -n[1]];   // 指向身后
+    const top = 0, h = 8, half = 18;
+    const from = [p.hip[0] - u[0] * 6 + n[0] * BENCH_GAP, p.hip[1] - u[1] * 6 + n[1] * BENCH_GAP];
+    const to = [p.shoulder[0] + u[0] * top + n[0] * BENCH_GAP, p.shoulder[1] + u[1] * top + n[1] * BENCH_GAP];
+    const f2 = [from[0] + n[0] * h, from[1] + n[1] * h], t2 = [to[0] + n[0] * h, to[1] + n[1] * h];
+    const q = (a, z) => [a[0], a[1], z];
+    // 竖直的板不像座面那样「从上往下看总在身体后面」：相机转到身后（yaw>0）时板挡在躯干前。
+    // faceBias 取板的背向法线：相机在板后时撤掉 ORB_BEHIND，按深度正常排序。
+    const fb = [n[0], n[1], 0];
+    S.push({ t: 'poly', pts: [q(from, -half), q(to, -half), q(to, half), q(from, half)], cls: 'sk-bench', bias: ORB_BEHIND, faceBias: fb, n: [-n[0], -n[1], 0] });
+    S.push({ t: 'poly', pts: [q(f2, -half), q(t2, -half), q(t2, half), q(f2, half)], cls: 'sk-bench', bias: ORB_BEHIND, faceBias: fb, n: [n[0], n[1], 0] });
+    for (const z of [-half, half]) S.push({ t: 'poly', pts: [q(from, z), q(to, z), q(t2, z), q(f2, z)], cls: 'sk-bench', bias: ORB_BEHIND, faceBias: fb, n: [0, 0, Math.sign(z)] });
   }
   if (p.benchIncline) {
     const { from, to, n, h } = p.benchIncline;
