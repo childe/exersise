@@ -111,7 +111,18 @@ export function interpolate(A, B, t, opts = {}) {
     q.head = from(q.shoulder, alerp(ang(A.shoulder,A.head), ang(B.shoulder,B.head), t), lerp(len(A.shoulder,A.head), len(B.shoulder,B.head), t));
     armToBar();
   } else {
-    if (grounded) { q.ankle = [...A.ankle]; q.knee = seg('ankle','knee'); q.hip = seg('knee','hip'); }
+    if (grounded) {
+      q.ankle = [...A.ankle];
+      q.knee = seg('ankle','knee');
+      // 小腿途经点：硬拉第一段「膝先往后让路」，杠升到膝高时小腿已竖直。线性插小腿角的话
+      // 膝在杠经过时只离杠 2.5px，杠穿过膝盖。到 A.shinVia.t 时小腿转到竖直，之后再到 B。
+      if (A.shinVia) {
+        const k = A.shinVia.t, up = -Math.PI / 2, a0 = ang(A.ankle, A.knee), a1 = ang(B.ankle, B.knee);
+        const sa = t < k ? alerp(a0, up, t / k) : alerp(up, a1, (t - k) / (1 - k));
+        q.knee = from(q.ankle, sa, lerp(len(A.ankle, A.knee), len(B.ankle, B.knee), t));
+      }
+      q.hip = seg('knee','hip');
+    }
     else if (toeRooted) {
       q.toe = [...A.toe];
       q.ankle = [q.toe[0] + lerp(A.ankle[0]-A.toe[0], B.ankle[0]-B.toe[0], t),

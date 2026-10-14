@@ -320,3 +320,23 @@ test('哑铃臀推：上背搭在凳沿上，全程钉住；顶点躯干水平�
     assert.ok(Math.hypot(q.ankle[0] - A.ankle[0], q.ankle[1] - A.ankle[1]) < 0.5, `t=${i / 16}: 踝漂移`);
   }
 });
+
+test('硬拉：起始杠片着地、髋高于膝；拉起全程杠不穿过膝', () => {
+  // 原来杠心离地 7px（片被钳成半径 7），髋压到膝高（髋角 27°），画成「蹲着拉」。
+  const f = figures['conventional-deadlift'], A = POSES[f.start], B = POSES[f.end];
+  const R = ORBIT_PARAMS['conventional-deadlift'].plateR;
+  assert.ok(R >= 28 && R <= 34, `硬拉片半径 ${R}（标准片直径 45cm，按腿的比例约 31px）`);
+  assert.ok(Math.abs(GROUND - A.load.at[1] - R) <= 1, `起始杠心离地 ${(GROUND - A.load.at[1]).toFixed(1)}px，片（半径 ${R}）应着地`);
+  const ang = (c, a, b) => { const u = [a[0] - c[0], a[1] - c[1]], v = [b[0] - c[0], b[1] - c[1]];
+    return Math.acos((u[0] * v[0] + u[1] * v[1]) / Math.hypot(...u) / Math.hypot(...v)) * 180 / Math.PI; };
+  const hipAng = ang(A.hip, A.shoulder, A.knee);
+  assert.ok(hipAng >= 40 && hipAng <= 70, `起始髋角 ${hipAng.toFixed(0)}°`);
+  for (let i = 0; i <= 40; i++) {
+    const q = interpolate(A, B, i / 40, { plumb: f.plumb !== false });
+    // 杠在膝上下 15px 内时，离膝关节须 ≥7px（髌骨在关节前方约 5px）
+    if (Math.abs(q.load.at[1] - q.knee[1]) < 15)
+      assert.ok(Math.hypot(q.load.at[0] - q.knee[0], q.load.at[1] - q.knee[1]) >= 7,
+        `t=${i / 40}: 杠离膝 ${Math.hypot(q.load.at[0] - q.knee[0], q.load.at[1] - q.knee[1]).toFixed(1)}px`);
+    assert.ok(Math.abs(q.load.at[0] - 90) < 0.6, `t=${i / 40}: 杠离开足中线`);
+  }
+});

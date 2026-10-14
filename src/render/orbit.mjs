@@ -54,6 +54,7 @@ const ST_TOGETHER = { hip: 12, knee: 11, ankle: 10, heel: 10, toe: 12 };  // 俯
  *   view    'side'（默认）、'front'
  *   band    弹力带下端的半宽（踩在脚下的带子分两股）
  *   benchHalf 凳在 z 方向的半宽（默认 16；臀推横靠长凳 60）
+ *   plateR    杠铃片半径（默认 16；硬拉用标准片 31，起始帧片着地）
  *   foreVertical  按「端点处前臂竖直」反解握距、解肘（取代 grip/out）
  *   foreTilt      正面看前臂外倾的角度
  *   foreBack      侧视前臂后倾的角度。只适用于直立动作：只取朝向的 x 分量
@@ -73,7 +74,8 @@ export const ORBIT_PARAMS = {
   'seated-leg-extension': { stance: ST_SEAT, grip: 32, out: 0.1 },
   'seated-calf-raise': { stance: ST_SEAT, grip: 22, out: 0.1 },
   'standing-calf-raise-bodyweight': { stance: ST_HIP, grip: 31, out: 0.05 },
-  'conventional-deadlift': { stance: ST_PULL, grip: 26, out: 0.05 },
+  // 硬拉从地上拉起：标准片直径 45cm，按腿的比例半径 31px，起始帧片着地、杠心离地 31px
+  'conventional-deadlift': { stance: ST_PULL, grip: 26, out: 0.05, plateR: 31 },
   'romanian-deadlift': { stance: ST_PULL, grip: 26, out: 0.05 },
   'db-romanian-deadlift': { stance: ST_PULL, grip: 20, out: 0.05, db: 'z', dbMode: 'each' },
   'band-good-morning': { stance: ST_HIP, grip: 52, out: 0.4, band: 14 },
@@ -439,7 +441,7 @@ function equipment(S, slug, p, J, lt) {
   const hands = (P.dbMode === 'near' ? ['N'] : ['N', 'F']);
   if (type === 'bar' || type === 'front') {
     // 杠铃片贴地时（硬拉起始），片的半径不能大于杠心离地的高度，否则片扎进地里
-    barbell(S, lx, ly, Math.min(ORB_PLATE_R, GROUND - ly));
+    barbell(S, lx, ly, Math.min(P.plateR ?? ORB_PLATE_R, GROUND - ly));
     return;
   }
   if (type === 'hands' || type === 'hands2') {
