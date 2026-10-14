@@ -1,10 +1,11 @@
-// 容器锚点（两轨自身与参考库里的三个分区）必须显式登记所属轨道：
+// 容器锚点（两轨自身与参考库里的四个分区）必须显式登记所属轨道：
 // 它们不带 ex-/plan-/claim- 前缀，靠前缀推断会落回 learn，
 // 结果是点「参考库」写入 #exercises、刷新后却停在学习轨、目标被藏起来。
 export const CONTAINER_TRACK = Object.freeze({
   'track-learn': 'learn',
   'track-ref': 'ref',
   exercises: 'ref',
+  atlas: 'ref',
   plans: 'ref',
   claims: 'ref',
 });

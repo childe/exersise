@@ -73,6 +73,15 @@ a { color: var(--accent); }
 .empty-state { background: var(--warn-bg); padding: 8px 12px; border-radius: 6px; width: 100%; }
 figure.concept { margin: 16px 0; }
 figure.concept figcaption { color: var(--muted); font-size: 0.88em; }
+/* 肌肉分布图（spec §7.5）：位图自带白底，深色主题下给一圈边框，别让白块直接贴在深底上 */
+figure.anat { margin: 18px 0 22px; }
+figure.anat img { display: block; width: 100%; height: auto; border-radius: 8px;
+  background: #fff; border: 1px solid color-mix(in srgb, var(--muted) 30%, transparent); }
+figure.anat figcaption { color: var(--muted); font-size: 0.85em; margin-top: 6px; }
+figure.anat.tall { max-width: 720px; margin-left: auto; margin-right: auto; }
+#atlas .atlas-lede, #atlas .atlas-note { max-width: 46em; }
+#atlas .atlas-note, .atlas-link { color: var(--muted); font-size: 0.9em; }
+#atlas h3 { margin-top: 32px; }
 
 /* 无 JS 与打印时两轨都展开；只有脚本跑起来后才隐藏非活动轨。
    全文件中不得存在任何无条件隐藏 .track 的规则。 */

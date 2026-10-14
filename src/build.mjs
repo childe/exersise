@@ -2,6 +2,7 @@ import { readFile, writeFile, mkdir } from 'node:fs/promises';
 import path from 'node:path';
 import { loadData } from './data.mjs';
 import { renderPage } from './render/page.mjs';
+import { renderAtlas } from './render/atlas.mjs';
 import { renderClaimRegistry } from './render/claims.mjs';
 import { renderExercises } from './render/exercises.mjs';
 import { renderPlans } from './render/plans.mjs';
@@ -11,6 +12,7 @@ import { validateChapters, validateChapterList } from './validate/chapters.mjs';
 import { validateInternalLinks } from './validate/links.mjs';
 import { loadFigures, validateFigures } from './validate/figures.mjs';
 import { scanSafety, scanSafetyReview } from './validate/safety.mjs';
+import { validateImages } from './validate/anatomy.mjs';
 import { validatePoses, validateFigures as validatePoseFigures, validateMuscles,
   validateFrameConsistency, validateJointAngles, validateContacts, validateStraightLines,
   validateFixedRigs, validateBarOnChest, validateSecondHand, validateKneeStable,
@@ -115,6 +117,7 @@ export async function build(root = defaultRoot, { outDir } = {}) {
     exercises: new Map(data.exercises.map((e) => [e.slug, e])),
     plans: new Map(data.plans.map((p) => [p.slug, p])),
     demos: new Map(data.demos.map((d) => [d.id, d])),
+    anatomy: new Map(data.anatomy.map((a) => [a.id, a])),
     figures: new Map([...figs].map(([k, v]) =>
       [k, `<figure class="concept">${v.svg.replace(/<!--caption:[\s\S]*?-->\s*/, '')}<figcaption>${escapeHtml(v.caption)}</figcaption></figure>`])),
     chapterTitles: new Map(data.chapters.map((c) => [c.id, `第 ${c.num} 章 ${c.title}`])),
@@ -135,6 +138,7 @@ export async function build(root = defaultRoot, { outDir } = {}) {
     css, js, animJs,
     chapterHtml: renderChapters(loaded, renderCtx),
     exerciseHtml,
+    atlasHtml: renderAtlas(data.anatomy),
     planHtml: renderPlans(data.plans, renderCtx),
     claimHtml: renderClaimRegistry(data.claims),
     quizHtml: renderQuiz(data.quiz, renderCtx),
@@ -145,6 +149,8 @@ export async function build(root = defaultRoot, { outDir } = {}) {
   if (review.length) {
     console.warn(`安全待复核 ${review.length} 处（不阻断构建，须在 docs/acceptance/safety-review.md 逐条判定）:\n- ${review.join('\n- ')}`);
   }
+  const imgErrs = validateImages(html, data.anatomy);
+  if (imgErrs.length) throw new Error(`位图登记校验失败:\n- ${imgErrs.join('\n- ')}`);
   const linkErrs = validateInternalLinks(html);
   if (linkErrs.length) throw new Error(`内部锚点校验失败:\n- ${linkErrs.join('\n- ')}`);
   const out = outDir ?? path.join(root, 'dist');

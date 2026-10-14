@@ -5,6 +5,7 @@ import { validateExercises, validateCoverage } from './validate/exercises.mjs';
 import { validatePlans } from './validate/plans.mjs';
 import { validateDemos } from './validate/demos.mjs';
 import { validateQuiz } from './validate/quiz.mjs';
+import { validateAnatomy } from './validate/anatomy.mjs';
 import { loadSafetyCanon } from './safety-canon.mjs';
 
 async function readJson(root, rel) {
@@ -23,7 +24,7 @@ async function readJson(root, rel) {
 }
 
 export async function loadData(root) {
-  const [claims, exercises, plans, demos, quiz, chapters, poseFigures] = await Promise.all([
+  const [claims, exercises, plans, demos, quiz, chapters, poseFigures, anatomy] = await Promise.all([
     readJson(root, 'data/claims.json'),
     readJson(root, 'data/exercises.json'),
     readJson(root, 'data/plans.json'),
@@ -31,6 +32,7 @@ export async function loadData(root) {
     readJson(root, 'data/quiz.json'),
     readJson(root, 'content/chapters.json'),
     readJson(root, 'data/figures.json'),
+    readJson(root, 'data/anatomy.json'),
   ]);
   const errs = [...validateClaims(claims)];
   const ctx = {
@@ -42,6 +44,7 @@ export async function loadData(root) {
   errs.push(...validateExercises(exercises, ctx));
   errs.push(...validateCoverage(exercises));
   errs.push(...validateDemos(demos, { exercises }));
+  errs.push(...validateAnatomy(anatomy));
   errs.push(...validateQuiz(quiz, { chapters: new Set(chapters.map((c) => c.id)) }));
   const safetyCanon = await loadSafetyCanon(root); // 缺小节直接抛错，构建失败
   errs.push(...validatePlans(plans, {
@@ -51,5 +54,5 @@ export async function loadData(root) {
     safetyCanon,
   }));
   if (errs.length) throw new Error(`数据校验失败:\n- ${errs.join('\n- ')}`);
-  return { claims, exercises, plans, demos, quiz, chapters, safetyCanon, poseFigures };
+  return { claims, exercises, plans, demos, quiz, chapters, safetyCanon, poseFigures, anatomy };
 }

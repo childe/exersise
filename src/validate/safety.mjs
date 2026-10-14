@@ -18,7 +18,7 @@ function sentenceAround(text, index) {
 
 const HARD_RULES = [
   { re: /<img[^>]+src="data:image\/(png|jpe?g|webp)/g,
-    msg: '内嵌位图可能是 AI 生成的动作或解剖图（§9.1-9）：动作示范走外部核验链接，概念图走内联 SVG' },
+    msg: '内嵌 data: 位图（§9.1-9）：动作示范走外部核验链接，概念图走内联 SVG，肌肉分布图托管 OSS 并在 data/anatomy.json 登记（§7.5）' },
   { re: /(待撰写|待补充|TODO|TBD|lorem ipsum)/gi,
     msg: '存在未完成的占位内容' },
 ];
@@ -32,7 +32,7 @@ const SOFT_RULES = [
   { re: /(deload|减量|降重)[^。；\n]{0,16}(来|以)?(处理|应对|缓解)[^。；\n]{0,8}(疼痛|疼|痛)/g,
     msg: '把 deload／减量与疼痛处理并提（§9.3-11e）——确认是否定句' },
   { re: /(AI\s*生成|由\s*AI\s*绘制|gpt-image|midjourney|stable\s*diffusion)/gi,
-    msg: '出现 AI 生成图字样（§7.2.1）——确认是声明"本站不含"而不是真的用了' },
+    msg: '出现 AI 生成图字样（§7.2.1 / §7.5）——动作图不得使用；肌肉分布图须已在 data/anatomy.json 登记' },
   { re: /占位/g, msg: '出现"占位"字样——确认是在讲占位符机制而不是遗留未写内容' },
 ];
 
@@ -55,5 +55,12 @@ export function scanSafety(html) {
 
 /** 人工安全验收的待复核清单：soft 规则，且已剔除明确的否定／引用／纠错语境。 */
 export function scanSafetyReview(html) {
-  return hits(html, SOFT_RULES, { skipNegated: true });
+  // 已登记的肌肉分布图（spec §7.5）如实写着「AI 生成」。它们是否合规由 validateImages
+  // 对登记表做确定性校验，不需要再进人工待复核——否则每张图每次构建都冒一条噪音。
+  // 只剔除我们自己渲染出来的 <figure class="anat">，正文里别处出现的字样照扫不误。
+  // 图谱开头那句如实交代「AI 生成底图」的声明（<p class="atlas-note">）同理。
+  const scanned = html
+    .replace(/<figure class="anat(?: tall)?">[\s\S]*?<\/figure>/g, '')
+    .replace(/<p class="atlas-note">[\s\S]*?<\/p>/g, '');
+  return hits(scanned, SOFT_RULES, { skipNegated: true });
 }

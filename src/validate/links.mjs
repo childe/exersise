@@ -20,10 +20,12 @@ export function validateInternalLinks(html) {
  * 发布检查要覆盖页面上**每一条**可点击外链：claim 来源、未降级的示范链接，
  * 以及示范的补充视觉链接（visual_url）。漏掉哪一类，哪一类就会悄悄死在页面上。
  */
-export function collectExternalUrls(claims, demos) {
+export function collectExternalUrls(claims, demos, anatomy = []) {
   return [
     ...claims.flatMap((c) => c.sources.map((s) => s.url)),
     ...demos.filter((d) => d.dead !== true).flatMap((d) => [d.url, d.visual_url]),
+    // 托管在 OSS 的肌肉分布图（spec §7.5）：图挂了页面上就是一个破图标
+    ...anatomy.map((a) => a.url),
   ].filter(Boolean);
 }
 
@@ -156,7 +158,8 @@ if (process.argv[1]?.endsWith('links.mjs') && process.argv.includes('--external'
   const demos = JSON.parse(await readFile(path.join(root, 'data/demos.json'), 'utf8'));
   // 已标 dead=true 的示范是"已处理"的：不再抓取、不再因它失败，但会显式列出来
   const degraded = demos.filter((d) => d.dead === true);
-  const urls = collectExternalUrls(claims, demos);
+  const anatomy = JSON.parse(await readFile(path.join(root, 'data/anatomy.json'), 'utf8'));
+  const urls = collectExternalUrls(claims, demos, anatomy);
   const results = await checkExternalUrls(urls);
   for (const r of results) console.log(`${r.status.padEnd(9)} ${r.url}  ${r.detail}`);
   for (const d of degraded) console.log(`degraded  ${d.id}  已降级为文字+判据+失效提示：${d.dead_note ?? '（缺 dead_note）'}`);
