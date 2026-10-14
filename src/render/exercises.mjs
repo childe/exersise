@@ -89,6 +89,7 @@ export function renderExercises(list, ctx) {
   }
   return `<section id="exercises"><h2>动作库</h2>
 ${renderFullMuscleMap(counts)}
+<p class="atlas-link"><a class="xref" href="#atlas">肌肉图谱：每块肌肉在哪、分几束、被哪些动作练 →</a></p>
 <div class="filters" data-for="exercises">${filters}<p class="result-count" role="status"></p>
 <p class="empty-state" hidden>这组条件下没有任何条目——这通常意味着该组合本身不存在（例如固定器械很少覆盖搬运模式）。<button type="button" class="clear-filters">清除筛选</button></p></div>
 <div class="ex-grid">${body}</div></section>`;

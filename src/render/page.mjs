@@ -1,7 +1,8 @@
 export function renderPage(data, parts) {
-  const { css, js, animJs = '', chapterHtml = '', exerciseHtml = '', planHtml = '',
+  const { css, js, animJs = '', chapterHtml = '', exerciseHtml = '', atlasHtml = '', planHtml = '',
           claimHtml = '', quizHtml = '' } = parts;
-  const ids = [...`${chapterHtml}${exerciseHtml}${planHtml}${claimHtml}${quizHtml}`
+  // 路由靠这张表判断锚点属于哪条轨道——新加的区块不进表，链接过去就不会切到参考库
+  const ids = [...`${chapterHtml}${exerciseHtml}${atlasHtml}${planHtml}${claimHtml}${quizHtml}`
     .matchAll(/\sid="([^"]+)"/g)].map((m) => m[1]);
   return `<!doctype html>
 <html lang="zh-CN">
@@ -23,7 +24,7 @@ export function renderPage(data, parts) {
 <p class="route-notice" tabindex="-1" hidden role="status"></p>
 <main>
   <section id="track-learn" class="track is-active" data-track="learn">${chapterHtml}${quizHtml}</section>
-  <section id="track-ref" class="track" data-track="ref">${exerciseHtml}${planHtml}${claimHtml}</section>
+  <section id="track-ref" class="track" data-track="ref">${exerciseHtml}${atlasHtml}${planHtml}${claimHtml}</section>
 </main>
 <script>window.__IDS__=${JSON.stringify(ids)}</script>
 <script type="module">${js}</script>

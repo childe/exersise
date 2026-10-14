@@ -2,6 +2,7 @@ import { readFile, writeFile, mkdir } from 'node:fs/promises';
 import path from 'node:path';
 import { loadData } from './data.mjs';
 import { renderPage } from './render/page.mjs';
+import { renderAtlas } from './render/atlas.mjs';
 import { renderClaimRegistry } from './render/claims.mjs';
 import { renderExercises } from './render/exercises.mjs';
 import { renderPlans } from './render/plans.mjs';
@@ -137,6 +138,7 @@ export async function build(root = defaultRoot, { outDir } = {}) {
     css, js, animJs,
     chapterHtml: renderChapters(loaded, renderCtx),
     exerciseHtml,
+    atlasHtml: renderAtlas(data.anatomy),
     planHtml: renderPlans(data.plans, renderCtx),
     claimHtml: renderClaimRegistry(data.claims),
     quizHtml: renderQuiz(data.quiz, renderCtx),

@@ -58,6 +58,9 @@ export function scanSafetyReview(html) {
   // 已登记的肌肉分布图（spec §7.5）如实写着「AI 生成」。它们是否合规由 validateImages
   // 对登记表做确定性校验，不需要再进人工待复核——否则每张图每次构建都冒一条噪音。
   // 只剔除我们自己渲染出来的 <figure class="anat">，正文里别处出现的字样照扫不误。
-  const scanned = html.replace(/<figure class="anat">[\s\S]*?<\/figure>/g, '');
+  // 图谱开头那句如实交代「AI 生成底图」的声明（<p class="atlas-note">）同理。
+  const scanned = html
+    .replace(/<figure class="anat(?: tall)?">[\s\S]*?<\/figure>/g, '')
+    .replace(/<p class="atlas-note">[\s\S]*?<\/p>/g, '');
   return hits(scanned, SOFT_RULES, { skipNegated: true });
 }

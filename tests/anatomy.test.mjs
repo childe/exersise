@@ -85,10 +85,32 @@ test('登记表缺宽高被拒', () => {
   assert.match(validateAnatomy([{ ...ok, height: 0 }]).join(), /height 必须是正整数/);
 });
 
-test('真实登记表：第 4 章 4.2 的 8 张动作模式图都在页面里', async () => {
+test('真实登记表：每张登记的图都在页面上出现在该在的位置', async () => {
   const { readFile } = await import('node:fs/promises');
   const list = JSON.parse(await readFile(path.join(root, 'data/anatomy.json'), 'utf8'));
   assert.deepEqual(validateAnatomy(list), []);
+  // 动作模式图配在第 4 章 4.2 正文里
   const ch4 = await readFile(path.join(root, 'content/ch4.html'), 'utf8');
-  for (const a of list) assert.ok(ch4.includes(`{{anat:${a.id.slice(5)}}}`), `${a.id} 登记了却没在正文里用`);
+  const actions = list.filter((a) => a.kind === '动作模式');
+  assert.equal(actions.length, 8, '4.2 的推、拉各拆水平 / 垂直，加蹲、髋铰链、搬运、核心抗阻，共 8 张');
+  for (const a of actions) assert.ok(ch4.includes(`{{anat:${a.id.slice(5)}}}`), `${a.id} 登记了却没在第 4 章里用`);
+  // 全局图与部位图在参考库的肌肉图谱里，且全局在前
+  const { renderAtlas } = await import('../src/render/atlas.mjs');
+  const atlas = renderAtlas(list);
+  const rest = list.filter((a) => a.kind !== '动作模式');
+  assert.ok(rest.length > 0);
+  for (const a of rest) assert.ok(atlas.includes(a.url), `${a.id} 登记了却没出现在图谱里`);
+  const lastGlobal = Math.max(...list.filter((a) => a.kind === '全局').map((a) => atlas.indexOf(a.url)));
+  const firstPart = Math.min(...list.filter((a) => a.kind === '部位').map((a) => atlas.indexOf(a.url)));
+  assert.ok(lastGlobal < firstPart, '全局图（在哪）应排在部位图（分几束）前面');
+});
+
+test('图谱是参考库的一部分：路由表认得 #atlas，动作库能链过去', async () => {
+  const outDir = await mkdtemp(path.join(tmpdir(), 'fitguide-atlas-'));
+  const html = await build(root, { outDir });
+  const ids = JSON.parse(/window\.__IDS__=(\[[^\]]*\])/.exec(html)[1]);
+  assert.ok(ids.includes('atlas'), '不进路由表的话，从别处点到 #atlas 不会切到参考库');
+  const ref = html.slice(html.indexOf('id="track-ref"'));
+  assert.ok(ref.includes('<section id="atlas">'), '图谱应在参考库轨道里');
+  assert.ok(html.includes('href="#atlas"'), '动作库顶部应有图谱入口');
 });
