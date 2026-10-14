@@ -404,3 +404,10 @@ test('坐姿推胸：握把起始在胸骨中段（乳头线），推出沿水�
     prev = H;
   }
 });
+
+test('保加利亚分腿蹲：凳高约到膝（setup 文字与图一致）', () => {
+  // setup 原写「凳高约到小腿中段」，图里的凳约到膝（站立膝高的 81%）；资料（Gymshark、Sweat）也是约到膝。改的是文字。
+  const f = figures['db-bulgarian-split-squat'], A = POSES[f.start];
+  const benchH = GROUND - A.bench[1], kneeH = GROUND - A.knee[1];
+  assert.ok(benchH >= 0.6 * kneeH && benchH <= 1.05 * kneeH, `凳高 ${benchH.toFixed(0)}px，站立膝高 ${kneeH.toFixed(0)}px`);
+});
