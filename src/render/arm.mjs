@@ -127,7 +127,7 @@ export const OUT_OF_PLANE_ARM = new Set([
   'carry_front', 'ohp_bottom', 'seated_press_bottom',
   // 卧推底部：肘向两侧张开，上臂指向读者；引体顶部：握距比肩宽，肘在后下方。
   // 两者的上臂与前臂在侧视里都投影重叠，和背蹲是同一类。
-  'bench_bottom', 'incline_bottom', 'pullup_top', 'inverted_row_end',
+  'bench_bottom', 'close_bench_bottom', 'incline_bottom', 'pullup_top', 'inverted_row_end',
   // 下拉终点：握距比肩宽、肘向两侧下方，把手贴到锁骨时侧视里手几乎落在肩上
   'pulldown_end',
   // 坐姿推胸起始：肘向两侧张开（与卧推底部同类），原来画成满长向后伸进靠背里
@@ -143,6 +143,7 @@ export const OUT_OF_PLANE_ARM = new Set([
 export const ARM_OVERRIDES = {
   // 卧推底部：肘在杠正下方，前臂沿朝脸方向竖直到杠（自检判据「前臂接近垂直」）
   bench_bottom: { foreshorten: 0.45, handAlongFacing: true },
+  close_bench_bottom: { foreshorten: 0.45, handAlongFacing: true },
   // 上斜底部的触点在胸上段，比平板高：肘要再往下一点，竖直的前臂才有长度可画。
   incline_bottom: { foreshorten: 0.51, handAlongVertical: true },
   // 引体顶部：肘在后下方（cue「肘往下往后拉」）。链上的肘够不到这个方向——
@@ -160,6 +161,10 @@ export const ARM_OVERRIDES = {
   // 「肘抬起形成平台」= 上臂大致水平前指，侧视里肘与杠齐高、明显在前；
   // 不是把肘抬到下巴以上（头心离杠只有 16px，再高上臂线就横穿头颅）。
   carry_front: { equalSplit: true, targetDeg: 130 },
+  // 早安底部躯干前倾到高于水平 25°，颈后的带子相对肩转到了头那一侧：按默认 0.5 投影，
+  // 握点被带子半宽钳住，肘角只有 35.9°（下限 40）。0.4 是为满足肘角下限的投影折中（46°），
+  // 不是几何上更斜出画面——该卡只画环绕视角，2D 的肘只给 3D 肘当 pole 方向。
+  gm_bottom: { foreshorten: 0.4 },
 };
 
 /** 按姿态名取覆盖参数再重建。renderPose 与校验都该走这个入口，保证画的和查的一致。 */

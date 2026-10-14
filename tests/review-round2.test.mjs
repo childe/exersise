@@ -42,7 +42,12 @@ test('站姿持械的两帧脚位完全一致，足中线标记在真正的足�
 
 // ── 硬拉家族 ───────────────────────────────────────────
 test('硬拉起始杠在地上，锁定杠在大腿；RDL 膝角基本不变', () => {
-  assert.ok(GROUND - POSES.hinge_bottom.load.at[1] <= 10, `硬拉起始杠离地 ${(GROUND - POSES.hinge_bottom.load.at[1]).toFixed(1)}px`);
+  // 「杠在地」是杠片着地：标准片半径 31px（按腿的比例），杠心离地约 31。原来这条断言要求杠心离地 ≤10，
+  // 把「杠心贴地」钉成了正确答案——杠落到踝下，髋被迫压到膝高。
+  const b = POSES.hinge_bottom, h = GROUND - b.load.at[1];
+  assert.ok(h >= 28 && h <= 34, `硬拉起始杠心离地 ${h.toFixed(1)}px（标准片半径 31）`);
+  assert.ok(b.hip[1] < b.knee[1] - 8, `起始髋应高于膝（髋 y=${b.hip[1].toFixed(1)}，膝 y=${b.knee[1].toFixed(1)}）`);
+  assert.ok(b.shoulder[0] >= b.load.at[0] && b.shoulder[0] - b.load.at[0] <= 10, '起始肩应在杠正上方或略前');
   const top = POSES.hinge_top;
   assert.ok(top.load.at[1] > top.hip[1] && top.load.at[1] < top.knee[1], '锁定时杠应在髋与膝之间（大腿）');
   assert.deepEqual(validateKneeStable(), []);
@@ -101,7 +106,7 @@ test('推举起始肘在肩前（不是颈后推）；坐姿推举只画近侧�
 });
 
 test('卧推底部：前臂竖直、杠在胸骨下段、重建前臂不超真长', () => {
-  for (const n of ['bench_bottom', 'incline_bottom']) {
+  for (const n of ['bench_bottom', 'close_bench_bottom', 'incline_bottom']) {
     const p = POSES[n], r = rebuildArmFor(n, p);
     assert.ok(r.fore <= 41, `${n}: 前臂 ${r.fore.toFixed(1)} > 39`);
     const s = along(p, p.load.at);

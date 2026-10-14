@@ -19,7 +19,7 @@
 //
 // 所有图元先组成一个 3D 场景（orbitScene），渲染与画框都从同一个场景出，
 // 不存在「框按一套几何算、画按另一套几何画」的分歧。
-import { GROUND, MIDFOOT, POSES, drawnArm } from './skeleton.mjs';
+import { GROUND, MIDFOOT, POSES, drawnArm, BENCH_GAP } from './skeleton.mjs';
 import { MUSCLE_SEG } from './muscle-segments.mjs';
 import { facing, FACE_GEOMETRY } from './facing.mjs';
 
@@ -53,6 +53,13 @@ const ST_TOGETHER = { hip: 12, knee: 11, ankle: 10, heel: 10, toe: 12 };  // 俯
  *   handle  拉力器把手半长；perHand 时每只手一个
  *   view    'side'（默认）、'front'
  *   band    弹力带下端的半宽（踩在脚下的带子分两股）
+ *   benchHalf 凳在 z 方向的半宽（默认 16；臀推横靠长凳 60）
+ *   backrest  画靠背（贴在躯干背侧，从髋下到肩高）
+ *   handOff   [前, 上]：握点相对肩的偏移（躯干系），取代 2D 的手位
+ *   plateR    杠铃片半径（默认 16；硬拉用标准片 31，起始帧片着地）
+ *   foreVertical  按「端点处前臂竖直」反解握距、解肘（取代 grip/out）
+ *   foreTilt      正面看前臂外倾的角度
+ *   foreBack      侧视前臂后倾的角度。只适用于直立动作：只取朝向的 x 分量
  */
 export const ORBIT_PARAMS = {
   // 背蹲的杠几乎压在肩关节上：握距太窄，手离肩不到 20px，肘只能折到 20° 以下（真人屈到头约 25–35°）。
@@ -60,47 +67,60 @@ export const ORBIT_PARAMS = {
   'back-squat-high-bar': { stance: ST_SQUAT, grip: 54, out: 0.4 },
   'back-squat-low-bar': { stance: ST_SQUAT, grip: 51, out: 0.5 },
   'bodyweight-squat': { stance: ST_SQUAT, grip: 20, out: 0.1 },
-  // 前架位：手离肩至少 22px 肘角才到 25°，于是握点外移到肩外；哑铃 cue「竖起来」
-  'db-front-squat': { stance: ST_SQUAT, grip: 50, out: 0.2, db: 'y', dbMode: 'each' },
+  // 前架位：哑铃竖起来，下端架在三角肌前束上，手握把手在肩前 12、上 20（躯干系）。
+  // cue「肘抬到与地面接近平行」：pole 朝前，上臂近水平。原来手在肩前 6、与肩齐平，
+  // 为了肘角 ≥25° 只好把握点外移到 z=50，肘掉到水平下 41–43°——画的正是 mistakes 里的「肘下掉」。
+  'db-front-squat': { stance: ST_SQUAT, grip: 32, handOff: [12, 20], pole: [1, 0, 0.15], db: 'y', dbMode: 'each' },
   'goblet-squat': { stance: ST_SQUAT, grip: 8, out: 0.3, db: 'y', dbMode: 'single' },
   // 凳心挪到 z=−12：后脚在远侧（z −15 … −19），凳面 ±16 居中时脚尖在凳外 3px
   'db-bulgarian-split-squat': { stance: ST_HIP, grip: 34, out: 0.05, db: 'x', dbMode: 'each', benchZ: -12 },
-  'leg-press': { stance: ST_SEAT, grip: 34, out: 0.1 },
-  'seated-leg-extension': { stance: ST_SEAT, grip: 32, out: 0.1 },
+  'leg-press': { stance: ST_SEAT, grip: 34, out: 0.1 },   // 斜躺座（benchIncline）本身就是靠背
+  'seated-leg-extension': { stance: ST_SEAT, grip: 32, out: 0.1, backrest: true },
   'seated-calf-raise': { stance: ST_SEAT, grip: 22, out: 0.1 },
   'standing-calf-raise-bodyweight': { stance: ST_HIP, grip: 31, out: 0.05 },
-  'conventional-deadlift': { stance: ST_PULL, grip: 26, out: 0.05 },
+  // 硬拉从地上拉起：标准片直径 45cm，按腿的比例半径 31px，起始帧片着地、杠心离地 31px
+  'conventional-deadlift': { stance: ST_PULL, grip: 26, out: 0.05, plateR: 31 },
   'romanian-deadlift': { stance: ST_PULL, grip: 26, out: 0.05 },
   'db-romanian-deadlift': { stance: ST_PULL, grip: 20, out: 0.05, db: 'z', dbMode: 'each' },
   'band-good-morning': { stance: ST_HIP, grip: 52, out: 0.4, band: 14 },
   // cue「脚约与肩同宽」
-  'db-hip-thrust': { stance: { hip: 14, knee: 26, ankle: 27, heel: 27, toe: 30 }, grip: 14, out: 0.3, db: 'z', dbMode: 'single' },
+  // 臀推是人横靠在凳的长边上：凳的长轴沿 z（benchHalf 60 ≈ 75cm 宽），不是 ±16 的小方墩
+  'db-hip-thrust': { stance: { hip: 14, knee: 26, ankle: 27, heel: 27, toe: 30 }, grip: 14, out: 0.3, db: 'z', dbMode: 'single', benchHalf: 60 },
   'glute-bridge-bodyweight': { stance: ST_HIP, grip: 32, out: 0.1 },
   'back-extension': { stance: ST_TOGETHER, crossChest: true },   // cue「双手交叉抱胸」
   'lying-leg-curl': { stance: ST_TOGETHER, grip: 30, out: 0.2 },
   // 卧推、推举类按「前臂竖直」反解握距（foreVertical），肘朝下
   'barbell-bench-press': { stance: ST_LYING, foreVertical: true },
-  'close-grip-bench-press': { stance: ST_LYING, grip: 26, out: 0.3 },
+  // 窄握：握距约与肩同宽（肩峰外缘 ≈ 关节半宽 27 + 一点），肘贴身（out 小）。
+  // 触点在胸骨下段（close_bench_bottom），底部前臂侧视偏竖直约 12°。
+  'close-grip-bench-press': { stance: ST_LYING, grip: 30, out: 0.2 },
   'db-bench-press': { stance: ST_LYING, foreVertical: true, db: 'z', dbMode: 'each' },
   'db-incline-bench-press': { stance: ST_LYING, foreVertical: true, db: 'z', dbMode: 'each' },
-  'machine-chest-press': { stance: ST_SEAT, grip: 34, out: 0.6, handle: 6, perHand: true },
-  'push-up': { stance: ST_TOGETHER, grip: 36, out: 0.35 },
-  'knee-push-up': { stance: ST_TOGETHER, grip: 36, out: 0.35 },
+  'machine-chest-press': { stance: ST_SEAT, grip: 46, out: 0.6, handle: 6, perHand: true, backrest: true },   // 握把间距约 57cm，起始肘角约 38°
+  // 俯卧撑：底部前臂在矢状面内竖直（肘在腕正上方），从正面看外倾 foreTilt°——
+  // 完全竖直的话肘外展 40° 要配两倍肩宽的手距。握距按这个约束从底部反解。
+  'push-up': { stance: ST_TOGETHER, foreVertical: true, foreTilt: 15 },
+  'knee-push-up': { stance: ST_TOGETHER, foreVertical: true, foreTilt: 15 },
   // 推举起始杠在锁骨前、离肩只有 7px：cue「握距略比肩宽」，握点外移到肘角 ≥25° 的最窄处
   'overhead-press': { stance: ST_HIP, grip: 50, out: 0.3 },
   'band-overhead-press': { stance: ST_HIP, grip: 50, out: 0.3, band: 14 },
-  'db-shoulder-press': { stance: ST_SEAT, foreVertical: true, db: 'z', dbMode: 'each' },
-  'machine-shoulder-press': { stance: ST_SEAT, foreVertical: true, handle: 6, perHand: true },
+  'db-shoulder-press': { stance: ST_SEAT, foreVertical: true, db: 'z', dbMode: 'each', backrest: true },
+  'machine-shoulder-press': { stance: ST_SEAT, foreVertical: true, handle: 6, perHand: true, backrest: true },
   'db-lateral-raise': { view: 'front', db: 'x', dbMode: 'each' },
   'cable-lateral-raise': { view: 'front', handle: 6, perHand: true, oneArm: true, dbMode: 'near' },   // cue：单臂，做完换边
-  'cable-pushdown': { stance: ST_HIP, grip: 10, out: 0.05, handle: 14 },
+  // 下压：「上臂贴住躯干两侧并全程保持」。pole 沿上臂（贴躯干、略内收）；握距 16（绳两端约 20cm）：
+  // 原来握距 10，3D 里手往中线收，肩到手的距离随伸肘变化不一致，肘在动画里前后漂 8px。
+  'cable-pushdown': { stance: ST_HIP, grip: 16, pole: [-0.11, 0.99, -0.05], handle: 16 },
   'barbell-row': { stance: ST_PULL, grip: 34, out: 0.4 },
   // 凳心在撑凳那一侧（z=−26）：撑凳的手与膝落在凳面上，站立腿在凳外
   'db-one-arm-row': { stance: ST_HIP, grip: 26, out: 0.1, db: 'x', dbMode: 'near', benchZ: -26 },
   'inverted-row': { stance: ST_TOGETHER, grip: 46, out: 0.4 },
   'band-row': { stance: ST_SEAT, grip: 6, out: 0.1, handle: 7 },
   'seated-cable-row': { stance: ST_SEAT, grip: 6, out: 0.1, handle: 7 },
-  'lat-pulldown': { stance: ST_SEAT, grip: 50, out: 0.6, handle: 62 },
+  // 下拉终点：正面看前臂竖直（手不往内收、不往外翻），侧视肘略在横杆之后（后倾 15°）。
+  // 原来按 out:0.6 解，终点肘在手外侧 17px、侧视后倾 50°，肘角折到 37°。
+  // 按这个约束反解出的握距约 50，与原来登记的一致。
+  'lat-pulldown': { stance: ST_SEAT, foreVertical: true, foreBack: 15, handle: 62 },
   'pull-up': { stance: ST_TOGETHER, grip: 50, pole: [-0.5, 0.8, 0.4] },   // cue「肘往下往后拉」
   'cable-face-pull': { stance: ST_HIP, grip: 18, out: 0.6, handle: 18 },   // 肘高且外展：out 太大会把「抬高」的信息丢掉
   'db-reverse-fly': { view: 'reverse-fly', stance: ST_PULL, db: 'x', dbMode: 'each' },
@@ -181,6 +201,9 @@ function handXY(name, p, lt, P) {
   if (p.load && p.loadAnchor === 'wrist' && !d.rebuilt) return p.wrist;
   const t = p.load?.type, rod = (x) => ORB_GRIP_LOAD.has(x) || (x === 'handle' && !P.perHand);
   if (p.load && (rod(t) || rod(lt))) return p.load.at;
+  // 器械握把锚在肩上（坐姿推胸）：握把的位置由座椅定、两端之间线性走，手就在握把上。
+  // 取 rebuildArm 的重建手会在两支候选之间换支，推出早段手前冲 14px 再退回。
+  if (p.load && t === 'handle' && p.loadAnchor === 'shoulder') return p.load.at;
   return d.H;
 }
 
@@ -190,6 +213,19 @@ function handXY(name, p, lt, P) {
  * 那一端（底部）来解，握距全程不变。
  */
 const orbGripCache = new Map();
+/**
+ * 前臂从手到肘的偏移。fy 带符号：卧推、推举的肘在手**下方**（+y），
+ * 俯卧撑的手撑地、肘在手**上方**（−y），取 2D 画出来的肘在手的哪一侧。
+ * foreTilt：正面看前臂外倾的角度（肘在手外侧）。
+ * foreBack：侧视前臂后倾的角度（肘在手的身后一侧，f 是人的朝向）。只取 f 的 x 分量，
+ * 所以只对直立动作成立；卧推（朝上）、俯卧撑（朝下）加它会被吞掉。
+ */
+const foreOffset = (P, E, H, f = [1, 0]) => {
+  const t = (P.foreTilt ?? 0) * Math.PI / 180, b = (P.foreBack ?? 0) * Math.PI / 180;
+  const up = E[1] < H[1] ? -1 : 1;
+  return { fx: -f[0] * ORB_FORE * Math.sin(b), fy: up * ORB_FORE * Math.cos(b) * Math.cos(t),
+    fz: ORB_FORE * Math.cos(b) * Math.sin(t) };
+};
 function foreVerticalGrip(slug, names, P, lt) {
   if (orbGripCache.has(slug)) return orbGripCache.get(slug);
   let best = null;
@@ -197,8 +233,9 @@ function foreVerticalGrip(slug, names, P, lt) {
     const q = POSES[n];
     const H = handXY(n, q, lt, P), S = q.shoulder;
     const d = Math.hypot(H[0] - S[0], H[1] - S[1]);
-    const zz = ORB_UPPER ** 2 - (H[0] - S[0]) ** 2 - (H[1] + ORB_FORE - S[1]) ** 2;
-    if (zz > 0 && (!best || d < best.d)) best = { d, grip: ORB_SHOULDER + Math.sqrt(zz) };
+    const { fx, fy, fz } = foreOffset(P, drawnArm(n, q, lt).E, H, facing(n, q) ?? [1, 0]);
+    const zz = ORB_UPPER ** 2 - (H[0] + fx - S[0]) ** 2 - (H[1] + fy - S[1]) ** 2;
+    if (zz > 0 && (!best || d < best.d)) best = { d, grip: ORB_SHOULDER + Math.sqrt(zz) - fz };
   }
   const g = best?.grip ?? P.grip ?? ORB_SHOULDER;
   orbGripCache.set(slug, g);
@@ -245,7 +282,17 @@ function liftSide(slug, names, p, u, P, lt) {
       const sp = [p.hip[0] - S[0], p.hip[1] - S[1]], sl = Math.hypot(sp[0], sp[1]) || 1;
       pole = [sp[0] / sl * 0.9 + f[0] * 0.35, sp[1] / sl * 0.9 + f[1] * 0.35, -s * 0.2];
     } else {
-      const hxy = own ? p.wrist2 : H2, exy = own ? p.elbow2 : E2;
+      let hxy = own ? p.wrist2 : H2;
+      const exy = own ? p.elbow2 : E2;
+      if (P.handOff && !own) {
+        // 握点相对肩的偏移，按躯干系给（前、上）：前架位的哑铃随躯干一起前倾，始终架在肩上
+        const tv = [top[0] - p.hip[0], top[1] - p.hip[1]], tl = Math.hypot(tv[0], tv[1]) || 1;
+        const up = [tv[0] / tl, tv[1] / tl];
+        let fw = [-up[1], up[0]];
+        if (fw[0] * f[0] + fw[1] * f[1] < 0) fw = [-fw[0], -fw[1]];
+        const [a, b] = P.handOff, S2 = s < 0 && p.shoulder2 ? p.shoulder2 : p.shoulder;
+        hxy = [S2[0] + fw[0] * a + up[0] * b, S2[1] + fw[1] * a + up[1] * b];
+      }
       H = [hxy[0], hxy[1], s * grip];
       const ed = [exy[0] - S[0], exy[1] - S[1]], el = Math.hypot(ed[0], ed[1]) || 1;
       const o = P.out ?? 0.2;
@@ -254,7 +301,10 @@ function liftSide(slug, names, p, u, P, lt) {
       // 前臂竖直：pole 直接指向「手正下方一个前臂长」的那一点。底部时它恰好在 IK 的圆上，
       // 解出来就是它；其余帧连续过渡。只给一个「朝下」的 pole 时，圆上离它最近的点不是正下方
       // （卧推底部前臂曾偏 35°）。
-      if (P.foreVertical) pole = [H[0] - S[0], H[1] + ORB_FORE - S[1], H[2] - S[2]];
+      if (P.foreVertical) {
+        const { fx, fy, fz } = foreOffset(P, exy, hxy, f);
+        pole = [H[0] + fx - S[0], H[1] + fy - S[1], H[2] + s * fz - S[2]];
+      }
     }
     H = orbReach(S, H, ORB_UPPER + ORB_FORE - 0.5, ORB_UPPER - ORB_FORE + 0.5);
     J['wrist' + tag] = H;
@@ -308,14 +358,27 @@ function liftFront(slug, names, p, u, P) {
 function liftReverseFly(u, P) {
   const b = POSES.row_start;
   const J = liftSide('', { a: 'row_start', b: 'row_start' }, { ...b, load: undefined }, 0, { ...P, grip: ORB_SHOULDER }, undefined);
-  const th = (8 + (84 - 8) * u) * Math.PI / 180;     // 上臂与竖直向下的夹角
+  // 顶点：自检「上臂约与躯干在一条线上，不超过」——终点角按背面所在平面反解，而不是写死 84°。
+  // 写死时躯干离竖直 51°，上臂越过背面 6.7°（手抬到背的上方）。
+  // 背面法线 n（指向背侧）⊥ 躯干、在矢状面内。
+  const reach = 87.5;                                  // cue「肘微屈」：肘角约 160°（原来 84 时 141°，屈了 38°）
+  const tv = [J.neck[0] - J.pelvis[0], J.neck[1] - J.pelvis[1]], tl = Math.hypot(tv[0], tv[1]) || 1;
+  let n = [-tv[1] / tl, tv[0] / tl];
+  if (n[1] > 0) n = [-n[0], -n[1]];                    // 背侧朝上（−y）
+  // 判据说的是**上臂**：肘微屈、pole 让肘略朝背侧，所以按肘（而不是手）落在背面内二分反解终点角。
+  const arm = (th, s, S) => {
+    const H = [S[0] + 4, S[1] + Math.cos(th) * reach, S[2] + s * Math.sin(th) * reach];
+    return { H, E: orbIk(S, H, ORB_UPPER, ORB_FORE, [0, -Math.sin(th) * 0.7, s * Math.cos(th)]) };
+  };
+  const SN = J.shoulderN, dev = (th) => { const { E } = arm(th, 1, SN); return (E[0] - SN[0]) * n[0] + (E[1] - SN[1]) * n[1]; };
+  let lo = 8 * Math.PI / 180, hi = Math.PI * 0.6;
+  for (let i = 0; i < 40; i++) { const m = (lo + hi) / 2; if (dev(m) < 0) lo = m; else hi = m; }
+  const th = 8 * Math.PI / 180 + (lo - 8 * Math.PI / 180) * u;   // 上臂与竖直向下的夹角
   for (const s of [1, -1]) {
     const tag = s > 0 ? 'N' : 'F';
-    const S = J['shoulder' + tag];
-    const reach = 84;                                  // 肘微屈：比 89 略短
-    const H = [S[0] + 4, S[1] + Math.cos(th) * reach, S[2] + s * Math.sin(th) * reach];
+    const { H, E } = arm(th, s, J['shoulder' + tag]);
     J['wrist' + tag] = H;
-    J['elbow' + tag] = orbIk(S, H, ORB_UPPER, ORB_FORE, [0, -Math.sin(th) * 0.7, s * Math.cos(th)]);
+    J['elbow' + tag] = E;
   }
   return J;
 }
@@ -379,11 +442,32 @@ function equipment(S, slug, p, J, lt) {
   if (p.bench) {
     const [x, y, w, h] = p.bench;
     // 凳心默认在中线；单侧支撑的动作（单臂划船、保加利亚）挪到支撑那一侧
-    const bz = P.benchZ ?? 0;
-    box(S, x, x + w, y, y + h, bz - 16, bz + 16, 'sk-bench', ORB_BEHIND);
-    for (const lx of [x + 8, x + w - 8]) for (const lz of [-11, 11]) {
+    const bz = P.benchZ ?? 0, bh = P.benchHalf ?? 16;
+    box(S, x, x + w, y, y + h, bz - bh, bz + bh, 'sk-bench', ORB_BEHIND);
+    for (const lx of [x + 8, x + w - 8]) for (const lz of [-(bh - 5), bh - 5]) {
       S.push({ t: 'line', a: [lx, y + h, bz + lz], b: [lx, GROUND, bz + lz], cls: 'sk-rig', bias: ORB_BEHIND });
     }
+  }
+  if (P.backrest && p.hip && p.shoulder && p.knee) {
+    // 靠背：一块贴在躯干背侧的板（间隙 BENCH_GAP，同凳面）。原来坐姿器械只画了座面，
+    // 而五张卡的 cue / 自检都点名「背贴靠背」「看腰与靠背之间有没有空隙」——图上没有对照物。
+    // 坐姿动作躯干不动，板按当前帧的躯干放即两帧同位。板只到肩高：这些坐姿的头心在躯干线后约 6px，
+    // 板再往上就从头里穿过去（推胸 cue「头贴住靠背」因此没有画出来）。
+    const tv = [p.shoulder[0] - p.hip[0], p.shoulder[1] - p.hip[1]], tl = Math.hypot(tv[0], tv[1]) || 1;
+    const u = [tv[0] / tl, tv[1] / tl];
+    let n = [-u[1], u[0]];
+    if (n[0] * (p.knee[0] - p.hip[0]) + n[1] * (p.knee[1] - p.hip[1]) > 0) n = [-n[0], -n[1]];   // 指向身后
+    const top = 0, h = 8, half = 18;
+    const from = [p.hip[0] - u[0] * 6 + n[0] * BENCH_GAP, p.hip[1] - u[1] * 6 + n[1] * BENCH_GAP];
+    const to = [p.shoulder[0] + u[0] * top + n[0] * BENCH_GAP, p.shoulder[1] + u[1] * top + n[1] * BENCH_GAP];
+    const f2 = [from[0] + n[0] * h, from[1] + n[1] * h], t2 = [to[0] + n[0] * h, to[1] + n[1] * h];
+    const q = (a, z) => [a[0], a[1], z];
+    // 竖直的板不像座面那样「从上往下看总在身体后面」：相机转到身后（yaw>0）时板挡在躯干前。
+    // faceBias 取板的背向法线：相机在板后时撤掉 ORB_BEHIND，按深度正常排序。
+    const fb = [n[0], n[1], 0];
+    S.push({ t: 'poly', pts: [q(from, -half), q(to, -half), q(to, half), q(from, half)], cls: 'sk-bench', bias: ORB_BEHIND, faceBias: fb, n: [-n[0], -n[1], 0] });
+    S.push({ t: 'poly', pts: [q(f2, -half), q(t2, -half), q(t2, half), q(f2, half)], cls: 'sk-bench', bias: ORB_BEHIND, faceBias: fb, n: [n[0], n[1], 0] });
+    for (const z of [-half, half]) S.push({ t: 'poly', pts: [q(from, z), q(to, z), q(t2, z), q(f2, z)], cls: 'sk-bench', bias: ORB_BEHIND, faceBias: fb, n: [0, 0, Math.sign(z)] });
   }
   if (p.benchIncline) {
     const { from, to, n, h } = p.benchIncline;
@@ -410,7 +494,7 @@ function equipment(S, slug, p, J, lt) {
   const hands = (P.dbMode === 'near' ? ['N'] : ['N', 'F']);
   if (type === 'bar' || type === 'front') {
     // 杠铃片贴地时（硬拉起始），片的半径不能大于杠心离地的高度，否则片扎进地里
-    barbell(S, lx, ly, Math.min(ORB_PLATE_R, GROUND - ly));
+    barbell(S, lx, ly, Math.min(P.plateR ?? ORB_PLATE_R, GROUND - ly));
     return;
   }
   if (type === 'hands' || type === 'hands2') {

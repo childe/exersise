@@ -25,7 +25,7 @@ const STANDING_LOADED = new Set([
   'hinge_bottom', 'hinge_top', 'rdl_bottom',
   'ohp_bottom', 'ohp_top',
   'carry_stance', 'carry_front', 'carry_overhead',
-  'gm_top', 'gm_bottom',    // 早安式也是站姿持械，之前漏在集合外，杠线断言对它不生效
+  'gm_top',    // 早安式顶部直立，颈在足中线上；底部不查——带子一端踩在脚下，拉力是内力，平衡看身体质心
 ]);
 
 // 这些姿态要求髋低于膝（蹲到位）
@@ -305,9 +305,8 @@ export function validateJointAngles(figures = {}) {
  * 脚端下沉得多、整体上提后手就悬在半空——俯卧撑手离地 36px、平板前臂 27px、
  * 臀桥上背 67px，全是这一条漏的。这里逐点核对，一个都不许飘。
  */
-export const SUPINE_ON_FLOOR = new Set(['bridge_bottom', 'bridge_top', 'deadbug_start', 'deadbug_end',
-  // 哑铃臀推从臀桥拆出来时漏了登记——新姿态没有任何断言证明它画对了
-  'hipthrust_bottom', 'hipthrust_top']);
+// 臀推不在此列：上背搭在凳沿上，不在地上（原来登记在这里，断言因此把它钉成了臀桥）
+export const SUPINE_ON_FLOOR = new Set(['bridge_bottom', 'bridge_top', 'deadbug_start', 'deadbug_end']);
 
 export function validateContacts() {
   const errors = [];
@@ -417,7 +416,7 @@ export function validateFixedRigs(figures) {
  * 卧推类「触胸」：杠停在胸面上，即躯干线朝脸那一侧 5–14px 处。
  * 用 facing() 取"朝上"方向，所以上斜卧推躯干倾斜也照查。
  */
-export const BAR_ON_CHEST = ['bench_bottom', 'incline_bottom'];
+export const BAR_ON_CHEST = ['bench_bottom', 'close_bench_bottom', 'incline_bottom'];
 export function validateBarOnChest() {
   const errors = [];
   for (const name of BAR_ON_CHEST) {

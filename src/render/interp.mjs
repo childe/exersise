@@ -111,7 +111,18 @@ export function interpolate(A, B, t, opts = {}) {
     q.head = from(q.shoulder, alerp(ang(A.shoulder,A.head), ang(B.shoulder,B.head), t), lerp(len(A.shoulder,A.head), len(B.shoulder,B.head), t));
     armToBar();
   } else {
-    if (grounded) { q.ankle = [...A.ankle]; q.knee = seg('ankle','knee'); q.hip = seg('knee','hip'); }
+    if (grounded) {
+      q.ankle = [...A.ankle];
+      q.knee = seg('ankle','knee');
+      // 小腿途经点：硬拉第一段「膝先往后让路」，杠升到膝高时小腿已竖直。线性插小腿角的话
+      // 膝在杠经过时只离杠 2.5px，杠穿过膝盖。到 A.shinVia.t 时小腿转到竖直，之后再到 B。
+      if (A.shinVia) {
+        const k = A.shinVia.t, up = -Math.PI / 2, a0 = ang(A.ankle, A.knee), a1 = ang(B.ankle, B.knee);
+        const sa = t < k ? alerp(a0, up, t / k) : alerp(up, a1, (t - k) / (1 - k));
+        q.knee = from(q.ankle, sa, lerp(len(A.ankle, A.knee), len(B.ankle, B.knee), t));
+      }
+      q.hip = seg('knee','hip');
+    }
     else if (toeRooted) {
       q.toe = [...A.toe];
       q.ankle = [q.toe[0] + lerp(A.ankle[0]-A.toe[0], B.ankle[0]-B.toe[0], t),
@@ -147,6 +158,16 @@ export function interpolate(A, B, t, opts = {}) {
       }
     }
     q.shoulder = from(q.hip, th, tl);
+    // 上背搭凳（臀推）：脚踩地、肩靠凳沿，两端都是接触点。从踝往上自由建链的话
+    // 肩在中途离开凳沿 7px。肩钉在凳沿，髋绕肩转，膝由「髋—踝」两骨 IK 解。
+    // 只认「只有肩靠凳」：卧推的 support 是 [shoulder, hip]，脚也踩地，不能进这里
+    const backOnEdge = (p) => p.bench && p.support?.length === 1 && p.support[0] === 'shoulder';
+    const shoulderOnBench = grounded && backOnEdge(A) && backOnEdge(B) && len(A.shoulder, B.shoulder) < 0.5;
+    if (shoulderOnBench) {
+      q.shoulder = [...A.shoulder];
+      q.hip = from(q.shoulder, alerp(ang(A.shoulder, A.hip), ang(B.shoulder, B.hip), t), tl);
+      q.knee = ik2(q.hip, q.ankle, len(A.hip, A.knee), len(A.knee, A.ankle), lerp2(A.knee, B.knee, t));
+    }
   }
   // 远侧腿从髋建（两条腿共用一个髋）。
   // 但两帧的远侧踝若在同一点，它就是第二个接触点（保加利亚的后脚搭在凳上）——
@@ -256,6 +277,16 @@ export function interpolate(A, B, t, opts = {}) {
         for (const k of keys) if (q[k] && q[k] !== P) q[k] = rot(q[k], d);
         if (q.load) q.load = { ...q.load, at: rot(q.load.at, d) };
         q._pivoted = d;
+      }
+      // 撑地的手是第二支点：转完只保证了 y 回到地面，x 仍随两段极角插值漂移。
+      // 底部前臂竖直后两端投影长度不同（顶 50/39、底 38/38），手曾在地上来回滑 8–11px。
+      // 所以把手钉在两端手位的连线上，肘按插出来的段长重新用 IK 解。
+      if (!supine && onG(A,'wrist') && onG(B,'wrist') && !q.load) {
+        q.wrist = lerp2(A.wrist, B.wrist, t);
+        q.elbow = ik2(q.shoulder, q.wrist,
+          lerp(len(A.shoulder, A.elbow), len(B.shoulder, B.elbow), t),
+          lerp(len(A.elbow, A.wrist), len(B.elbow, B.wrist), t),
+          lerp2(A.elbow, B.elbow, t));
       }
     }
   }

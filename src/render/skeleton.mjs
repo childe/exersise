@@ -160,10 +160,16 @@ export const POSES = {
   }),
 
   // ── 髋铰链 ─────────────────────────────────────────
+  // 硬拉起始：「杠在地」指杠片着地，不是杠心着地。标准片直径 45cm，杠心离地 22.5cm。
+  // 比例按腿量（膝高 68px ≈ 50cm → 1.37px/cm），杠心离地 31px，约在膝高的 45%（真人约 45%）。
+  // 原来杠心只离地 7px（片半径被钳到 7），杠在踝下，手臂 89px 够不到，髋只能压到膝高——
+  // 大腿近水平、髋角 27°，画成了「蹲着拉」。按约束构造：杠过足中线、手臂竖直、
+  // 肩略在杠前（Starting Strength：肩胛在杠正上方）、小腿前倾 6° 贴杠，髋高于膝 14px、髋角 48°。
   hinge_bottom: P({
-    head: [110, 115], shoulder: [94, 121], elbow: [94, 171], wrist: [94, 210],
-    hip: [18.8, 148.4], knee: [78.3, 156], ankle: [80, 216], heel: [72, 225], toe: [108, 225],
-    load: { type: 'bar', at: [90, 218] },
+    head: [108, 87.4], shoulder: [94, 97], elbow: [94, 147], wrist: [94, 186],
+    hip: [28, 142.2], knee: [86.3, 156.3], ankle: [80, 216], heel: [72, 225], toe: [108, 225],
+    load: { type: 'bar', at: [90, 194] },
+    shinVia: { t: 0.35 },   // 补间：杠升到膝高（t≈0.37）之前小腿转到竖直，膝让开杠路（见 interp.mjs）
   }),
   hinge_top: P({
     head: [100, 40], shoulder: [88, 58], elbow: [88, 108], wrist: [90, 147],
@@ -192,17 +198,22 @@ export const POSES = {
     hip: [129.2, 183.1], knee: [182.8, 156.2], ankle: [178, 216], heel: [174, 225], toe: [194, 225],
   }),
 
-  // 哑铃臀推借用臀桥姿态时，手躺在地面、哑铃在髋上，两者相距 18–50px——
-  // 一只没人扶的哑铃。这里给它自己的一对姿态：肘仍落在地面附近，前臂上举扶住哑铃。
+  // 哑铃臀推：上背（肩胛下缘）搭在凳沿上，凳高约 40cm（≈64px，Contreras 建议 30–40cm）。
+  // 原来照抄臀桥，肩躺在地上、图里没有凳——画成了负重臀桥，与 cue「上背靠在稳固的凳边」不符。
+  // 按约束构造：肩钉在凳沿（凳面 y=161，肩在其上 BENCH_GAP）、脚钉在地，
+  // 顶点躯干水平、大腿水平、小腿竖直（膝角 91°）；底部髋沉到离地约 25px，肩绕凳沿转。
+  // 手扶住横在髋上的哑铃，头微收下巴（cue「下巴微收」）。
   hipthrust_bottom: P({
-    head: [42, 213], shoulder: [57.7, 219], elbow: [99.4, 191.2], wrist: [135, 207],
-    hip: [137.5, 214], knee: [160.6, 158.5], ankle: [178, 216], heel: [174, 225], toe: [194, 225],
-    load: { type: 'hands', at: [137.5, 206] },
+    head: [29.8, 141.4], shoulder: [40, 155], elbow: [89.98, 156.51], wrist: [106.14, 192],
+    hip: [106.14, 200], knee: [152.94, 162.45], ankle: [180, 216], heel: [176, 225], toe: [196, 225],
+    bench: [0, 161, 48, 8], support: ['shoulder'],
+    load: { type: 'hands', at: [106.14, 191] },
   }),
   hipthrust_top: P({
-    head: [42, 213], shoulder: [57.7, 219], elbow: [86, 176], wrist: [124, 178],
-    hip: [129.2, 183.1], knee: [182.8, 156.2], ankle: [178, 216], heel: [174, 225], toe: [194, 225],
-    load: { type: 'hands', at: [129.2, 175] },
+    head: [26.98, 144.07], shoulder: [40, 155], elbow: [84.18, 131.58], wrist: [120, 147],
+    hip: [120, 155], knee: [179.99, 156], ankle: [180, 216], heel: [176, 225], toe: [196, 225],
+    bench: [0, 161, 48, 8], support: ['shoulder'],
+    load: { type: 'hands', at: [120, 146] },
   }),
 
   // ── 水平推（卧姿）─────────────────────────────────
@@ -217,6 +228,15 @@ export const POSES = {
     bench: [48, 148, 86, 10],
     load: { type: 'bar', at: [98, 132] },
   }),
+  // 窄握卧推触胸：平板卧推落在胸骨下段的上部（s=0.30，肩下 24px≈15cm），窄握落在胸骨下段的
+  // 下端（s=0.40，32px≈20cm，约剑突），再低就进腹部了（review-round2 断言 s 的范围）。
+  // 原来直接借用 bench_bottom，杠落在中胸，与 cue 不符；肘因此在 3D 里折到 31°。
+  close_bench_bottom: P({
+    head: [54, 140], shoulder: [74, 142], elbow: [106, 162], wrist: [106, 134],
+    hip: [112, 142], knee: [146, 176], ankle: [150, 216], heel: [142, 225], toe: [170, 225],
+    bench: [48, 148, 86, 10],
+    load: { type: 'bar', at: [106, 132] },
+  }),
   bench_top: P({
     head: [54, 140], shoulder: [74, 142], elbow: [74, 92], wrist: [74, 53],
     hip: [112, 142], knee: [146, 176], ankle: [150, 216], heel: [142, 225], toe: [170, 225],
@@ -225,17 +245,24 @@ export const POSES = {
   }),
   // 俯卧撑 / 地面推：手撑地
   // 俯卧撑与平板支撑按约束**构造**，不是手摆：
-  //   腕（或肘）在地面、脚尖在地面、肩-髋-膝-踝一条线、手臂竖直在肩正下方。
+  //   腕（或肘）在地面、脚尖在地面、肩-髋-膝-踝一条线；俯卧撑底部肘在腕正上方（见下）。
   // 原来手摆的坐标归一化后手悬空 36px、髋偏离直线 27px——腿被放大 1.8 倍而
-  // 贴地修正只按回最低的那一个点。这里直接用 BONE 长度算出坐标，归一化是恒等。
+  // 贴地修正只按回最低的那一个点。这里直接用 BONE 长度算出坐标，归一化是恒等
+  // （俯撑四帧的手臂是投影长度，登记在 FORESHORTENED_ARM，归一化同样不改）。
   // 俯卧家族 toe 在地、heel 在上（脚尖撑地），别和站姿的 heel/toe 混。
+  // 底部前臂竖直、肘在腕正上方（ACE：下放位前臂垂直于地面）。原来手按「肩正下方」摆，
+  // 身体绕脚尖转、肩到底只前移十来像素，手几乎还在肩下——上臂 50px 没处放，只能把肘
+  // 甩向脚的方向，前臂斜了 63°。所以手放在下胸下方（底部在肩后 38px），顶部手臂随之
+  // 后倾约 20°。肘外展约 40°、前臂从正面看外倾 15°（见 orbit.mjs foreVertical/foreTilt），
+  // 手臂斜出画面（手在肩外 22px），侧视里是投影长度：顶部肩到腕 85.5（3D 88.3），
+  // 底部上臂 38、前臂 38。
   pushup_bottom: P({
-    head: [37.9, 186.1], shoulder: [54.8, 187.6], elbow: [100.8, 207.3], wrist: [66, 225],
-    hip: [134.5, 194.6], knee: [194.2, 199.8], ankle: [254, 205], heel: [252, 211], toe: [262, 225],
+    head: [37.52, 190.5], shoulder: [54.42, 192], elbow: [92.54, 187.33], wrist: [92.54, 225],
+    hip: [134.25, 197.2], knee: [194.13, 201.1], ankle: [254, 205], heel: [252, 211], toe: [262, 225],
   }),
   pushup_top: P({
-    head: [50, 130.8], shoulder: [66, 136.6], elbow: [66, 186.6], wrist: [66, 225],
-    hip: [141.2, 164], knee: [197.6, 184.5], ankle: [254, 205], heel: [252, 211], toe: [262, 225],
+    head: [47.32, 138.85], shoulder: [63.32, 144.65], elbow: [79.74, 189.79], wrist: [92.54, 225],
+    hip: [139.59, 168.79], knee: [196.8, 186.89], ankle: [254, 205], heel: [252, 211], toe: [262, 225],
   }),
 
   // 弹力带早安式：负荷在颈后（锚在肩），带子从脚下拉到肩，手扶在肩上握带。
@@ -245,10 +272,15 @@ export const POSES = {
     hip: [84, 118], knee: [86, 152], ankle: [80, 216], heel: [72, 225], toe: [108, 225],
     load: { type: 'band', at: [84.4, 51.7], from: [90, 225] },
   }),
+  // 底部不做「负荷过足中线」反解：带子一端踩在脚下、一端绕颈，拉力是人+带子系统的内力，
+  // 平衡只要求**身体**质心落在脚上，不要求颈落在足中线上。原来按杠铃反解，躯干只前倾到
+  // 高于水平 53°（比 RDL 底部的 34° 还浅），而身体质心落在 x=68.9、脚跟（72）之后——会后倒。
+  // 现在髋位同 RDL 底部，躯干高于水平 25°（ExRx：前倾到接近水平），身体质心约 79，在脚上；头沿躯干线。
+  // 负荷点（颈后带子）随躯干刚性转；手由 rebuildArm 按带子重建，到底部时肘自然下垂。
   gm_bottom: P({
-    head: [104, 33], shoulder: [88, 39.4], elbow: [70, 60], wrist: [90, 44],
+    head: [129.5, 63.6], shoulder: [114.1, 70.8], elbow: [70.8, 95.8], wrist: [105.7, 81.4],
     hip: [41.6, 104.6], knee: [71.6, 156.6], ankle: [80, 216], heel: [72, 225], toe: [108, 225],
-    load: { type: 'band', at: [88.2, 32.2], from: [90, 225] },
+    load: { type: 'band', at: [117.8, 64.6], from: [90, 225] },
   }),
 
   // ── 垂直推 ─────────────────────────────────────────
@@ -435,15 +467,17 @@ export const POSES = {
     hip: [84, 116], knee: [84, 152], ankle: [82, 216], heel: [72, 225], toe: [108, 225],
     load: { type: 'hands', at: [106, 68] },
   }),
+  // 绳索下压：cue「站姿略前倾，上臂贴住躯干两侧并全程保持」。原来躯干只前倾 2°；
+  // 上半身（上臂贴躯干，一起）绕髋前倾 10°，躯干前倾约 12°。肘两帧同位。
   triceps_top: P({
-    head: [98, 40], shoulder: [86, 58], elbow: [88, 92], wrist: [120, 86],
+    head: [111, 43.6], shoulder: [96, 59.2], elbow: [92.1, 93.1], wrist: [124.7, 92.7],
     hip: [84, 116], knee: [84, 152], ankle: [82, 216], heel: [72, 225], toe: [108, 225],
-    load: { type: 'handle', at: [126, 86] },
+    load: { type: 'handle', at: [130.6, 93.7] },
   }),
   triceps_bottom: P({
-    head: [98, 40], shoulder: [86, 58], elbow: [88, 92], wrist: [92, 128],
+    head: [111, 43.6], shoulder: [96, 59.2], elbow: [92.1, 93.1], wrist: [89.8, 129.2],
     hip: [84, 116], knee: [84, 152], ankle: [82, 216], heel: [72, 225], toe: [108, 225],
-    load: { type: 'handle', at: [96, 132] },
+    load: { type: 'handle', at: [93, 133.8] },
   }),
   calf_down: P({
     head: [98, 38], shoulder: [86, 56], elbow: [84, 92], wrist: [84, 126],
@@ -537,29 +571,35 @@ export const POSES = {
     bench: [46, 128, 84, 10],
     load: { type: 'bar', at: [42.7, 29] },
   }),
+  // 握把在胸骨中段（乳头线，ACE：handles level with your mid-chest），肩下 18px（躯干 s≈0.22）。
+  // 原来握把跟着腕归一化，落到肩下 30px（s=0.38，约剑突）——与 cue「握把大致在胸骨中段」不符。
+  // 负荷改锚在肩上（LOAD_ANCHOR），握把高度不随手臂归一化漂走。
   machine_press_start: P({
-    head: [76, 106], shoulder: [86, 124], elbow: [66, 142], wrist: [92, 140],
+    head: [76, 106], shoulder: [86, 124], elbow: [66, 142], wrist: [97, 142],
     hip: [84, 180], knee: [128, 186], ankle: [158, 214], heel: [154, 225], toe: [174, 225],
     bench: [60, 188, 44, 8],
-    load: { type: 'handle', at: [98, 140] },
+    load: { type: 'handle', at: [103.2, 142] },   // 胸前（肩前 18）：「握把不比胸更深」
   }),
   machine_press_end: P({
-    head: [76, 106], shoulder: [86, 124], elbow: [112, 136], wrist: [142, 140],
+    head: [76, 106], shoulder: [86, 124], elbow: [130.1, 147.6], wrist: [168.7, 142],
     hip: [84, 180], knee: [128, 186], ankle: [158, 214], heel: [154, 225], toe: [174, 225],
     bench: [60, 188, 44, 8],
-    load: { type: 'handle', at: [148, 140] },
+    load: { type: 'handle', at: [168.7, 142] },   // 3D 肩到手约 86.7、肘角约 155°（伸直上限 88.5）：「接近伸直但不锁死」
   }),
+  // 坐姿推举：靠背「略仰 5–10 度」（哑铃推举 setup）/「接近垂直」（器械推举）。原来躯干前倾 2°，
+  // 补上靠背后板也跟着前倾——方向反了。躯干与头绕髋后仰 9°（躯干后仰约 7°）；
+  // 手臂保持原来的世界方向随肩平移：锁定时负荷叠在肩关节正上方，不跟着躯干往后倒。
   seated_press_bottom: P({
-    head: [80, 70], shoulder: [86, 90], elbow: [110, 100], wrist: [100, 86],
+    head: [67.5, 71.6], shoulder: [76.6, 90.4], elbow: [100.6, 100.4], wrist: [90.6, 86.4],
     hip: [84, 150], knee: [126, 158], ankle: [156, 216], heel: [152, 225], toe: [172, 225],
     bench: [62, 158, 42, 8],
-    load: { type: 'hands', at: [104, 82] },
+    load: { type: 'hands', at: [94.6, 82.4] },
   }),
   seated_press_top: P({
-    head: [80, 76], shoulder: [86, 92], elbow: [86, 70], wrist: [88, 46],
+    head: [68.5, 77.5], shoulder: [76.9, 92.4], elbow: [76.9, 70.4], wrist: [78.9, 46.4],
     hip: [84, 150], knee: [126, 158], ankle: [156, 216], heel: [152, 225], toe: [172, 225],
     bench: [62, 158, 42, 8],
-    load: { type: 'hands', at: [88, 38] },
+    load: { type: 'hands', at: [78.9, 38.4] },
   }),
   // 跪姿俯卧撑整副按 BONE 构造：膝是支点，两帧必须落在同一点。
   // 原来两帧的「膝→髋→肩」跨度 143.6 > 60+80，normalize 够不到就自己改了膝位，
@@ -567,12 +607,13 @@ export const POSES = {
   knee_pushup_bottom: P({
     // 「胸接近地面」比俯卧撑的「离地一拳」更深，所以跪姿底部的肩必须比俯卧撑**更低**。
     // 第六轮只把行程从 53% 提到 80%，顺序仍然是反的（45.6 vs 37.4），注释却已声称修好。
-    head: [39.5, 187.9], shoulder: [56, 192], elbow: [105.5, 198.6], wrist: [76.95, 225.96],
-    hip: [131.7, 210.7], knee: [190, 225], ankle: [246.4, 204.5], heel: [240.4, 200.5], toe: [255.4, 213.5],
+    // 手位与前臂竖直同俯卧撑（见 pushup_bottom）；膝—髋—肩取满长 140，一条直线。
+    head: [36.54, 191.9], shoulder: [53.04, 196], elbow: [90.74, 187.33], wrist: [90.74, 225],
+    hip: [131.3, 212.57], knee: [190, 225], ankle: [246.4, 204.5], heel: [240.4, 200.5], toe: [255.4, 213.5],
   }),
   knee_pushup_top: P({
-    head: [68.4, 128.9], shoulder: [81.7, 139.4], elbow: [91.45, 188.41], wrist: [81.72, 226.21],
-    hip: [142.9, 187.8], knee: [190, 225], ankle: [246.4, 204.5], heel: [240.4, 200.5], toe: [255.4, 213.5],
+    head: [65.16, 129.89], shoulder: [78.46, 140.39], elbow: [85.36, 187.92], wrist: [90.74, 225],
+    hip: [142.2, 188.74], knee: [190, 225], ankle: [246.4, 204.5], heel: [240.4, 200.5], toe: [255.4, 213.5],
   }),
   // 单臂划船：凳面原来离地只有 38.9px（约 24cm，实物训练凳 45cm）。
   // 跪腿把髋顶在离地 105px 处，而站立腿有 120px，只能屈到 109.5° 的半蹲。
@@ -702,7 +743,8 @@ const LOAD_ANCHOR = {
   squat_front_bottom: 'shoulder', squat_front_top: 'shoulder',
   goblet_top: 'shoulder', goblet_bottom: 'shoulder',
   squat_lowbar_top: 'shoulder', squat_lowbar_bottom: 'shoulder',
-  bench_top: 'shoulder', bench_bottom: 'shoulder',   // 杠的位置不该随手臂归一化漂走
+  bench_top: 'shoulder', bench_bottom: 'shoulder', close_bench_bottom: 'shoulder',   // 杠的位置不该随手臂归一化漂走
+  machine_press_start: 'shoulder', machine_press_end: 'shoulder',   // 握把高度由座椅定，不随手臂漂
   incline_top: 'shoulder', incline_bottom: 'shoulder',
   gm_top: 'shoulder', gm_bottom: 'shoulder',
   carry_front: 'shoulder', ohp_bottom: 'shoulder',
@@ -872,8 +914,15 @@ function normalize(name, p) {
       // 两侧各 +24 的话凳子伸到膝那一侧，后侧小腿要从 8px 厚的凳板里穿过去 3.95px——
       // 那是这一类重叠里唯一物理上讲不通的一处（其余几处是手臂/腿在凳侧面，侧视本就重叠）。
       const footOnBench = q.support.length === 1 && q.support[0] === 'ankle2';
-      const x0 = proneHip ? q.hip[0] - 4 : footOnBench ? Math.min(...xs) - 44 : Math.min(...xs) - 24;
-      const x1 = proneHip ? q.hip[0] + 44 : footOnBench ? Math.max(...xs) + 4 : Math.max(...xs) + 24;
+      // 上背搭凳沿（臀推）：凳沿停在肩往髋 8px 处，凳只往头的方向延伸。
+      // 两侧各 +24 的话凳伸到髋那一侧，底部下斜的躯干要从凳板里穿过去。
+      const backOnEdge = q.support.length === 1 && q.support[0] === 'shoulder';
+      const toHip = backOnEdge ? Math.sign(q.hip[0] - q.shoulder[0]) || 1 : 0;
+      const edge = backOnEdge ? q.shoulder[0] + toHip * 8 : 0;
+      const x0 = proneHip ? q.hip[0] - 4 : footOnBench ? Math.min(...xs) - 44
+        : backOnEdge ? Math.min(edge, edge - toHip * 48) : Math.min(...xs) - 24;
+      const x1 = proneHip ? q.hip[0] + 44 : footOnBench ? Math.max(...xs) + 4
+        : backOnEdge ? Math.max(edge, edge - toHip * 48) : Math.max(...xs) + 24;
       q.bench = [x0, Math.max(...ys) + BENCH_GAP, x1 - x0, 8];
     }
   }
@@ -919,7 +968,7 @@ function normalize(name, p) {
 const PLUMB_SOLVED = new Set([
   'squat_bottom', 'squat_top', 'squat_front_bottom', 'squat_front_top',
   'squat_lowbar_top', 'squat_lowbar_bottom', 'goblet_top', 'goblet_bottom',
-  'hinge_bottom', 'hinge_top', 'rdl_bottom', 'gm_top', 'gm_bottom',
+  'hinge_bottom', 'hinge_top', 'rdl_bottom', 'gm_top',   // gm_bottom 不在此列：带子是内力，见姿态注释
   'ohp_bottom', 'ohp_top',
   'carry_stance', 'carry_front', 'carry_overhead',
 ]);
@@ -1007,7 +1056,9 @@ export const RAW_POSES = Object.fromEntries(
 // 指向读者（正视图里朝景深方向伸）的手臂，投影本来就短，归一化不得把它拉到全长。
 // 与 OUT_OF_PLANE_ARM 不同：那组是侧视里出平面、靠 rebuildArm 重画；这组是正视里
 // 出平面、作者给的投影长度就是真相。
-export const FORESHORTENED_ARM = new Set(['pallof_in', 'pallof_out', 'back_extension_down', 'back_extension_up', 'face_pull_end']);
+export const FORESHORTENED_ARM = new Set(['pallof_in', 'pallof_out', 'back_extension_down', 'back_extension_up', 'face_pull_end',
+  // 俯撑四帧：手距比肩宽、底部肘外展，手臂都斜出画面，侧视里是投影长度（顶部 85.5 < 89）
+  'pushup_top', 'pushup_bottom', 'knee_pushup_top', 'knee_pushup_bottom']);
 
 for (const [name, p] of Object.entries(POSES)) {
   const n = normalize(name, p);
