@@ -102,6 +102,7 @@
 | 2026-10-14 | 传统硬拉 | 起始杠心离地 7px（片被钳成半径 7），杠在踝下；髋压到膝高、髋角 27°，画成「蹲着拉」。一条断言要求杠心离地 ≤10，把错误钉成了正确答案 | [Starting Strength：标准片 450mm](https://startingstrength.com/resources/forum/gyms-and-equipment/96568-deadlift-44-cm-46-cm-diameter-plates-post1876588.html)；肩胛在杠正上方、杠贴小腿过足中线 | 片半径 31（按腿的比例）、杠心离地 31；按约束重建起始帧（髋高于膝 14px、髋角 48°、肩在杠前 4px）；补间加小腿途经点 shinVia，杠过膝时离膝 ≈10px（原 2.5）；改写旧断言。figure-reviewer APPROVE | fix/deadlift-bar-height |
 | 2026-10-14 | 哑铃前蹲 | cue「肘抬到与地面接近平行」「肘不许掉」，3D 上臂却低于水平 41–43°、肘朝外——画的正是 mistakes 里的「肘下掉」 | [NASM Dumbbell Front Squat](https://www.nasm.org/resource-center/exercise-library/dumbbell-front-squat)（elbows high） | 新参数 handOff（握点按躯干系放到哑铃把手上）、pole 朝前；上臂 +6° … −16°（全程），肘角 28°；断言全程采样。遗留：哑铃画短，下端离上臂约 6px。figure-reviewer APPROVE | fix/db-front-squat-elbows |
 | 2026-10-14 | 弹力带早安 | 把颈后的带子当杠铃反解到足中线：底部躯干只到高于水平 53°（比 RDL 浅），身体质心落在脚跟之后（会后倒） | [ExRx Good Morning](https://exrx.net/WeightExercises/Hamstrings/BBGoodMorning)（躯干前倾到接近水平）；力学：带子两端在人身上，是内力 | 底部移出 PLUMB_SOLVED，按身体质心构造：髋同 RDL、躯干高于水平 25°、质心约 79（在脚上）；断言全程质心在脚上、底部不比 RDL 浅；手臂重建测试改走 rebuildArmFor（暴露反向划船一处旧问题）。figure-reviewer APPROVE | fix/good-morning-depth |
+| 2026-10-14 | 坐姿推胸机 | 握把随腕归一化落到肩下 30px（约剑突），cue「握把在胸骨中段」；评审又查出推出早段手前冲 14px 再退回（重建手换支，旧问题被放大） | [ACE Seated Chest Press](https://www.acefitness.org/resources/everyone/exercise-library/188/seated-chest-press/)（handles level with mid-chest / nipple） | 握把锚在肩上、肩下 18px（s≈0.22），起始在胸前；3D 手直接取握把（线性），hand_path；握距 46；肘角 39°→154°；断言高度、胸前、肘角、不锁死、不跳。figure-reviewer 两轮后 APPROVE | fix/chest-press-handle-height |
 
 ## 5. 待查候选
 
@@ -125,7 +126,7 @@
 | 4 | 引体向上 | ACE：肘往下拉到躯干两侧 | 顶点肘在手外侧 23px，前臂正面外倾 41°（与下拉修复前同） | 中高 | **搁置**：顶部 2D 肩只在杠下 12px，手离肩 26px，肘只能落在离肩 46px 的小圆上，调 pole/foreVertical 都不行；要改肩位就得同时动头颈比例（下巴已在杠下 14px），需要人决定取舍 |
 | 5 | 弹力带早安 | 躯干前倾到接近水平 | 底部躯干高于水平 53°，比 RDL 底部（34°）还浅；身体质心在脚跟之后 | 中 | **已修** |
 | 6 | 罗马尼亚硬拉 | 「杠贴大腿」「膝角保持」 | 杠离股骨线 19–22px，膝角变 13° | 中 | 待修 |
-| 7 | 坐姿推胸机 | 「握把大致在胸骨中段」 | 握把在 s=0.38（约剑突） | 中低 | 待修 |
+| 7 | 坐姿推胸机 | 「握把大致在胸骨中段」 | 握把在 s=0.38（约剑突） | 中低 | **已修** |
 | 8 | 保加利亚分腿蹲 | setup「凳高约到小腿中段」 | 图中凳约到膝（资料也是到膝）——**文字错**；骨盆后移 26px | 中低 | 待修 |
 
 小偏差：哑铃推举无靠背（setup 写靠背后仰 5–10°）；下压躯干未前倾、肘漂 8px；反向飞鸟顶点上臂越过背面 6.5°；面拉握把离面部偏远。

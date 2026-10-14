@@ -373,3 +373,34 @@ test('弹力带早安：底部躯干接近水平、不比 RDL 浅，且身体质
     assert.ok(x > A.heel[0] + 2 && x < A.toe[0], `t=${i / 16}: 身体质心 x=${x.toFixed(1)} 不在脚上（${A.heel[0]}–${A.toe[0]}）`);
   }
 });
+
+test('坐姿推胸：握把起始在胸骨中段（乳头线），推出沿水平路径', () => {
+  // 原来握把随腕归一化落到肩下 30px（躯干 s=0.38，约剑突）；cue 与 ACE 都要求在胸骨中段 / 乳头线。
+  const f = figures['machine-chest-press'], A = POSES[f.start], B = POSES[f.end];
+  const s = (p) => (p.load.at[1] - p.shoulder[1]) / Math.hypot(p.hip[0] - p.shoulder[0], p.hip[1] - p.shoulder[1]);
+  assert.ok(s(A) >= 0.15 && s(A) <= 0.28, `起始握把在躯干 s=${s(A).toFixed(2)}（胸骨中段约 0.2）`);
+  assert.ok(Math.abs(A.load.at[1] - B.load.at[1]) < 1, '推出应沿水平方向');
+  for (let i = 0; i <= 16; i++) {
+    const u = i / 16, q = interpolate(A, B, u, { plumb: f.plumb, handPath: !!f.hand_path });
+    const J = orbitLift('machine-chest-press', { a: f.start, b: f.end }, q, u, f.load_type);
+    assert.ok(Math.abs(J.wristN[1] - A.load.at[1]) < 6, `u=${u}: 手离开握把路径 ${(J.wristN[1] - A.load.at[1]).toFixed(1)}px`);
+  }
+  // 起始手在胸前（肩前 ≥15）、肘角不屈到头（卧推类到底 42–54°）
+  const J0 = orbitLift('machine-chest-press', { a: f.start, b: f.end }, interpolate(A, B, 0, { plumb: f.plumb, handPath: true }), 0, f.load_type);
+  const S0 = J0.shoulderN, E0 = J0.elbowN, H0 = J0.wristN;
+  assert.ok(H0[0] - S0[0] >= 15, `起始手只在肩前 ${(H0[0] - S0[0]).toFixed(1)}px`);
+  const v1 = [S0[0] - E0[0], S0[1] - E0[1], S0[2] - E0[2]], v2 = [H0[0] - E0[0], H0[1] - E0[1], H0[2] - E0[2]];
+  const el = Math.acos((v1[0] * v2[0] + v1[1] * v2[1] + v1[2] * v2[2]) / Math.hypot(...v1) / Math.hypot(...v2)) * 180 / Math.PI;
+  assert.ok(el >= 35, `起始肘角 ${el.toFixed(1)}°`);
+  const J1 = orbitLift('machine-chest-press', { a: f.start, b: f.end }, interpolate(A, B, 1, { plumb: f.plumb, handPath: true }), 1, f.load_type);
+  const r1 = Math.hypot(...[0, 1, 2].map((k) => J1.wristN[k] - J1.shoulderN[k]));
+  assert.ok(r1 < 87.5, `推出终点肩到手 ${r1.toFixed(1)}，手臂锁死了（cue「接近伸直但不锁死」）`);
+  // 推出全程手不跳（重建手曾在两支之间换支，一步前冲 14px）
+  let prev = null;
+  for (let i = 0; i <= 64; i++) {
+    const u = i / 64, q = interpolate(A, B, u, { plumb: f.plumb, handPath: true });
+    const H = orbitLift('machine-chest-press', { a: f.start, b: f.end }, q, u, f.load_type).wristN;
+    if (prev) assert.ok(Math.hypot(H[0] - prev[0], H[1] - prev[1], H[2] - prev[2]) <= 3, `u=${u}: 手一步移动 ${Math.hypot(H[0] - prev[0], H[1] - prev[1]).toFixed(1)}px`);
+    prev = H;
+  }
+});

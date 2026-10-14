@@ -569,17 +569,20 @@ export const POSES = {
     bench: [46, 128, 84, 10],
     load: { type: 'bar', at: [42.7, 29] },
   }),
+  // 握把在胸骨中段（乳头线，ACE：handles level with your mid-chest），肩下 18px（躯干 s≈0.22）。
+  // 原来握把跟着腕归一化，落到肩下 30px（s=0.38，约剑突）——与 cue「握把大致在胸骨中段」不符。
+  // 负荷改锚在肩上（LOAD_ANCHOR），握把高度不随手臂归一化漂走。
   machine_press_start: P({
-    head: [76, 106], shoulder: [86, 124], elbow: [66, 142], wrist: [92, 140],
+    head: [76, 106], shoulder: [86, 124], elbow: [66, 142], wrist: [97, 142],
     hip: [84, 180], knee: [128, 186], ankle: [158, 214], heel: [154, 225], toe: [174, 225],
     bench: [60, 188, 44, 8],
-    load: { type: 'handle', at: [98, 140] },
+    load: { type: 'handle', at: [103.2, 142] },   // 胸前（肩前 18）：「握把不比胸更深」
   }),
   machine_press_end: P({
-    head: [76, 106], shoulder: [86, 124], elbow: [112, 136], wrist: [142, 140],
+    head: [76, 106], shoulder: [86, 124], elbow: [130.1, 147.6], wrist: [168.7, 142],
     hip: [84, 180], knee: [128, 186], ankle: [158, 214], heel: [154, 225], toe: [174, 225],
     bench: [60, 188, 44, 8],
-    load: { type: 'handle', at: [148, 140] },
+    load: { type: 'handle', at: [168.7, 142] },   // 3D 肩到手约 86.7、肘角约 155°（伸直上限 88.5）：「接近伸直但不锁死」
   }),
   seated_press_bottom: P({
     head: [80, 70], shoulder: [86, 90], elbow: [110, 100], wrist: [100, 86],
@@ -736,6 +739,7 @@ const LOAD_ANCHOR = {
   goblet_top: 'shoulder', goblet_bottom: 'shoulder',
   squat_lowbar_top: 'shoulder', squat_lowbar_bottom: 'shoulder',
   bench_top: 'shoulder', bench_bottom: 'shoulder', close_bench_bottom: 'shoulder',   // 杠的位置不该随手臂归一化漂走
+  machine_press_start: 'shoulder', machine_press_end: 'shoulder',   // 握把高度由座椅定，不随手臂漂
   incline_top: 'shoulder', incline_bottom: 'shoulder',
   gm_top: 'shoulder', gm_bottom: 'shoulder',
   carry_front: 'shoulder', ohp_bottom: 'shoulder',

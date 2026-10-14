@@ -95,7 +95,7 @@ export const ORBIT_PARAMS = {
   'close-grip-bench-press': { stance: ST_LYING, grip: 30, out: 0.2 },
   'db-bench-press': { stance: ST_LYING, foreVertical: true, db: 'z', dbMode: 'each' },
   'db-incline-bench-press': { stance: ST_LYING, foreVertical: true, db: 'z', dbMode: 'each' },
-  'machine-chest-press': { stance: ST_SEAT, grip: 34, out: 0.6, handle: 6, perHand: true },
+  'machine-chest-press': { stance: ST_SEAT, grip: 46, out: 0.6, handle: 6, perHand: true },   // 握把间距约 57cm，起始肘角约 38°
   // 俯卧撑：底部前臂在矢状面内竖直（肘在腕正上方），从正面看外倾 foreTilt°——
   // 完全竖直的话肘外展 40° 要配两倍肩宽的手距。握距按这个约束从底部反解。
   'push-up': { stance: ST_TOGETHER, foreVertical: true, foreTilt: 15 },
@@ -198,6 +198,9 @@ function handXY(name, p, lt, P) {
   if (p.load && p.loadAnchor === 'wrist' && !d.rebuilt) return p.wrist;
   const t = p.load?.type, rod = (x) => ORB_GRIP_LOAD.has(x) || (x === 'handle' && !P.perHand);
   if (p.load && (rod(t) || rod(lt))) return p.load.at;
+  // 器械握把锚在肩上（坐姿推胸）：握把的位置由座椅定、两端之间线性走，手就在握把上。
+  // 取 rebuildArm 的重建手会在两支候选之间换支，推出早段手前冲 14px 再退回。
+  if (p.load && t === 'handle' && p.loadAnchor === 'shoulder') return p.load.at;
   return d.H;
 }
 

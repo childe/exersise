@@ -162,7 +162,8 @@
     "end": "machine_press_end",
     "cap_start": "起始",
     "cap_end": "推出",
-    "plumb": false
+    "plumb": false,
+    "hand_path": true
   },
   "push-up": {
     "start": "pushup_top",
