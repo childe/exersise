@@ -18,7 +18,7 @@ function sentenceAround(text, index) {
 
 const HARD_RULES = [
   { re: /<img[^>]+src="data:image\/(png|jpe?g|webp)/g,
-    msg: '内嵌位图可能是 AI 生成的动作或解剖图（§9.1-9）：动作示范走外部核验链接，概念图走内联 SVG' },
+    msg: '内嵌 data: 位图（§9.1-9）：动作示范走外部核验链接，概念图走内联 SVG，肌肉分布图托管 OSS 并在 data/anatomy.json 登记（§7.5）' },
   { re: /(待撰写|待补充|TODO|TBD|lorem ipsum)/gi,
     msg: '存在未完成的占位内容' },
 ];
@@ -32,7 +32,7 @@ const SOFT_RULES = [
   { re: /(deload|减量|降重)[^。；\n]{0,16}(来|以)?(处理|应对|缓解)[^。；\n]{0,8}(疼痛|疼|痛)/g,
     msg: '把 deload／减量与疼痛处理并提（§9.3-11e）——确认是否定句' },
   { re: /(AI\s*生成|由\s*AI\s*绘制|gpt-image|midjourney|stable\s*diffusion)/gi,
-    msg: '出现 AI 生成图字样（§7.2.1）——确认是声明"本站不含"而不是真的用了' },
+    msg: '出现 AI 生成图字样（§7.2.1 / §7.5）——动作图不得使用；肌肉分布图须已在 data/anatomy.json 登记' },
   { re: /占位/g, msg: '出现"占位"字样——确认是在讲占位符机制而不是遗留未写内容' },
 ];
 

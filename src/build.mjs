@@ -11,6 +11,7 @@ import { validateChapters, validateChapterList } from './validate/chapters.mjs';
 import { validateInternalLinks } from './validate/links.mjs';
 import { loadFigures, validateFigures } from './validate/figures.mjs';
 import { scanSafety, scanSafetyReview } from './validate/safety.mjs';
+import { validateImages } from './validate/anatomy.mjs';
 import { validatePoses, validateFigures as validatePoseFigures, validateMuscles,
   validateFrameConsistency, validateJointAngles, validateContacts, validateStraightLines,
   validateFixedRigs, validateBarOnChest, validateSecondHand, validateKneeStable,
@@ -145,6 +146,8 @@ export async function build(root = defaultRoot, { outDir } = {}) {
   if (review.length) {
     console.warn(`安全待复核 ${review.length} 处（不阻断构建，须在 docs/acceptance/safety-review.md 逐条判定）:\n- ${review.join('\n- ')}`);
   }
+  const imgErrs = validateImages(html, data.anatomy);
+  if (imgErrs.length) throw new Error(`位图登记校验失败:\n- ${imgErrs.join('\n- ')}`);
   const linkErrs = validateInternalLinks(html);
   if (linkErrs.length) throw new Error(`内部锚点校验失败:\n- ${linkErrs.join('\n- ')}`);
   const out = outDir ?? path.join(root, 'dist');
