@@ -257,6 +257,16 @@ export function interpolate(A, B, t, opts = {}) {
         if (q.load) q.load = { ...q.load, at: rot(q.load.at, d) };
         q._pivoted = d;
       }
+      // 撑地的手是第二支点：转完只保证了 y 回到地面，x 仍随两段极角插值漂移。
+      // 底部前臂竖直后两端投影长度不同（顶 50/39、底 38/38），手曾在地上来回滑 8–11px。
+      // 所以把手钉在两端手位的连线上，肘按插出来的段长重新用 IK 解。
+      if (!supine && onG(A,'wrist') && onG(B,'wrist') && !q.load) {
+        q.wrist = lerp2(A.wrist, B.wrist, t);
+        q.elbow = ik2(q.shoulder, q.wrist,
+          lerp(len(A.shoulder, A.elbow), len(B.shoulder, B.elbow), t),
+          lerp(len(A.elbow, A.wrist), len(B.elbow, B.wrist), t),
+          lerp2(A.elbow, B.elbow, t));
+      }
     }
   }
   for (const [f, src] of [['heel','ankle'],['toe','ankle'],['heel2','ankle2'],['toe2','ankle2']]) {

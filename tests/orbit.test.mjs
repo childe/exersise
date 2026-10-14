@@ -223,3 +223,43 @@ test('肘的去向跟着当前端点的姿态走（起止两端各自对上 2D �
     }
   }
 });
+
+test('俯卧撑底部肘在腕正上方：侧视前臂竖直，肘外展 30–50°（ACE「下放位前臂垂直于地面」）', () => {
+  // 曾经手按「肩正下方」摆，到底肩只前移十来像素，肘被甩向脚的方向，前臂斜 57–63°。
+  for (const slug of ['push-up', 'knee-push-up']) {
+    const f = figures[slug], names = { a: f.start, b: f.end };
+    const p = interpolate(POSES[f.start], POSES[f.end], 1, { plumb: f.plumb });
+    const J = orbitLift(slug, names, p, 1);
+    for (const t of ['N', 'F']) {
+      const E = J['elbow' + t], H = J['wrist' + t], S = J['shoulder' + t];
+      const sag = Math.atan2(Math.abs(E[0] - H[0]), H[1] - E[1]) * 180 / Math.PI;
+      assert.ok(sag < 5, `${slug} ${t}: 侧视前臂偏离竖直 ${sag.toFixed(1)}°`);
+      const flare = Math.atan2(Math.abs(E[2]) - Math.abs(S[2]), Math.abs(E[0] - S[0])) * 180 / Math.PI;
+      assert.ok(flare >= 30 && flare <= 50, `${slug} ${t}: 肘外展 ${flare.toFixed(0)}°`);
+    }
+    // 2D 的肘也必须在腕正上方——姿态数据本身就是对的，不是靠 3D 求解掩盖
+    const b = POSES[f.end];
+    assert.ok(Math.abs(b.elbow[0] - b.wrist[0]) < 2 && b.elbow[1] < b.wrist[1], `${slug}: 2D 底部肘不在腕正上方`);
+  }
+});
+
+test('俯撑动画：手钉在地上不滑、支点贴地、顶部手臂后倾 ≤25°、归一化是恒等', async () => {
+  // 手曾在地上来回滑 8–11px：转支点只把手的 y 送回地面，x 随两段极角插值漂。
+  // 顶部原始臂长与 FORESHORTENED_ARM 登记不符时，归一化会把整个人抬高 2.4px、膝全程离地。
+  const { RAW_POSES } = await import('../src/render/skeleton.mjs');
+  for (const [slug, pivot] of [['push-up', 'toe'], ['knee-push-up', 'knee']]) {
+    const f = figures[slug], A = POSES[f.start], B = POSES[f.end];
+    for (const n of [f.start, f.end]) for (const k of ['shoulder', 'elbow', 'wrist', 'hip', 'knee', 'toe'])
+      assert.ok(Math.hypot(POSES[n][k][0] - RAW_POSES[n][k][0], POSES[n][k][1] - RAW_POSES[n][k][1]) < 0.05, `${n}.${k} 归一化后移动了`);
+    const tilt = Math.atan2(A.wrist[0] - A.shoulder[0], A.wrist[1] - A.shoulder[1]) * 180 / Math.PI;
+    assert.ok(tilt >= 0 && tilt <= 25, `${slug} 顶部手臂后倾 ${tilt.toFixed(1)}°`);
+    for (let i = 0; i <= 20; i++) {
+      const t = i / 20, q = interpolate(A, B, t, { plumb: f.plumb });
+      const wx = A.wrist[0] + (B.wrist[0] - A.wrist[0]) * t;
+      assert.ok(Math.abs(q.wrist[0] - wx) < 1 && Math.abs(q.wrist[1] - GROUND) < 1, `${slug} t=${t}: 手在 (${q.wrist[0].toFixed(1)}, ${q.wrist[1].toFixed(1)})，应钉在 x≈${wx.toFixed(1)}`);
+      assert.ok(Math.abs(q[pivot][1] - GROUND) < 0.5, `${slug} t=${t}: ${pivot} 离地 ${(GROUND - q[pivot][1]).toFixed(1)}px`);
+      const J = orbitLift(slug, { a: f.start, b: f.end }, q, t);
+      assert.ok(Math.abs(J.wristN[1] - GROUND) < 1, `${slug} t=${t}: 3D 手离地 ${(GROUND - J.wristN[1]).toFixed(1)}px`);
+    }
+  }
+});

@@ -84,8 +84,10 @@ export const ORBIT_PARAMS = {
   'db-bench-press': { stance: ST_LYING, foreVertical: true, db: 'z', dbMode: 'each' },
   'db-incline-bench-press': { stance: ST_LYING, foreVertical: true, db: 'z', dbMode: 'each' },
   'machine-chest-press': { stance: ST_SEAT, grip: 34, out: 0.6, handle: 6, perHand: true },
-  'push-up': { stance: ST_TOGETHER, grip: 36, out: 0.35 },
-  'knee-push-up': { stance: ST_TOGETHER, grip: 36, out: 0.35 },
+  // 俯卧撑：底部前臂在矢状面内竖直（肘在腕正上方），从正面看外倾 foreTilt°——
+  // 完全竖直的话肘外展 40° 要配两倍肩宽的手距。握距按这个约束从底部反解。
+  'push-up': { stance: ST_TOGETHER, foreVertical: true, foreTilt: 15 },
+  'knee-push-up': { stance: ST_TOGETHER, foreVertical: true, foreTilt: 15 },
   // 推举起始杠在锁骨前、离肩只有 7px：cue「握距略比肩宽」，握点外移到肘角 ≥25° 的最窄处
   'overhead-press': { stance: ST_HIP, grip: 50, out: 0.3 },
   'band-overhead-press': { stance: ST_HIP, grip: 50, out: 0.3, band: 14 },
@@ -190,6 +192,15 @@ function handXY(name, p, lt, P) {
  * 那一端（底部）来解，握距全程不变。
  */
 const orbGripCache = new Map();
+/**
+ * 前臂从手到肘的竖直、外侧分量。fy 带符号：卧推、推举的肘在手**下方**（+y），
+ * 俯卧撑的手撑地、肘在手**上方**（−y），取 2D 画出来的肘在手的哪一侧。
+ * foreTilt 是正面看前臂外倾的角度（肘在手外侧）。
+ */
+const foreOffset = (P, E, H) => {
+  const t = (P.foreTilt ?? 0) * Math.PI / 180, up = E[1] < H[1] ? -1 : 1;
+  return { fy: up * ORB_FORE * Math.cos(t), fz: ORB_FORE * Math.sin(t) };
+};
 function foreVerticalGrip(slug, names, P, lt) {
   if (orbGripCache.has(slug)) return orbGripCache.get(slug);
   let best = null;
@@ -197,8 +208,9 @@ function foreVerticalGrip(slug, names, P, lt) {
     const q = POSES[n];
     const H = handXY(n, q, lt, P), S = q.shoulder;
     const d = Math.hypot(H[0] - S[0], H[1] - S[1]);
-    const zz = ORB_UPPER ** 2 - (H[0] - S[0]) ** 2 - (H[1] + ORB_FORE - S[1]) ** 2;
-    if (zz > 0 && (!best || d < best.d)) best = { d, grip: ORB_SHOULDER + Math.sqrt(zz) };
+    const { fy, fz } = foreOffset(P, drawnArm(n, q, lt).E, H);
+    const zz = ORB_UPPER ** 2 - (H[0] - S[0]) ** 2 - (H[1] + fy - S[1]) ** 2;
+    if (zz > 0 && (!best || d < best.d)) best = { d, grip: ORB_SHOULDER + Math.sqrt(zz) - fz };
   }
   const g = best?.grip ?? P.grip ?? ORB_SHOULDER;
   orbGripCache.set(slug, g);
@@ -254,7 +266,10 @@ function liftSide(slug, names, p, u, P, lt) {
       // 前臂竖直：pole 直接指向「手正下方一个前臂长」的那一点。底部时它恰好在 IK 的圆上，
       // 解出来就是它；其余帧连续过渡。只给一个「朝下」的 pole 时，圆上离它最近的点不是正下方
       // （卧推底部前臂曾偏 35°）。
-      if (P.foreVertical) pole = [H[0] - S[0], H[1] + ORB_FORE - S[1], H[2] - S[2]];
+      if (P.foreVertical) {
+        const { fy, fz } = foreOffset(P, exy, hxy);
+        pole = [H[0] - S[0], H[1] + fy - S[1], H[2] + s * fz - S[2]];
+      }
     }
     H = orbReach(S, H, ORB_UPPER + ORB_FORE - 0.5, ORB_UPPER - ORB_FORE + 0.5);
     J['wrist' + tag] = H;
