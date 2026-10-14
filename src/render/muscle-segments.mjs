@@ -14,6 +14,7 @@ export const MUSCLE_SEG = {
   胸:     [['shoulder', 'hip', 0, 0.4]],
   肱二头: [['shoulder', 'elbow', 0, 1]],
   肱三头: [['shoulder', 'elbow', 0, 1]],
+  前臂:   [['elbow', 'wrist', 0, 1]],
   前束:   [['shoulder', 'elbow', 0, 0.38]],
   中束:   [['shoulder', 'elbow', 0, 0.38]],
   后束:   [['shoulder', 'elbow', 0, 0.38]],

@@ -140,14 +140,14 @@ test('同一肌肉同时是主动肌与稳定肌时按主动肌画', () => {
   assert.equal(m?.[1], 'm-prime');
 });
 
-test('整体肌肉分布图含全部 13 个分区且可点', () => {
+test('整体肌肉分布图含全部 14 个分区且可点', () => {
   const counts = new Map(MUSCLE_NAMES.map((n) => [n, 3]));
   const html = renderFullMuscleMap(counts);
   for (const n of MUSCLE_NAMES) {
     assert.ok(html.includes(`data-muscle="${n}"`), `缺少分区 ${n}`);
   }
   assert.ok(html.includes('tabindex="0"'), '肌群必须可键盘聚焦');
-  assert.equal(MUSCLE_NAMES.length, 13);
+  assert.equal(MUSCLE_NAMES.length, 14);
 });
 
 test('每张图画出来的东西都落在它自己的 viewBox 内', async () => {

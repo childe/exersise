@@ -109,7 +109,7 @@ export function validatePoses() {
     // 8. 头在肩之上
     if (p.view !== 'front' && name !== 'plank' && !name.startsWith('bridge')
         && !name.startsWith('bench') && !name.startsWith('incline')
-        && !name.startsWith('pushup') && !name.startsWith('knee_pushup')
+        && !name.startsWith('pushup') && !name.startsWith('knee_pushup') && !name.startsWith('close_pushup')
         && !name.startsWith('deadbug') && !name.startsWith('rollout')
         && !name.startsWith('leg_curl') && !name.startsWith('leg_press')
         && !name.startsWith('back_extension') && !name.startsWith('inverted')) {
@@ -359,6 +359,8 @@ export const STRAIGHT_LINE = {
   hipthrust_top: ['shoulder', 'knee', 'hip'],
   pushup_top: ['shoulder', 'ankle', 'hip', 'knee'],
   pushup_bottom: ['shoulder', 'ankle', 'hip', 'knee'],
+  close_pushup_top: ['shoulder', 'ankle', 'hip', 'knee'],
+  close_pushup_bottom: ['shoulder', 'ankle', 'hip', 'knee'],
   rollout_end: ['shoulder', 'knee', 'hip'],
   bridge_top: ['shoulder', 'knee', 'hip'],
   hinge_top: ['shoulder', 'ankle', 'hip', 'knee'],

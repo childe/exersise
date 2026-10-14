@@ -48,7 +48,8 @@ const ST_TOGETHER = { hip: 12, knee: 11, ankle: 10, heel: 10, toe: 12 };  // 俯
  *   stance  站距（见上）
  *   grip    手到身体中线的距离
  *   out     肘往外偏的量（0 = 肘在 2D 画出的方向上，1 = 几乎全朝外）
- *   db      哑铃长轴方向：'x' 前后（中立握）、'z' 左右（正握）、'y' 竖直（高脚杯）
+ *   db      哑铃长轴方向：'x' 前后（中立握）、'z' 左右（正握）、'y' 竖直（高脚杯）、
+ *           'fore' 中立握且随前臂转（锤式弯举：长轴在矢状面内、垂直于前臂）
  *   dbMode  'each' 每只手一只、'near' 只有近侧手、'single' 双手托一只（在中线上）
  *   handle  拉力器把手半长；perHand 时每只手一个
  *   view    'side'（默认）、'front'
@@ -101,6 +102,9 @@ export const ORBIT_PARAMS = {
   // 完全竖直的话肘外展 40° 要配两倍肩宽的手距。握距按这个约束从底部反解。
   'push-up': { stance: ST_TOGETHER, foreVertical: true, foreTilt: 15 },
   'knee-push-up': { stance: ST_TOGETHER, foreVertical: true, foreTilt: 15 },
+  // 窄距俯卧撑：手约与肩同宽（手在肩正下方的 z 上、略内收），肘贴肋往脚的方向走——
+  // 手臂在矢状面内，3D 与 2D 的肘一致；out 小，肘只略往外偏一点（不贴死在躯干里）。
+  'close-grip-push-up': { stance: ST_TOGETHER, grip: 25, out: 0.1 },
   // 推举起始杠在锁骨前、离肩只有 7px：cue「握距略比肩宽」，握点外移到肘角 ≥25° 的最窄处
   'overhead-press': { stance: ST_HIP, grip: 50, out: 0.3 },
   'band-overhead-press': { stance: ST_HIP, grip: 50, out: 0.3, band: 14 },
@@ -122,11 +126,16 @@ export const ORBIT_PARAMS = {
   // 按这个约束反解出的握距约 50，与原来登记的一致。
   'lat-pulldown': { stance: ST_SEAT, foreVertical: true, foreBack: 15, handle: 62 },
   'pull-up': { stance: ST_TOGETHER, grip: 50, pole: [-0.5, 0.8, 0.4] },   // cue「肘往下往后拉」
+  'dead-hang': { stance: ST_TOGETHER, grip: 50, pole: [-0.5, 0.8, 0.4] },   // 与引体同一副悬垂：握距略比肩宽
   'cable-face-pull': { stance: ST_HIP, grip: 18, out: 0.6, handle: 18 },   // 肘高且外展：out 太大会把「抬高」的信息丢掉
   'db-reverse-fly': { view: 'reverse-fly', stance: ST_PULL, db: 'x', dbMode: 'each' },
   'barbell-curl': { stance: ST_HIP, grip: 24, out: 0.05 },
   'db-curl': { stance: ST_HIP, grip: 28, out: 0.05, db: 'z', dbMode: 'each' },
   'cable-curl': { stance: ST_HIP, grip: 16, out: 0.05, handle: 20 },
+  // 锤式弯举：掌心相对，哑铃长轴在矢状面内、垂直于前臂（随前臂转），握距同哑铃弯举
+  'db-hammer-curl': { stance: ST_HIP, grip: 28, out: 0.05, db: 'fore', dbMode: 'each' },
+  // 反握弯举：正握、握距约与肩同宽（手在肩正下方的 z 上），侧视与杠铃弯举同一副姿态
+  'barbell-reverse-curl': { stance: ST_HIP, grip: 27, out: 0.05 },
   'barbell-front-rack-carry': { stance: ST_HIP, grip: 50, out: 0.1 },
   'db-farmer-carry': { stance: ST_HIP, grip: 34, out: 0.05, db: 'x', dbMode: 'each' },
   'db-suitcase-carry': { stance: ST_HIP, grip: 34, out: 0.05, db: 'x', dbMode: 'near' },
@@ -430,10 +439,35 @@ function barbell(S, x, y, plateR = ORB_PLATE_R) {
 
 function dumbbell(S, c, axis) {
   const half = 9, r = 5.5;
+  if (Array.isArray(axis)) {
+    // 任意方向的长轴（锤式弯举：随前臂转）。片是垂直于长轴的圆，用长轴的一组正交基画
+    const l = o3len(axis) || 1, u = axis.map((x) => x / l);
+    const ref = Math.abs(u[2]) < 0.9 ? [0, 0, 1] : [1, 0, 0];
+    const cr = (p, q) => [p[1] * q[2] - p[2] * q[1], p[2] * q[0] - p[0] * q[2], p[0] * q[1] - p[1] * q[0]];
+    const e1 = cr(u, ref), l1 = o3len(e1), v1 = e1.map((x) => x / l1), v2 = cr(u, v1);
+    const d = u.map((x) => x * half), a = o3sub(c, d), b = o3add(c, d);
+    S.push({ t: 'line', a, b, cls: 'sk-bar sk-db-handle' });
+    for (const e of [a, b]) {
+      S.push({ t: 'poly', cls: 'sk-plate sk-plate-3d', pts: Array.from({ length: 14 }, (_, i) => {
+        const t = (i / 14) * Math.PI * 2, ca = Math.cos(t) * r, sa = Math.sin(t) * r;
+        return [0, 1, 2].map((k) => e[k] + v1[k] * ca + v2[k] * sa);
+      }) });
+    }
+    return;
+  }
   const d = axis === 'x' ? [half, 0, 0] : axis === 'y' ? [0, half, 0] : [0, 0, half];
   const a = o3sub(c, d), b = o3add(c, d);
   S.push({ t: 'line', a, b, cls: 'sk-bar sk-db-handle' });
   for (const e of [a, b]) S.push({ t: 'poly', pts: ring(e, r, axis, 14), cls: 'sk-plate sk-plate-3d' });
+}
+
+/**
+ * 中立握（掌心相对）时哑铃长轴的方向：在矢状面内、垂直于前臂。
+ * 手垂在体侧时朝前后，前臂水平时竖直，举到顶时又朝前后——它随前臂转，不是固定的世界轴。
+ */
+function neutralGripAxis(E, H) {
+  const v = o3sub(H, E);
+  return [-v[1], v[0], 0];
 }
 
 /** 器械。lt 是 figures.json 的 load_type 覆盖：画出来的是它，不是姿态模板里的那件。 */
@@ -504,7 +538,10 @@ function equipment(S, slug, p, J, lt) {
       return;
     }
     // 手握在哑铃把手中间，所以哑铃心就在手上（2D 里偏开 8px 只是为了不盖住手）
-    for (const tag of hands) dumbbell(S, J['wrist' + tag], P.db ?? 'x');
+    for (const tag of hands) {
+      const axis = P.db === 'fore' ? neutralGripAxis(J['elbow' + tag], J['wrist' + tag]) : P.db ?? 'x';
+      dumbbell(S, J['wrist' + tag], axis);
+    }
     return;
   }
   if (type === 'handle') {

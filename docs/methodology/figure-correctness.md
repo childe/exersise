@@ -108,6 +108,7 @@
 | 2026-10-14 | 哑铃推举、器械推举（坐姿） | setup「靠背略仰 5–10 度」/「接近垂直」，躯干实测前倾 2°；补上靠背后板跟着前倾，方向反了 | 卡片自身文字 | 躯干与头绕髋后仰到 7°，手臂保持世界方向（锁定时负荷叠在肩上）；断言躯干后仰 4–12°。figure-reviewer APPROVE | fix/shoulder-press-recline |
 | 2026-10-14 | 绳索下压 | cue「站姿略前倾，上臂贴住躯干两侧并全程保持」：躯干只前倾 2°，3D 肘前后漂 8px（z 向 8px） | 卡片自身文字（cue / setup / 自检 / mistakes） | 上半身（上臂贴躯干）绕髋前倾到 12°；3D pole 沿上臂、握距 16，肘漂移 ≤2.8px；断言前倾与漂移。遗留：3D 底部肘角 168°（2D 177°，原有）。figure-reviewer APPROVE | fix/pushdown-lean |
 | 2026-10-14 | 哑铃反向飞鸟 | 自检「顶点时上臂约与躯干在一条线上，不超过」：终点角写死 84°，上臂越过背面 6.7°；cue「肘微屈」实际屈 38° | 卡片自身文字 | 终点角按「上臂落在背面平面内」二分反解；肘角 160°（reach 87.5）；断言不越过、到位、肘角恒定且微屈。figure-reviewer APPROVE | fix/reverse-fly-top |
+| 2026-10-15 | 新增前臂训练：窄距俯卧撑、锤式弯举、杠铃反握弯举、悬垂（新增肌群「前臂」） | 新动作，不是修错。窄距俯卧撑若借标准俯卧撑姿态，肘外展 40°，画的是标准俯卧撑；手放在标准俯卧撑的位置、肘贴体时，底部肘折到 54°、前臂倒向脚 39°（与俯卧撑当初同一个冲突） | [StrengthLog Close-Grip Push-Up](https://www.strengthlog.com/close-grip-push-up/)（手约与肩同宽）；ACE（肘贴肋、胸接近地面）；[StrengthLog Hammer Curl](https://www.strengthlog.com/hammer-curl/)；[StrengthLog Reverse Barbell Curl](https://www.strengthlog.com/reverse-barbell-curl/) | 窄距俯卧撑按约束构造新姿态（身体同 pushup_bottom，手在肩后 41.6px）：3D 肘外展 9–12°（标准 40°）、底部上臂与躯干 12°、肘角 72°、前臂侧视 12°，顶部手臂后倾 21°；锤式弯举哑铃长轴随前臂转（`db: 'fore'`）；悬垂复用引体悬垂帧；断言 4 条，均做过变异检验 | feat/forearm-exercises |
 
 ## 5. 待查候选
 

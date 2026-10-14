@@ -6,7 +6,7 @@
 // 可以写成断言，因此它是"构造上正确"的，与 §7 不冲突。
 //
 // 词表来自 data/exercises.json 的 muscles.prime/synergist/stabilizer，
-// 共 13 个取值，与本文件的 MUSCLE_REGIONS 键必须完全一致（见 validate/muscles.mjs）。
+// 共 14 个取值，与本文件的 MUSCLE_REGIONS 键必须完全一致（见 validate/muscles.mjs）。
 
 // 单个视图的画布：110 × 230，中线 x=55。
 // 正面与背面并排时，背面整体平移 +120。
@@ -37,7 +37,7 @@ const SILHOUETTE = [
   { t: 'path', d: 'M69 206 L74 206 L74 212 L56 212 L56 206 Z' },
 ];
 
-// 13 个分区。view 决定它画在正面还是背面——
+// 14 个分区。view 决定它画在正面还是背面——
 // 肌肉画在它实际可见的那一面，而不是两面都画一遍。
 export const MUSCLE_REGIONS = {
   前束: { view: 'front', label: '三角肌前束', shapes: [
@@ -55,6 +55,12 @@ export const MUSCLE_REGIONS = {
   肱二头: { view: 'front', label: '肱二头肌', shapes: [
     { t: 'ellipse', cx: 31, cy: 70, rx: 6, ry: 13 },
     { t: 'ellipse', cx: 79, cy: 70, rx: 6, ry: 13 },
+  ] },
+  // 前臂屈肌群与肱桡肌在掌侧/桡侧，正面看得到；伸肌在背侧，但握力类动作两组一起工作，
+  // 只画一处，放在正面（与肱二头同一面，读者找手臂时先看这里）。
+  前臂: { view: 'front', label: '前臂肌群（肱桡肌与腕屈伸肌）', shapes: [
+    { t: 'ellipse', cx: 27, cy: 97, rx: 4.5, ry: 12 },
+    { t: 'ellipse', cx: 83, cy: 97, rx: 4.5, ry: 12 },
   ] },
   核心: { view: 'front', label: '腹肌与深层核心', shapes: [
     { t: 'path', d: 'M46 72 L64 72 L66 106 L62 118 L48 118 L44 106 Z' },
@@ -171,7 +177,7 @@ export function renderCardMuscleMap(muscles, nameZh) {
     + `<figcaption class="m-legend">${legend}</figcaption></figure>`;
 }
 
-/** 第 4 章的整体肌肉分布图：全部 13 个分区可点，点了筛动作库。 */
+/** 第 4 章的整体肌肉分布图：全部 14 个分区可点，点了筛动作库。 */
 export function renderFullMuscleMap(counts) {
   const roles = new Map(MUSCLE_NAMES.map((n) => [n, 'prime']));
   const rows = MUSCLE_NAMES.map((n) => {

@@ -179,6 +179,14 @@
     "cap_end": "底部",
     "plumb": false
   },
+  "close-grip-push-up": {
+    "start": "close_pushup_top",
+    "end": "close_pushup_bottom",
+    "cap_start": "顶部",
+    "cap_end": "底部",
+    "plumb": false,
+    "note": "与标准俯卧撑的差别在手距与肘：手约与肩同宽，肘贴着肋往脚的方向走，到底时肘在腕的后上方、前臂接近竖直。"
+  },
   "overhead-press": {
     "start": "ohp_bottom",
     "end": "ohp_top",
@@ -284,6 +292,11 @@
     "plumb": false,
     "note": "「下巴过杠」在这副骨架上只能画到头心与杠齐平：颈 17px、头半径 12px，下巴最多比肩高 5px，而手握在杠上时肩必然在杠下约 18px。真人的头颈比例比火柴人长得多，下巴确实能过杠。"
   },
+  "dead-hang": {
+    "start": "pullup_hang",
+    "cap_start": "悬垂",
+    "note": "与引体向上的起始悬垂同一副姿态：手臂伸直，肩胛微微下沉，不完全松垮地挂着。"
+  },
   "cable-face-pull": {
     "start": "face_pull_start",
     "end": "face_pull_end",
@@ -321,6 +334,23 @@
     "cap_end": "顶峰",
     "plumb": false,
     "load_type": "handle"
+  },
+  "db-hammer-curl": {
+    "start": "curl_down",
+    "end": "curl_up",
+    "cap_start": "起始",
+    "cap_end": "顶峰",
+    "plumb": false,
+    "note": "侧视与哑铃弯举一致，差别在握法：掌心相对，哑铃长轴在身体前后方向、随前臂一起转（转动视角可见）。"
+  },
+  "barbell-reverse-curl": {
+    "start": "curl_down",
+    "end": "curl_up",
+    "cap_start": "起始",
+    "cap_end": "顶峰",
+    "plumb": false,
+    "load_type": "bar",
+    "note": "侧视的躯干与手臂轨迹与杠铃弯举一致；差别是正握（掌心朝下），骨架图画不出握法，以文字为准。"
   },
   "barbell-front-rack-carry": {
     "start": "carry_front",
