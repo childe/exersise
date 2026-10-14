@@ -5,6 +5,7 @@ import path from 'node:path';
 import { POSES, POSE_NAMES, renderSkeleton, renderPose, contentBox, drawnArm, MIDFOOT, GROUND, FIG_W, FIG_H } from '../src/render/skeleton.mjs';
 import { validatePoses, validateFigures, validateMuscles, validateFrameConsistency } from '../src/validate/poses.mjs';
 import { MUSCLE_NAMES, MUSCLE_REGIONS, renderCardMuscleMap, renderFullMuscleMap } from '../src/render/muscles.mjs';
+import { ORBIT_FIGS } from '../src/render/orbit.mjs';
 
 const root = path.resolve(import.meta.dirname, '..');
 const readJson = async (rel) => JSON.parse(await readFile(path.join(root, rel), 'utf8'));
@@ -221,7 +222,9 @@ test('每张图画出来的东西都落在它自己的 viewBox 内', async () =>
       // 「该画的东西被整类删掉」对账看不见——hit 与 total 一起减，恒等成立。
       // 实测把 sk-head / sk-foot / sk-bench / sk-bar 整类删掉，全仓 241 条测试无一报警。
       // 所以这里逐帧查该出现的 class：骨架件永远要有，器械件按这一帧真画了什么推导。
-      for (const c of ['sk-trunk', 'sk-limb', 'sk-foot', 'sk-head', 'sk-ground', 'sk-caption'])
+      // 环绕视角帧的地面是一块透视平面（sk-floor），不是侧视的地线
+      const ground = m[0].includes('sk-orbit') ? 'sk-floor' : 'sk-ground';
+      for (const c of ['sk-trunk', 'sk-limb', 'sk-foot', 'sk-head', ground, 'sk-caption'])
         assert.ok(m[0].includes(`"${c}`) || m[0].includes(` ${c}`), `${slug}: 这一帧没有 ${c}`);
       assert.ok(pts.length >= 20, `${slug}: 这一帧只有 ${pts.length} 个点，画空了`);
       for (const [x, y] of pts) {
@@ -234,8 +237,9 @@ test('每张图画出来的东西都落在它自己的 viewBox 内', async () =>
   }
   // 帧数由 figures 自己推导，不写死 104——写死的数字在正常增删动作时误报，
   // 而「把数字改大」这个动作没有任何信息量，正是会被当橡皮图章盖掉的那种断言。
-  const expect = Object.values(figures)
-    .reduce((n, f) => n + (f.end && f.end !== f.start ? 2 : 1), 0);
+  // 启用环绕视角的双帧动作只画一格（环绕视角的静止帧），取代起止两帧。
+  const expect = Object.entries(figures)
+    .reduce((n, [slug, f]) => n + (f.end && f.end !== f.start ? (ORBIT_FIGS.has(slug) ? 1 : 2) : 1), 0);
   assert.equal(frames, expect, `${expect} 张帧里只扫到 ${frames}——有帧没被正则捞到`);
 });
 

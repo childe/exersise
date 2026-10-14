@@ -148,6 +148,13 @@ figure.concept figcaption { color: var(--muted); font-size: 0.88em; }
 /* 主动肌：骨架之下的一层"荧光笔"，颜色与肌肉分布图的主动肌一致 */
 .sk-muscle { stroke: var(--danger); stroke-width: 16; stroke-linecap: round; opacity: .34; fill: none; }
 .sk-hand { fill: var(--fg); stroke: var(--surface); stroke-width: 1.5; }
+/* 环绕视角（orbit.mjs）：地面成一块平面、躯干成一块半透明的面，深度靠它们读出来 */
+.sk-floor { fill: var(--rule); fill-opacity: .45; stroke: var(--rule); stroke-width: 1.5; }
+.sk-floor-grid { stroke: var(--muted); stroke-opacity: .35; stroke-width: 1; }
+.sk-torso-plane { fill: var(--fg); fill-opacity: .14; stroke: none; }
+.sk-girdle { stroke-width: 5; }
+.sk-plate-3d { fill-opacity: .55; stroke: var(--equip); stroke-width: 1.5; }
+.sk-midfoot-3d { stroke-width: 3; }
 .sk-caption {
   fill: var(--muted); font-size: 15px; text-anchor: middle;
   font-family: inherit;

@@ -9,6 +9,7 @@
 
 const REP = 4.2;                       // 一次完整起落的秒数
 import { ik2 } from '../render/interp.mjs';
+import { renderOrbit, ORBIT_YAW, ORBIT_PERIOD } from '../render/orbit.mjs';
 const ARM_TAU = Math.PI * 2;
 const ARM_TRUE_UPPER = 50, ARM_TRUE_FORE = 39;   // 与 BONE 一致：投影不可能超过真骨
 // 最短弧：跨 ±π 时走近路
@@ -146,14 +147,23 @@ export function initSkeletonAnimation({ POSES, interpolate, renderPose, drawnArm
     let cfg;
     try { cfg = JSON.parse(fig.dataset.anim); } catch { continue; }
     if (!POSES[cfg.a] || !POSES[cfg.b]) continue;
-    const [x, y, w, h] = cfg.box;
-    const svg = document.createElementNS(SVG_NS, 'svg');
-    svg.setAttribute('viewBox', `${x} ${y} ${w} ${h}`);
-    svg.setAttribute('class', 'sk-frame sk-anim' + (w / h > 1.6 ? ' sk-wide' : ''));
-    svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
-    svg.setAttribute('role', 'img');
-    svg.setAttribute('aria-label', `${fig.dataset.exercise}·循环演示`);
-    fig.insertBefore(svg, fig.querySelector('figcaption'));
+    // 启用环绕视角的动作只有一格（服务端画好的静止帧），动画直接接管它；
+    // 其余动作在两帧之后追加一格侧视循环演示。
+    const orbit = !!(cfg.orbit && cfg.orbitBox);
+    const [x, y, w, h] = orbit ? cfg.orbitBox : cfg.box;
+    let svg = orbit ? fig.querySelector('svg.sk-orbit') : null;
+    if (orbit && !svg) continue;
+    if (!svg) {
+      svg = document.createElementNS(SVG_NS, 'svg');
+      svg.setAttribute('viewBox', `${x} ${y} ${w} ${h}`);
+      svg.setAttribute('class', 'sk-frame sk-anim' + (w / h > 1.6 ? ' sk-wide' : ''));
+      svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
+      svg.setAttribute('role', 'img');
+      svg.setAttribute('aria-label', `${fig.dataset.exercise}·循环演示`);
+      fig.insertBefore(svg, fig.querySelector('figcaption'));
+    } else {
+      svg.classList.add('sk-anim');
+    }
     // 自重动作把模板里的负荷摘掉——照着练一副不存在的杠铃就是教错
     const strip = (p) => (cfg.no_load ? { ...p, load: undefined } : p);
     const A = strip(POSES[cfg.a]), B = strip(POSES[cfg.b]);
@@ -169,6 +179,7 @@ export function initSkeletonAnimation({ POSES, interpolate, renderPose, drawnArm
     const armA = armDescriptor(dA, A), armB = armDescriptor(dB, B);
     const opts = { plumb: cfg.plumb, handPath: cfg.handPath };
     items.push({ svg, cfg, box: { x, y, w, h }, A, B, visible: false, t: 0, armA, armB,
+      orbit, orbT: 0,
       plan: armSidePlan(armA, armB, A, B, dA, dB, interpolate, opts) });
   }
   if (!items.length) return null;
@@ -185,6 +196,13 @@ export function initSkeletonAnimation({ POSES, interpolate, renderPose, drawnArm
     const ph = it.t / REP;
     const u = ease(ph < 0.5 ? ph * 2 : (1 - ph) * 2);
     const p = interpolate(it.A, it.B, u, { plumb: it.cfg.plumb, handPath: it.cfg.handPath });
+    if (it.orbit) {
+      // 环绕视角：相机在侧视两边来回摆，摆一个来回 = 两次起落
+      const yaw = ORBIT_YAW * Math.sin((it.orbT / ORBIT_PERIOD) * Math.PI * 2);
+      it.svg.innerHTML = renderOrbit(p, { yaw, box: it.box, prime: it.cfg.prime,
+        caption: '环绕视角', plumb: it.cfg.plumb, name: it.cfg.a });
+      return;
+    }
     const arm = blendArm(it.armA, it.armB, u, p, it.plan);
     it.svg.innerHTML = renderPose(p, { plumb: it.cfg.plumb, box: it.box, arm,
       caption: '循环演示', name: it.cfg.a, prime: it.cfg.prime, loadType: it.cfg.load_type ?? undefined });
@@ -198,6 +216,7 @@ export function initSkeletonAnimation({ POSES, interpolate, renderPose, drawnArm
     for (const it of items) {
       if (!it.visible) continue;
       it.t = (it.t + dt) % REP;
+      it.orbT = (it.orbT + dt) % ORBIT_PERIOD;
       draw(it);
     }
     raf = requestAnimationFrame(tick);

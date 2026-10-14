@@ -1,4 +1,5 @@
 // 出平面手臂的重建与主动肌标注。两者都只影响画法，不改姿态数据本身。
+import { ORBIT_FIGS, orbitBox, renderOrbit, ORBIT_STATIC } from './orbit.mjs';
 import { rebuildArmFor, OUT_OF_PLANE_ARM, ARM_OVERRIDES } from './arm.mjs';
 import { MUSCLE_SEG } from './muscle-segments.mjs';
 import { renderFace, facing, PRONE_POSES, FACE_GEOMETRY } from './facing.mjs';
@@ -1351,13 +1352,31 @@ export function renderSkeleton(fig, nameZh, prime = [], slug = '') {
       + `${renderPose(p, { plumb, caption: cap, box, name: key, prime, loadType: fig.load_type })}</svg>`;
   };
   const two = fig.end && fig.end !== fig.start;
+  // 环绕视角的画框：固定一个，逐帧投影在客户端算（见 orbit.mjs）
+  const orb = two && ORBIT_FIGS.has(slug)
+    ? orbitBox(a, b, interpolate, { plumb: fig.plumb, handPath: !!fig.hand_path }) : null;
+  const orbArr = orb && [orb.x, orb.y, orb.w, orb.h].map((v) => +v.toFixed(1));
   // 动画是渐进增强：没有 JS 时这两帧静态图本身就是完整的图示。
   // data-anim 只登记"用哪两个姿态、画在哪个框里"，补间在客户端算。
   const anim = two
     ? ` data-anim="${escapeAttr(JSON.stringify({ slug, a: fig.start, b: fig.end, plumb,
         no_load: !!fig.no_load, handPath: !!fig.hand_path, box: [+animBox.x.toFixed(1), +animBox.y.toFixed(1), +animBox.w.toFixed(1), +animBox.h.toFixed(1)],
-        prime, load_type: fig.load_type ?? null }))}"`
+        prime, load_type: fig.load_type ?? null, ...(orb ? { orbit: true, orbitBox: orbArr } : {}) }))}"`
     : '';
+  // 启用环绕视角的动作只留这一格：起止两帧和侧视循环演示都由它取代。
+  // 服务端先画一张静止帧（没有 JS、减少动态效果、打印时就是它），有 JS 时由动画接管。
+  if (orb) {
+    const [ox, oy, ow, oh] = orbArr;
+    const ob = { x: ox, y: oy, w: ow, h: oh };
+    const p = interpolate(a, b, ORBIT_STATIC.u, { plumb: fig.plumb, handPath: !!fig.hand_path });
+    return `<figure class="skeleton" data-exercise="${nameZh}"${anim}>`
+      + `<svg viewBox="${ox} ${oy} ${ow} ${oh}" class="sk-frame sk-orbit" data-pose="orbit"`
+      + ` preserveAspectRatio="xMidYMid meet" role="img" aria-label="${nameZh}·环绕视角">`
+      + renderOrbit(p, { yaw: ORBIT_STATIC.yaw, box: ob, prime, caption: '环绕视角', plumb, name: fig.start })
+      + '</svg>'
+      + `<figcaption>${fig.note ?? '示意图：关节位置按本卡自检判据摆放，非写实插画。'}</figcaption>`
+      + '</figure>';
+  }
   return `<figure class="skeleton" data-exercise="${nameZh}"${anim}>`
     + frame(a, fig.cap_start ?? '起始', fig.start)
     + (two ? frame(b, fig.cap_end ?? '结束', fig.end) : '')
