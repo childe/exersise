@@ -23,8 +23,8 @@ export function renderPage(data, parts) {
 </header>
 <p class="route-notice" tabindex="-1" hidden role="status"></p>
 <main>
-  <section id="track-learn" class="track is-active" data-track="learn">${chapterHtml}${quizHtml}</section>
-  <section id="track-ref" class="track" data-track="ref">${exerciseHtml}${atlasHtml}${planHtml}${claimHtml}</section>
+  <section id="track-learn" class="track is-active" data-track="learn">${chapterHtml}${atlasHtml}${quizHtml}</section>
+  <section id="track-ref" class="track" data-track="ref">${exerciseHtml}${planHtml}${claimHtml}</section>
 </main>
 <script>window.__IDS__=${JSON.stringify(ids)}</script>
 <script type="module">${js}</script>
