@@ -358,14 +358,27 @@ function liftFront(slug, names, p, u, P) {
 function liftReverseFly(u, P) {
   const b = POSES.row_start;
   const J = liftSide('', { a: 'row_start', b: 'row_start' }, { ...b, load: undefined }, 0, { ...P, grip: ORB_SHOULDER }, undefined);
-  const th = (8 + (84 - 8) * u) * Math.PI / 180;     // 上臂与竖直向下的夹角
+  // 顶点：自检「上臂约与躯干在一条线上，不超过」——终点角按背面所在平面反解，而不是写死 84°。
+  // 写死时躯干离竖直 51°，上臂越过背面 6.7°（手抬到背的上方）。
+  // 背面法线 n（指向背侧）⊥ 躯干、在矢状面内。
+  const reach = 87.5;                                  // cue「肘微屈」：肘角约 160°（原来 84 时 141°，屈了 38°）
+  const tv = [J.neck[0] - J.pelvis[0], J.neck[1] - J.pelvis[1]], tl = Math.hypot(tv[0], tv[1]) || 1;
+  let n = [-tv[1] / tl, tv[0] / tl];
+  if (n[1] > 0) n = [-n[0], -n[1]];                    // 背侧朝上（−y）
+  // 判据说的是**上臂**：肘微屈、pole 让肘略朝背侧，所以按肘（而不是手）落在背面内二分反解终点角。
+  const arm = (th, s, S) => {
+    const H = [S[0] + 4, S[1] + Math.cos(th) * reach, S[2] + s * Math.sin(th) * reach];
+    return { H, E: orbIk(S, H, ORB_UPPER, ORB_FORE, [0, -Math.sin(th) * 0.7, s * Math.cos(th)]) };
+  };
+  const SN = J.shoulderN, dev = (th) => { const { E } = arm(th, 1, SN); return (E[0] - SN[0]) * n[0] + (E[1] - SN[1]) * n[1]; };
+  let lo = 8 * Math.PI / 180, hi = Math.PI * 0.6;
+  for (let i = 0; i < 40; i++) { const m = (lo + hi) / 2; if (dev(m) < 0) lo = m; else hi = m; }
+  const th = 8 * Math.PI / 180 + (lo - 8 * Math.PI / 180) * u;   // 上臂与竖直向下的夹角
   for (const s of [1, -1]) {
     const tag = s > 0 ? 'N' : 'F';
-    const S = J['shoulder' + tag];
-    const reach = 84;                                  // 肘微屈：比 89 略短
-    const H = [S[0] + 4, S[1] + Math.cos(th) * reach, S[2] + s * Math.sin(th) * reach];
+    const { H, E } = arm(th, s, J['shoulder' + tag]);
     J['wrist' + tag] = H;
-    J['elbow' + tag] = orbIk(S, H, ORB_UPPER, ORB_FORE, [0, -Math.sin(th) * 0.7, s * Math.cos(th)]);
+    J['elbow' + tag] = E;
   }
   return J;
 }

@@ -447,3 +447,23 @@ test('绳索下压：躯干略前倾，上臂全程不动（3D 肘漂移 ≤4px�
     assert.ok(span <= 4, `肘在第 ${k} 轴上漂 ${span.toFixed(1)}px`);
   }
 });
+
+test('反向飞鸟顶点上臂与背面平齐、不越过；肘角全程不变', () => {
+  // 自检「顶点时上臂约与躯干在一条线上，不超过」「肘角在全程保持不变」；原来终点角写死 84°，上臂越过背面 6.5°。
+  const slug = 'db-reverse-fly', f = figures[slug], names = { a: f.start, b: f.end ?? f.start };
+  const els = [];
+  for (let i = 0; i <= 16; i++) {
+    const u = i / 16, p = interpolate(POSES[f.start], POSES[f.end ?? f.start], u, {});
+    const J = orbitLift(slug, names, p, u, f.load_type);
+    const tv = [J.neck[0] - J.pelvis[0], J.neck[1] - J.pelvis[1]], tl = Math.hypot(...tv);
+    let n = [-tv[1] / tl, tv[0] / tl]; if (n[1] > 0) n = [-n[0], -n[1]];
+    const v = [0, 1, 2].map((k) => J.elbowN[k] - J.shoulderN[k]);
+    const past = Math.asin((v[0] * n[0] + v[1] * n[1]) / Math.hypot(...v)) * 180 / Math.PI;
+    assert.ok(past <= 1, `u=${u}: 上臂越过背面 ${past.toFixed(1)}°`);
+    if (i === 16) assert.ok(past >= -5, `顶点上臂离背面还差 ${(-past).toFixed(1)}°，没抬到位`);
+    const a = v.map((x) => -x), b = [0, 1, 2].map((k) => J.wristN[k] - J.elbowN[k]);
+    els.push(Math.acos((a[0] * b[0] + a[1] * b[1] + a[2] * b[2]) / Math.hypot(...a) / Math.hypot(...b)) * 180 / Math.PI);
+  }
+  assert.ok(Math.max(...els) - Math.min(...els) < 3, `肘角在 ${Math.min(...els).toFixed(0)}–${Math.max(...els).toFixed(0)}° 之间变化`);
+  assert.ok(els[0] >= 150 && els[0] <= 172, `肘角 ${els[0].toFixed(0)}°，cue「肘微屈」`);
+});
