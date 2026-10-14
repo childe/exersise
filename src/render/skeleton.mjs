@@ -467,15 +467,17 @@ export const POSES = {
     hip: [84, 116], knee: [84, 152], ankle: [82, 216], heel: [72, 225], toe: [108, 225],
     load: { type: 'hands', at: [106, 68] },
   }),
+  // 绳索下压：cue「站姿略前倾，上臂贴住躯干两侧并全程保持」。原来躯干只前倾 2°；
+  // 上半身（上臂贴躯干，一起）绕髋前倾 10°，躯干前倾约 12°。肘两帧同位。
   triceps_top: P({
-    head: [98, 40], shoulder: [86, 58], elbow: [88, 92], wrist: [120, 86],
+    head: [111, 43.6], shoulder: [96, 59.2], elbow: [92.1, 93.1], wrist: [124.7, 92.7],
     hip: [84, 116], knee: [84, 152], ankle: [82, 216], heel: [72, 225], toe: [108, 225],
-    load: { type: 'handle', at: [126, 86] },
+    load: { type: 'handle', at: [130.6, 93.7] },
   }),
   triceps_bottom: P({
-    head: [98, 40], shoulder: [86, 58], elbow: [88, 92], wrist: [92, 128],
+    head: [111, 43.6], shoulder: [96, 59.2], elbow: [92.1, 93.1], wrist: [89.8, 129.2],
     hip: [84, 116], knee: [84, 152], ankle: [82, 216], heel: [72, 225], toe: [108, 225],
-    load: { type: 'handle', at: [96, 132] },
+    load: { type: 'handle', at: [93, 133.8] },
   }),
   calf_down: P({
     head: [98, 38], shoulder: [86, 56], elbow: [84, 92], wrist: [84, 126],

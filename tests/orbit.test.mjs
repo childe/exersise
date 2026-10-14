@@ -431,3 +431,19 @@ test('坐姿推举躯干（靠背）略后仰 4–12°，不前倾', () => {
     assert.ok(back >= 4 && back <= 12, `${n}: 躯干后仰 ${back.toFixed(1)}°`);
   }
 });
+
+test('绳索下压：躯干略前倾，上臂全程不动（3D 肘漂移 ≤4px）', () => {
+  // cue「站姿略前倾，上臂贴住躯干两侧并全程保持」；原来躯干前倾 2°，3D 肘前后漂 8px。
+  const slug = 'cable-pushdown', f = figures[slug], A = POSES[f.start], B = POSES[f.end];
+  const lean = Math.atan2(A.shoulder[0] - A.hip[0], A.hip[1] - A.shoulder[1]) * 180 / Math.PI;   // 人朝 +x
+  assert.ok(lean >= 6 && lean <= 20, `躯干前倾 ${lean.toFixed(1)}°`);
+  const es = [];
+  for (let i = 0; i <= 32; i++) {
+    const u = i / 32, p = interpolate(A, B, u, { plumb: f.plumb, handPath: !!f.hand_path });
+    es.push(orbitLift(slug, { a: f.start, b: f.end }, p, u, f.load_type).elbowN);
+  }
+  for (const k of [0, 1, 2]) {
+    const v = es.map((e) => e[k]), span = Math.max(...v) - Math.min(...v);
+    assert.ok(span <= 4, `肘在第 ${k} 轴上漂 ${span.toFixed(1)}px`);
+  }
+});

@@ -108,7 +108,9 @@ export const ORBIT_PARAMS = {
   'machine-shoulder-press': { stance: ST_SEAT, foreVertical: true, handle: 6, perHand: true, backrest: true },
   'db-lateral-raise': { view: 'front', db: 'x', dbMode: 'each' },
   'cable-lateral-raise': { view: 'front', handle: 6, perHand: true, oneArm: true, dbMode: 'near' },   // cue：单臂，做完换边
-  'cable-pushdown': { stance: ST_HIP, grip: 10, out: 0.05, handle: 14 },
+  // 下压：「上臂贴住躯干两侧并全程保持」。pole 沿上臂（贴躯干、略内收）；握距 16（绳两端约 20cm）：
+  // 原来握距 10，3D 里手往中线收，肩到手的距离随伸肘变化不一致，肘在动画里前后漂 8px。
+  'cable-pushdown': { stance: ST_HIP, grip: 16, pole: [-0.11, 0.99, -0.05], handle: 16 },
   'barbell-row': { stance: ST_PULL, grip: 34, out: 0.4 },
   // 凳心在撑凳那一侧（z=−26）：撑凳的手与膝落在凳面上，站立腿在凳外
   'db-one-arm-row': { stance: ST_HIP, grip: 26, out: 0.1, db: 'x', dbMode: 'near', benchZ: -26 },
