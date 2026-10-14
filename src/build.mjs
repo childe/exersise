@@ -32,6 +32,7 @@ const ANIM_MODULES = [
   'src/render/facing.mjs',
   'src/render/skeleton.mjs',   // 依赖上面三个
   'src/render/interp.mjs',     // 依赖 skeleton
+  'src/render/orbit.mjs',      // 依赖 skeleton、facing、muscle-segments
   'src/assets/anim.js',
 ];
 
