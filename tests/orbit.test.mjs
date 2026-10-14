@@ -263,3 +263,24 @@ test('俯撑动画：手钉在地上不滑、支点贴地、顶部手臂后倾 �
     }
   }
 });
+
+test('下拉终点前臂正面看竖直、侧视略后倾（「前臂尽量保持竖直」）', () => {
+  // 原来终点肘在手外侧 17px、侧视后倾 50°：手往内收，读起来是在用二头弯举把杆拉下来。
+  const slug = 'lat-pulldown', f = figures[slug];
+  const p = interpolate(POSES[f.start], POSES[f.end], 1, { plumb: f.plumb, handPath: !!f.hand_path });
+  const J = orbitLift(slug, { a: f.start, b: f.end }, p, 1, f.load_type);
+  for (const t of ['N', 'F']) {
+    const E = J['elbow' + t], H = J['wrist' + t];
+    const front = Math.atan2(Math.abs(E[2]) - Math.abs(H[2]), E[1] - H[1]) * 180 / Math.PI;
+    const back = Math.atan2(H[0] - E[0], E[1] - H[1]) * 180 / Math.PI;   // 人朝 +x，肘在手之后为正
+    assert.ok(Math.abs(front) < 5, `${t}: 正面看前臂偏离竖直 ${front.toFixed(1)}°`);
+    assert.ok(back >= 0 && back <= 25, `${t}: 侧视前臂后倾 ${back.toFixed(1)}°`);
+  }
+  // 中段握距只略比肩宽、上臂接近水平，肘必然在手外侧；但不能外翻成「用二头」的样子
+  for (let i = 0; i <= 16; i++) {
+    const u = i / 16, q = interpolate(POSES[f.start], POSES[f.end], u, { plumb: f.plumb, handPath: !!f.hand_path });
+    const K = orbitLift(slug, { a: f.start, b: f.end }, q, u, f.load_type), E = K.elbowN, H = K.wristN;
+    const front = Math.atan2(Math.abs(E[2]) - Math.abs(H[2]), Math.abs(E[1] - H[1])) * 180 / Math.PI;
+    assert.ok(front <= 40, `u=${u}: 正面看前臂外倾 ${front.toFixed(1)}°`);
+  }
+});

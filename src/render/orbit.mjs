@@ -53,6 +53,9 @@ const ST_TOGETHER = { hip: 12, knee: 11, ankle: 10, heel: 10, toe: 12 };  // 俯
  *   handle  拉力器把手半长；perHand 时每只手一个
  *   view    'side'（默认）、'front'
  *   band    弹力带下端的半宽（踩在脚下的带子分两股）
+ *   foreVertical  按「端点处前臂竖直」反解握距、解肘（取代 grip/out）
+ *   foreTilt      正面看前臂外倾的角度
+ *   foreBack      侧视前臂后倾的角度。只适用于直立动作：只取朝向的 x 分量
  */
 export const ORBIT_PARAMS = {
   // 背蹲的杠几乎压在肩关节上：握距太窄，手离肩不到 20px，肘只能折到 20° 以下（真人屈到头约 25–35°）。
@@ -102,7 +105,10 @@ export const ORBIT_PARAMS = {
   'inverted-row': { stance: ST_TOGETHER, grip: 46, out: 0.4 },
   'band-row': { stance: ST_SEAT, grip: 6, out: 0.1, handle: 7 },
   'seated-cable-row': { stance: ST_SEAT, grip: 6, out: 0.1, handle: 7 },
-  'lat-pulldown': { stance: ST_SEAT, grip: 50, out: 0.6, handle: 62 },
+  // 下拉终点：正面看前臂竖直（手不往内收、不往外翻），侧视肘略在横杆之后（后倾 15°）。
+  // 原来按 out:0.6 解，终点肘在手外侧 17px、侧视后倾 50°，肘角折到 37°。
+  // 按这个约束反解出的握距约 50，与原来登记的一致。
+  'lat-pulldown': { stance: ST_SEAT, foreVertical: true, foreBack: 15, handle: 62 },
   'pull-up': { stance: ST_TOGETHER, grip: 50, pole: [-0.5, 0.8, 0.4] },   // cue「肘往下往后拉」
   'cable-face-pull': { stance: ST_HIP, grip: 18, out: 0.6, handle: 18 },   // 肘高且外展：out 太大会把「抬高」的信息丢掉
   'db-reverse-fly': { view: 'reverse-fly', stance: ST_PULL, db: 'x', dbMode: 'each' },
@@ -193,13 +199,17 @@ function handXY(name, p, lt, P) {
  */
 const orbGripCache = new Map();
 /**
- * 前臂从手到肘的竖直、外侧分量。fy 带符号：卧推、推举的肘在手**下方**（+y），
+ * 前臂从手到肘的偏移。fy 带符号：卧推、推举的肘在手**下方**（+y），
  * 俯卧撑的手撑地、肘在手**上方**（−y），取 2D 画出来的肘在手的哪一侧。
- * foreTilt 是正面看前臂外倾的角度（肘在手外侧）。
+ * foreTilt：正面看前臂外倾的角度（肘在手外侧）。
+ * foreBack：侧视前臂后倾的角度（肘在手的身后一侧，f 是人的朝向）。只取 f 的 x 分量，
+ * 所以只对直立动作成立；卧推（朝上）、俯卧撑（朝下）加它会被吞掉。
  */
-const foreOffset = (P, E, H) => {
-  const t = (P.foreTilt ?? 0) * Math.PI / 180, up = E[1] < H[1] ? -1 : 1;
-  return { fy: up * ORB_FORE * Math.cos(t), fz: ORB_FORE * Math.sin(t) };
+const foreOffset = (P, E, H, f = [1, 0]) => {
+  const t = (P.foreTilt ?? 0) * Math.PI / 180, b = (P.foreBack ?? 0) * Math.PI / 180;
+  const up = E[1] < H[1] ? -1 : 1;
+  return { fx: -f[0] * ORB_FORE * Math.sin(b), fy: up * ORB_FORE * Math.cos(b) * Math.cos(t),
+    fz: ORB_FORE * Math.cos(b) * Math.sin(t) };
 };
 function foreVerticalGrip(slug, names, P, lt) {
   if (orbGripCache.has(slug)) return orbGripCache.get(slug);
@@ -208,8 +218,8 @@ function foreVerticalGrip(slug, names, P, lt) {
     const q = POSES[n];
     const H = handXY(n, q, lt, P), S = q.shoulder;
     const d = Math.hypot(H[0] - S[0], H[1] - S[1]);
-    const { fy, fz } = foreOffset(P, drawnArm(n, q, lt).E, H);
-    const zz = ORB_UPPER ** 2 - (H[0] - S[0]) ** 2 - (H[1] + fy - S[1]) ** 2;
+    const { fx, fy, fz } = foreOffset(P, drawnArm(n, q, lt).E, H, facing(n, q) ?? [1, 0]);
+    const zz = ORB_UPPER ** 2 - (H[0] + fx - S[0]) ** 2 - (H[1] + fy - S[1]) ** 2;
     if (zz > 0 && (!best || d < best.d)) best = { d, grip: ORB_SHOULDER + Math.sqrt(zz) - fz };
   }
   const g = best?.grip ?? P.grip ?? ORB_SHOULDER;
@@ -267,8 +277,8 @@ function liftSide(slug, names, p, u, P, lt) {
       // 解出来就是它；其余帧连续过渡。只给一个「朝下」的 pole 时，圆上离它最近的点不是正下方
       // （卧推底部前臂曾偏 35°）。
       if (P.foreVertical) {
-        const { fy, fz } = foreOffset(P, exy, hxy);
-        pole = [H[0] - S[0], H[1] + fy - S[1], H[2] + s * fz - S[2]];
+        const { fx, fy, fz } = foreOffset(P, exy, hxy, f);
+        pole = [H[0] + fx - S[0], H[1] + fy - S[1], H[2] + s * fz - S[2]];
       }
     }
     H = orbReach(S, H, ORB_UPPER + ORB_FORE - 0.5, ORB_UPPER - ORB_FORE + 0.5);
