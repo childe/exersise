@@ -53,6 +53,7 @@ const ST_TOGETHER = { hip: 12, knee: 11, ankle: 10, heel: 10, toe: 12 };  // 俯
  *   handle  拉力器把手半长；perHand 时每只手一个
  *   view    'side'（默认）、'front'
  *   band    弹力带下端的半宽（踩在脚下的带子分两股）
+ *   benchHalf 凳在 z 方向的半宽（默认 16；臀推横靠长凳 60）
  *   foreVertical  按「端点处前臂竖直」反解握距、解肘（取代 grip/out）
  *   foreTilt      正面看前臂外倾的角度
  *   foreBack      侧视前臂后倾的角度。只适用于直立动作：只取朝向的 x 分量
@@ -77,7 +78,8 @@ export const ORBIT_PARAMS = {
   'db-romanian-deadlift': { stance: ST_PULL, grip: 20, out: 0.05, db: 'z', dbMode: 'each' },
   'band-good-morning': { stance: ST_HIP, grip: 52, out: 0.4, band: 14 },
   // cue「脚约与肩同宽」
-  'db-hip-thrust': { stance: { hip: 14, knee: 26, ankle: 27, heel: 27, toe: 30 }, grip: 14, out: 0.3, db: 'z', dbMode: 'single' },
+  // 臀推是人横靠在凳的长边上：凳的长轴沿 z（benchHalf 60 ≈ 75cm 宽），不是 ±16 的小方墩
+  'db-hip-thrust': { stance: { hip: 14, knee: 26, ankle: 27, heel: 27, toe: 30 }, grip: 14, out: 0.3, db: 'z', dbMode: 'single', benchHalf: 60 },
   'glute-bridge-bodyweight': { stance: ST_HIP, grip: 32, out: 0.1 },
   'back-extension': { stance: ST_TOGETHER, crossChest: true },   // cue「双手交叉抱胸」
   'lying-leg-curl': { stance: ST_TOGETHER, grip: 30, out: 0.2 },
@@ -406,9 +408,9 @@ function equipment(S, slug, p, J, lt) {
   if (p.bench) {
     const [x, y, w, h] = p.bench;
     // 凳心默认在中线；单侧支撑的动作（单臂划船、保加利亚）挪到支撑那一侧
-    const bz = P.benchZ ?? 0;
-    box(S, x, x + w, y, y + h, bz - 16, bz + 16, 'sk-bench', ORB_BEHIND);
-    for (const lx of [x + 8, x + w - 8]) for (const lz of [-11, 11]) {
+    const bz = P.benchZ ?? 0, bh = P.benchHalf ?? 16;
+    box(S, x, x + w, y, y + h, bz - bh, bz + bh, 'sk-bench', ORB_BEHIND);
+    for (const lx of [x + 8, x + w - 8]) for (const lz of [-(bh - 5), bh - 5]) {
       S.push({ t: 'line', a: [lx, y + h, bz + lz], b: [lx, GROUND, bz + lz], cls: 'sk-rig', bias: ORB_BEHIND });
     }
   }

@@ -305,9 +305,8 @@ export function validateJointAngles(figures = {}) {
  * 脚端下沉得多、整体上提后手就悬在半空——俯卧撑手离地 36px、平板前臂 27px、
  * 臀桥上背 67px，全是这一条漏的。这里逐点核对，一个都不许飘。
  */
-export const SUPINE_ON_FLOOR = new Set(['bridge_bottom', 'bridge_top', 'deadbug_start', 'deadbug_end',
-  // 哑铃臀推从臀桥拆出来时漏了登记——新姿态没有任何断言证明它画对了
-  'hipthrust_bottom', 'hipthrust_top']);
+// 臀推不在此列：上背搭在凳沿上，不在地上（原来登记在这里，断言因此把它钉成了臀桥）
+export const SUPINE_ON_FLOOR = new Set(['bridge_bottom', 'bridge_top', 'deadbug_start', 'deadbug_end']);
 
 export function validateContacts() {
   const errors = [];

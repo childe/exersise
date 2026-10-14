@@ -147,6 +147,16 @@ export function interpolate(A, B, t, opts = {}) {
       }
     }
     q.shoulder = from(q.hip, th, tl);
+    // 上背搭凳（臀推）：脚踩地、肩靠凳沿，两端都是接触点。从踝往上自由建链的话
+    // 肩在中途离开凳沿 7px。肩钉在凳沿，髋绕肩转，膝由「髋—踝」两骨 IK 解。
+    // 只认「只有肩靠凳」：卧推的 support 是 [shoulder, hip]，脚也踩地，不能进这里
+    const backOnEdge = (p) => p.bench && p.support?.length === 1 && p.support[0] === 'shoulder';
+    const shoulderOnBench = grounded && backOnEdge(A) && backOnEdge(B) && len(A.shoulder, B.shoulder) < 0.5;
+    if (shoulderOnBench) {
+      q.shoulder = [...A.shoulder];
+      q.hip = from(q.shoulder, alerp(ang(A.shoulder, A.hip), ang(B.shoulder, B.hip), t), tl);
+      q.knee = ik2(q.hip, q.ankle, len(A.hip, A.knee), len(A.knee, A.ankle), lerp2(A.knee, B.knee, t));
+    }
   }
   // 远侧腿从髋建（两条腿共用一个髋）。
   // 但两帧的远侧踝若在同一点，它就是第二个接触点（保加利亚的后脚搭在凳上）——

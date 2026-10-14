@@ -300,3 +300,23 @@ test('窄握卧推触点在胸骨下段、肘贴身、底部前臂接近竖直',
   assert.ok(sag < 20 && front < 25, `底部前臂侧视 ${sag.toFixed(0)}°、正面 ${front.toFixed(0)}°`);
   assert.ok(tuck < 35, `肘外展 ${tuck.toFixed(0)}°，cue 要求贴身`);
 });
+
+test('哑铃臀推：上背搭在凳沿上，全程钉住；顶点躯干水平、小腿竖直', () => {
+  // 原来照抄臀桥：肩躺在地上、图里没有凳，与 cue「上背靠在稳固的凳边」不符（Contreras：凳高 30–40cm）。
+  const f = figures['db-hip-thrust'], A = POSES[f.start], B = POSES[f.end];
+  for (const p of [A, B]) {
+    assert.ok(p.bench, '臀推要有凳');
+    assert.ok(GROUND - p.bench[1] >= 45 && GROUND - p.bench[1] <= 70, `凳高 ${(GROUND - p.bench[1]).toFixed(0)}px`);
+    assert.ok(p.bench[0] <= p.shoulder[0] && p.shoulder[0] <= p.bench[0] + p.bench[2], '肩在凳面上');
+    // 凳沿不能伸到髋那一侧：底部躯干下斜，否则躯干穿过凳板
+    assert.ok(p.bench[0] + p.bench[2] - p.shoulder[0] <= 10, '凳沿离肩太远');
+  }
+  const deg = (a, b) => Math.atan2(b[1] - a[1], b[0] - a[0]) * 180 / Math.PI;
+  assert.ok(Math.abs(deg(B.shoulder, B.hip)) < 10, `顶点躯干偏离水平 ${deg(B.shoulder, B.hip).toFixed(1)}°`);
+  assert.ok(Math.abs(90 - deg(B.knee, B.ankle)) < 10, `顶点小腿偏离竖直 ${(90 - deg(B.knee, B.ankle)).toFixed(1)}°`);
+  for (let i = 0; i <= 16; i++) {
+    const q = interpolate(A, B, i / 16, { plumb: f.plumb });
+    assert.ok(Math.hypot(q.shoulder[0] - A.shoulder[0], q.shoulder[1] - A.shoulder[1]) < 0.5, `t=${i / 16}: 肩离开凳沿`);
+    assert.ok(Math.hypot(q.ankle[0] - A.ankle[0], q.ankle[1] - A.ankle[1]) < 0.5, `t=${i / 16}: 踝漂移`);
+  }
+});

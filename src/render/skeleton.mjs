@@ -192,17 +192,22 @@ export const POSES = {
     hip: [129.2, 183.1], knee: [182.8, 156.2], ankle: [178, 216], heel: [174, 225], toe: [194, 225],
   }),
 
-  // 哑铃臀推借用臀桥姿态时，手躺在地面、哑铃在髋上，两者相距 18–50px——
-  // 一只没人扶的哑铃。这里给它自己的一对姿态：肘仍落在地面附近，前臂上举扶住哑铃。
+  // 哑铃臀推：上背（肩胛下缘）搭在凳沿上，凳高约 40cm（≈64px，Contreras 建议 30–40cm）。
+  // 原来照抄臀桥，肩躺在地上、图里没有凳——画成了负重臀桥，与 cue「上背靠在稳固的凳边」不符。
+  // 按约束构造：肩钉在凳沿（凳面 y=161，肩在其上 BENCH_GAP）、脚钉在地，
+  // 顶点躯干水平、大腿水平、小腿竖直（膝角 91°）；底部髋沉到离地约 25px，肩绕凳沿转。
+  // 手扶住横在髋上的哑铃，头微收下巴（cue「下巴微收」）。
   hipthrust_bottom: P({
-    head: [42, 213], shoulder: [57.7, 219], elbow: [99.4, 191.2], wrist: [135, 207],
-    hip: [137.5, 214], knee: [160.6, 158.5], ankle: [178, 216], heel: [174, 225], toe: [194, 225],
-    load: { type: 'hands', at: [137.5, 206] },
+    head: [29.8, 141.4], shoulder: [40, 155], elbow: [89.98, 156.51], wrist: [106.14, 192],
+    hip: [106.14, 200], knee: [152.94, 162.45], ankle: [180, 216], heel: [176, 225], toe: [196, 225],
+    bench: [0, 161, 48, 8], support: ['shoulder'],
+    load: { type: 'hands', at: [106.14, 191] },
   }),
   hipthrust_top: P({
-    head: [42, 213], shoulder: [57.7, 219], elbow: [86, 176], wrist: [124, 178],
-    hip: [129.2, 183.1], knee: [182.8, 156.2], ankle: [178, 216], heel: [174, 225], toe: [194, 225],
-    load: { type: 'hands', at: [129.2, 175] },
+    head: [26.98, 144.07], shoulder: [40, 155], elbow: [84.18, 131.58], wrist: [120, 147],
+    hip: [120, 155], knee: [179.99, 156], ankle: [180, 216], heel: [176, 225], toe: [196, 225],
+    bench: [0, 161, 48, 8], support: ['shoulder'],
+    load: { type: 'hands', at: [120, 146] },
   }),
 
   // ── 水平推（卧姿）─────────────────────────────────
@@ -889,8 +894,15 @@ function normalize(name, p) {
       // 两侧各 +24 的话凳子伸到膝那一侧，后侧小腿要从 8px 厚的凳板里穿过去 3.95px——
       // 那是这一类重叠里唯一物理上讲不通的一处（其余几处是手臂/腿在凳侧面，侧视本就重叠）。
       const footOnBench = q.support.length === 1 && q.support[0] === 'ankle2';
-      const x0 = proneHip ? q.hip[0] - 4 : footOnBench ? Math.min(...xs) - 44 : Math.min(...xs) - 24;
-      const x1 = proneHip ? q.hip[0] + 44 : footOnBench ? Math.max(...xs) + 4 : Math.max(...xs) + 24;
+      // 上背搭凳沿（臀推）：凳沿停在肩往髋 8px 处，凳只往头的方向延伸。
+      // 两侧各 +24 的话凳伸到髋那一侧，底部下斜的躯干要从凳板里穿过去。
+      const backOnEdge = q.support.length === 1 && q.support[0] === 'shoulder';
+      const toHip = backOnEdge ? Math.sign(q.hip[0] - q.shoulder[0]) || 1 : 0;
+      const edge = backOnEdge ? q.shoulder[0] + toHip * 8 : 0;
+      const x0 = proneHip ? q.hip[0] - 4 : footOnBench ? Math.min(...xs) - 44
+        : backOnEdge ? Math.min(edge, edge - toHip * 48) : Math.min(...xs) - 24;
+      const x1 = proneHip ? q.hip[0] + 44 : footOnBench ? Math.max(...xs) + 4
+        : backOnEdge ? Math.max(edge, edge - toHip * 48) : Math.max(...xs) + 24;
       q.bench = [x0, Math.max(...ys) + BENCH_GAP, x1 - x0, 8];
     }
   }
