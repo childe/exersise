@@ -467,3 +467,94 @@ test('反向飞鸟顶点上臂与背面平齐、不越过；肘角全程不变',
   assert.ok(Math.max(...els) - Math.min(...els) < 3, `肘角在 ${Math.min(...els).toFixed(0)}–${Math.max(...els).toFixed(0)}° 之间变化`);
   assert.ok(els[0] >= 150 && els[0] <= 172, `肘角 ${els[0].toFixed(0)}°，cue「肘微屈」`);
 });
+
+test('窄距俯卧撑：肘贴肋（外展 ≤20°，比标准俯卧撑窄至少 20°），到底上臂贴躯干、肘朝脚、前臂偏竖直 ≤15°', () => {
+  // ACE / StrengthLog：手约与肩同宽，下放时肘贴着肋往后走、胸接近地面。
+  // 借标准俯卧撑的姿态（手比肩宽、肘外展 40°）画就是另一个动作——这条会在那种坐标上失败。
+  const f = figures['close-grip-push-up'], names = { a: f.start, b: f.end };
+  const wide = figures['push-up'];
+  const flareOf = (J, t) => Math.atan2(Math.abs(J['elbow' + t][2]) - Math.abs(J['shoulder' + t][2]),
+    Math.abs(J['elbow' + t][0] - J['shoulder' + t][0])) * 180 / Math.PI;
+  const Jw = orbitLift('push-up', { a: wide.start, b: wide.end }, interpolate(POSES[wide.start], POSES[wide.end], 1, { plumb: false }), 1);
+  for (let i = 0; i <= 8; i++) {
+    const u = i / 8, J = orbitLift('close-grip-push-up', names, interpolate(POSES[f.start], POSES[f.end], u, { plumb: f.plumb }), u);
+    for (const t of ['N', 'F']) {
+      const fl = flareOf(J, t);
+      assert.ok(fl <= 20, `u=${u} ${t}: 肘外展 ${fl.toFixed(1)}°，不是「肘贴肋」`);
+      if (u === 1) assert.ok(flareOf(Jw, t) - fl >= 20, `${t}: 窄距 ${fl.toFixed(0)}° 与标准俯卧撑 ${flareOf(Jw, t).toFixed(0)}° 拉不开`);
+      // 手在肩的正下方方向（z 上不比肩宽）：「手约与肩同宽」
+      assert.ok(Math.abs(J['wrist' + t][2]) <= Math.abs(J['shoulder' + t][2]) + 1, `u=${u} ${t}: 手比肩宽`);
+    }
+  }
+  const J = orbitLift('close-grip-push-up', names, interpolate(POSES[f.start], POSES[f.end], 1, { plumb: f.plumb }), 1);
+  const torso = [J.pelvis[0] - J.neck[0], J.pelvis[1] - J.neck[1], 0];
+  for (const t of ['N', 'F']) {
+    const S = J['shoulder' + t], E = J['elbow' + t], H = J['wrist' + t];
+    const ua = [E[0] - S[0], E[1] - S[1], E[2] - S[2]];
+    const c = (ua[0] * torso[0] + ua[1] * torso[1]) / Math.hypot(...ua) / Math.hypot(...torso);
+    const uaT = Math.acos(c) * 180 / Math.PI;
+    assert.ok(uaT <= 20, `${t}: 底部上臂与躯干 ${uaT.toFixed(1)}°，肘没有贴在身侧`);
+    assert.ok(E[0] > H[0], `${t}: 底部肘不在腕的脚侧（肘应朝脚的方向走）`);
+    const sag = Math.atan2(E[0] - H[0], H[1] - E[1]) * 180 / Math.PI;
+    assert.ok(sag <= 15, `${t}: 底部前臂侧视偏竖直 ${sag.toFixed(1)}°`);
+    const el = Math.acos(((S[0] - E[0]) * (H[0] - E[0]) + (S[1] - E[1]) * (H[1] - E[1]) + (S[2] - E[2]) * (H[2] - E[2]))
+      / L(S, E) / L(H, E)) * 180 / Math.PI;
+    assert.ok(el >= 60 && el <= 100, `${t}: 底部肘角 ${el.toFixed(0)}°（胸接近地面时约 70–90°）`);
+  }
+});
+
+test('窄距俯卧撑动画：手钉在地上、脚尖贴地、顶部手臂后倾 ≤25°、归一化是恒等、底部与标准俯卧撑同深', async () => {
+  const { RAW_POSES } = await import('../src/render/skeleton.mjs');
+  const f = figures['close-grip-push-up'], A = POSES[f.start], B = POSES[f.end];
+  for (const n of [f.start, f.end]) for (const k of ['head', 'shoulder', 'elbow', 'wrist', 'hip', 'knee', 'ankle', 'toe'])
+    assert.ok(Math.hypot(POSES[n][k][0] - RAW_POSES[n][k][0], POSES[n][k][1] - RAW_POSES[n][k][1]) < 0.05, `${n}.${k} 归一化后移动了`);
+  // 手臂在矢状面内（不是投影）：2D 就是真骨长
+  for (const n of [f.start, f.end]) {
+    assert.ok(Math.abs(Math.hypot(POSES[n].elbow[0] - POSES[n].shoulder[0], POSES[n].elbow[1] - POSES[n].shoulder[1]) - 50) < 0.1, `${n} 上臂不是 50`);
+    assert.ok(Math.abs(Math.hypot(POSES[n].wrist[0] - POSES[n].elbow[0], POSES[n].wrist[1] - POSES[n].elbow[1]) - 39) < 0.1, `${n} 前臂不是 39`);
+  }
+  const tilt = Math.atan2(A.wrist[0] - A.shoulder[0], A.wrist[1] - A.shoulder[1]) * 180 / Math.PI;
+  assert.ok(tilt >= 0 && tilt <= 25, `顶部手臂后倾 ${tilt.toFixed(1)}°`);
+  assert.ok(Math.abs(B.shoulder[1] - POSES.pushup_bottom.shoulder[1]) < 1, '底部肩高应与标准俯卧撑一致（胸接近地面）');
+  for (let i = 0; i <= 20; i++) {
+    const t = i / 20, q = interpolate(A, B, t, { plumb: f.plumb });
+    assert.ok(Math.abs(q.wrist[0] - A.wrist[0]) < 1 && Math.abs(q.wrist[1] - GROUND) < 1, `t=${t}: 手在 (${q.wrist[0].toFixed(1)}, ${q.wrist[1].toFixed(1)})`);
+    assert.ok(Math.abs(q.toe[1] - GROUND) < 0.5, `t=${t}: 脚尖离地`);
+    const J = orbitLift('close-grip-push-up', { a: f.start, b: f.end }, q, t);
+    assert.ok(Math.abs(J.wristN[1] - GROUND) < 1, `t=${t}: 3D 手离地 ${(GROUND - J.wristN[1]).toFixed(1)}px`);
+  }
+});
+
+test('锤式弯举：哑铃长轴全程在矢状面内、垂直于前臂（掌心相对，随前臂转）', () => {
+  // 固定成世界轴的话：'x' 在前臂水平时哑铃会横着指向前方（应竖直），'z' 是正握——都不是锤式握法。
+  const f = figures['db-hammer-curl'], names = { a: f.start, b: f.end };
+  for (let i = 0; i <= 16; i++) {
+    const u = i / 16, p = interpolate(POSES[f.start], POSES[f.end], u, { plumb: f.plumb });
+    const J = orbitLift('db-hammer-curl', names, p, u);
+    const { S } = orbitScene('db-hammer-curl', names, p, { u, plumb: f.plumb });
+    const handles = S.filter((g) => g.t === 'line' && g.cls.includes('sk-db-handle'));
+    assert.equal(handles.length, 2, '两只手各一只哑铃');
+    for (const h of handles) {
+      const c = h.a.map((x, k) => (x + h.b[k]) / 2);
+      const tag = L(c, J.wristN) < L(c, J.wristF) ? 'N' : 'F';
+      assert.ok(L(c, J['wrist' + tag]) < 0.5, `u=${u}: 哑铃不在手上`);
+      const ax = h.b.map((x, k) => x - h.a[k]), fo = J['wrist' + tag].map((x, k) => x - J['elbow' + tag][k]);
+      assert.ok(Math.abs(ax[2]) < 1e-6, `u=${u} ${tag}: 哑铃长轴有左右分量（不是中立握）`);
+      const cos = Math.abs(ax[0] * fo[0] + ax[1] * fo[1]) / Math.hypot(ax[0], ax[1]) / Math.hypot(fo[0], fo[1]);
+      assert.ok(cos < Math.sin(15 * Math.PI / 180), `u=${u} ${tag}: 哑铃长轴与前臂（矢状面投影）夹角偏离 90° 超过 15°`);
+    }
+  }
+});
+
+test('悬垂：手臂接近伸直、两手都在杠上、肩在杠正下方', () => {
+  const f = figures['dead-hang'], p = POSES[f.start];
+  const J = orbitLift('dead-hang', f.start, p, 0);
+  for (const t of ['N', 'F']) {
+    const S = J['shoulder' + t], E = J['elbow' + t], H = J['wrist' + t];
+    const el = Math.acos(((S[0] - E[0]) * (H[0] - E[0]) + (S[1] - E[1]) * (H[1] - E[1]) + (S[2] - E[2]) * (H[2] - E[2]))
+      / L(S, E) / L(H, E)) * 180 / Math.PI;
+    assert.ok(el >= 160, `${t}: 悬垂肘角 ${el.toFixed(0)}°——cue「手臂伸直」`);
+  }
+  assert.ok(Math.abs(p.shoulder[0] - p.fixed.at[0]) < 12, `肩离杠的竖直线 ${Math.abs(p.shoulder[0] - p.fixed.at[0]).toFixed(1)}px，身体不竖直`);
+  assert.equal(f.end, undefined, '悬垂是静态保持，只有一帧');
+});

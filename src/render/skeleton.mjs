@@ -264,6 +264,21 @@ export const POSES = {
     head: [47.32, 138.85], shoulder: [63.32, 144.65], elbow: [79.74, 189.79], wrist: [92.54, 225],
     hip: [139.59, 168.79], knee: [196.8, 186.89], ankle: [254, 205], heel: [252, 211], toe: [262, 225],
   }),
+  // 窄距俯卧撑：手约与肩同宽、肘贴着肋往脚的方向走（ACE / StrengthLog）。手在肩的正下方方向
+  // （z 上不外展），手臂在矢状面内，侧视就是真长 50/39，不登记 FORESHORTENED_ARM。
+  // 身体与 pushup_bottom 同一条线（同样「胸接近地面」）。上臂贴体时侧视投影接近全长，
+  // 手若仍在 pushup 的位置（肩后 38px），肘只能折到 54°、前臂倒向脚 39°——
+  // 与俯卧撑当初同一个冲突。按「底部前臂偏竖直 ≤15°」与「顶部手臂后倾不超过约 20°」折中：
+  // 手在肩后 41.6px（底部），底部肘角 72°、前臂偏竖直 12°、上臂与躯干约 10°（肘贴肋）；
+  // 顶部身体绕踝转 14.4° 到肩腕 88.3（肘角 165.5°，同俯卧撑），手臂后倾 21°。
+  close_pushup_bottom: P({
+    head: [37.52, 190.5], shoulder: [54.42, 192], elbow: [104.16, 186.86], wrist: [96, 225],
+    hip: [134.25, 197.2], knee: [194.13, 201.1], ankle: [254, 205], heel: [252, 211], toe: [262, 225],
+  }),
+  close_pushup_top: P({
+    head: [47.94, 137.07], shoulder: [63.94, 142.73], elbow: [87.15, 187.02], wrist: [96, 225],
+    hip: [139.96, 167.63], knee: [196.99, 186.32], ankle: [254, 205], heel: [252, 211], toe: [262, 225],
+  }),
 
   // 弹力带早安式：负荷在颈后（锚在肩），带子从脚下拉到肩，手扶在肩上握带。
   // 原来直接借用 RDL 的姿态，画成了一张杠铃 RDL——早安式与 RDL 的唯一区别（负荷位置）被画反。
@@ -1325,7 +1340,7 @@ export function renderPose(p, opts = {}) {
   g.push(seg(p.knee, p.ankle, 'sk-limb', 'knee-ankle'));
   g.push(seg(p.heel, p.toe, 'sk-foot'));
   g.push(seg(p.shoulder, ELBOW, 'sk-limb', 'shoulder-elbow'));
-  g.push(seg(ELBOW, HAND));
+  g.push(seg(ELBOW, HAND, 'sk-limb', 'elbow-wrist'));
   g.push(`<circle class="sk-head" cx="${p.head[0]}" cy="${p.head[1]}" r="${HEAD_RADIUS}"/>`);
   // 面部标记。没有它，实心圆的头不带任何朝向信息，读者判断不了人面向哪边——
   // 站姿还能靠脚的形状反推，坐姿和卧姿里脚被器械挡着就完全看不出来。

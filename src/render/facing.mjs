@@ -23,6 +23,7 @@
 export const PRONE_POSES = new Set([
   'plank',
   'pushup_top', 'pushup_bottom',
+  'close_pushup_top', 'close_pushup_bottom',
   'knee_pushup_top', 'knee_pushup_bottom',
   'leg_curl_start', 'leg_curl_end',
   'rollout_start', 'rollout_end',

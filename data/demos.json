@@ -598,6 +598,62 @@
     "visual_check": "ACE 44-1（起始）与 44-2（顶点）照片，正面机位：起始帧手臂基本完全伸直垂在体侧，顶点帧肘没有前移。"
   },
   {
+    "id": "demo-db-hammer-curl",
+    "exercise_id": "db-hammer-curl",
+    "url": "https://www.strengthlog.com/hammer-curl/",
+    "source_type": "专业示范",
+    "publisher": "StrengthLog",
+    "author_credential": "StrengthLog 训练记录应用的官方动作库（页面注明「Text and graphics from the StrengthLog app」），无个人署名",
+    "license": "链接引用，不转载",
+    "verified_on": "2026-10-15",
+    "verified_by": "childe（核验方式：打开来源页面读完它的分步执行说明与器械标注，并逐张打开该页的示范画面实际查看，再逐条比对本卡的自检判据，逐条记录符合／未覆盖／不符；视频类来源只看得到可取回的帧，不等于逐帧看完）",
+    "dead": false,
+    "shows_equipment": "哑铃",
+    "shows_variant": "相同",
+    "coverage": "逐条核验",
+    "verification": [
+      {
+        "criterion": "全程掌心相对、手腕不翻转",
+        "status": "符合",
+        "result": "步骤 1 写「neutral grip (palms facing each other)」，要点里专门提醒「Keep your grip neutral during the movement」、不要在举起时转腕；示范动图全程掌心相对，哑铃随前臂转、始终竖在身体前后—上下平面里。"
+      },
+      {
+        "criterion": "上臂贴住躯干，不往后跑、最多略向前",
+        "status": "符合",
+        "result": "步骤 3 写「Don't let your upper arms travel back during the curl. Keep them at your sides, or move them slightly forward」——不许后移，允许略前移，与本判据一致；示范动图里上臂始终贴在体侧。"
+      }
+    ],
+    "visual_check": "2026-10-15 实查该页示范动图 Hammer-curl.gif（600×600，37 帧，斜前方机位），取第 0／9／18 帧：起始手臂伸直垂在体侧、拳眼朝前；前臂水平时哑铃竖直（长轴垂直于前臂）；顶点哑铃举到肩前、掌心仍相对，上臂全程贴体侧。"
+  },
+  {
+    "id": "demo-barbell-reverse-curl",
+    "exercise_id": "barbell-reverse-curl",
+    "url": "https://www.strengthlog.com/reverse-barbell-curl/",
+    "source_type": "专业示范",
+    "publisher": "StrengthLog",
+    "author_credential": "StrengthLog 训练记录应用的官方动作库（页面注明「Text and graphics from the StrengthLog app」），无个人署名",
+    "license": "链接引用，不转载",
+    "verified_on": "2026-10-15",
+    "verified_by": "childe（核验方式：打开来源页面读完它的分步执行说明与器械标注，并逐张打开该页的示范画面实际查看，再逐条比对本卡的自检判据，逐条记录符合／未覆盖／不符；视频类来源只看得到可取回的帧，不等于逐帧看完）",
+    "dead": false,
+    "shows_equipment": "杠铃",
+    "shows_variant": "相同",
+    "coverage": "逐条核验",
+    "verification": [
+      {
+        "criterion": "手腕与前臂全程保持一条直线",
+        "status": "符合",
+        "result": "正文没有单独写手腕，但示范动图里前臂举到水平时手背与前臂成一条直线、没有往下折——这一条由画面支持。"
+      },
+      {
+        "criterion": "上臂贴住躯干，不往后跑、最多略向前",
+        "status": "符合",
+        "result": "步骤 3 写「Don't let your upper arm travel back during the curl. Keep it at your side or move it slightly forward」——不许后移，允许略前移，与本判据一致；示范动图里上臂基本贴在体侧，只在顶点略前移。"
+      }
+    ],
+    "visual_check": "2026-10-15 实查该页示范动图 reverse-barbell-curl.gif（22 帧，斜前方机位），取第 0／5／11 帧：正握（掌心朝下）、握距约与肩同宽的杠铃；起始杠垂在大腿前、手臂伸直；前臂水平时手腕与前臂成一线；顶点杠到胸前，上臂基本贴体侧。"
+  },
+  {
     "id": "demo-barbell-front-rack-carry",
     "exercise_id": "barbell-front-rack-carry",
     "url": "https://www.youtube.com/watch?v=BwhnfxrKvaQ",

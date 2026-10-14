@@ -1637,6 +1637,160 @@
     "claim_refs": []
   },
   {
+    "slug": "db-hammer-curl",
+    "name_zh": "锤式弯举",
+    "name_en": "Dumbbell Hammer Curl",
+    "pattern": "拉",
+    "laterality": "双侧",
+    "muscles": {
+      "prime": [
+        "前臂",
+        "肱二头"
+      ],
+      "synergist": [
+        "上背"
+      ],
+      "stabilizer": [
+        "核心"
+      ]
+    },
+    "equipment": "哑铃",
+    "cues": [
+      {
+        "phase": "设置",
+        "text": "站直，双手各持一只哑铃垂在体侧，掌心相对（拳眼朝前），上臂贴住躯干。"
+      },
+      {
+        "phase": "发力",
+        "text": "只屈肘把哑铃举到肩前，全程保持掌心相对、手腕不翻转；上臂不往后跑，最多略向前。"
+      },
+      {
+        "phase": "收尾",
+        "text": "有控制地放回到手臂接近伸直，不借反弹。"
+      }
+    ],
+    "mistakes": [
+      {
+        "error": "举起时手腕翻成掌心朝上",
+        "consequence": "动作变回普通弯举，肱桡肌（前臂）的份额下降。"
+      },
+      {
+        "error": "用躯干摆动起铃",
+        "consequence": "刺激被借力分走，还给腰增加负担。"
+      }
+    ],
+    "self_checks": [
+      {
+        "criterion": "全程掌心相对、手腕不翻转",
+        "how": "侧面拍视频，看举起过程中哑铃是否始终竖在身体前后—上下这个平面里（手腕一翻，哑铃就转成横向、侧面看成一个圆）。",
+        "cannot": "看不出前臂与肱二头各自分担了多少。"
+      },
+      {
+        "criterion": "上臂贴住躯干，不往后跑、最多略向前",
+        "how": "正侧面拍视频，看肘的水平位置。",
+        "cannot": "判断不了左右两侧的发力差异；要比较得逐侧看。"
+      }
+    ],
+    "audience": {
+      "suitable": "想练前臂（肱桡肌）与肱二头、普通弯举手腕不舒服的读者。",
+      "cautions": "训练中出现疼痛：当场停止该动作，当次不用其他动作替代着练同一部位，按第 9 章的判断原则决定继续观察还是就医。"
+    },
+    "home_alts": [
+      "dead-hang"
+    ],
+    "difficulty": "入门",
+    "safety": {
+      "rack": "不需要保护架。",
+      "collars": "哑铃不涉及卡扣；用可调哑铃时，每组开始前确认锁扣已扣死。",
+      "setup": "站姿或坐姿均可；重量以能完成完整下放、手腕不翻转为准。",
+      "solo_ok": true,
+      "solo_alt": null,
+      "bailout": "举不动就把哑铃放回体侧并放到地面，不甩躯干补次数。"
+    },
+    "demo_id": "demo-db-hammer-curl",
+    "chapter_refs": [
+      "ch4"
+    ],
+    "claim_refs": []
+  },
+  {
+    "slug": "barbell-reverse-curl",
+    "name_zh": "杠铃反握弯举",
+    "name_en": "Barbell Reverse Curl",
+    "pattern": "拉",
+    "laterality": "双侧",
+    "muscles": {
+      "prime": [
+        "前臂",
+        "肱二头"
+      ],
+      "synergist": [
+        "上背"
+      ],
+      "stabilizer": [
+        "核心"
+      ]
+    },
+    "equipment": "杠铃",
+    "cues": [
+      {
+        "phase": "设置",
+        "text": "站直，双手与肩同宽正握杠（掌心朝下），杠垂在大腿前，上臂贴住躯干两侧。"
+      },
+      {
+        "phase": "发力",
+        "text": "只屈肘把杠举到胸前，手腕与前臂保持一条直线，不往下折；上臂不往后跑，最多略向前，躯干不后仰。"
+      },
+      {
+        "phase": "收尾",
+        "text": "有控制地放回到手臂接近伸直，不在底部甩起下一次。"
+      }
+    ],
+    "mistakes": [
+      {
+        "error": "手腕被杠压得往下折",
+        "consequence": "前臂伸肌被动拉长受力，手腕容易不适，杠也更难控制。"
+      },
+      {
+        "error": "用腰后仰把杠甩上来",
+        "consequence": "刺激从前臂转到腰，重量变成假的。"
+      }
+    ],
+    "self_checks": [
+      {
+        "criterion": "手腕与前臂全程保持一条直线",
+        "how": "侧面拍视频，看前臂举到水平时手背是否往下折。",
+        "cannot": "看不出握力是否已经先于肘屈肌耗尽。"
+      },
+      {
+        "criterion": "上臂贴住躯干，不往后跑、最多略向前",
+        "how": "正侧面拍视频，看肘的水平位置有没有往前跑。",
+        "cannot": "判断不了前臂实际收缩了多少；手臂酸不等于练到位。"
+      }
+    ],
+    "audience": {
+      "suitable": "想补前臂（肱桡肌与前臂伸肌）的读者；重量通常比正握弯举轻得多。",
+      "cautions": "训练中出现疼痛：当场停止该动作，当次不用其他动作替代着练同一部位，按第 9 章的判断原则决定继续观察还是就医。"
+    },
+    "home_alts": [
+      "dead-hang"
+    ],
+    "difficulty": "入门",
+    "safety": {
+      "rack": "不需要保护杆。",
+      "collars": "两侧卡扣必须上紧，无例外。",
+      "setup": "从挂钩或地面取杠；从比杠铃弯举更轻的重量起步，用最小片调整。",
+      "solo_ok": true,
+      "solo_alt": null,
+      "bailout": "举不动就把杠顺着大腿放回地面或挂钩，不甩腰完成剩余次数。"
+    },
+    "demo_id": "demo-barbell-reverse-curl",
+    "chapter_refs": [
+      "ch4"
+    ],
+    "claim_refs": []
+  },
+  {
     "slug": "barbell-front-rack-carry",
     "name_zh": "杠铃前架位行走",
     "name_en": "Barbell Front-Rack Carry",
@@ -1727,7 +1881,8 @@
       ],
       "synergist": [
         "上背",
-        "小腿"
+        "小腿",
+        "前臂"
       ],
       "stabilizer": [
         "臀",
@@ -1805,7 +1960,8 @@
       ],
       "synergist": [
         "上背",
-        "臀"
+        "臀",
+        "前臂"
       ],
       "stabilizer": [
         "小腿",
@@ -3177,6 +3333,92 @@
     "claim_refs": []
   },
   {
+    "slug": "close-grip-push-up",
+    "name_zh": "窄距俯卧撑",
+    "name_en": "Close-Grip Push-Up",
+    "pattern": "推",
+    "laterality": "双侧",
+    "muscles": {
+      "prime": [
+        "肱三头"
+      ],
+      "synergist": [
+        "胸",
+        "前束"
+      ],
+      "stabilizer": [
+        "核心"
+      ]
+    },
+    "equipment": "自重",
+    "cues": [
+      {
+        "phase": "设置",
+        "text": "双手约与肩同宽撑地（比标准俯卧撑窄），手指朝前；从头到脚跟成一条线，肋骨收住、臀夹住。"
+      },
+      {
+        "phase": "发力",
+        "text": "下放时肘贴着身体两侧往脚的方向走，不往外张；到底时胸接近地面，肘在腕的后上方、前臂接近竖直。"
+      },
+      {
+        "phase": "发力",
+        "text": "推起到手臂接近伸直，全程保持身体一条线。"
+      },
+      {
+        "phase": "收尾",
+        "text": "结束时先把膝落地，再起身。"
+      }
+    ],
+    "mistakes": [
+      {
+        "error": "下放时肘往两侧张开",
+        "consequence": "动作变回标准俯卧撑，肱三头的份额被胸分走。"
+      },
+      {
+        "error": "双手并到一起、压得比肩窄很多",
+        "consequence": "手腕和肘被迫内扣，手腕负担明显加大，又没有多练到肱三头。"
+      },
+      {
+        "error": "腰塌下去、髋先掉",
+        "consequence": "腰段过伸，动作变成腰的被动拉伸而不是推。"
+      }
+    ],
+    "self_checks": [
+      {
+        "criterion": "下放时肘贴住身体两侧，不往外张",
+        "how": "正侧面拍视频，看最低点上臂是否几乎与躯干平行、肘指向脚的方向（肘一外张，侧面看上臂就明显变短）。",
+        "cannot": "判断不了肱三头实际用了多少力；手臂酸不等于练到位。"
+      },
+      {
+        "criterion": "从头到脚跟全程一条线",
+        "how": "正侧面拍视频，看最低点髋是否明显下沉或翘起。",
+        "cannot": "体表看不出腰段实际受力；衣服宽松时更难判断。"
+      }
+    ],
+    "audience": {
+      "suitable": "已能做 10 次以上标准俯卧撑、想在家补肱三头的读者；做不动先用标准俯卧撑或跪姿俯卧撑积累。",
+      "cautions": "训练中出现疼痛：当场停止该动作，当次不用其他动作替代着练同一部位，按第 9 章的判断原则决定继续观察还是就医。"
+    },
+    "home_alts": [
+      "push-up",
+      "knee-push-up"
+    ],
+    "difficulty": "进阶",
+    "safety": {
+      "rack": "不需要任何支撑；地面平整即可。",
+      "collars": "本动作不使用杠铃，不涉及卡扣。",
+      "setup": "手掌约与肩同宽、约在胸骨下端到肋弓一线（比肩靠脚的方向）；脚与髋同宽。",
+      "solo_ok": true,
+      "solo_alt": null,
+      "bailout": "推不起来就把膝或整个身体落到地面，再从侧面起身。"
+    },
+    "demo_id": null,
+    "chapter_refs": [
+      "ch4"
+    ],
+    "claim_refs": []
+  },
+  {
     "slug": "band-overhead-press",
     "name_zh": "弹力带推举",
     "name_en": "Band Overhead Press",
@@ -3640,6 +3882,82 @@
     "claim_refs": []
   },
   {
+    "slug": "dead-hang",
+    "name_zh": "悬垂",
+    "name_en": "Dead Hang",
+    "pattern": "拉",
+    "laterality": "双侧",
+    "muscles": {
+      "prime": [
+        "前臂"
+      ],
+      "synergist": [
+        "上背"
+      ],
+      "stabilizer": [
+        "核心"
+      ]
+    },
+    "equipment": "自重",
+    "cues": [
+      {
+        "phase": "设置",
+        "text": "踩上稳固的凳子，双手略比肩宽正握单杠，再把脚收离凳面，不跳上去抓杠。"
+      },
+      {
+        "phase": "发力",
+        "text": "手臂伸直，肩胛微微往下沉，不完全松垮地挂着、也不耸到耳边；身体竖直不晃，计时保持。"
+      },
+      {
+        "phase": "收尾",
+        "text": "握力耗尽之前先把脚踩回凳面，站稳再松手。"
+      }
+    ],
+    "mistakes": [
+      {
+        "error": "跳起来抓杠或握不住突然松手",
+        "consequence": "冲击落在肩和手上，落地也容易崴脚。"
+      },
+      {
+        "error": "肩完全放松、耸到耳边",
+        "consequence": "肩只靠韧带被动挂着，时间越长越不舒服。"
+      }
+    ],
+    "self_checks": [
+      {
+        "criterion": "手臂伸直、肩不耸到耳边",
+        "how": "侧面拍视频，看悬垂中段肩与耳朵之间的距离有没有明显缩短。",
+        "cannot": "判断不了你的肩是否适合长时间悬垂；肩有旧伤先问医生。"
+      },
+      {
+        "criterion": "身体竖直不前后晃",
+        "how": "侧面拍视频，看脚的前后摆动。",
+        "cannot": "看不出握力与肩各自的极限；先掉的往往是握力。"
+      }
+    ],
+    "audience": {
+      "suitable": "想练握力与前臂、为引体向上打基础的读者；也是家里有单杠时最简单的前臂训练。",
+      "cautions": "训练中出现疼痛：当场停止该动作，当次不用其他动作替代着练同一部位，按第 9 章的判断原则决定继续观察还是就医。"
+    },
+    "home_alts": [
+      "inverted-row"
+    ],
+    "difficulty": "入门",
+    "safety": {
+      "rack": "单杠必须固定牢靠（门框杠先试挂）；杠下方留出站立空间。",
+      "collars": "本动作不使用杠铃，不涉及卡扣。",
+      "setup": "单杠高度让你伸直手臂时脚能离地；脚下放一个稳固的凳子用来上下。",
+      "solo_ok": true,
+      "solo_alt": null,
+      "bailout": "握不住时先把脚踩回凳面或有控制地落地，不在握力耗尽时突然松手。"
+    },
+    "demo_id": null,
+    "chapter_refs": [
+      "ch4"
+    ],
+    "claim_refs": []
+  },
+  {
     "slug": "inverted-row",
     "name_zh": "反向划船",
     "name_en": "Inverted Row",
@@ -3884,7 +4202,8 @@
       ],
       "synergist": [
         "上背",
-        "小腿"
+        "小腿",
+        "前臂"
       ],
       "stabilizer": [
         "臀",
