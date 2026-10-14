@@ -89,14 +89,15 @@
 |---|---|---|---|---|---|
 | 2026-10-14 | 俯卧撑、跪姿俯卧撑 | 底部前臂偏离竖直 63° / 46°（3D 57° / 44°）；setup 写「手在肩正下方」 | [ACE Push Up](https://www.acefitness.org/resources/everyone/exercise-library/41/push-up/)；[Built With Science](https://builtwithscience.com/fitness-tips/how-to-do-push-up/) | 手挪到下胸下方；底部肘在腕正上方、外展 40°；3D `foreVertical`+`foreTilt`；补间钉住撑地的手；文字同步；新断言 3 条。figure-reviewer 两轮后 APPROVE | fix/pushup-forearm |
 | 2026-10-14 | 高位下拉 | 终点肘在手外侧 17px，正面看前臂外倾 38°、侧视后倾 50°（手往内收，像用二头拉） | [powerliftingtechnique.com Lat Pulldowns](https://powerliftingtechnique.com/lat-pulldowns/)（前臂尽量竖直、肘在冠状面内往下往两侧） | 3D `foreVertical`+`foreBack:15`（反解握距 49.8，与原登记一致）；cue 改「肘往下、往身体两侧走」；断言终点前臂 + 中段外倾 ≤40°。figure-reviewer APPROVE | fix/pulldown-forearm |
+| 2026-10-14 | 窄握卧推 | 借用平板卧推的触胸帧，杠落在中胸，与 cue「杠落到胸骨下段」不符；3D 底部肘折到 31°、前臂侧视斜 34° | [Barbell Medicine 论坛：窄握触点](https://forum.barbellmedicine.com/t/close-grip-bench-press-touch-point/671)；[Barbell Logic](https://barbell-logic.com/?p=4698)（触点更低、肘内收、前臂尽量竖直） | 新姿态 close_bench_bottom（触点 s=0.40，约剑突）；握距 30、out 0.2；底部肘角 42°、前臂侧视 12°、外展 21°（平板 54°）；断言触点低于平板且仍在胸骨内。figure-reviewer APPROVE | fix/close-grip-bench |
 
 ## 5. 待查候选（`node tools/audit-angles.mjs` 初筛，未经资料确认）
 
 | 动作 | 报表读数 | 疑点 |
 |---|---|---|
-| 窄握卧推 | 底部肘角 31°，前臂偏竖直 34° | 复用平板卧推的 bench_bottom，杠落在中胸；cue 写「杠落到胸骨下段」——**文字与图不一致**。资料：窄握触点更低，前臂尽量竖直 |
+| ~~窄握卧推~~ | 已修，见进度表 | 遗留：推起中段前臂侧视斜约 44°（直线杠路 + 窄握的几何结果，改前 48°） |
 | ~~高位下拉~~ | 已修，见进度表 | 肘角 37° 由横杆离肩距离决定，几何上必然，真人估算 30–45° |
 | 杠铃划船 | 终点前臂偏竖直 38° | 资料只说起始手臂垂直地面、顶部肘贴身，未给顶部前臂角，**证据不足暂不改** |
 | 传统硬拉 | 起始髋角 27°、膝角 99°（大腿近水平） | 资料：传统硬拉背角 20–30°（本图 20°），在范围内，**降级**；可再核实「肩胛在杠正上方」 |
-| 反向划船 | 终点肘角 31° | 胸贴杠时肘角通常约 70–90° |
+| 反向划船 | 终点肘角 31°、上臂与躯干 73° | 资料：胸贴杠、肘贴身约 45°；胸贴杠时肘角几何上本就深屈，**证据不足暂不改** |
 | 上斜哑铃卧推 | 底部肘角 41° | 待查 |

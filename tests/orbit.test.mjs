@@ -284,3 +284,19 @@ test('下拉终点前臂正面看竖直、侧视略后倾（「前臂尽量保�
     assert.ok(front <= 40, `u=${u}: 正面看前臂外倾 ${front.toFixed(1)}°`);
   }
 });
+
+test('窄握卧推触点在胸骨下段、肘贴身、底部前臂接近竖直', () => {
+  // 原来借用平板卧推的 bench_bottom：杠落在中胸，与 cue「杠落到胸骨下段」不符，肘折到 31°。
+  const slug = 'close-grip-bench-press', f = figures[slug];
+  const B = POSES[f.end], flat = POSES.bench_bottom;
+  const along = (p) => p.load.at[0] - p.shoulder[0];   // 仰卧、头在 −x：沿躯干往脚的距离
+  assert.ok(along(B) - along(flat) >= 6, `窄握触点只比平板低 ${(along(B) - along(flat)).toFixed(1)}px`);
+  const p = interpolate(POSES[f.start], B, 1, { plumb: f.plumb });
+  const J = orbitLift(slug, { a: f.start, b: f.end }, p, 1, f.load_type);
+  const E = J.elbowN, H = J.wristN, S = J.shoulderN;
+  const sag = Math.atan2(Math.abs(E[0] - H[0]), E[1] - H[1]) * 180 / Math.PI;
+  const front = Math.atan2(Math.abs(E[2]) - Math.abs(H[2]), E[1] - H[1]) * 180 / Math.PI;
+  const tuck = Math.atan2(Math.abs(E[2]) - Math.abs(S[2]), E[0] - S[0]) * 180 / Math.PI;   // 俯视上臂离躯干
+  assert.ok(sag < 20 && front < 25, `底部前臂侧视 ${sag.toFixed(0)}°、正面 ${front.toFixed(0)}°`);
+  assert.ok(tuck < 35, `肘外展 ${tuck.toFixed(0)}°，cue 要求贴身`);
+});

@@ -101,7 +101,7 @@ test('推举起始肘在肩前（不是颈后推）；坐姿推举只画近侧�
 });
 
 test('卧推底部：前臂竖直、杠在胸骨下段、重建前臂不超真长', () => {
-  for (const n of ['bench_bottom', 'incline_bottom']) {
+  for (const n of ['bench_bottom', 'close_bench_bottom', 'incline_bottom']) {
     const p = POSES[n], r = rebuildArmFor(n, p);
     assert.ok(r.fore <= 41, `${n}: 前臂 ${r.fore.toFixed(1)} > 39`);
     const s = along(p, p.load.at);

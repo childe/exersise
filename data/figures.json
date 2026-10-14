@@ -134,11 +134,11 @@
   },
   "close-grip-bench-press": {
     "start": "bench_top",
-    "end": "bench_bottom",
+    "end": "close_bench_bottom",
     "cap_start": "顶部",
     "cap_end": "触胸",
     "plumb": false,
-    "note": "窄握的差别在握距与肘的轨迹：两手间距约与肩同宽，肘贴近身体；躯干与肩位与平板卧推一致。"
+    "note": "窄握的差别在握距、肘的轨迹与触点：两手间距约与肩同宽，肘贴近身体，杠落在胸骨下段的下端（比平板卧推略低）；躯干与肩位与平板卧推一致。"
   },
   "db-bench-press": {
     "start": "bench_top",

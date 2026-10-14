@@ -217,6 +217,15 @@ export const POSES = {
     bench: [48, 148, 86, 10],
     load: { type: 'bar', at: [98, 132] },
   }),
+  // 窄握卧推触胸：平板卧推落在胸骨下段的上部（s=0.30，肩下 24px≈15cm），窄握落在胸骨下段的
+  // 下端（s=0.40，32px≈20cm，约剑突），再低就进腹部了（review-round2 断言 s 的范围）。
+  // 原来直接借用 bench_bottom，杠落在中胸，与 cue 不符；肘因此在 3D 里折到 31°。
+  close_bench_bottom: P({
+    head: [54, 140], shoulder: [74, 142], elbow: [106, 162], wrist: [106, 134],
+    hip: [112, 142], knee: [146, 176], ankle: [150, 216], heel: [142, 225], toe: [170, 225],
+    bench: [48, 148, 86, 10],
+    load: { type: 'bar', at: [106, 132] },
+  }),
   bench_top: P({
     head: [54, 140], shoulder: [74, 142], elbow: [74, 92], wrist: [74, 53],
     hip: [112, 142], knee: [146, 176], ankle: [150, 216], heel: [142, 225], toe: [170, 225],
@@ -710,7 +719,7 @@ const LOAD_ANCHOR = {
   squat_front_bottom: 'shoulder', squat_front_top: 'shoulder',
   goblet_top: 'shoulder', goblet_bottom: 'shoulder',
   squat_lowbar_top: 'shoulder', squat_lowbar_bottom: 'shoulder',
-  bench_top: 'shoulder', bench_bottom: 'shoulder',   // 杠的位置不该随手臂归一化漂走
+  bench_top: 'shoulder', bench_bottom: 'shoulder', close_bench_bottom: 'shoulder',   // 杠的位置不该随手臂归一化漂走
   incline_top: 'shoulder', incline_bottom: 'shoulder',
   gm_top: 'shoulder', gm_bottom: 'shoulder',
   carry_front: 'shoulder', ohp_bottom: 'shoulder',

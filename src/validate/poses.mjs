@@ -417,7 +417,7 @@ export function validateFixedRigs(figures) {
  * 卧推类「触胸」：杠停在胸面上，即躯干线朝脸那一侧 5–14px 处。
  * 用 facing() 取"朝上"方向，所以上斜卧推躯干倾斜也照查。
  */
-export const BAR_ON_CHEST = ['bench_bottom', 'incline_bottom'];
+export const BAR_ON_CHEST = ['bench_bottom', 'close_bench_bottom', 'incline_bottom'];
 export function validateBarOnChest() {
   const errors = [];
   for (const name of BAR_ON_CHEST) {

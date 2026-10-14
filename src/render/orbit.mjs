@@ -83,7 +83,9 @@ export const ORBIT_PARAMS = {
   'lying-leg-curl': { stance: ST_TOGETHER, grip: 30, out: 0.2 },
   // 卧推、推举类按「前臂竖直」反解握距（foreVertical），肘朝下
   'barbell-bench-press': { stance: ST_LYING, foreVertical: true },
-  'close-grip-bench-press': { stance: ST_LYING, grip: 26, out: 0.3 },
+  // 窄握：握距约与肩同宽（肩峰外缘 ≈ 关节半宽 27 + 一点），肘贴身（out 小）。
+  // 触点在胸骨下段（close_bench_bottom），底部前臂侧视偏竖直约 12°。
+  'close-grip-bench-press': { stance: ST_LYING, grip: 30, out: 0.2 },
   'db-bench-press': { stance: ST_LYING, foreVertical: true, db: 'z', dbMode: 'each' },
   'db-incline-bench-press': { stance: ST_LYING, foreVertical: true, db: 'z', dbMode: 'each' },
   'machine-chest-press': { stance: ST_SEAT, grip: 34, out: 0.6, handle: 6, perHand: true },
