@@ -103,14 +103,15 @@ test('握点不压到杠片上——压上去就看不出那是只手', () => {
   const PLATE_INNER = 31 - 7;   // 与 skeleton.mjs 的 load() 保持一致
   for (const name of OUT_OF_PLANE_ARM) {
     const p = POSES[name];
-    const off = Math.abs(rebuildArm(p).hand[0] - p.load.at[0]);
+    const bar = p.load ?? p.fixed;   // 引体的杠是 fixed
+    const off = Math.abs(rebuildArm(p).hand[0] - bar.at[0]);
     assert.ok(off <= PLATE_INNER + 0.01, `${name}: 握点偏移 ${off.toFixed(1)} > ${PLATE_INNER}`);
   }
 });
 
 test('重建保留原始肘朝向——它编码的是教学提示', () => {
   // 背蹲肘向后下、前架位向前下。方向丢了等于把动作要点一起丢了。
-  for (const [name, side] of [['squat_top', -1], ['ohp_bottom', -1], ['squat_front_top', 1]]) {
+  for (const [name, side] of [['squat_top', -1], ['ohp_bottom', 1], ['squat_front_top', 1]]) {
     const p = POSES[name], r = rebuildArm(p);
     const before = Math.sign(p.elbow[0] - p.shoulder[0]);
     const after = Math.sign(r.elbow[0] - p.shoulder[0]);
@@ -140,27 +141,28 @@ test('关节角校验通过', () => {
 });
 
 test('新增的超限肘角会让构建失败——棘轮只锁现状，不接纳新债', () => {
-  const saved = POSES.pulldown_end;
+  // 用矢状面内的姿态做靶子：出平面的那些（含现在的 pulldown_end）走投影重建，
+  // 改原始 wrist 不会改变画出来的肘角，拿它们试探等于什么都没试。
+  const saved = POSES.curl_up;
   // 把手腕拉到肩旁边，制造一个折叠的肘
-  POSES.pulldown_end = { ...saved, wrist: [saved.shoulder[0] + 1, saved.shoulder[1] + 1] };
+  POSES.curl_up = { ...saved, wrist: [saved.shoulder[0] + 1, saved.shoulder[1] + 1] };
   try {
     const errs = validateJointAngles();
-    assert.ok(errs.some((e) => e.includes('pulldown_end') && e.includes('低于解剖下限')),
+    assert.ok(errs.some((e) => e.includes('curl_up') && e.includes('低于解剖下限')),
       `应当报出肘角超限，实际: ${errs.join(' | ')}`);
   } finally {
-    POSES.pulldown_end = saved;
+    POSES.curl_up = saved;
   }
 });
 
 test('已修好的姿态必须从棘轮表里移除', () => {
-  const saved = POSES.curl_up;
-  assert.ok(ELBOW_PENDING.has('curl_up'));
-  // 把它修到合格
-  POSES.curl_up = { ...saved, wrist: [saved.shoulder[0] + 20, saved.shoulder[1] + 4] };
+  // 棘轮表现在是空的（第二轮把 7 个都修了）。临时登记一个合格的姿态，断言必须报"应移除"。
+  assert.equal(ELBOW_PENDING.size, 0, '棘轮表应已清空；若有新登记项，这条测试要改用它');
+  ELBOW_PENDING.set('pulldown_start', 20);
   try {
-    assert.ok(validateJointAngles().some((e) => e.includes('应从 ELBOW_PENDING 移除')));
+    assert.ok(validateJointAngles().some((e) => e.includes('pulldown_start') && e.includes('应从 ELBOW_PENDING 移除')));
   } finally {
-    POSES.curl_up = saved;
+    ELBOW_PENDING.delete('pulldown_start');
   }
 });
 
@@ -253,8 +255,21 @@ test('低杠的两处差别可量：杠位更低、躯干更倾', () => {
 test('髋更往后是约束推出来的，不是摆出来的', () => {
   // 杠位更低 + 躯干更倾，而「杠过足中线」对两者都不变 → 髋必须更往后走。
   // 这条断言的意义：如果哪天有人"顺手"把低杠的髋挪回去，图就不再演示这个力学关系了。
+  // 「杠过足中线」把躯干角和髋位绑在一起：髋越靠后，躯干反而越立。
+  // 真正由杠位推出来的是**同一髋位下躯干更倾**（高杠 35° → 低杠 48°），髋随之略往后约 5px。
+  // 早先写成 >8px 是把这条关系的量级猜大了，逼出来的姿态大腿上翘 39°、与躯干近共线——
+  // 那正是「早安式深蹲」这个错误本身。
+  const lean = (p) => Math.abs(Math.atan2(p.shoulder[0] - p.hip[0], p.hip[1] - p.shoulder[1]) * 180 / Math.PI);
   const back = POSES.squat_bottom.hip[0] - POSES.squat_lowbar_bottom.hip[0];
-  assert.ok(back > 8, `低杠底部的髋应明显更靠后，实际只多 ${back.toFixed(1)}px`);
+  assert.ok(back > 3, `低杠底部的髋应更靠后，实际只多 ${back.toFixed(1)}px`);
+  assert.ok(lean(POSES.squat_lowbar_bottom) - lean(POSES.squat_bottom) > 10,
+    '低杠底部的躯干应比高杠明显更倾');
+  // 大腿不能和躯干共线，膝要真的前移
+  const thigh = (p) => Math.atan2(p.knee[1] - p.hip[1], p.knee[0] - p.hip[0]) * 180 / Math.PI;
+  for (const n of ['squat_bottom', 'squat_lowbar_bottom', 'squat_front_bottom']) {
+    assert.ok(Math.abs(thigh(POSES[n])) < 25, `${n}: 大腿上翘 ${Math.abs(thigh(POSES[n])).toFixed(1)}°，接近躯干方向`);
+    assert.ok(POSES[n].knee[0] - POSES[n].ankle[0] > 10, `${n}: 膝只在踝前 ${(POSES[n].knee[0] - POSES[n].ankle[0]).toFixed(1)}px`);
+  }
   for (const n of ['squat_bottom', 'squat_lowbar_bottom']) {
     assert.ok(Math.abs(POSES[n].load.at[0] - MIDFOOT) < 0.5,
       `${n}: 杠未落在足中线上，上面那条推理的前提就不成立`);
@@ -264,11 +279,11 @@ test('髋更往后是约束推出来的，不是摆出来的', () => {
 test('契约文档与代码里的阈值一致', async () => {
   const doc = await readFile(path.join(root, 'docs/figure-contract.md'), 'utf8');
   // 文档写错数字比没有文档更糟——它会被当成权威
-  for (const [what, want] of [['大腿 / 小腿', '60 / 60'], ['上臂 / 前臂', '30 / 29'],
+  for (const [what, want] of [['大腿 / 小腿', '60 / 60'], ['上臂 / 前臂', '50 / 39'],
                               ['躯干 / 颈', '80 / 17']]) {
     assert.ok(doc.includes(what) && doc.includes(want), `契约里的 ${what} 应为 ${want}`);
   }
   assert.ok(doc.includes('35°') && doc.includes('38°'), '契约应记录肘/膝角下限');
-  assert.ok(doc.includes('85%'), '契约应记录投影缩短比例');
+  assert.ok(doc.includes('25px'), '契约应记录投影缩短长度');
   assert.ok(doc.includes('±24'), '契约应记录握点上限');
 });

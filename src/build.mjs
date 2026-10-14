@@ -12,7 +12,11 @@ import { validateInternalLinks } from './validate/links.mjs';
 import { loadFigures, validateFigures } from './validate/figures.mjs';
 import { scanSafety, scanSafetyReview } from './validate/safety.mjs';
 import { validatePoses, validateFigures as validatePoseFigures, validateMuscles,
-  validateFrameConsistency, validateJointAngles } from './validate/poses.mjs';
+  validateFrameConsistency, validateJointAngles, validateContacts, validateStraightLines,
+  validateFixedRigs, validateBarOnChest, validateSecondHand, validateKneeStable,
+  validateDrawnAnimation, validateRackSide, validateAnimBox, validateHeldLoad,
+  validateCoronal, validateLimbVsHead, validateAnimEndpoints,
+  validateArmFixedToTorso, validateMuscleOnBone } from './validate/poses.mjs';
 import { MUSCLE_NAMES } from './render/muscles.mjs';
 import { escapeHtml } from './render/claims.mjs';
 
@@ -25,18 +29,29 @@ const defaultRoot = path.resolve(import.meta.dirname, '..');
 const ANIM_MODULES = [
   'src/render/arm.mjs',
   'src/render/muscle-segments.mjs',
-  'src/render/skeleton.mjs',   // 依赖上面两个
+  'src/render/facing.mjs',
+  'src/render/skeleton.mjs',   // 依赖上面三个
   'src/render/interp.mjs',     // 依赖 skeleton
   'src/assets/anim.js',
 ];
 
 async function bundleAnim(root) {
   const parts = [];
+  const included = new Set(ANIM_MODULES.map((f) => path.resolve(root, f)));
   for (const f of ANIM_MODULES) {
     const src = await readFile(path.join(root, f), 'utf8');
+    // 漏掉一个依赖不会让拼接后的脚本编译失败——它只是在浏览器里抛 ReferenceError，
+    // 动画格静默空着而页面其余部分照常。所以这里逐个核对本地 import 都在清单内。
+    for (const m of src.matchAll(/^import .*? from '(\.[^']+)';$/gm)) {
+      const dep = path.resolve(path.dirname(path.join(root, f)), m[1]);
+      if (!included.has(dep)) {
+        throw new Error(`动画脚本漏了依赖：${f} 依赖 ${m[1]}，但它不在 ANIM_MODULES 里。`
+          + '拼接后 import 会被剥掉，浏览器里是 ReferenceError，动画格会静默空着。');
+      }
+    }
     parts.push(src.replace(/^import .*?;$/gm, '').replace(/^export\s+/gm, ''));
   }
-  const js = `${parts.join('\n')}\ninitSkeletonAnimation({ POSES, interpolate, renderPose });\n`;
+  const js = `${parts.join('\n')}\ninitSkeletonAnimation({ POSES, interpolate, renderPose, drawnArm });\n`;
   const tops = [...js.matchAll(/^(?:const|let|function|class)\s+([A-Za-z_$][\w$]*)/gm)].map((m) => m[1]);
   const dup = [...new Set(tops.filter((n, i) => tops.indexOf(n) !== i))];
   if (dup.length) throw new Error(`动画脚本拼接后顶层重名声明：${dup.join('、')}`);
@@ -44,7 +59,7 @@ async function bundleAnim(root) {
   return js;
 }
 
-export async function build(root = defaultRoot) {
+export async function build(root = defaultRoot, { outDir } = {}) {
   const data = await loadData(root);
   const css = await readFile(path.join(root, 'src/assets/styles.css'), 'utf8');
   const js = await readFile(path.join(root, 'src/assets/app.js'), 'utf8');
@@ -64,8 +79,36 @@ export async function build(root = defaultRoot) {
   if (frameErrs.length) throw new Error(`骨架两帧一致性校验失败:\n- ${frameErrs.join('\n- ')}`);
   const muscleErrs = validateMuscles(data.exercises, MUSCLE_NAMES);
   if (muscleErrs.length) throw new Error(`肌肉分区校验失败:\n- ${muscleErrs.join('\n- ')}`);
-  const angleErrs = validateJointAngles();
+  const angleErrs = validateJointAngles(data.poseFigures);
   if (angleErrs.length) throw new Error(`关节角校验失败:\n- ${angleErrs.join('\n- ')}`);
+  const contactErrs = validateContacts();
+  if (contactErrs.length) throw new Error(`支撑关系校验失败:\n- ${contactErrs.join('\n- ')}`);
+  const lineErrs = validateStraightLines();
+  if (lineErrs.length) throw new Error(`直线校验失败:\n- ${lineErrs.join('\n- ')}`);
+  const rigErrs = validateFixedRigs(data.poseFigures);
+  if (rigErrs.length) throw new Error(`固定物校验失败:\n- ${rigErrs.join('\n- ')}`);
+  const chestErrs = validateBarOnChest();
+  if (chestErrs.length) throw new Error(`触胸校验失败:\n- ${chestErrs.join('\n- ')}`);
+  const handErrs = validateSecondHand();
+  if (handErrs.length) throw new Error(`远侧负荷校验失败:\n- ${handErrs.join('\n- ')}`);
+  const kneeErrs = validateKneeStable();
+  if (kneeErrs.length) throw new Error(`RDL 膝角校验失败:\n- ${kneeErrs.join('\n- ')}`);
+  const limbHeadErrs = validateLimbVsHead(data.poseFigures);
+  if (limbHeadErrs.length) throw new Error(`肢体与头部重叠校验失败:\n- ${limbHeadErrs.join('\n- ')}`);
+  const coronalErrs = validateCoronal();
+  if (coronalErrs.length) throw new Error(`冠状面校验失败:\n- ${coronalErrs.join('\n- ')}`);
+  const heldErrs = validateHeldLoad(data.poseFigures);
+  if (heldErrs.length) throw new Error(`手持器械校验失败:\n- ${heldErrs.join('\n- ')}`);
+  const rackErrs = validateRackSide();
+  if (rackErrs.length) throw new Error(`架位校验失败:\n- ${rackErrs.join('\n- ')}`);
+  const muscleBoneErrs = validateMuscleOnBone(data.poseFigures, data.exercises);
+  if (muscleBoneErrs.length) throw new Error(`主动肌标注校验失败:\n- ${muscleBoneErrs.join('\n- ')}`);
+  const armFixErrs = validateArmFixedToTorso();
+  if (armFixErrs.length) throw new Error(`抱胸手臂校验失败:\n- ${armFixErrs.join('\n- ')}`);
+  const endErrs = validateAnimEndpoints(data.poseFigures);
+  if (endErrs.length) throw new Error(`动画端点校验失败:\n- ${endErrs.join('\n- ')}`);
+  const drawnErrs = validateDrawnAnimation(data.poseFigures);
+  if (drawnErrs.length) throw new Error(`动画手臂校验失败:\n- ${drawnErrs.join('\n- ')}`);
   const renderCtx = {
     claims: new Map(data.claims.map((c) => [c.id, c])),
     exercises: new Map(data.exercises.map((e) => [e.slug, e])),
@@ -77,10 +120,20 @@ export async function build(root = defaultRoot) {
     safetyCanon: data.safetyCanon,
     poseFigures: data.poseFigures,
   };
+  const exerciseHtml = renderExercises(data.exercises, renderCtx);
+  // 从**渲染产物**里把框读回来，而不是在校验器里重算一遍——重算等于同义反复。
+  const animBoxes = new Map();
+  for (const m of exerciseHtml.matchAll(/data-anim="([^"]*)"/g)) {
+    const cfg = JSON.parse(m[1].replace(/&quot;/g, '"').replace(/&amp;/g, '&'));
+    if (cfg.slug) animBoxes.set(cfg.slug, cfg.box);
+  }
+  if (animBoxes.size === 0) throw new Error('动画框校验：一个 data-anim 都没解析到，断言会静默放行');
+  const animBoxErrs = validateAnimBox(data.poseFigures, (slug) => animBoxes.get(slug) ?? null);
+  if (animBoxErrs.length) throw new Error(`动画框校验失败:\n- ${animBoxErrs.join('\n- ')}`);
   const html = renderPage(data, {
     css, js, animJs,
     chapterHtml: renderChapters(loaded, renderCtx),
-    exerciseHtml: renderExercises(data.exercises, renderCtx),
+    exerciseHtml,
     planHtml: renderPlans(data.plans, renderCtx),
     claimHtml: renderClaimRegistry(data.claims),
     quizHtml: renderQuiz(data.quiz, renderCtx),
@@ -93,15 +146,16 @@ export async function build(root = defaultRoot) {
   }
   const linkErrs = validateInternalLinks(html);
   if (linkErrs.length) throw new Error(`内部锚点校验失败:\n- ${linkErrs.join('\n- ')}`);
-  await mkdir(path.join(root, 'dist'), { recursive: true });
-  await writeFile(path.join(root, 'dist/index.html'), html, 'utf8');
+  const out = outDir ?? path.join(root, 'dist');
+  await mkdir(out, { recursive: true });
+  await writeFile(path.join(out, 'index.html'), html, 'utf8');
   // 发布用的同一份内容：Artifact 发布时由平台补 <!doctype>/<html>/<head>/<body> 外壳，
   // 所以这里去掉文档外壳，只留 <title>/<style>/正文/<script>。两份内容完全同源。
   const inner = html
     .replace(/^[\s\S]*?<title>/, '<title>')
     .replace(/<\/head>\s*<body>/, '')
     .replace(/<\/body>\s*<\/html>\s*$/, '');
-  await writeFile(path.join(root, 'dist/artifact.html'), inner, 'utf8');
+  await writeFile(path.join(out, 'artifact.html'), inner, 'utf8');
   return html;
 }
 

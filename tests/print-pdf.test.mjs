@@ -4,6 +4,8 @@
 import test, { before, after } from 'node:test';
 import assert from 'node:assert/strict';
 import path from 'node:path';
+import { mkdtemp } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
 import { readFile, writeFile } from 'node:fs/promises';
 import { pathToFileURL } from 'node:url';
 import { build } from '../src/build.mjs';
@@ -17,8 +19,10 @@ let pdf = null;
 
 before(async () => {
   if (skip) return;
-  await build();
-  B = await launch(pathToFileURL(path.join(root, 'dist/index.html')).href);
+  // 自己的输出目录：并行跑的其他测试文件也在 build()，共用 dist/ 会互相覆盖
+  const outDir = await mkdtemp(path.join(tmpdir(), 'fitguide-pdf-'));
+  await build(root, { outDir });
+  B = await launch(pathToFileURL(path.join(outDir, 'index.html')).href);
   await B.send('Page.enable');
   const r = await B.send('Page.printToPDF', {
     printBackground: true,

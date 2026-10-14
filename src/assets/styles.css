@@ -107,6 +107,8 @@ figure.concept figcaption { color: var(--muted); font-size: 0.88em; }
 .ex-visual figure { margin: 0; }
 
 .skeleton { display: flex; flex-wrap: wrap; gap: 8px; align-items: flex-start; }
+/* 横向姿态的格子放宽，否则 5:1 的图在 168px 里只剩一条线 */
+.sk-frame.sk-wide { width: 100%; max-width: 360px; }
 .skeleton figcaption {
   flex-basis: 100%; font-size: .78rem; color: var(--muted); line-height: 1.5;
 }
@@ -123,6 +125,9 @@ figure.concept figcaption { color: var(--muted); font-size: 0.88em; }
 .sk-neck { stroke-width: 4; }
 .sk-far { opacity: .34; }
 .sk-head { fill: var(--fg); stroke: none; }
+/* 面部标记：底色填充，在实心头上读作缺口。侧视一只眼指向前方，正视两只眼。
+   骨架没有任何其他朝向线索——没有它，读者判断不出人面向哪边。 */
+.sk-eye { fill: var(--surface); stroke: none; }
 .sk-joint { fill: var(--fg); }
 .sk-ground { stroke: var(--rule); stroke-width: 2.5; }
 .sk-bench, .sk-sled { fill: var(--rule); stroke: var(--muted); stroke-width: 1.5; }
@@ -133,6 +138,7 @@ figure.concept figcaption { color: var(--muted); font-size: 0.88em; }
 .sk-plate { fill: var(--equip); }
 .sk-dumbbell, .sk-handle, .sk-pad { fill: var(--equip); }
 .sk-wheel { fill: none; stroke: var(--equip); stroke-width: 3.5; }
+.sk-band { stroke: var(--equip); stroke-width: 2; stroke-dasharray: 3 3; fill: none; }
 /* 判据线：杠线与足中线是深蹲/硬拉唯一的硬性力学判据，必须最显眼。
    用 --accent 而不是 --danger——红留给主动肌，与肌肉分布图的 .m-prime 同色，
    读者在同一张卡上学一次"红=主动肌"就够了，不该在骨架上换个意思。
