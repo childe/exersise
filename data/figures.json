@@ -95,7 +95,8 @@
     "start": "gm_top",
     "end": "gm_bottom",
     "cap_start": "起始",
-    "cap_end": "底部"
+    "cap_end": "底部",
+    "plumb": false
   },
   "db-hip-thrust": {
     "start": "hipthrust_bottom",

@@ -356,3 +356,20 @@ test('哑铃前蹲：上臂接近水平、肘朝前（cue「肘抬到与地面�
     }
   }
 });
+
+test('弹力带早安：底部躯干接近水平、不比 RDL 浅，且身体质心全程落在脚上', () => {
+  // 原来把颈后的带子当杠铃反解到足中线：躯干只到高于水平 53°，身体质心却落在脚跟之后（会后倒）。
+  // 带子一端踩在脚下，拉力是内力；平衡看的是身体自己的质心。
+  const f = figures['band-good-morning'], A = POSES[f.start], B = POSES[f.end];
+  const above = (p) => Math.atan2(p.hip[1] - p.shoulder[1], Math.abs(p.shoulder[0] - p.hip[0])) * 180 / Math.PI;
+  assert.ok(above(B) <= 35, `底部躯干高于水平 ${above(B).toFixed(0)}°`);
+  assert.ok(above(B) <= above(POSES.rdl_bottom) + 2, `早安底部比 RDL 底部还浅（${above(B).toFixed(0)}° vs ${above(POSES.rdl_bottom).toFixed(0)}°）`);
+  const mid = (a, b) => (a[0] + b[0]) / 2;
+  const com = (p) => p.head[0] * 0.08 + mid(p.hip, p.shoulder) * 0.5 + mid(p.shoulder, p.elbow) * 0.055
+    + mid(p.elbow, p.wrist) * 0.045 + mid(p.hip, p.knee) * 0.2 + mid(p.knee, p.ankle) * 0.12;
+  for (let i = 0; i <= 16; i++) {
+    const q = interpolate(A, B, i / 16, { plumb: f.plumb !== false });
+    const x = com(q);
+    assert.ok(x > A.heel[0] + 2 && x < A.toe[0], `t=${i / 16}: 身体质心 x=${x.toFixed(1)} 不在脚上（${A.heel[0]}–${A.toe[0]}）`);
+  }
+});

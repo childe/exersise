@@ -25,7 +25,7 @@ const STANDING_LOADED = new Set([
   'hinge_bottom', 'hinge_top', 'rdl_bottom',
   'ohp_bottom', 'ohp_top',
   'carry_stance', 'carry_front', 'carry_overhead',
-  'gm_top', 'gm_bottom',    // 早安式也是站姿持械，之前漏在集合外，杠线断言对它不生效
+  'gm_top',    // 早安式顶部直立，颈在足中线上；底部不查——带子一端踩在脚下，拉力是内力，平衡看身体质心
 ]);
 
 // 这些姿态要求髋低于膝（蹲到位）

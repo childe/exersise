@@ -272,10 +272,15 @@ export const POSES = {
     hip: [84, 118], knee: [86, 152], ankle: [80, 216], heel: [72, 225], toe: [108, 225],
     load: { type: 'band', at: [84.4, 51.7], from: [90, 225] },
   }),
+  // 底部不做「负荷过足中线」反解：带子一端踩在脚下、一端绕颈，拉力是人+带子系统的内力，
+  // 平衡只要求**身体**质心落在脚上，不要求颈落在足中线上。原来按杠铃反解，躯干只前倾到
+  // 高于水平 53°（比 RDL 底部的 34° 还浅），而身体质心落在 x=68.9、脚跟（72）之后——会后倒。
+  // 现在髋位同 RDL 底部，躯干高于水平 25°（ExRx：前倾到接近水平），身体质心约 79，在脚上；头沿躯干线。
+  // 负荷点（颈后带子）随躯干刚性转；手由 rebuildArm 按带子重建，到底部时肘自然下垂。
   gm_bottom: P({
-    head: [104, 33], shoulder: [88, 39.4], elbow: [70, 60], wrist: [90, 44],
+    head: [129.5, 63.6], shoulder: [114.1, 70.8], elbow: [70.8, 95.8], wrist: [105.7, 81.4],
     hip: [41.6, 104.6], knee: [71.6, 156.6], ankle: [80, 216], heel: [72, 225], toe: [108, 225],
-    load: { type: 'band', at: [88.2, 32.2], from: [90, 225] },
+    load: { type: 'band', at: [117.8, 64.6], from: [90, 225] },
   }),
 
   // ── 垂直推 ─────────────────────────────────────────
@@ -954,7 +959,7 @@ function normalize(name, p) {
 const PLUMB_SOLVED = new Set([
   'squat_bottom', 'squat_top', 'squat_front_bottom', 'squat_front_top',
   'squat_lowbar_top', 'squat_lowbar_bottom', 'goblet_top', 'goblet_bottom',
-  'hinge_bottom', 'hinge_top', 'rdl_bottom', 'gm_top', 'gm_bottom',
+  'hinge_bottom', 'hinge_top', 'rdl_bottom', 'gm_top',   // gm_bottom 不在此列：带子是内力，见姿态注释
   'ohp_bottom', 'ohp_top',
   'carry_stance', 'carry_front', 'carry_overhead',
 ]);
