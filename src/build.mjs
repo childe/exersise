@@ -134,11 +134,12 @@ export async function build(root = defaultRoot, { outDir } = {}) {
   if (animBoxes.size === 0) throw new Error('动画框校验：一个 data-anim 都没解析到，断言会静默放行');
   const animBoxErrs = validateAnimBox(data.poseFigures, (slug) => animBoxes.get(slug) ?? null);
   if (animBoxErrs.length) throw new Error(`动画框校验失败:\n- ${animBoxErrs.join('\n- ')}`);
+  const atlasHtml = renderAtlas(data.anatomy);
   const html = renderPage(data, {
     css, js, animJs,
-    chapterHtml: renderChapters(loaded, renderCtx),
+    chapterHtml: renderChapters(loaded, renderCtx, { atlas: Boolean(atlasHtml) }),
     exerciseHtml,
-    atlasHtml: renderAtlas(data.anatomy),
+    atlasHtml,
     planHtml: renderPlans(data.plans, renderCtx),
     claimHtml: renderClaimRegistry(data.claims),
     quizHtml: renderQuiz(data.quiz, renderCtx),
