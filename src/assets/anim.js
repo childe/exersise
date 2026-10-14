@@ -149,8 +149,8 @@ export function initSkeletonAnimation({ POSES, interpolate, renderPose, drawnArm
     if (!POSES[cfg.a] || !POSES[cfg.b]) continue;
     // 启用环绕视角的动作只有一格（服务端画好的静止帧），动画直接接管它；
     // 其余动作在两帧之后追加一格侧视循环演示。
-    const orbit = !!(cfg.orbit && cfg.orbitBox);
-    const [x, y, w, h] = orbit ? cfg.orbitBox : cfg.box;
+    const orbit = cfg.orbit ?? null;
+    const [x, y, w, h] = orbit ? orbit.box : cfg.box;
     let svg = orbit ? fig.querySelector('svg.sk-orbit') : null;
     if (orbit && !svg) continue;
     if (!svg) {
@@ -199,8 +199,8 @@ export function initSkeletonAnimation({ POSES, interpolate, renderPose, drawnArm
     if (it.orbit) {
       // 环绕视角：相机在侧视两边来回摆，摆一个来回 = 两次起落
       const yaw = ORBIT_YAW * Math.sin((it.orbT / ORBIT_PERIOD) * Math.PI * 2);
-      it.svg.innerHTML = renderOrbit(p, { yaw, box: it.box, prime: it.cfg.prime,
-        caption: '环绕视角', plumb: it.cfg.plumb, name: it.cfg.a });
+      it.svg.innerHTML = renderOrbit(p, { slug: it.cfg.slug, names: { a: it.cfg.a, b: it.cfg.b }, u, yaw, frame: it.orbit,
+        prime: it.cfg.prime, caption: '环绕视角', plumb: it.cfg.plumb, lt: it.cfg.load_type ?? undefined });
       return;
     }
     const arm = blendArm(it.armA, it.armB, u, p, it.plan);
