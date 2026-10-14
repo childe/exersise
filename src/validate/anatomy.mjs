@@ -24,6 +24,10 @@ export function validateAnatomy(list) {
     if (!KINDS.includes(a?.kind)) errs.push(`${at}: kind 必须是 ${KINDS.join('/')}`);
     if (!MODELS.includes(a?.model)) errs.push(`${at}: model 必须是 ${MODELS.join('/')}`);
     if (!/^\d{4}-\d{2}-\d{2}$/.test(a?.generated ?? '')) errs.push(`${at}: generated 必须是 YYYY-MM-DD`);
+    // 宽高写进 <img>：不写的话图片加载完成前占位为 0，正文会整段往下跳
+    for (const k of ['width', 'height']) {
+      if (!Number.isInteger(a?.[k]) || a[k] <= 0) errs.push(`${at}: ${k} 必须是正整数（像素）`);
+    }
   });
   return errs;
 }

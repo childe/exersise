@@ -116,6 +116,7 @@ export async function build(root = defaultRoot, { outDir } = {}) {
     exercises: new Map(data.exercises.map((e) => [e.slug, e])),
     plans: new Map(data.plans.map((p) => [p.slug, p])),
     demos: new Map(data.demos.map((d) => [d.id, d])),
+    anatomy: new Map(data.anatomy.map((a) => [a.id, a])),
     figures: new Map([...figs].map(([k, v]) =>
       [k, `<figure class="concept">${v.svg.replace(/<!--caption:[\s\S]*?-->\s*/, '')}<figcaption>${escapeHtml(v.caption)}</figcaption></figure>`])),
     chapterTitles: new Map(data.chapters.map((c) => [c.id, `第 ${c.num} 章 ${c.title}`])),

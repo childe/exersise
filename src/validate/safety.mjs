@@ -55,5 +55,9 @@ export function scanSafety(html) {
 
 /** 人工安全验收的待复核清单：soft 规则，且已剔除明确的否定／引用／纠错语境。 */
 export function scanSafetyReview(html) {
-  return hits(html, SOFT_RULES, { skipNegated: true });
+  // 已登记的肌肉分布图（spec §7.5）如实写着「AI 生成」。它们是否合规由 validateImages
+  // 对登记表做确定性校验，不需要再进人工待复核——否则每张图每次构建都冒一条噪音。
+  // 只剔除我们自己渲染出来的 <figure class="anat">，正文里别处出现的字样照扫不误。
+  const scanned = html.replace(/<figure class="anat">[\s\S]*?<\/figure>/g, '');
+  return hits(scanned, SOFT_RULES, { skipNegated: true });
 }

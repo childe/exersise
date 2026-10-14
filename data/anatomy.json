@@ -1,1 +1,82 @@
-[]
+[
+  {
+    "id": "anat-horizontal-push",
+    "title": "推 · 水平推：练到哪里",
+    "kind": "动作模式",
+    "url": "https://ohsaisai.oss-cn-shanghai.aliyuncs.com/fit/anatomy/action/horizontal-push.26d93f2b.jpg",
+    "width": 1600,
+    "height": 1052,
+    "model": "gpt-image-2",
+    "generated": "2026-10-14"
+  },
+  {
+    "id": "anat-vertical-push",
+    "title": "推 · 垂直推（过头）：练到哪里",
+    "kind": "动作模式",
+    "url": "https://ohsaisai.oss-cn-shanghai.aliyuncs.com/fit/anatomy/action/vertical-push.004ade76.jpg",
+    "width": 1600,
+    "height": 1052,
+    "model": "gpt-image-2",
+    "generated": "2026-10-14"
+  },
+  {
+    "id": "anat-horizontal-pull",
+    "title": "拉 · 水平拉：练到哪里",
+    "kind": "动作模式",
+    "url": "https://ohsaisai.oss-cn-shanghai.aliyuncs.com/fit/anatomy/action/horizontal-pull.a253a263.jpg",
+    "width": 1600,
+    "height": 1052,
+    "model": "gpt-image-2",
+    "generated": "2026-10-14"
+  },
+  {
+    "id": "anat-vertical-pull",
+    "title": "拉 · 垂直拉：练到哪里",
+    "kind": "动作模式",
+    "url": "https://ohsaisai.oss-cn-shanghai.aliyuncs.com/fit/anatomy/action/vertical-pull.2fb3752c.jpg",
+    "width": 1600,
+    "height": 1052,
+    "model": "gpt-image-2",
+    "generated": "2026-10-14"
+  },
+  {
+    "id": "anat-squat",
+    "title": "蹲：练到哪里",
+    "kind": "动作模式",
+    "url": "https://ohsaisai.oss-cn-shanghai.aliyuncs.com/fit/anatomy/action/squat.cfe469e7.jpg",
+    "width": 1600,
+    "height": 1052,
+    "model": "gpt-image-2",
+    "generated": "2026-10-14"
+  },
+  {
+    "id": "anat-hinge",
+    "title": "髋铰链：练到哪里",
+    "kind": "动作模式",
+    "url": "https://ohsaisai.oss-cn-shanghai.aliyuncs.com/fit/anatomy/action/hinge.fd0574fe.jpg",
+    "width": 1600,
+    "height": 1052,
+    "model": "gpt-image-2",
+    "generated": "2026-10-14"
+  },
+  {
+    "id": "anat-carry",
+    "title": "搬运：练到哪里",
+    "kind": "动作模式",
+    "url": "https://ohsaisai.oss-cn-shanghai.aliyuncs.com/fit/anatomy/action/carry.bf4e8b71.jpg",
+    "width": 1600,
+    "height": 1052,
+    "model": "gpt-image-2",
+    "generated": "2026-10-14"
+  },
+  {
+    "id": "anat-core",
+    "title": "核心抗阻：练到哪里",
+    "kind": "动作模式",
+    "url": "https://ohsaisai.oss-cn-shanghai.aliyuncs.com/fit/anatomy/action/core.f2088e81.jpg",
+    "width": 1600,
+    "height": 1052,
+    "model": "gpt-image-2",
+    "generated": "2026-10-14"
+  }
+]
