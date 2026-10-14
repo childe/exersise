@@ -54,6 +54,7 @@ const ST_TOGETHER = { hip: 12, knee: 11, ankle: 10, heel: 10, toe: 12 };  // 俯
  *   view    'side'（默认）、'front'
  *   band    弹力带下端的半宽（踩在脚下的带子分两股）
  *   benchHalf 凳在 z 方向的半宽（默认 16；臀推横靠长凳 60）
+ *   handOff   [前, 上]：握点相对肩的偏移（躯干系），取代 2D 的手位
  *   plateR    杠铃片半径（默认 16；硬拉用标准片 31，起始帧片着地）
  *   foreVertical  按「端点处前臂竖直」反解握距、解肘（取代 grip/out）
  *   foreTilt      正面看前臂外倾的角度
@@ -65,8 +66,10 @@ export const ORBIT_PARAMS = {
   'back-squat-high-bar': { stance: ST_SQUAT, grip: 54, out: 0.4 },
   'back-squat-low-bar': { stance: ST_SQUAT, grip: 51, out: 0.5 },
   'bodyweight-squat': { stance: ST_SQUAT, grip: 20, out: 0.1 },
-  // 前架位：手离肩至少 22px 肘角才到 25°，于是握点外移到肩外；哑铃 cue「竖起来」
-  'db-front-squat': { stance: ST_SQUAT, grip: 50, out: 0.2, db: 'y', dbMode: 'each' },
+  // 前架位：哑铃竖起来，下端架在三角肌前束上，手握把手在肩前 12、上 20（躯干系）。
+  // cue「肘抬到与地面接近平行」：pole 朝前，上臂近水平。原来手在肩前 6、与肩齐平，
+  // 为了肘角 ≥25° 只好把握点外移到 z=50，肘掉到水平下 41–43°——画的正是 mistakes 里的「肘下掉」。
+  'db-front-squat': { stance: ST_SQUAT, grip: 32, handOff: [12, 20], pole: [1, 0, 0.15], db: 'y', dbMode: 'each' },
   'goblet-squat': { stance: ST_SQUAT, grip: 8, out: 0.3, db: 'y', dbMode: 'single' },
   // 凳心挪到 z=−12：后脚在远侧（z −15 … −19），凳面 ±16 居中时脚尖在凳外 3px
   'db-bulgarian-split-squat': { stance: ST_HIP, grip: 34, out: 0.05, db: 'x', dbMode: 'each', benchZ: -12 },
@@ -273,7 +276,17 @@ function liftSide(slug, names, p, u, P, lt) {
       const sp = [p.hip[0] - S[0], p.hip[1] - S[1]], sl = Math.hypot(sp[0], sp[1]) || 1;
       pole = [sp[0] / sl * 0.9 + f[0] * 0.35, sp[1] / sl * 0.9 + f[1] * 0.35, -s * 0.2];
     } else {
-      const hxy = own ? p.wrist2 : H2, exy = own ? p.elbow2 : E2;
+      let hxy = own ? p.wrist2 : H2;
+      const exy = own ? p.elbow2 : E2;
+      if (P.handOff && !own) {
+        // 握点相对肩的偏移，按躯干系给（前、上）：前架位的哑铃随躯干一起前倾，始终架在肩上
+        const tv = [top[0] - p.hip[0], top[1] - p.hip[1]], tl = Math.hypot(tv[0], tv[1]) || 1;
+        const up = [tv[0] / tl, tv[1] / tl];
+        let fw = [-up[1], up[0]];
+        if (fw[0] * f[0] + fw[1] * f[1] < 0) fw = [-fw[0], -fw[1]];
+        const [a, b] = P.handOff, S2 = s < 0 && p.shoulder2 ? p.shoulder2 : p.shoulder;
+        hxy = [S2[0] + fw[0] * a + up[0] * b, S2[1] + fw[1] * a + up[1] * b];
+      }
       H = [hxy[0], hxy[1], s * grip];
       const ed = [exy[0] - S[0], exy[1] - S[1]], el = Math.hypot(ed[0], ed[1]) || 1;
       const o = P.out ?? 0.2;

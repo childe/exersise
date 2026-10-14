@@ -340,3 +340,19 @@ test('硬拉：起始杠片着地、髋高于膝；拉起全程杠不穿过膝',
     assert.ok(Math.abs(q.load.at[0] - 90) < 0.6, `t=${i / 40}: 杠离开足中线`);
   }
 });
+
+test('哑铃前蹲：上臂接近水平、肘朝前（cue「肘抬到与地面接近平行」「肘不许掉」）', () => {
+  // 原来手在肩前 6、与肩齐平，为了肘角 ≥25° 握点外移到 z=50，上臂掉到水平下 41–43°。
+  const slug = 'db-front-squat', f = figures[slug];
+  for (let i = 0; i <= 16; i++) {
+    const u = i / 16;   // 下蹲中段躯干比底部更前倾（u≈0.75），上臂最低在这里，不只查端点
+    const p = interpolate(POSES[f.start], POSES[f.end], u, { plumb: f.plumb !== false && !f.no_load });
+    const J = orbitLift(slug, { a: f.start, b: f.end }, p, u, f.load_type);
+    for (const t of ['N', 'F']) {
+      const S = J['shoulder' + t], E = J['elbow' + t], v = [E[0] - S[0], E[1] - S[1], E[2] - S[2]];
+      const below = Math.atan2(v[1], Math.hypot(v[0], v[2])) * 180 / Math.PI;
+      assert.ok(below <= 20, `u=${u} ${t}: 上臂低于水平 ${below.toFixed(0)}°`);
+      assert.ok(v[0] > Math.abs(Math.abs(E[2]) - Math.abs(S[2])), `u=${u} ${t}: 肘朝外多于朝前`);
+    }
+  }
+});

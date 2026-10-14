@@ -100,6 +100,7 @@
 | 2026-10-14 | 窄握卧推 | 借用平板卧推的触胸帧，杠落在中胸，与 cue「杠落到胸骨下段」不符；3D 底部肘折到 31°、前臂侧视斜 34° | [Barbell Medicine 论坛：窄握触点](https://forum.barbellmedicine.com/t/close-grip-bench-press-touch-point/671)；[Barbell Logic](https://barbell-logic.com/?p=4698)（触点更低、肘内收、前臂尽量竖直） | 新姿态 close_bench_bottom（触点 s=0.40，约剑突）；握距 30、out 0.2；底部肘角 42°、前臂侧视 12°、外展 21°（平板 54°）；断言触点低于平板且仍在胸骨内。figure-reviewer APPROVE | fix/close-grip-bench |
 | 2026-10-14 | 哑铃臀推 | 照抄臀桥：肩躺在地上、图里没有凳（还被 SUPINE_ON_FLOOR 断言钉在地上），与 cue「上背靠在稳固的凳边」不符 | [Contreras, Human Kinetics](https://us.humankinetics.com/blogs/excerpt/barbell-glute-hip-thrust)（凳高 30–40cm、顶点髋与地平行） | 按约束重建：凳高 64px≈40cm，肩钉凳沿，顶点躯干/大腿水平、小腿竖直；凳只向头侧延伸、z 向半宽 60；补间肩钉住（原中途离凳 7px）；新断言。figure-reviewer APPROVE | fix/hip-thrust-bench |
 | 2026-10-14 | 传统硬拉 | 起始杠心离地 7px（片被钳成半径 7），杠在踝下；髋压到膝高、髋角 27°，画成「蹲着拉」。一条断言要求杠心离地 ≤10，把错误钉成了正确答案 | [Starting Strength：标准片 450mm](https://startingstrength.com/resources/forum/gyms-and-equipment/96568-deadlift-44-cm-46-cm-diameter-plates-post1876588.html)；肩胛在杠正上方、杠贴小腿过足中线 | 片半径 31（按腿的比例）、杠心离地 31；按约束重建起始帧（髋高于膝 14px、髋角 48°、肩在杠前 4px）；补间加小腿途经点 shinVia，杠过膝时离膝 ≈10px（原 2.5）；改写旧断言。figure-reviewer APPROVE | fix/deadlift-bar-height |
+| 2026-10-14 | 哑铃前蹲 | cue「肘抬到与地面接近平行」「肘不许掉」，3D 上臂却低于水平 41–43°、肘朝外——画的正是 mistakes 里的「肘下掉」 | [NASM Dumbbell Front Squat](https://www.nasm.org/resource-center/exercise-library/dumbbell-front-squat)（elbows high） | 新参数 handOff（握点按躯干系放到哑铃把手上）、pole 朝前；上臂 +6° … −16°（全程），肘角 28°；断言全程采样。遗留：哑铃画短，下端离上臂约 6px。figure-reviewer APPROVE | fix/db-front-squat-elbows |
 
 ## 5. 待查候选
 
@@ -118,7 +119,7 @@
 |---|---|---|---|---|---|
 | 1 | 哑铃臀推 | 「上背靠在稳固的凳边」，凳高 30–40cm（Contreras） | 图里没有凳，肩离地 6px——照抄臀桥，画成负重臀桥 | 高 | **已修** |
 | 2 | 传统硬拉 | 标准片杠心离地 22.5cm（按腿的比例≈31px） | 起始杠心离地 6.8px（片半径被钳到 7），杠在踝下；大腿近水平是它的连带结果 | 高 | **已修** |
-| 3 | 哑铃前蹲 | 「肘抬到与地面接近平行」「肘不许掉」 | 上臂低于水平 41–43° | 高 | 待修 |
+| 3 | 哑铃前蹲 | 「肘抬到与地面接近平行」「肘不许掉」 | 上臂低于水平 41–43° | 高 | **已修** |
 | 4 | 引体向上 | ACE：肘往下拉到躯干两侧 | 顶点肘在手外侧 23px，前臂正面外倾 41°（与下拉修复前同） | 中高 | 待修 |
 | 5 | 弹力带早安 | 躯干前倾到接近水平 | 底部躯干高于水平 53°，比 RDL 底部（34°）还浅 | 中 | 待修 |
 | 6 | 罗马尼亚硬拉 | 「杠贴大腿」「膝角保持」 | 杠离股骨线 19–22px，膝角变 13° | 中 | 待修 |
