@@ -422,3 +422,12 @@ test('卡片文字提到靠背的坐姿动作，图上要有靠背', async () =>
   // 斜躺座（腿举）沿躯干铺开，本身就是靠背；平座面要另画一块
   for (const slug of need) assert.ok(ORBIT_PARAMS[slug].backrest || POSES[figures[slug].start].benchIncline, `${slug}: 文字提到靠背，图上没有`);
 });
+
+test('坐姿推举躯干（靠背）略后仰 4–12°，不前倾', () => {
+  // setup「靠背调到接近垂直（略仰 5–10 度）」；原来躯干前倾 2°，补上的靠背跟着前倾，方向反了。
+  for (const n of ['seated_press_bottom', 'seated_press_top']) {
+    const p = POSES[n];
+    const back = Math.atan2(p.hip[0] - p.shoulder[0], p.hip[1] - p.shoulder[1]) * 180 / Math.PI;   // 人朝 +x，肩在髋后为正
+    assert.ok(back >= 4 && back <= 12, `${n}: 躯干后仰 ${back.toFixed(1)}°`);
+  }
+});
