@@ -2,7 +2,7 @@ import { renderClaimTag, escapeHtml } from './claims.mjs';
 
 const TOKEN_RE = /\{\{(claim|ex|plan|fig|anat):([a-z0-9-]+)\}\}/g;
 
-/** 一张已登记的肌肉分布图。正文占位符与参考库图谱共用，保证两处标记一致、都能过登记校验。 */
+/** 一张已登记的肌肉分布图。正文占位符与第 4 章开头的图谱共用，保证两处标记一致、都能过登记校验。 */
 export function anatFigure(a) {
   const t = escapeHtml(a.title);
   // 竖图（全身、躯干）铺满正文宽度会有一千多像素高，单独收窄
@@ -13,6 +13,11 @@ export function anatFigure(a) {
 }
 
 export function expandTokens(html, ctx) {
+  // {{atlas}}：肌肉图谱整块（第 4 章开头），只能用一次——它带 id="atlas"
+  html = html.replace(/\{\{atlas\}\}/g, () => {
+    if (!ctx.atlasHtml) throw new Error('{{atlas}} 占位符需要肌肉图谱，但没有登记任何全局/部位图');
+    return ctx.atlasHtml;
+  });
   return html.replace(TOKEN_RE, (_m, kind, id) => {
     if (kind === 'claim') {
       const claim = ctx.claims.get(id);

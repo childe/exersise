@@ -56,7 +56,6 @@ a { color: var(--accent); }
 .evidence-scope { font-size: 0.85em; color: var(--muted, inherit); }
 
 .toc { border: 1px solid var(--rule); padding: 8px 16px; border-radius: 8px; background: var(--surface); }
-.toc .toc-appendix { list-style: none; margin-top: 4px; }
 .chapter, .ex-card, .plan-card, .claim-entry, .quiz-item {
   border: 1px solid var(--rule); border-radius: 8px; padding: 16px;
   margin: 16px 0; background: var(--surface);
@@ -82,7 +81,7 @@ figure.anat figcaption { color: var(--muted); font-size: 0.85em; margin-top: 6px
 figure.anat.tall { max-width: 720px; margin-left: auto; margin-right: auto; }
 #atlas .atlas-lede, #atlas .atlas-note { max-width: 46em; }
 #atlas .atlas-note, .atlas-link { color: var(--muted); font-size: 0.9em; }
-#atlas h3 { margin-top: 32px; }
+#atlas h4 { margin-top: 32px; }
 
 /* 无 JS 与打印时两轨都展开；只有脚本跑起来后才隐藏非活动轨。
    全文件中不得存在任何无条件隐藏 .track 的规则。 */
