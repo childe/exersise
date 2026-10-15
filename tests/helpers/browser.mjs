@@ -2,7 +2,7 @@
 // 在真实浏览器里跑路由 / 筛选 / 锚点 / 历史导航 / 打印 / 窄屏 / 无 JS 的行为。
 // 不引入任何依赖（package.json 是零依赖的），只用 Node 自带的 WebSocket 与 fetch。
 import { spawn } from 'node:child_process';
-import { mkdtemp, rm } from 'node:fs/promises';
+import { mkdtemp, readFile, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { existsSync } from 'node:fs';
@@ -22,27 +22,40 @@ export function findBrowser() {
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
-export async function launch(fileUrl, { port = 9400 + (process.pid % 400) } = {}) {
+// CI 的 2 核机器上几个测试文件并行跑，冷启动 Chrome 偶尔要 10 秒以上——
+// 给 30 秒；真起不来的情况靠下面的「进程已退出」快速失败，不会白等。
+const LAUNCH_TIMEOUT_MS = 30000;
+
+export async function launch(fileUrl) {
   const bin = findBrowser();
   if (!bin) throw new Error('没有找到 Chromium 内核浏览器');
   const userDataDir = await mkdtemp(path.join(tmpdir(), 'fg-browser-'));
+  // 端口交给 Chrome 自己挑（0），它把实际端口写进 user-data-dir/DevToolsActivePort。
+  // 以前按 pid 算端口，并行的测试文件偶尔撞上同一个，表现为「没有打开目标页面」。
   const proc = spawn(bin, [
     '--headless=new', '--disable-gpu', '--no-first-run', '--no-default-browser-check',
     '--disable-extensions', '--allow-file-access-from-files',
-    `--user-data-dir=${userDataDir}`, `--remote-debugging-port=${port}`, fileUrl,
-  ], { stdio: 'ignore' });
+    `--user-data-dir=${userDataDir}`, '--remote-debugging-port=0', fileUrl,
+  ], { stdio: ['ignore', 'ignore', 'pipe'] });
+  let stderr = '';
+  proc.stderr.on('data', (d) => { stderr = (stderr + d).slice(-2000); });
+  let exited = null;
+  proc.on('exit', (code, signal) => { exited = signal ?? code; });
 
   let target = null;
-  for (let i = 0; i < 100 && !target; i += 1) {
+  const deadline = Date.now() + LAUNCH_TIMEOUT_MS;
+  while (!target && exited === null && Date.now() < deadline) {
     await sleep(100);
     try {
+      const port = (await readFile(path.join(userDataDir, 'DevToolsActivePort'), 'utf8')).split('\n')[0];
       const list = await (await fetch(`http://127.0.0.1:${port}/json/list`)).json();
       target = list.find((t) => t.type === 'page' && t.url.startsWith('file://'));
     } catch { /* 还没起来 */ }
   }
   if (!target) {
     proc.kill('SIGKILL');
-    throw new Error('浏览器没有在 10 秒内打开目标页面');
+    const why = exited !== null ? `浏览器进程已退出（${exited}）` : `浏览器没有在 ${LAUNCH_TIMEOUT_MS / 1000} 秒内打开目标页面`;
+    throw new Error(`${why}${stderr ? `\n--- stderr 末尾 ---\n${stderr}` : ''}`);
   }
 
   const ws = new WebSocket(target.webSocketDebuggerUrl);

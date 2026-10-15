@@ -193,7 +193,7 @@ test('实际发布的 artifact.html（平台补外壳后）在浏览器里同样
   await writeFile(file, `<!doctype html><html><head><meta charset="utf-8">`
     + `<meta name="viewport" content="width=device-width, initial-scale=1">`
     + `</head><body>${body}</body></html>`, 'utf8');
-  const A = await launch(pathToFileURL(file).href, { port: 9833 });
+  const A = await launch(pathToFileURL(file).href);
   try {
     assert.equal(await A.evaluate(() => document.body.classList.contains('js-on')), true);
     await A.evaluate(() => { document.querySelector('.track-switch button[data-track="ref"]').click(); });
