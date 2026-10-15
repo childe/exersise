@@ -83,7 +83,14 @@ export function faultPose2D(p, fault, u, half) {
           const S = q['shoulder' + s] ?? q.shoulder;
           for (const k of ['elbow', 'wrist']) if (q[k + s]) q[k + s] = fltRot(q[k + s], S, op.deg * w);
         }
-        if (op.load !== false && q.load && q.loadAnchor === 'wrist') fltMoveLoad(q, (x) => fltRot(x, q.shoulder, op.deg * w));
+        if (op.load !== false && q.load && q.loadAnchor === 'wrist') {
+          // 只转被转的那一侧手里的负荷：at 在近侧手、at2 在远侧手
+          const L = { ...q.load };
+          if (op.side !== 'far') L.at = fltRot(L.at, q.shoulder, op.deg * w);
+          if (L.at2 && op.side !== 'near') L.at2 = fltRot(L.at2, q.shoulder2 ?? q.shoulder, op.deg * w);
+          if (op.side === 'far' && !L.at2) break;   // 只有一件负荷（杠）时它在两手之间，转一侧手不该带走它
+          q.load = L;
+        }
         break;
       }
       case 'hip': {
@@ -95,7 +102,7 @@ export function faultPose2D(p, fault, u, half) {
         const A0 = q.ankle, K0 = q.knee;
         if (A0 && K0) {
           const reach = Math.hypot(K0[0] - H0[0], K0[1] - H0[1]) + Math.hypot(A0[0] - K0[0], A0[1] - K0[1]) - 0.01;
-          if (Math.hypot(H[0] - A0[0], H[1] - A0[1]) > reach) H = fltIk(S, A0, tl, reach, H);
+          if (Math.hypot(H[0] - A0[0], H[1] - A0[1]) > reach) { H = fltIk(S, A0, tl, reach, H); q._faultClamped = true; }
         }
         for (const s of ['', '2']) {
           const K = q['knee' + s], A = q['ankle' + s];
@@ -103,6 +110,9 @@ export function faultPose2D(p, fault, u, half) {
           const l1 = Math.hypot(K[0] - H0[0], K[1] - H0[1]), l2 = Math.hypot(A[0] - K[0], A[1] - K[1]);
           q['knee' + s] = fltIk(H, A, l1, l2, K);
         }
+        // 头随躯干一起转（绕肩），否则多出一个没人要的仰头 / 低头
+        const a0 = Math.atan2(S[1] - H0[1], S[0] - H0[0]), a1 = Math.atan2(S[1] - H[1], S[0] - H[0]);
+        if (q.head) q.head = fltRot(q.head, S, (a1 - a0) / FLT_RAD);
         q.hip = H;
         break;
       }
@@ -177,7 +187,7 @@ export function faultJoints3D(J, fault, u, half) {
         const ax = [A[0] - H[0], A[1] - H[1], A[2] - H[2]], al = Math.hypot(...ax) || 1;
         const k = ax.map((x) => x / al);
         // 二分找转角：膝的 |z| 收 px。方向取让 |z| 变小的那一边
-        const target = Math.abs(K[2]) - op.px * w;
+        const target = Math.max(0, Math.abs(K[2]) - op.px * w);   // 最多收到中线，不穿过去
         const zAt = (deg) => Math.abs(fltRot3(K, H, k, deg)[2]);
         const sgn = zAt(5) < zAt(-5) ? 1 : -1;
         let lo = 0, hi = 80;

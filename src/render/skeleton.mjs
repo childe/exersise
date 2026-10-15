@@ -1490,7 +1490,8 @@ export function renderMistakeFigure(fig, mf, nameZh, slug, error) {
   const ro = { plumb, lt: fig.load_type, names: { a: wa, b: wb }, fault, ghost };
   const of = orbitFrame(slug, A, B, interpolate, iopts, ro);
   const [ox, oy, ow, oh] = of.box;
-  const cfg = { slug, a: wa, b: wb, plumb, no_load: !!fig.no_load, handPath: !!fig.hand_path, prime: [],
+  // plumb 是「画不画杠线」，ip 是补间要不要反解躯干（fig.plumb）：两件事，换了视角只关前者
+  const cfg = { slug, a: wa, b: wb, plumb, ip: fig.plumb ?? null, no_load: !!fig.no_load, handPath: !!fig.hand_path, prime: [],
     load_type: fig.load_type ?? null, orbit: of, mistake: mf.mistake, fault, tempo: mf.tempo ?? null,
     ...(ghost ? { ga, gb } : {}) };
   const st = mistakeStill(mf);

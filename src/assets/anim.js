@@ -200,7 +200,7 @@ export function initSkeletonAnimation({ POSES, interpolate, renderPose, drawnArm
     if (it.cfg.fault) {
       // 错误示范：错误动作按自己的节奏走（弹震、失控下落），灰影始终按正常节奏
       const yaw = ORBIT_YAW * Math.sin((it.orbT / ORBIT_PERIOD) * Math.PI * 2);
-      const io = { plumb: it.cfg.plumb, handPath: it.cfg.handPath };
+      const io = { plumb: it.cfg.ip ?? undefined, handPath: it.cfg.handPath };
       const w = faultPhase(it.cfg.tempo, ph), g = faultPhase(null, ph);
       const uw = faultU(it.cfg.fault, w.u);
       const p = interpolate(it.A, it.B, uw, io);

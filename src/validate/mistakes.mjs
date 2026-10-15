@@ -40,6 +40,10 @@ export function validateMistakeFigures(mf, exercises, poseFigures, { requireAll 
       if (m.yaw !== undefined && !(typeof m.yaw === 'number' && Math.abs(m.yaw) <= 120)) errs.push(`${where}：yaw 必须是 ±120 内的角度`);
       if (m.tempo && !TEMPOS.has(m.tempo)) errs.push(`${where}：未知节奏 ${m.tempo}`);
       if (m.rom && !(m.rom.length === 2 && m.rom.every((x) => x >= 0 && x <= 1))) errs.push(`${where}：rom 必须是 [0..1, 0..1]`);
+      // 侧倾 / 旋转只转身体；横在两手之间的杠铃不会跟着转，手会离杠
+      const lt = poseFigures[e.slug].load_type ?? POSES[m.start ?? poseFigures[e.slug].start]?.load?.type;
+      if ((m.ops ?? []).some((op) => op.op === 'lateral' || op.op === 'twist') && ['bar', 'front'].includes(lt) && !poseFigures[e.slug].no_load)
+        errs.push(`${where}：lateral / twist 不能用在杠铃上（杠不随身体转，手会离杠）`);
       for (const op of m.ops ?? []) {
         const need = OPS[op.op];
         if (!need) { errs.push(`${where}：未知变换 ${op.op}`); continue; }

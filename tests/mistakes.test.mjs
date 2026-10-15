@@ -9,7 +9,7 @@ import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { GROUND, mistakeSetup, mistakeStill, renderMistakeFigure } from '../src/render/skeleton.mjs';
 import { interpolate } from '../src/render/interp.mjs';
-import { orbitScene, orbitFrame, orbitPoints, orbitBaseYaw, ORBIT_YAW } from '../src/render/orbit.mjs';
+import { orbitScene, orbitFrame, orbitPoints, orbitBaseYaw, orbitProject, ORBIT_YAW } from '../src/render/orbit.mjs';
 import { faultU, faultWeight } from '../src/render/faults.mjs';
 import { mistakeMetrics } from '../src/render/mistake-metrics.mjs';
 import { validateMistakeFigures } from '../src/validate/mistakes.mjs';
@@ -64,23 +64,112 @@ test('错误示范里的人仍然成立：骨长不变、不穿地', () => {
   }
 });
 
-test('错误示范与灰影看得出差别', () => {
-  // 最大的关节位移至少 8px（约 5cm）：再小就是两层几乎重合的线，读者看不出错在哪。
+const cfgOf = (d) => {
+  const html = renderMistakeFigure(d.fig, d.mf, d.slug, d.slug, 'x');
+  return JSON.parse(html.match(/data-anim="([^"]+)"/)[1].replace(/&quot;/g, '"').replace(/&lt;/g, '<').replace(/&amp;/g, '&'));
+};
+// 关节 → 它所在的骨段（标红按骨段标）
+const PART_OF = {
+  knee: ['thigh', 'shin'], ankle: ['shin', 'foot'], heel: ['foot'], toe: ['foot'], hip: ['thigh', 'pelvis', 'trunk'],
+  pelvis: ['trunk', 'thigh', 'pelvis'], neck: ['trunk', 'shoulders', 'head'], back: ['trunk'], shoulder: ['shoulders', 'trunk', 'upperarm'],
+  elbow: ['upperarm', 'forearm'], wrist: ['forearm', 'load'], head: ['head'], spine: ['trunk'],
+};
+/** 错误与灰影在若干视角下投影位移最大的关节：[位移, 关节名]。 */
+function maxShift(d) {
+  const cfg = cfgOf(d), base = orbitBaseYaw(d.slug, cfg.fault);
+  let best = [0, ''];
+  for (const { W, G } of framesOf(d)) {
+    const pts = (J) => {
+      const o = Object.fromEntries(Object.entries(J).filter(([, v]) => Array.isArray(v) && typeof v[0] === 'number'));
+      // 圆背 / 塌腰只改躯干线中段：取弧的中点，灰影取直线中点
+      o.spine = J.spinePts ? J.spinePts[Math.floor(J.spinePts.length / 2)] : J.pelvis.map((x, i) => (x + J.neck[i]) / 2);
+      return o;
+    };
+    const w = pts(W.J), g = pts(G.J);
+    for (const yaw of [base - ORBIT_YAW, base, base + ORBIT_YAW]) {
+      for (const k of Object.keys(g)) {
+        if (!w[k]) continue;
+        const a = orbitProject(w[k], yaw, cfg.orbit.pivot), b = orbitProject(g[k], yaw, cfg.orbit.pivot);
+        const dd = Math.hypot(a[0] - b[0], a[1] - b[1]);
+        if (dd > best[0]) best = [dd, k.replace(/[NF]$/, '')];
+      }
+    }
+  }
+  return best;
+}
+
+test('错误示范与灰影看得出差别（投影到屏幕上量）', () => {
+  // 最大的关节位移至少 8px（约 5cm），在基准视角与两侧摆到头的视角里量投影——
+  // 3D 距离会放过「纯 z 方向的错误配侧视」：膝内扣 12px 在侧视两边摆 30° 只剩 6px。
   // 节奏类错误（tempo）的差别在时间上，不在形状上，不查。
   for (const d of drawn) {
     if (d.mf.tempo) continue;
-    let best = 0;
-    for (const { W, G } of framesOf(d)) {
-      for (const k of Object.keys(G.J)) if (Array.isArray(G.J[k]) && W.J[k]) best = Math.max(best, L3(W.J[k], G.J[k]));
+    const [dd, k] = maxShift(d);
+    assert.ok(dd >= 8, `${d.slug}#${d.mf.mistake}: 错误与正确投影最多只差 ${dd.toFixed(1)}px（${k}）`);
+  }
+});
+
+test('标红的部位包含差别最大的那个关节所在的骨段', () => {
+  for (const d of drawn) {
+    if (!d.mf.hl?.length) continue;
+    const [, k] = maxShift(d);
+    const parts = PART_OF[k] ?? [];
+    assert.ok(parts.some((x) => d.mf.hl.includes(x)), `${d.slug}#${d.mf.mistake}: 差别最大的是 ${k}，可标红的是 ${d.mf.hl.join('、')}`);
+  }
+});
+
+test('变换没有被钳住：要多少给多少', () => {
+  // 挪髋挪到腿够不到时会被钳到两圆交点上——画出来的是「腿锁直、小腿后仰」，不是数据写的那个错误
+  for (const d of drawn) for (const { W, u, half } of framesOf(d))
+    assert.ok(!W.p._faultClamped, `${d.slug}#${d.mf.mistake} u=${u} half=${half}: 变换被钳住，调小幅度`);
+});
+
+test('只在一个半程出现的错误，另一个半程与灰影完全相同', () => {
+  for (const d of drawn) {
+    const profs = new Set((d.mf.ops ?? []).map((op) => op.prof ?? 'u'));
+    if (d.mf.params || d.mf.rom || d.mf.start || d.mf.end || profs.size !== 1) continue;
+    const off = profs.has('up') ? 0 : profs.has('down') ? 1 : null;
+    if (off === null) continue;
+    for (const { W, G, half, u } of framesOf(d)) {
+      if (half !== off) continue;
+      for (const k of Object.keys(G.J)) if (Array.isArray(G.J[k]) && W.J[k])
+        assert.ok(L3(W.J[k], G.J[k]) < 0.5, `${d.slug}#${d.mf.mistake} u=${u}: 不该出错的半程 ${k} 差 ${L3(W.J[k], G.J[k]).toFixed(1)}`);
     }
-    assert.ok(best >= 8, `${d.slug}#${d.mf.mistake}: 错误与正确最多只差 ${best.toFixed(1)}px`);
+  }
+});
+
+test('握杆类器械：错误示范里手仍握在杆上', () => {
+  for (const d of drawn) for (const { W, u, half } of framesOf(d)) {
+    const p = W.p, t = d.fig.load_type ?? p.load?.type;
+    const at = p.fixed?.at ?? (['bar', 'front', 'wheel', 'sled'].includes(t) ? p.load?.at : null);
+    if (!at) continue;
+    for (const k of ['wristN', 'wristF']) {
+      const dd = Math.hypot(W.J[k][0] - at[0], W.J[k][1] - at[1]);
+      assert.ok(dd <= 10, `${d.slug}#${d.mf.mistake} u=${u} half=${half} ${k}: 手离杆心 ${dd.toFixed(1)}px`);
+    }
+  }
+});
+
+test('浏览器里的补间与服务端同一套参数', () => {
+  // 客户端只拿得到 data-anim 里的 cfg。曾把「画不画杠线」当成补间参数传过去，
+  // 换了视角的错误示范在浏览器里灰影的杠离开足中线 13px，而服务端、断言都看不到。
+  for (const d of drawn) {
+    const cfg = cfgOf(d), s = mistakeSetup(d.fig, d.mf);
+    const io = { plumb: cfg.ip ?? undefined, handPath: cfg.handPath };
+    for (let i = 0; i <= 8; i++) {
+      const u = i / 8;
+      for (const [A, B] of [[s.A, s.B], [s.GA, s.GB]]) {
+        const c = interpolate(A, B, u, io), v = interpolate(A, B, u, s.iopts);
+        for (const k of ['hip', 'shoulder', 'knee', 'wrist']) if (v[k])
+          assert.ok(Math.hypot(c[k][0] - v[k][0], c[k][1] - v[k][1]) < 0.5, `${d.slug}#${d.mf.mistake} u=${u} ${k}: 客户端与服务端不一致`);
+      }
+    }
   }
 });
 
 test('错误示范的每一帧、每个角度都在画框内', () => {
   for (const d of drawn) {
-    const html = renderMistakeFigure(d.fig, d.mf, d.slug, d.slug, 'x');
-    const cfg = JSON.parse(html.match(/data-anim="([^"]+)"/)[1].replace(/&quot;/g, '"').replace(/&lt;/g, '<').replace(/&amp;/g, '&'));
+    const cfg = cfgOf(d);
     const [bx, by, bw, bh] = cfg.orbit.box;
     const base = orbitBaseYaw(d.slug, cfg.fault);
     for (const { W, G, half } of framesOf(d)) {
@@ -109,13 +198,15 @@ test('出错部位只在真的错了的帧标红', () => {
 // 写进文字的量都在这里核对：图改了、文字没跟上，这里会失败。
 const near = (v, x, tol, msg) => assert.ok(Math.abs(v - x) <= tol, `${msg}：实测 ${v.toFixed(1)}，文字写 ${x}`);
 const CLAIMS = {
-  'back-squat-high-bar#0': ({ wrong: w, right: r }) => {
-    near(r.kneeAngle, 113, 2, '正确动作起身中段膝角');
-    near(w.kneeAngle, 163, 2, '错误动作膝角');
-    near(r.trunkFromVertical, 33, 1.5, '正确躯干离竖直');
-    near(w.trunkFromVertical, 49, 1.5, '错误躯干离竖直');
-    near(r.hipToLoadX, 43, 1.5, '正确髋到杠水平距离');
-    near(w.hipToLoadX, 60, 1.5, '错误髋到杠水平距离');
+  'back-squat-high-bar#0': ({ wrong: w, right: r, pw }) => {
+    near(w.kneeAngle - r.kneeAngle, 20, 2, '膝多伸');
+    const shin = Math.atan2(pw.knee[0] - pw.ankle[0], pw.ankle[1] - pw.knee[1]) * 180 / Math.PI;
+    near(shin, 0, 3, '小腿接近竖直（不往后仰）');
+    near(r.trunkFromVertical, 33, 1, '正确躯干离竖直');
+    near(w.trunkFromVertical, 42, 1, '错误躯干离竖直');
+    near(r.hipToLoadX, 43, 1, '正确髋到杠水平距离');
+    near(w.hipToLoadX, 52, 1, '错误髋到杠水平距离');
+    near((w.hipToLoadX / r.hipToLoadX - 1) * 100, 22, 2, '力臂增幅 %');
     near(w.load[0], r.load[0], 0.5, '杠的水平位置不变');
   },
   'back-squat-high-bar#1': ({ wrong: w, right: r }) => {
