@@ -123,6 +123,7 @@ export async function build(root = defaultRoot, { outDir } = {}) {
     chapterTitles: new Map(data.chapters.map((c) => [c.id, `第 ${c.num} 章 ${c.title}`])),
     safetyCanon: data.safetyCanon,
     poseFigures: data.poseFigures,
+    atlasHtml: renderAtlas(data.anatomy),
   };
   const exerciseHtml = renderExercises(data.exercises, renderCtx);
   // 从**渲染产物**里把框读回来，而不是在校验器里重算一遍——重算等于同义反复。
@@ -134,12 +135,10 @@ export async function build(root = defaultRoot, { outDir } = {}) {
   if (animBoxes.size === 0) throw new Error('动画框校验：一个 data-anim 都没解析到，断言会静默放行');
   const animBoxErrs = validateAnimBox(data.poseFigures, (slug) => animBoxes.get(slug) ?? null);
   if (animBoxErrs.length) throw new Error(`动画框校验失败:\n- ${animBoxErrs.join('\n- ')}`);
-  const atlasHtml = renderAtlas(data.anatomy);
   const html = renderPage(data, {
     css, js, animJs,
-    chapterHtml: renderChapters(loaded, renderCtx, { atlas: Boolean(atlasHtml) }),
+    chapterHtml: renderChapters(loaded, renderCtx),
     exerciseHtml,
-    atlasHtml,
     planHtml: renderPlans(data.plans, renderCtx),
     claimHtml: renderClaimRegistry(data.claims),
     quizHtml: renderQuiz(data.quiz, renderCtx),

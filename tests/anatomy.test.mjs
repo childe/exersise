@@ -105,21 +105,19 @@ test('真实登记表：每张登记的图都在页面上出现在该在的位�
   assert.ok(lastGlobal < firstPart, '全局图（在哪）应排在部位图（分几束）前面');
 });
 
-test('图谱是学习路径的一部分：进路由表、归学习轨、目录有入口，动作库能链过去', async () => {
+test('图谱在第 4 章开头：先于 4.1，进路由表、归学习轨，动作库能链过去', async () => {
   const outDir = await mkdtemp(path.join(tmpdir(), 'fitguide-atlas-'));
   const html = await build(root, { outDir });
   const ids = JSON.parse(/window\.__IDS__=(\[[^\]]*\])/.exec(html)[1]);
   assert.ok(ids.includes('atlas'), '不进路由表的话，从别处点到 #atlas 会提示锚点不存在');
-  const learnStart = html.indexOf('id="track-learn"');
-  const refStart = html.indexOf('id="track-ref"');
+  assert.equal(html.split('<section id="atlas">').length, 2, '图谱只应出现一次');
+  const ch4Start = html.indexOf('id="ch4"');
   const atlasAt = html.indexOf('<section id="atlas">');
-  assert.ok(atlasAt > learnStart && atlasAt < refStart, '图谱应在学习路径轨道里，而不是参考库');
-  const toc = /<nav class="toc"[\s\S]*?<\/nav>/.exec(html)[0];
-  assert.ok(toc.includes('href="#atlas"'), '章节目录里应有图谱入口');
+  const s41 = html.indexOf('<h3>4.1 ', ch4Start);
+  assert.ok(ch4Start < atlasAt && atlasAt < s41, '图谱应在第 4 章开头、4.1 之前');
   const { trackOf } = await import('../src/assets/app.js');
   assert.equal(trackOf('atlas'), 'learn', '#atlas 应切到学习轨');
-  const ref = html.slice(refStart);
+  const ref = html.slice(html.indexOf('id="track-ref"'));
   assert.ok(ref.includes('href="#atlas"'), '动作库顶部仍应有跳到图谱的入口');
-  const ch4 = html.slice(html.indexOf('id="ch4"'), html.indexOf('id="ch5"'));
-  assert.ok(ch4.includes('href="#atlas"'), '第 4 章功能解剖应链到图谱');
+  assert.ok(!html.includes('toc-appendix'), '图谱已并入第 4 章，目录里不再单列附录');
 });
