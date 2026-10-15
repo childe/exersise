@@ -116,6 +116,31 @@ export function faultPose2D(p, fault, u, half) {
         q.hip = H;
         break;
       }
+      case 'shift': {
+        // 髋连同整个上半身（和肩上 / 手里的负荷）平移，踝不动、膝按大小腿长重解
+        const d = [op.dx * w, op.dy * w], H0 = q.hip, H = fltAdd(H0, d);
+        for (const s of ['', '2']) {
+          const K = q['knee' + s], A = q['ankle' + s];
+          if (!K || !A) continue;
+          const l1 = Math.hypot(K[0] - H0[0], K[1] - H0[1]), l2 = Math.hypot(A[0] - K[0], A[1] - K[1]);
+          if (Math.hypot(H[0] - A[0], H[1] - A[1]) > l1 + l2 - 0.01) q._faultClamped = true;
+          q['knee' + s] = fltIk(H, A, l1, l2, K);
+        }
+        q.hip = H;
+        for (const k of FLT_UPPER) if (q[k]) q[k] = fltAdd(q[k], d);
+        if (fltLoadUpper(q)) fltMoveLoad(q, (x) => fltAdd(x, d));
+        break;
+      }
+      case 'foot': {
+        // 一只脚整体前后挪（脚踩的位置不对），髋不动、膝按大小腿长重解
+        const s = op.side === 'far' ? '2' : '';
+        const d = [op.dx * w, (op.dy ?? 0) * w], K = q['knee' + s], A0 = q['ankle' + s];
+        const l1 = Math.hypot(K[0] - q.hip[0], K[1] - q.hip[1]), l2 = Math.hypot(A0[0] - K[0], A0[1] - K[1]);
+        for (const k of ['ankle', 'heel', 'toe']) if (q[k + s]) q[k + s] = fltAdd(q[k + s], d);
+        if (Math.hypot(q.hip[0] - q['ankle' + s][0], q.hip[1] - q['ankle' + s][1]) > l1 + l2 - 0.01) q._faultClamped = true;
+        q['knee' + s] = fltIk(q.hip, q['ankle' + s], l1, l2, K);
+        break;
+      }
       case 'heel': {
         const shift = {};
         for (const s of ['', '2']) {
@@ -205,6 +230,23 @@ export function faultJoints3D(J, fault, u, half) {
     }
   }
   return J;
+}
+
+/**
+ * 浏览器里错误示范的补间参数：只从 data-anim 的 cfg 取。ip 是 figures.json 的 plumb（补间要不要反解躯干），
+ * 不是 cfg.plumb（画不画杠线）——换了视角的错误示范两者不同，混用会让灰影的杠离开足中线。
+ */
+export const mistakeInterpOpts = (cfg) => ({ plumb: cfg.ip ?? undefined, handPath: cfg.handPath });
+
+/** 静止帧对应的动画相位：页面加载后动画从这一刻开始，而不是从还没出错的第一帧。 */
+export function faultPhaseOf(tempo, still) {
+  let best = 0, bd = Infinity;
+  for (let i = 0; i < 400; i++) {
+    const ph = i / 400, r = faultPhase(tempo, ph);
+    const dd = Math.abs(r.u - still.u) + (r.half === still.half ? 0 : 10);
+    if (dd < bd) { bd = dd; best = ph; }
+  }
+  return best;
 }
 
 /** 错误示范的补间进度：只做半程的错误把 u 压到 rom 区间里。 */

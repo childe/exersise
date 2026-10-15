@@ -1495,6 +1495,7 @@ export function renderMistakeFigure(fig, mf, nameZh, slug, error) {
     load_type: fig.load_type ?? null, orbit: of, mistake: mf.mistake, fault, tempo: mf.tempo ?? null,
     ...(ghost ? { ga, gb } : {}) };
   const st = mistakeStill(mf);
+  cfg.still = st;
   const uw = faultU(fault, st.u);
   const p = interpolate(A, B, uw, iopts);
   const gp = ghost ? { p: interpolate(GA, GB, st.u, iopts), names: ghost.names, u: st.u } : undefined;

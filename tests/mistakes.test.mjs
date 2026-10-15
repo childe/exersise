@@ -10,7 +10,8 @@ import path from 'node:path';
 import { GROUND, mistakeSetup, mistakeStill, renderMistakeFigure } from '../src/render/skeleton.mjs';
 import { interpolate } from '../src/render/interp.mjs';
 import { orbitScene, orbitFrame, orbitPoints, orbitBaseYaw, orbitProject, ORBIT_YAW } from '../src/render/orbit.mjs';
-import { faultU, faultWeight } from '../src/render/faults.mjs';
+import { faultU, faultWeight, mistakeInterpOpts } from '../src/render/faults.mjs';
+import { ORBIT_STATIC } from '../src/render/orbit.mjs';
 import { mistakeMetrics } from '../src/render/mistake-metrics.mjs';
 import { validateMistakeFigures } from '../src/validate/mistakes.mjs';
 
@@ -75,7 +76,7 @@ const PART_OF = {
   elbow: ['upperarm', 'forearm'], wrist: ['forearm', 'load'], head: ['head'], spine: ['trunk'],
 };
 /** 错误与灰影在若干视角下投影位移最大的关节：[位移, 关节名]。 */
-function maxShift(d) {
+function maxShift(d, yaws) {
   const cfg = cfgOf(d), base = orbitBaseYaw(d.slug, cfg.fault);
   let best = [0, ''];
   for (const { W, G } of framesOf(d)) {
@@ -86,7 +87,7 @@ function maxShift(d) {
       return o;
     };
     const w = pts(W.J), g = pts(G.J);
-    for (const yaw of [base - ORBIT_YAW, base, base + ORBIT_YAW]) {
+    for (const yaw of (yaws ?? [base - ORBIT_YAW, base, base + ORBIT_YAW])) {
       for (const k of Object.keys(g)) {
         if (!w[k]) continue;
         const a = orbitProject(w[k], yaw, cfg.orbit.pivot), b = orbitProject(g[k], yaw, cfg.orbit.pivot);
@@ -104,7 +105,9 @@ test('错误示范与灰影看得出差别（投影到屏幕上量）', () => {
   // 节奏类错误（tempo）的差别在时间上，不在形状上，不查。
   for (const d of drawn) {
     if (d.mf.tempo) continue;
-    const [dd, k] = maxShift(d);
+    // 只在基准视角与静止帧视角量：取两侧摆到头的最大值，侧视的膝内扣在 +30° 能凑到 8.6px 而放行
+    const base = orbitBaseYaw(d.slug, cfgOf(d).fault);
+    const [dd, k] = maxShift(d, [base, base + ORBIT_STATIC.yaw]);
     assert.ok(dd >= 8, `${d.slug}#${d.mf.mistake}: 错误与正确投影最多只差 ${dd.toFixed(1)}px（${k}）`);
   }
 });
@@ -155,7 +158,7 @@ test('浏览器里的补间与服务端同一套参数', () => {
   // 换了视角的错误示范在浏览器里灰影的杠离开足中线 13px，而服务端、断言都看不到。
   for (const d of drawn) {
     const cfg = cfgOf(d), s = mistakeSetup(d.fig, d.mf);
-    const io = { plumb: cfg.ip ?? undefined, handPath: cfg.handPath };
+    const io = mistakeInterpOpts(cfg);   // 与 anim.js 同一个函数
     for (let i = 0; i <= 8; i++) {
       const u = i / 8;
       for (const [A, B] of [[s.A, s.B], [s.GA, s.GB]]) {

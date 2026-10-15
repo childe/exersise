@@ -6,7 +6,7 @@
 import { POSES } from '../render/skeleton.mjs';
 
 const OPS = {
-  trunk: ['deg'], arm: ['deg'], hip: ['dx', 'dy'], heel: ['deg'], shrug: ['px'], load: ['dx', 'dy'],
+  trunk: ['deg'], arm: ['deg'], hip: ['dx', 'dy'], heel: ['deg'], shrug: ['px'], load: ['dx', 'dy'], shift: ['dx', 'dy'], foot: ['dx'],
   valgus: ['px'], lateral: ['deg'], twist: ['deg'], arm3: ['deg'], spine: ['bend'],
 };
 const PROFS = new Set(['u', '1-u', 'mid', 'up', 'down', 'const']);
@@ -44,6 +44,9 @@ export function validateMistakeFigures(mf, exercises, poseFigures, { requireAll 
       const lt = poseFigures[e.slug].load_type ?? POSES[m.start ?? poseFigures[e.slug].start]?.load?.type;
       if ((m.ops ?? []).some((op) => op.op === 'lateral' || op.op === 'twist') && ['bar', 'front'].includes(lt) && !poseFigures[e.slug].no_load)
         errs.push(`${where}：lateral / twist 不能用在杠铃上（杠不随身体转，手会离杠）`);
+      // 单侧转手臂：杠铃只有一件，3D 里两只手都重解到杠上——要么拖走整根杠，要么被完全抵消
+      if ((m.ops ?? []).some((op) => op.op === 'arm' && op.side) && ['bar', 'front'].includes(lt) && !poseFigures[e.slug].no_load)
+        errs.push(`${where}：杠铃上不能单侧转手臂（arm 带 side）`);
       for (const op of m.ops ?? []) {
         const need = OPS[op.op];
         if (!need) { errs.push(`${where}：未知变换 ${op.op}`); continue; }

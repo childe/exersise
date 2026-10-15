@@ -10,7 +10,7 @@
 const REP = 4.2;                       // 一次完整起落的秒数
 import { ik2 } from '../render/interp.mjs';
 import { renderOrbit, ORBIT_YAW, ORBIT_PERIOD } from '../render/orbit.mjs';
-import { faultPhase, faultU } from '../render/faults.mjs';
+import { faultPhase, faultU, mistakeInterpOpts, faultPhaseOf } from '../render/faults.mjs';
 const ARM_TAU = Math.PI * 2;
 const ARM_TRUE_UPPER = 50, ARM_TRUE_FORE = 39;   // 与 BONE 一致：投影不可能超过真骨
 // 最短弧：跨 ±π 时走近路
@@ -181,7 +181,9 @@ export function initSkeletonAnimation({ POSES, interpolate, renderPose, drawnArm
     const dB = drawnArm(cfg.b, B, cfg.load_type ?? undefined);
     const armA = armDescriptor(dA, A), armB = armDescriptor(dB, B);
     const opts = { plumb: cfg.plumb, handPath: cfg.handPath };
-    items.push({ svg, cfg, box: { x, y, w, h }, A, B, GA, GB, visible: false, t: 0, armA, armB,
+    // 错误示范从静止帧那一刻开始播：从 t=0 起的话，第一眼看到的是还没出错的那一帧
+    const t0 = cfg.fault && cfg.still ? faultPhaseOf(cfg.tempo, cfg.still) * REP : 0;
+    items.push({ svg, cfg, box: { x, y, w, h }, A, B, GA, GB, visible: false, t: t0, armA, armB,
       orbit, orbT: 0,
       plan: armSidePlan(armA, armB, A, B, dA, dB, interpolate, opts) });
   }
@@ -200,7 +202,7 @@ export function initSkeletonAnimation({ POSES, interpolate, renderPose, drawnArm
     if (it.cfg.fault) {
       // 错误示范：错误动作按自己的节奏走（弹震、失控下落），灰影始终按正常节奏
       const yaw = ORBIT_YAW * Math.sin((it.orbT / ORBIT_PERIOD) * Math.PI * 2);
-      const io = { plumb: it.cfg.ip ?? undefined, handPath: it.cfg.handPath };
+      const io = mistakeInterpOpts(it.cfg);
       const w = faultPhase(it.cfg.tempo, ph), g = faultPhase(null, ph);
       const uw = faultU(it.cfg.fault, w.u);
       const p = interpolate(it.A, it.B, uw, io);
