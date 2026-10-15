@@ -20,6 +20,7 @@ import { validatePoses, validateFigures as validatePoseFigures, validateMuscles,
   validateCoronal, validateLimbVsHead, validateAnimEndpoints,
   validateArmFixedToTorso, validateMuscleOnBone } from './validate/poses.mjs';
 import { MUSCLE_NAMES } from './render/muscles.mjs';
+import { validateMistakeFigures } from './validate/mistakes.mjs';
 import { escapeHtml } from './render/claims.mjs';
 
 const defaultRoot = path.resolve(import.meta.dirname, '..');
@@ -29,12 +30,13 @@ const defaultRoot = path.resolve(import.meta.dirname, '..');
 // 会让整段脚本**静默失效**（页面不报错，动画就是不出来）。
 // 所以拼完必须编译一遍并扫重名：这类错误不该靠肉眼在页面上发现。
 const ANIM_MODULES = [
+  'src/render/faults.mjs',     // 错误示范的姿态变换（无依赖）
   'src/render/arm.mjs',
   'src/render/muscle-segments.mjs',
   'src/render/facing.mjs',
   'src/render/skeleton.mjs',   // 依赖上面三个
   'src/render/interp.mjs',     // 依赖 skeleton
-  'src/render/orbit.mjs',      // 依赖 skeleton、facing、muscle-segments
+  'src/render/orbit.mjs',      // 依赖 skeleton、facing、muscle-segments、faults
   'src/assets/anim.js',
 ];
 
@@ -112,6 +114,8 @@ export async function build(root = defaultRoot, { outDir } = {}) {
   if (endErrs.length) throw new Error(`动画端点校验失败:\n- ${endErrs.join('\n- ')}`);
   const drawnErrs = validateDrawnAnimation(data.poseFigures);
   if (drawnErrs.length) throw new Error(`动画手臂校验失败:\n- ${drawnErrs.join('\n- ')}`);
+  const mistakeErrs = validateMistakeFigures(data.mistakeFigures, data.exercises, data.poseFigures, { requireAll: false });
+  if (mistakeErrs.length) throw new Error(`错误示范图校验失败:\n- ${mistakeErrs.join('\n- ')}`);
   const renderCtx = {
     claims: new Map(data.claims.map((c) => [c.id, c])),
     exercises: new Map(data.exercises.map((e) => [e.slug, e])),
@@ -123,6 +127,7 @@ export async function build(root = defaultRoot, { outDir } = {}) {
     chapterTitles: new Map(data.chapters.map((c) => [c.id, `第 ${c.num} 章 ${c.title}`])),
     safetyCanon: data.safetyCanon,
     poseFigures: data.poseFigures,
+    mistakeFigures: data.mistakeFigures,
     atlasHtml: renderAtlas(data.anatomy),
   };
   const exerciseHtml = renderExercises(data.exercises, renderCtx);
@@ -130,7 +135,7 @@ export async function build(root = defaultRoot, { outDir } = {}) {
   const animBoxes = new Map();
   for (const m of exerciseHtml.matchAll(/data-anim="([^"]*)"/g)) {
     const cfg = JSON.parse(m[1].replace(/&quot;/g, '"').replace(/&amp;/g, '&'));
-    if (cfg.slug) animBoxes.set(cfg.slug, cfg.box);
+    if (cfg.slug && cfg.mistake === undefined) animBoxes.set(cfg.slug, cfg.box);
   }
   if (animBoxes.size === 0) throw new Error('动画框校验：一个 data-anim 都没解析到，断言会静默放行');
   const animBoxErrs = validateAnimBox(data.poseFigures, (slug) => animBoxes.get(slug) ?? null);

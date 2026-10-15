@@ -10,6 +10,7 @@
 const REP = 4.2;                       // 一次完整起落的秒数
 import { ik2 } from '../render/interp.mjs';
 import { renderOrbit, ORBIT_YAW, ORBIT_PERIOD } from '../render/orbit.mjs';
+import { faultPhase, faultU } from '../render/faults.mjs';
 const ARM_TAU = Math.PI * 2;
 const ARM_TRUE_UPPER = 50, ARM_TRUE_FORE = 39;   // 与 BONE 一致：投影不可能超过真骨
 // 最短弧：跨 ±π 时走近路
@@ -167,6 +168,8 @@ export function initSkeletonAnimation({ POSES, interpolate, renderPose, drawnArm
     // 自重动作把模板里的负荷摘掉——照着练一副不存在的杠铃就是教错
     const strip = (p) => (cfg.no_load ? { ...p, load: undefined } : p);
     const A = strip(POSES[cfg.a]), B = strip(POSES[cfg.b]);
+    // 错误示范：正确动作（灰影）的两端
+    const GA = cfg.ga && POSES[cfg.ga] ? strip(POSES[cfg.ga]) : null, GB = cfg.gb && POSES[cfg.gb] ? strip(POSES[cfg.gb]) : null;
     // 手臂分两种画法，按端点是不是**重建过**来分：
     //   矢状面内（没重建）：直接用补间链算出的 elbow/wrist。链保证骨长不变、
     //     俯撑家族的手回到地面；以前对所有图一律走下面的混合，等于在两端点之间
@@ -178,7 +181,7 @@ export function initSkeletonAnimation({ POSES, interpolate, renderPose, drawnArm
     const dB = drawnArm(cfg.b, B, cfg.load_type ?? undefined);
     const armA = armDescriptor(dA, A), armB = armDescriptor(dB, B);
     const opts = { plumb: cfg.plumb, handPath: cfg.handPath };
-    items.push({ svg, cfg, box: { x, y, w, h }, A, B, visible: false, t: 0, armA, armB,
+    items.push({ svg, cfg, box: { x, y, w, h }, A, B, GA, GB, visible: false, t: 0, armA, armB,
       orbit, orbT: 0,
       plan: armSidePlan(armA, armB, A, B, dA, dB, interpolate, opts) });
   }
@@ -194,6 +197,18 @@ export function initSkeletonAnimation({ POSES, interpolate, renderPose, drawnArm
 
   const draw = (it) => {
     const ph = it.t / REP;
+    if (it.cfg.fault) {
+      // 错误示范：错误动作按自己的节奏走（弹震、失控下落），灰影始终按正常节奏
+      const yaw = ORBIT_YAW * Math.sin((it.orbT / ORBIT_PERIOD) * Math.PI * 2);
+      const io = { plumb: it.cfg.plumb, handPath: it.cfg.handPath };
+      const w = faultPhase(it.cfg.tempo, ph), g = faultPhase(null, ph);
+      const uw = faultU(it.cfg.fault, w.u);
+      const p = interpolate(it.A, it.B, uw, io);
+      const ghost = it.GA ? { p: interpolate(it.GA, it.GB, g.u, io), names: { a: it.cfg.ga, b: it.cfg.gb }, u: g.u } : undefined;
+      it.svg.innerHTML = renderOrbit(p, { slug: it.cfg.slug, names: { a: it.cfg.a, b: it.cfg.b }, u: uw, half: w.half, yaw,
+        frame: it.orbit, caption: '错误示范', plumb: it.cfg.plumb, lt: it.cfg.load_type ?? undefined, fault: it.cfg.fault, ghost });
+      return;
+    }
     const u = ease(ph < 0.5 ? ph * 2 : (1 - ph) * 2);
     const p = interpolate(it.A, it.B, u, { plumb: it.cfg.plumb, handPath: it.cfg.handPath });
     if (it.orbit) {

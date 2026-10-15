@@ -1,5 +1,6 @@
 // 出平面手臂的重建与主动肌标注。两者都只影响画法，不改姿态数据本身。
 import { ORBIT_FIGS, orbitFrame, renderOrbit, ORBIT_STATIC } from './orbit.mjs';
+import { faultWeight, faultU } from './faults.mjs';
 import { rebuildArmFor, OUT_OF_PLANE_ARM, ARM_OVERRIDES } from './arm.mjs';
 import { MUSCLE_SEG } from './muscle-segments.mjs';
 import { renderFace, facing, PRONE_POSES, FACE_GEOMETRY } from './facing.mjs';
@@ -1448,5 +1449,61 @@ export function renderSkeleton(fig, nameZh, prime = [], slug = '') {
     + frame(a, fig.cap_start ?? '起始', fig.start)
     + (two ? frame(b, fig.cap_end ?? '结束', fig.end) : '')
     + `<figcaption>${fig.note ?? '示意图：关节位置按本卡自检判据摆放，非写实插画。'}</figcaption>`
+    + '</figure>';
+}
+
+/**
+ * 错误示范的静止帧取在哪：变换最明显的那一刻（各变换强度之和最大）。
+ * 只有幅度 / 节奏类错误（没有变换）时取结束帧——只做半程的人停在半路，灰影在终点。
+ */
+export function mistakeStill(mf) {
+  if (mf.still) return mf.still;
+  let best = { u: 1, half: 0 }, bw = 0;
+  for (const half of [0, 1]) for (let i = 0; i <= 24; i++) {
+    const u = i / 24;
+    const w = (mf.ops ?? []).reduce((s, op) => s + faultWeight(op.prof, u, half), 0);
+    if (w > bw + 1e-9) { bw = w; best = { u, half }; }
+  }
+  return best;
+}
+
+/** 错误示范的全部输入：错误动作的两端、正确动作（灰影）的两端、变换。渲染、预览、断言共用这一份。 */
+export function mistakeSetup(fig, mf) {
+  const strip = (p) => (fig.no_load && p ? { ...p, load: undefined } : p);
+  const ga = fig.start, gb = fig.end ?? fig.start;
+  const wa = mf.start ?? ga, wb = mf.end ?? (mf.start ? mf.start : gb);
+  const fault = { ops: mf.ops ?? [], hl: mf.hl ?? [], ...(mf.params ? { params: mf.params } : {}),
+    ...(mf.rom ? { rom: mf.rom } : {}), ...(mf.yaw !== undefined ? { yaw: mf.yaw } : {}) };
+  return { wa, wb, ga, gb, A: strip(POSES[wa]), B: strip(POSES[wb]), GA: strip(POSES[ga]), GB: strip(POSES[gb]),
+    // 换了基准视角（正面看膝内扣）时不画杠线：足中线是侧视的判据，正面看它只是一条横在脚下的线
+    plumb: fig.plumb !== false && !fig.no_load && mf.yaw === undefined, iopts: { plumb: fig.plumb, handPath: !!fig.hand_path }, fault,
+    ghost: mf.ghost !== false };
+}
+
+/**
+ * 一张错误示范图：环绕视角，错误动作实画、出错部位标红，正确动作画成灰影叠在同一格里。
+ * fig 是该动作的正确图（figures.json），mf 是 mistake-figures.json 里的一条。
+ */
+export function renderMistakeFigure(fig, mf, nameZh, slug, error) {
+  const { wa, wb, ga, gb, A, B, GA, GB, plumb, iopts, fault, ghost: hasGhost } = mistakeSetup(fig, mf);
+  const ghost = hasGhost ? { A: GA, B: GB, names: { a: ga, b: gb } } : null;
+  const ro = { plumb, lt: fig.load_type, names: { a: wa, b: wb }, fault, ghost };
+  const of = orbitFrame(slug, A, B, interpolate, iopts, ro);
+  const [ox, oy, ow, oh] = of.box;
+  const cfg = { slug, a: wa, b: wb, plumb, no_load: !!fig.no_load, handPath: !!fig.hand_path, prime: [],
+    load_type: fig.load_type ?? null, orbit: of, mistake: mf.mistake, fault, tempo: mf.tempo ?? null,
+    ...(ghost ? { ga, gb } : {}) };
+  const st = mistakeStill(mf);
+  const uw = faultU(fault, st.u);
+  const p = interpolate(A, B, uw, iopts);
+  const gp = ghost ? { p: interpolate(GA, GB, st.u, iopts), names: ghost.names, u: st.u } : undefined;
+  const tempoNote = mf.tempo ? '这是节奏上的错误：看动图里错误动作与灰影的快慢差别。' : '';
+  return `<figure class="skeleton sk-mistake" data-exercise="${nameZh}" data-anim="${escapeAttr(JSON.stringify(cfg))}">`
+    + `<svg viewBox="${ox} ${oy} ${ow} ${oh}" class="sk-frame sk-orbit" data-pose="orbit"`
+    + ` preserveAspectRatio="xMidYMid meet" role="img" aria-label="${nameZh}·错误示范：${escapeAttr(error)}">`
+    + renderOrbit(p, { slug, names: ro.names, lt: fig.load_type, plumb, u: uw, half: st.half, yaw: ORBIT_STATIC.yaw,
+      frame: of, caption: '错误示范', fault, ghost: gp })
+    + '</svg>'
+    + `<figcaption>${ghost ? '红色＝出错的部位；灰影＝同一时刻的正确动作。' : '红色＝出错的部位。'}${tempoNote}</figcaption>`
     + '</figure>';
 }
