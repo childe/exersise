@@ -229,6 +229,21 @@ const CLAIMS = {
     near(pw.toe[1], 225, 0.5, '前脚掌仍在地上');
     assert.ok(pw.knee[0] - pg.knee[0] > 1, '膝更往前');
   },
+  'back-squat-low-bar#0': ({ wrong: w, right: r, pw, pg }) => {
+    near(w.trunkFromVertical, 35, 1, '错误躯干角');
+    near(r.trunkFromVertical, 48, 1, '正确躯干角');
+    near(w.load[0] - 90, 11, 1, '杠在足中线前');
+    near(pw.knee[0] - pw.toe[0], 16, 1, '膝超过脚尖');
+    near(pg.toe[0] - pg.knee[0], 10, 1, '灰影的膝在脚尖后');
+    assert.ok(!pw._faultClamped);
+  },
+  'back-squat-low-bar#1': ({ wrong: w, right: r, pw, pg }) => {
+    const along = (p) => { const S = p.shoulder, H = p.hip, L = p.load.at, v = [S[0] - H[0], S[1] - H[1]], l = Math.hypot(...v); return ((L[0] - H[0]) * v[0] + (L[1] - H[1]) * v[1]) / l; };
+    near(along(pg) - along(pw), 10, 0.5, '杠沿躯干下滑');
+    near(r.trunkFromVertical, 48, 1, '正确躯干角');
+    near(w.trunkFromVertical, 57, 1, '错误躯干角');
+    near(w.load[0], 90, 1, '杠仍在足中线上');
+  },
 };
 
 test('「为什么错」里的数字是图上量得到的', () => {
