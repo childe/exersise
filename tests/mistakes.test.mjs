@@ -379,6 +379,18 @@ const CLAIMS = {
     near(pg.load.at[0] - Jg.shoulderN[0], 3, 1, '正确杠到肩'); near(pw.load.at[0] - Jw.shoulderN[0], 17, 1, '错误杠到肩');
     assert.ok(pw.load.at[0] > 96, '杠在足中线前方');
   },
+  'close-grip-bench-press#0': ({ Jw, Jg }) => {
+    const tilt = (J) => Math.atan2(J.elbowN[2] - J.wristN[2], J.elbowN[1] - J.wristN[1]) * 180 / Math.PI;
+    near(Jg.wristN[2] - Jg.wristF[2], 60, 1, '正确两手间距'); near(Jw.wristN[2] - Jw.wristF[2], 24, 1, '错误两手间距');
+    near(tilt(Jw), 39, 1.5, '错误前臂外倾'); near(tilt(Jg), 18, 1.5, '正确前臂外倾');
+  },
+  'close-grip-bench-press#1': ({ Jw, Jg }) => {
+    const ab = (J) => { const t = J.pelvis.map((v, i) => v - J.neck[i]), a = J.elbowN.map((v, i) => v - J.shoulderN[i]); return Math.acos(t.reduce((s, x, i) => s + x * a[i], 0) / Math.hypot(...t) / Math.hypot(...a)) * 180 / Math.PI; };
+    const tilt = (J) => Math.atan2(J.elbowN[2] - J.wristN[2], J.elbowN[1] - J.wristN[1]) * 180 / Math.PI;
+    near(ab(Jg), 37, 1, '正确上臂与躯干'); near(ab(Jw), 50, 1, '错误上臂与躯干');
+    near(tilt(Jw), 63, 1.5, '错误前臂外倾');
+    near(Jw.wristN[2], Jg.wristN[2], 0.5, '握距不变');
+  },
 };
 
 test('错误只错在那一处：不许顺带画出别的错误', () => {
