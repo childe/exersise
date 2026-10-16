@@ -217,6 +217,18 @@ const CLAIMS = {
     assert.ok(w.kneeZ < w.ankleZ, '错误动作的膝落在踝的内侧');
     assert.ok(r.kneeZ >= r.ankleZ, '正确动作的膝在踝的正上方或外侧');
   },
+  'goblet-squat#0': ({ wrong: w, right: r }) => {
+    near(w.load[0] - r.load[0], 16, 0.5, '哑铃前移');
+    near(r.hipToLoadX, 36, 1, '正确力臂');
+    near(w.hipToLoadX, 52, 1, '错误力臂');
+    near((w.hipToLoadX / r.hipToLoadX - 1) * 100, 45, 2, '力臂增幅 %');
+    assert.ok(w.load[0] > 90 + 6, '哑铃铅垂线落在足中线前方');
+  },
+  'goblet-squat#1': ({ pw, pg }) => {
+    near(225 - pw.heel[1], 9, 0.5, '脚跟离地');
+    near(pw.toe[1], 225, 0.5, '前脚掌仍在地上');
+    assert.ok(pw.knee[0] - pg.knee[0] > 1, '膝更往前');
+  },
 };
 
 test('「为什么错」里的数字是图上量得到的', () => {
