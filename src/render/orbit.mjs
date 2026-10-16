@@ -166,7 +166,7 @@ const orbParams = (slug, fault, u = 0) => {
   const w = opWeight({ prof: fault.pprof }, u, fault._half ?? 0), P = { ...base };
   for (const [k, v] of Object.entries(fault.params)) {
     const b = base[k];
-    P[k] = typeof v === 'number' && typeof b === 'number' ? b + (v - b) * w
+    P[k] = typeof v === 'number' && (typeof b === 'number' || b === undefined) ? (b ?? 0) + (v - (b ?? 0)) * w
       : Array.isArray(v) && Array.isArray(b) ? v.map((x, i) => b[i] + (x - b[i]) * w) : (w >= 0.5 ? v : b);
   }
   return P;
@@ -555,7 +555,14 @@ function equipment(S, slug, p, J, lt, P = ORBIT_PARAMS[slug] ?? {}) {
     }
     // 手握在哑铃把手中间，所以哑铃心就在手上（2D 里偏开 8px 只是为了不盖住手）
     for (const tag of hands) {
-      const axis = P.db === 'fore' ? neutralGripAxis(J['elbow' + tag], J['wrist' + tag]) : P.db ?? 'x';
+      let axis = P.db === 'fore' ? neutralGripAxis(J['elbow' + tag], J['wrist' + tag]) : P.db ?? 'x';
+      // dbTwist：哑铃长轴绕前臂转（锤式弯举举起时手腕翻成掌心朝上：中立握 → 正握，转 90°）
+      if (P.dbTwist && Array.isArray(axis)) {
+        const f3 = o3sub(J['wrist' + tag], J['elbow' + tag]), fl = o3len(f3) || 1, k = f3.map((x) => x / fl);
+        const a = (tag === 'N' ? 1 : -1) * P.dbTwist * Math.PI / 180, c = Math.cos(a), s = Math.sin(a);
+        const kx = [k[1] * axis[2] - k[2] * axis[1], k[2] * axis[0] - k[0] * axis[2], k[0] * axis[1] - k[1] * axis[0]], kd = o3dot(k, axis);
+        axis = axis.map((x, i) => x * c + kx[i] * s + k[i] * kd * (1 - c));
+      }
       const n0 = S.length;
       dumbbell(S, J['wrist' + tag], axis);
       for (let i = n0; i < S.length; i++) S[i].side = tag;   // 错误示范可以只标一侧的哑铃（load.F）

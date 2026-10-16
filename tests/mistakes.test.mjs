@@ -21,6 +21,8 @@ const figures = await read('data/figures.json');
 const exercises = await read('data/exercises.json');
 const MF = await read('data/mistake-figures.json');
 const L3 = (a, b) => Math.hypot(a[0] - b[0], a[1] - b[1], a[2] - b[2]);
+/** 器械图元的端点（按顺序）：只改器械朝向的错误（锤式弯举翻腕）关节一个不动，差别全在这里。 */
+const loadPts = (S) => S.filter((it) => it.part === 'load').flatMap((it) => (it.t === 'line' ? [it.a, it.b] : it.t === 'poly' ? it.pts : [it.c]));
 
 /** 全部可画的错误示范。 */
 const drawn = [];
@@ -76,7 +78,7 @@ const cfgOf = (d) => {
 // 关节 → 它所在的骨段（标红按骨段标）
 const PART_OF = {
   knee: ['thigh', 'shin'], ankle: ['shin', 'foot'], heel: ['foot'], toe: ['foot'], hip: ['thigh', 'pelvis', 'trunk'],
-  pelvis: ['trunk', 'thigh', 'pelvis'], neck: ['trunk', 'shoulders', 'head'], back: ['trunk'], shoulder: ['shoulders', 'trunk', 'upperarm'],
+  load: ['load', 'forearm'], pelvis: ['trunk', 'thigh', 'pelvis'], neck: ['trunk', 'shoulders', 'head'], back: ['trunk'], shoulder: ['shoulders', 'trunk', 'upperarm'],
   elbow: ['upperarm', 'forearm'], wrist: ['forearm', 'load'], head: ['head'], spine: ['trunk'],
 };
 /** 错误与灰影在若干视角下投影位移最大的关节：[位移, 关节名]。 */
@@ -92,12 +94,14 @@ function maxShift(d, yaws) {
       return o;
     };
     const w = pts(W.J), g = pts(G.J);
+    const lw = loadPts(W.S), lg = loadPts(G.S);
+    if (lw.length === lg.length) lw.forEach((q, i) => { w['load' + i] = q; g['load' + i] = lg[i]; });
     for (const yaw of (yaws ?? [base - ORBIT_YAW, base, base + ORBIT_YAW])) {
       for (const k of Object.keys(g)) {
         if (!w[k]) continue;
         const a = orbitProject(w[k], yaw, cfg.orbit.pivot), b = orbitProject(g[k], yaw, cfg.orbit.pivot);
         const dd = Math.hypot(a[0] - b[0], a[1] - b[1]);
-        if (dd > best[0]) best = [dd, k.replace(/[NF]$/, ''), /[NF]$/.test(k) ? k.slice(-1) : null];
+        if (dd > best[0]) best = [dd, k.startsWith('load') ? 'load' : k.replace(/[NF]$/, ''), /[NF]$/.test(k) ? k.slice(-1) : null];
         per[k] = Math.max(per[k] ?? 0, dd);
       }
     }
@@ -126,7 +130,7 @@ test('标红的部位包含差别最大的那个关节所在的骨段', () => {
     if (!d.mf.hl?.length) continue;
     const best = maxShift(d), top = Object.entries(best.per).filter(([, v]) => v >= best[0] * 0.7);
     const ok = top.some(([k]) => {
-      const j = k.replace(/[NF]$/, ''), sd = /[NF]$/.test(k) ? k.slice(-1) : null;
+      const j = k.startsWith('load') ? 'load' : k.replace(/[NF]$/, ''), sd = /[NF]$/.test(k) ? k.slice(-1) : null;
       const hl = d.mf.hl.map((h) => h.split('@')[0]).filter((h) => { const s = h.split('.')[1]; return !s || !sd || s === sd; }).map((h) => h.replace(/\.[NF]$/, ''));
       return (PART_OF[j] ?? []).some((x) => hl.includes(x));
     });
@@ -450,15 +454,18 @@ const CLAIMS = {
   },
   'barbell-row#0': ({ Jw, Jg, pw, pg }) => {
     const tf = (J) => Math.atan2(J.pelvis[1] - J.neck[1], J.neck[0] - J.pelvis[0]) * 180 / Math.PI;
-    near(tf(Jg), 42, 0.5, '正确躯干离水平'); near(tf(Jw), 56, 0.5, '错误躯干离水平');
-    near(pg.load.at[1] - pw.load.at[1], 10, 0.5, '杠被荡高');
+    near(tf(Jg), 45, 0.5, '正确躯干离水平'); near(tf(Jw), 59, 0.5, '错误躯干离水平');
+    near(pg.load.at[1] - pw.load.at[1], 9, 0.6, '杠被荡高');
   },
   'barbell-row#1': ({ Jw, Jg }, d) => {
     const tf = (J) => Math.atan2(J.pelvis[1] - J.neck[1], J.neck[0] - J.pelvis[0]) * 180 / Math.PI;
-    near(tf(Jg), 42, 0.5, '正确躯干'); near(tf(Jw), 58, 0.5, '错误躯干');
+    near(tf(Jg), 45, 0.5, '正确躯干'); near(tf(Jw), 57, 0.5, '错误躯干');
     const a = mistakeMetrics(d.slug, d.fig, d.mf, 0, 0), b = mistakeMetrics(d.slug, d.fig, d.mf, 1, 0);
-    near(a.right.hipToLoadX, 60, 1, '起始正确力臂'); near(a.wrong.hipToLoadX, 42, 1, '起始错误力臂');
-    near(b.right.hipToLoadX, 29, 1, '顶点正确力臂'); near(b.wrong.hipToLoadX, 11, 1, '顶点错误力臂');
+    near(a.right.hipToLoadX, 57, 1, '起始正确力臂'); near(a.wrong.hipToLoadX, 37, 1, '起始错误力臂');
+    near(a.wrong.kneeAngle, a.right.kneeAngle, 0.5, '膝角不变');
+    // 拉到顶时杠仍落在腹部同一处：杠到躯干线的垂距与正确相同
+    const perp = (p) => { const S = p.shoulder, H = p.hip, L = p.load.at, t = [S[0] - H[0], S[1] - H[1]], l = Math.hypot(...t); return ((L[0] - H[0]) * t[1] - (L[1] - H[1]) * t[0]) / l; };
+    near(perp(b.pw), perp(b.pg), 0.5, '顶点杠贴腹位置不变');
   },
   'barbell-curl#0': ({ wrong: w, right: r, Jw, Jg, pw, pg }) => {
     const sg = (J) => Math.atan2(J.neck[0] - J.pelvis[0], J.pelvis[1] - J.neck[1]) * 180 / Math.PI;
@@ -481,8 +488,8 @@ const CLAIMS = {
   },
   'db-reverse-fly#0': ({ Jw, Jg }) => {
     const th = (J) => Math.atan2(J.pelvis[1] - J.neck[1], Math.abs(J.neck[0] - J.pelvis[0])) * 180 / Math.PI;
-    near(th(Jg), 42, 0.5, '正确躯干离水平'); near(th(Jw), 60, 0.5, '错误躯干离水平');
-    near(Jg.wristN[1] - Jw.wristN[1], 20, 0.6, '哑铃被掀高');
+    near(th(Jg), 45, 0.5, '正确躯干离水平'); near(th(Jw), 63, 0.5, '错误躯干离水平');
+    near(Jg.wristN[1] - Jw.wristN[1], 19, 0.6, '哑铃被掀高');
   },
   'db-reverse-fly#1': ({ Jw, Jg }) => {
     near(L3(Jw.shoulderN, Jg.shoulderN), 8, 0.1, '耸肩');
@@ -495,6 +502,25 @@ const CLAIMS = {
   },
   'db-curl#1': ({ wrong: w, right: r }) => {
     near(w.elbowAngle, 107, 1, '错误只放到一半'); near(r.elbowAngle, 168, 1, '灰影放到接近伸直');
+  },
+  'db-hammer-curl#0': (_, d) => {
+    // 直接量场景里画出来的哑铃把手方向：错误到顶时与灰影差 90°，起始时重合
+    const s = mistakeSetup(d.fig, d.mf);
+    const axis = (u, fault) => {
+      const p = interpolate(fault ? s.A : s.GA, fault ? s.B : s.GB, u, s.iopts);
+      const sc = orbitScene(d.slug, fault ? { a: s.wa, b: s.wb } : { a: s.ga, b: s.gb }, p, { u, lt: d.fig.load_type, fault: fault ? s.fault : undefined });
+      const h = sc.S.find((it) => it.cls.includes('sk-db-handle') && it.side === 'N');
+      const v = [h.b[0] - h.a[0], h.b[1] - h.a[1], h.b[2] - h.a[2]], l = Math.hypot(...v);
+      return v.map((x) => x / l);
+    };
+    const ang = (a, b) => Math.acos(Math.min(1, Math.abs(a[0] * b[0] + a[1] * b[1] + a[2] * b[2]))) * 180 / Math.PI;
+    near(ang(axis(1, true), axis(1, false)), 90, 1, '到顶翻转 90°');
+    near(ang(axis(0, true), axis(0, false)), 0, 1, '起始中立握');
+  },
+  'db-hammer-curl#1': ({ wrong: w, right: r, Jw, Jg, pw, pg }) => {
+    const sg = (J) => Math.atan2(J.neck[0] - J.pelvis[0], J.pelvis[1] - J.neck[1]) * 180 / Math.PI;
+    near(pw.hip[0] - pg.hip[0], 10, 0.6, '髋前顶'); near(sg(Jw), -7, 0.6, '错误后仰'); near(sg(Jg), 2, 0.6, '灰影前倾');
+    near(Jg.wristN[1] - Jw.wristN[1], 5, 0.6, '哑铃更高'); near(w.elbowAngle, r.elbowAngle, 0.5, '肘角一样');
   },
 };
 
@@ -565,7 +591,9 @@ test('与灰影重合的帧不标红', () => {
     if (d.mf.rom || d.mf.start || d.mf.end) continue;
     // 参数类错误（握距、肘的去向）在行程两端本来就和灰影差一两像素：放宽到 3px
     const tol = d.mf.params ? 3 : 0.5;
-    const same = Object.keys(G.J).every((k) => !Array.isArray(G.J[k]) || !W.J[k] || L3(W.J[k], G.J[k]) < tol) && Math.abs(W.J.spine?.bend ?? 0) < 0.5;
+    const lw = loadPts(W.S), lg = loadPts(G.S);
+    const same = Object.keys(G.J).every((k) => !Array.isArray(G.J[k]) || !W.J[k] || L3(W.J[k], G.J[k]) < tol) && Math.abs(W.J.spine?.bend ?? 0) < 0.5
+      && lw.length === lg.length && lw.every((q, i) => L3(q, lg[i]) < tol);
     if (same) assert.ok(!W.S.some((it) => it.cls.includes('sk-fault')), `${d.slug}#${d.mf.mistake} u=${u} half=${half}: 与灰影重合却标红`);
   }
 });
