@@ -315,6 +315,15 @@ const CLAIMS = {
     near(w.load[1] - r.load[1], 12, 0.5, '杠更低');
     near(r.hipToLoadX, 48, 1, '正确力臂'); near(w.hipToLoadX, 55, 1, '错误力臂');
   },
+  'db-romanian-deadlift#0': ({ Jw, Jg, pw, pg }) => {
+    near(Jw.wristN[0] - Jg.wristN[0], 18, 0.5, '哑铃前荡');
+    near(Jg.wristN[0] - Jg.pelvis[0], 48, 1, '正确哑铃到髋'); near(Jw.wristN[0] - Jw.pelvis[0], 67, 1, '错误哑铃到髋');
+    for (const [fr, pct] of [[0.1, 9], [0.3, 16]]) near((hipMoment(Jw, loadPoints(Jw, pw), fr) / hipMoment(Jg, loadPoints(Jg, pg), fr) - 1) * 100, pct, 1, `${fr} 倍体重伸髋力矩增幅 %`);
+  },
+  'db-romanian-deadlift#1': ({ wrong: w, right: r, Jw }) => {
+    near(Jw.spine.bend, 11, 0.1, '背拱起');
+    near(w.trunkFromVertical - r.trunkFromVertical, 6, 0.5, '躯干多倾');
+  },
 };
 
 test('站姿错误示范站得住：全身重心落在支撑面上', () => {
