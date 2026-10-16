@@ -400,6 +400,19 @@ const CLAIMS = {
   'db-bench-press#1': ({ Jw, Jg }) => {
     near(Jw.wristF[1] - Jw.wristN[1], 20, 0.3, '远侧落后'); near(Jg.wristF[1] - Jg.wristN[1], 0, 0.1, '灰影同高');
   },
+  'db-incline-bench-press#0': (_, d) => {
+    const inc = (J) => Math.atan2(J.pelvis[1] - J.neck[1], J.pelvis[0] - J.neck[0]) * 180 / Math.PI;
+    const ang = (J) => { const t = J.neck.map((v, i) => v - J.pelvis[i]), a = J.wristN.map((v, i) => v - J.shoulderN[i]); return Math.acos(t.reduce((s, x, i) => s + x * a[i], 0) / Math.hypot(...t) / Math.hypot(...a)) * 180 / Math.PI; };
+    const m = mistakeMetrics(d.slug, d.fig, d.mf, 0, 0);
+    near(inc(m.Jg), 30, 1, '正确凳角'); near(inc(m.Jw), 55, 1, '错误凳角');
+    near(ang(m.Jg), 62, 1, '正确手臂与躯干'); near(ang(m.Jw), 39, 1, '错误手臂与躯干');
+  },
+  'db-incline-bench-press#1': ({ Jw, Jg }) => {
+    const along = (J) => { const S = J.neck, H = J.pelvis, v = [H[0] - S[0], H[1] - S[1]], l = Math.hypot(...v); return ((J.wristN[0] - S[0]) * v[0] + (J.wristN[1] - S[1]) * v[1]) / l; };
+    const ua = (J) => { const t = J.pelvis.map((v, i) => v - J.neck[i]), a = J.elbowN.map((v, i) => v - J.shoulderN[i]); return Math.acos(t.reduce((s, x, i) => s + x * a[i], 0) / Math.hypot(...t) / Math.hypot(...a)) * 180 / Math.PI; };
+    near(along(Jw), 31, 1, '错误落点'); near(along(Jg), 14, 1, '正确落点');
+    near(ua(Jg), 47, 1, '正确上臂与躯干'); near(ua(Jw), 40, 1, '错误上臂与躯干');
+  },
 };
 
 test('错误只错在那一处：不许顺带画出别的错误', () => {
@@ -413,7 +426,7 @@ test('错误只错在那一处：不许顺带画出别的错误', () => {
     for (const { W, G, u, half } of framesOf(d)) {
       const w = W.p, g = G.p, at = `${key} u=${u} half=${half}`;
       if (!w.knee || !w.ankle || !g.knee) continue;
-      const standing = !g.bench && !g.fixed && g.heel?.[1] >= 222 && g.toe?.[1] >= 222;
+      const standing = !g.bench && !g.benchIncline && !g.fixed && g.heel?.[1] >= 222 && g.toe?.[1] >= 222;
       const fwd = Math.sign((g.toe[0] - g.heel[0]) || 1);
       if (standing && !allow.has('kneeBack') && (g.knee[0] - g.ankle[0]) * fwd >= -1)
         assert.ok((w.knee[0] - w.ankle[0]) * fwd >= -2, `${at}: 膝到了踝后方 ${((w.knee[0] - w.ankle[0]) * fwd).toFixed(1)}px（正确动作不会）`);

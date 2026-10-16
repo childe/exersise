@@ -82,8 +82,19 @@ export function faultPose2D(p, fault, u, half) {
     switch (op.op) {
       case 'trunk': {
         const c = q.hip, f = (x) => fltRot(x, c, op.deg * w);
+        const S0 = q.shoulder;
         for (const k of FLT_UPPER) if (q[k]) q[k] = f(q[k]);
-        if (op.load !== false && fltLoadUpper(q)) fltMoveLoad(q, f);
+        // keepArms：手臂保持世界方向（仍朝正上方推），负荷只随肩平移，不跟着躯干转
+        if (op.keepArms) {
+          const dS = [q.shoulder[0] - S0[0], q.shoulder[1] - S0[1]];
+          for (const k of FLT_ARM) if (p[k]) q[k] = fltAdd(p[k], dS);
+          if (q.load) fltMoveLoad(q, (x) => fltAdd(x, dS));
+        } else if (op.load !== false && fltLoadUpper(q)) fltMoveLoad(q, f);
+        // bench: true —— 上斜凳的靠背跟着躯干一起转（凳面角度调错这类错误）
+        if (op.bench && q.benchIncline) {
+          const B = q.benchIncline, a = op.deg * w * FLT_RAD;
+          q.benchIncline = { ...B, from: f(B.from), to: f(B.to), n: [B.n[0] * Math.cos(a) - B.n[1] * Math.sin(a), B.n[0] * Math.sin(a) + B.n[1] * Math.cos(a)] };
+        }
         break;
       }
       case 'arm': {

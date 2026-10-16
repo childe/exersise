@@ -94,7 +94,7 @@ const LOAD_FRAC = { bar: [0.3, 0.8], front: [0.3, 0.8], hands: [0.1, 0.3], hands
  */
 export function mistakeBalance(slug, fig, mf) {
   const s = mistakeSetup(fig, mf);
-  if (s.GA.bench || s.GA.fixed || s.GA.view === 'front') return null;
+  if (s.GA.bench || s.GA.benchIncline || s.GA.fixed || s.GA.view === 'front') return null;
   const flat = (p) => p.heel[1] >= 222 && p.toe[1] >= 222 && p.wrist[1] < 215;
   if (!flat(s.GA) || !flat(s.GB)) return null;
   // 返回最小余量那一帧（余量 < 0 即出界）。支撑面：后沿脚跟（容差 2，脚跟着地时重心可以压在跟上），
