@@ -6,14 +6,14 @@
 import { POSES } from '../render/skeleton.mjs';
 
 const OPS = {
-  trunk: ['deg'], arm: ['deg'], hip: ['dx', 'dy'], heel: ['deg'], shrug: ['px'], load: ['dx', 'dy'], shift: ['dx', 'dy'], foot: ['dx'], regrip: [], chain: ['deg'], hand3: [],
+  trunk: ['deg'], arm: ['deg'], hip: ['dx', 'dy'], heel: ['deg'], shrug: ['px'], load: ['dx', 'dy'], shift: ['dx', 'dy'], foot: ['dx'], regrip: [], chain: ['deg'], legs: ['deg'], plankPike: ['deg'], hand3: [],
   valgus: ['px'], lateral: ['deg'], twist: ['deg'], pitch: ['deg'], roll: ['deg'], shrug3: ['px'], arm3: ['deg'], spine: ['bend'],
 };
 const PROFS = new Set(['u', 'u2', 'late', 'early', '1-u', 'mid', 'up', 'down', 'const']);
 // allow：这条错误示范允许出现的「副作用」（断言默认禁止）。depth 蹲浅、kneeBack 膝到踝后、shin 小腿前倾超过 45°
 const ALLOW = new Set(['depth', 'kneeBack', 'shin', 'elbow', 'barDepth']);
 export const MISTAKE_PARTS = new Set(['trunk', 'shoulders', 'pelvis', 'head', 'thigh', 'shin', 'foot', 'upperarm', 'forearm', 'load']);
-const TEMPOS = new Set(['bounce', 'drop', 'bounceA']);
+const TEMPOS = new Set(['bounce', 'drop', 'bounceA', 'fast']);
 
 export function validateMistakeFigures(mf, exercises, poseFigures, { requireAll = true } = {}) {
   const errs = [];

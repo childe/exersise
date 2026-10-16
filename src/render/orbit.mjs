@@ -166,6 +166,8 @@ const orbParams = (slug, fault, u = 0) => {
   const w = opWeight({ prof: fault.pprof }, u, fault._half ?? 0), P = { ...base };
   for (const [k, v] of Object.entries(fault.params)) {
     const b = base[k];
+    // pole 没有登记默认值时，默认去向由 liftSide 按 2D 肘算出来——这里只记下强度，到那里再混合
+    if (k === 'pole' && b === undefined) { P.pole = v; P._poleW = w; continue; }
     P[k] = typeof v === 'number' && (typeof b === 'number' || b === undefined) ? (b ?? 0) + (v - (b ?? 0)) * w
       : Array.isArray(v) && Array.isArray(b) ? v.map((x, i) => b[i] + (x - b[i]) * w) : (w >= 0.5 ? v : b);
   }
@@ -322,8 +324,10 @@ function liftSide(slug, names, p, u, P, lt) {
       H = [hxy[0], hxy[1], s * grip];
       const ed = [exy[0] - S[0], exy[1] - S[1]], el = Math.hypot(ed[0], ed[1]) || 1;
       const o = P.out ?? 0.2;
-      pole = P.pole ? [P.pole[0], P.pole[1], s * P.pole[2]]
-        : [ed[0] / el * (1 - o), ed[1] / el * (1 - o), s * (o + 0.05)];
+      const def = [ed[0] / el * (1 - o), ed[1] / el * (1 - o), s * (o + 0.05)];
+      pole = P.pole && P._poleW !== undefined
+        ? def.map((x, i) => x + ([P.pole[0], P.pole[1], s * P.pole[2]][i] - x) * P._poleW)
+        : P.pole ? [P.pole[0], P.pole[1], s * P.pole[2]] : def;
       // 前臂竖直：pole 直接指向「手正下方一个前臂长」的那一点。底部时它恰好在 IK 的圆上，
       // 解出来就是它；其余帧连续过渡。只给一个「朝下」的 pole 时，圆上离它最近的点不是正下方
       // （卧推底部前臂曾偏 35°）。

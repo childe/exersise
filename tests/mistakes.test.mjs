@@ -224,6 +224,15 @@ test('出错部位只在真的错了的帧标红', () => {
 // ── 每条错误示范的「为什么错」里写的数字 ──────────────────────
 // 写进文字的量都在这里核对：图改了、文字没跟上，这里会失败。
 const near = (v, x, tol, msg) => assert.ok(Math.abs(v - x) <= tol, `${msg}：实测 ${v.toFixed(1)}，文字写 ${x}`);
+/** 前滚回程「手臂先拉」：两个前滚动作共用同一组读数。 */
+function rolloutReturn(d) {
+  const ang = (a, b, c) => { const u = [a[0] - b[0], a[1] - b[1]], v = [c[0] - b[0], c[1] - b[1]]; return Math.acos((u[0] * v[0] + u[1] * v[1]) / Math.hypot(...u) / Math.hypot(...v)) * 180 / Math.PI; };
+  const m = mistakeMetrics(d.slug, d.fig, d.mf, 0.5, 1), w = m.pw, g = m.pg;
+  near(w.load.at[0] - g.load.at[0], 19, 1, '杠 / 轮多回来');
+  near(ang(w.hip, w.shoulder, w.wrist), 74, 1, '错误肩角'); near(ang(g.hip, g.shoulder, g.wrist), 92, 1, '灰影肩角');
+  near(ang(w.shoulder, w.hip, w.knee), 163, 1, '错误髋角'); near(ang(g.shoulder, g.hip, g.knee), 152, 1, '灰影髋角');
+  near(m.wrong.elbowAngle, m.right.elbowAngle, 1, '手臂仍伸直');
+}
 const CLAIMS = {
   'back-squat-high-bar#0': ({ wrong: w, right: r, pw }) => {
     near(w.kneeAngle - r.kneeAngle, 17, 1, '膝多伸');
@@ -573,6 +582,56 @@ const CLAIMS = {
     const mid = Jw.spinePts[Math.floor(Jw.spinePts.length / 2)], line = Jw.pelvis.map((v, i) => (v + Jw.neck[i]) / 2);
     near(mid[1] - line[1], 9, 0.5, '躯干中段往地面塌');
   },
+  'barbell-rollout#1': (_, d) => rolloutReturn(d),
+  'ab-wheel-rollout#1': (_, d) => rolloutReturn(d),
+  'bodyweight-squat#0': ({ pw, pg }) => {
+    const shin = (p) => Math.atan2(p.knee[0] - p.ankle[0], p.ankle[1] - p.knee[1]) * 180 / Math.PI;
+    near(225 - pw.heel[1], 13, 0.6, '脚跟离地'); near(pw.knee[0] - pg.knee[0], 23, 1, '膝前移');
+    near(shin(pw), 44, 1, '错误小腿'); near(shin(pg), 24, 1, '灰影小腿');
+  },
+  'bodyweight-squat#1': ({ Jw }) => { near(Jw.spine.bend, 10, 0.1, '腰往背侧卷'); },
+  'glute-bridge-bodyweight#0': ({ Jw }) => {
+    near(Jw.spine.bend, -10, 0.1, '腰拱');
+    const mid = Jw.spinePts[Math.floor(Jw.spinePts.length / 2)], line = (Jw.pelvis[1] + Jw.neck[1]) / 2;
+    near(line - mid[1], 8, 0.6, '往天花板方向拱');
+  },
+  'glute-bridge-bodyweight#1': ({ wrong: w, right: r, pw, pg }) => {
+    const sh = (p) => Math.atan2(p.ankle[0] - p.knee[0], p.ankle[1] - p.knee[1]) * 180 / Math.PI;
+    near(pw.ankle[0] - pg.ankle[0], 16, 0.1, '脚挪远'); near(sh(pw), 10, 1, '错误小腿前斜'); near(Math.abs(sh(pg)), 5, 1, '灰影接近竖直');
+    near(r.kneeAngle, 59, 1, '正确膝角'); near(w.kneeAngle, 75, 1, '错误膝角');
+  },
+  'plank#0': ({ Jw }) => {
+    const mid = Jw.spinePts[Math.floor(Jw.spinePts.length / 2)], line = Jw.pelvis.map((v, i) => (v + Jw.neck[i]) / 2);
+    near(mid[1] - line[1], 9, 0.6, '躯干中段往地面塌');
+  },
+  'plank#1': ({ wrong: w, right: r, pw, pg }) => {
+    near(pg.hip[1] - pw.hip[1], 28, 0.6, '臀抬高'); near(r.hipAngle, 170, 1, '正确髋角'); near(w.hipAngle, 144, 1, '错误髋角');
+    assert.ok(pw.shoulder[0] > pg.shoulder[0], '肩往脚的方向倒');
+  },
+  'push-up#0': ({ Jw }) => {
+    const mid = Jw.spinePts[Math.floor(Jw.spinePts.length / 2)], line = Jw.pelvis.map((v, i) => (v + Jw.neck[i]) / 2);
+    near(mid[1] - line[1], 10, 0.6, '躯干中段往地面塌');
+  },
+  'push-up#1': ({ wrong: w, right: r, pw, pg }) => {
+    near(w.elbowAngle, 109, 1, '错误只下到一半'); near(r.elbowAngle, 75, 1, '灰影下到底'); near(pg.shoulder[1] - pw.shoulder[1], 27, 1, '肩更高');
+  },
+  'knee-push-up#0': ({ wrong: w, right: r, pw, pg }) => {
+    near(pg.hip[1] - pw.hip[1], 24, 1, '髋更高'); near(r.hipAngle, 170, 1, '正确髋角'); near(w.hipAngle, 142, 1, '错误髋角');
+  },
+  'knee-push-up#1': ({ wrong: w, right: r, pw, pg }) => {
+    near(pg.wrist[0] - pw.wrist[0], 16, 0.1, '手往前撑'); near(w.elbowAngle, 55, 1, '错误肘角'); near(r.elbowAngle, 71, 1, '正确肘角');
+  },
+  'close-grip-push-up#0': ({ Jw, Jg }) => { near(Jw.elbowN[2], 59, 1, '错误肘离中线'); near(Jg.elbowN[2], 35, 1, '正确肘离中线'); },
+  'close-grip-push-up#1': ({ Jw, Jg }) => { near(Jw.wristN[2], 10, 0.5, '错误手离中线'); near(Jg.wristN[2], 25, 0.5, '正确手离中线'); },
+  'close-grip-push-up#2': ({ Jw }) => {
+    const mid = Jw.spinePts[Math.floor(Jw.spinePts.length / 2)], line = Jw.pelvis.map((v, i) => (v + Jw.neck[i]) / 2);
+    near(mid[1] - line[1], 10, 0.6, '躯干中段往地面塌');
+  },
+  'db-dead-bug#0': ({ Jw }) => {
+    near(Jw.spine.bend, -10, 0.1, '腰拱');
+    const mid = Jw.spinePts[Math.floor(Jw.spinePts.length / 2)], line = (Jw.pelvis[1] + Jw.neck[1]) / 2;
+    near(line - mid[1], 10, 0.6, '往天花板方向拱离地面');
+  },
 };
 
 test('错误只错在那一处：不许顺带画出别的错误', () => {
@@ -644,6 +703,28 @@ test('变换几乎没起作用的帧与灰影几乎重合（不许跳变）', ()
       if (!(d.mf.ops ?? []).every((op) => opWeight(op, u, half) < 0.05)) continue;
       for (const k of Object.keys(G.J)) if (Array.isArray(G.J[k]) && W.J[k])
         assert.ok(L3(W.J[k], G.J[k]) < 3, `${d.slug}#${d.mf.mistake} u=${u} half=${half}: 强度 <0.05 时 ${k} 差 ${L3(W.J[k], G.J[k]).toFixed(1)}`);
+    }
+  }
+});
+
+test('错误动作连续：相邻帧任何关节不跳', () => {
+  // 参数开关式切换（数组参数没有默认值时曾在强度 0.5 处一下切过去）会让肘一帧瞬移 43px
+  for (const d of drawn) {
+    if (d.mf.tempo) continue;
+    const s = mistakeSetup(d.fig, d.mf);
+    for (const half of [0, 1]) {
+      // 跳变的判据相对于正确动作：锁定前后正确动作自己一步就走 3–4px（快，不是跳）
+      let prev = null, prevG = null;
+      for (let i = 0; i <= 64; i++) {
+        const u = i / 64, uw = faultU(s.fault, u), p = interpolate(s.A, s.B, uw, s.iopts);
+        const J = orbitScene(d.slug, { a: s.wa, b: s.wb }, p, { u: uw, half, lt: d.fig.load_type, fault: s.fault }).J;
+        const G = orbitScene(d.slug, { a: s.ga, b: s.gb }, interpolate(s.GA, s.GB, uw, s.iopts), { u: uw, lt: d.fig.load_type }).J;
+        if (prev) for (const k of Object.keys(J)) if (Array.isArray(J[k]) && typeof J[k][0] === 'number' && prev[k]) {
+          const lim = Math.max(4, (G[k] && prevG[k] ? L3(G[k], prevG[k]) : 0) * 1.5 + 1);
+          assert.ok(L3(J[k], prev[k]) <= lim, `${d.slug}#${d.mf.mistake} half=${half} u=${u.toFixed(3)}: ${k} 一步跳 ${L3(J[k], prev[k]).toFixed(1)}px（上限 ${lim.toFixed(1)}）`);
+        }
+        prev = J; prevG = G;
+      }
     }
   }
 });

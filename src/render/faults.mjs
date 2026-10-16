@@ -55,6 +55,27 @@ function fltIk(A, C, l1, l2, hint) {
   return Math.hypot(c1[0] - hint[0], c1[1] - hint[1]) <= Math.hypot(c2[0] - hint[0], c2[1] - hint[1]) ? c1 : c2;
 }
 
+/** 腿的 IK：膝往脚尖那侧屈（解剖上膝不能往后折）。
+ *  原姿态的膝可能略在「髋—踝」连线之后（分腿蹲顶部约 2px），这时朝前那支离原膝有 4px；
+ *  变换强度 w 的前 15% 里从「原膝那一侧」平滑过渡到「朝前那一侧」，不让膝在第一帧就跳。
+ *  （直接拿当前的膝当选支提示更糟：腿接近伸直时提示一越线就换支，膝一帧跳 10px。） */
+function fltLegIk(H, A, K, l1, l2, fwd, w) {
+  const sd = (X) => { const v = [A[0] - H[0], A[1] - H[1]], l = Math.hypot(...v) || 1; return ((X[0] - H[0]) * v[1] - (X[1] - H[1]) * v[0]) / l; };
+  const dx = A[0] - H[0], dy = A[1] - H[1], dd = Math.hypot(dx, dy) || 1e-6;
+  const d = Math.min(Math.max(dd, Math.abs(l1 - l2) + 1e-6), l1 + l2 - 1e-6);
+  const a = (l1 * l1 - l2 * l2 + d * d) / (2 * d), h = Math.sqrt(Math.max(0, l1 * l1 - a * a));
+  const ux = dx / dd, uy = dy / dd, M = [H[0] + ux * a, H[1] + uy * a];
+  const c1 = [M[0] - uy * h, M[1] + ux * h], c2 = [M[0] + uy * h, M[1] - ux * h];
+  // 朝前那支：膝在连线上脚尖一侧（屏幕上 x 往 fwd 方向偏）
+  const front = (c1[0] - M[0]) * fwd >= (c2[0] - M[0]) * fwd ? c1 : c2, back = front === c1 ? c2 : c1;
+  const orig = Math.abs(sd(c1) - sd(K)) <= Math.abs(sd(c2) - sd(K)) ? c1 : c2;
+  if (!fwd || orig === front) return orig;
+  const t = Math.min(Math.max(w / 0.15, 0), 1);
+  return [back[0] + (front[0] - back[0]) * t, back[1] + (front[1] - back[1]) * t];
+}
+// 只有脚平踩在地上的腿才按「膝朝脚尖」选支；搭在凳上的后脚（脚背朝下、脚尖朝后）不适用，返回 0 = 沿用原来那侧
+const fltFwd = (q, s) => { const T = q['toe' + s] ?? q.toe, Hh = q['heel' + s] ?? q.heel; return T && Hh && T[1] >= 222 && Hh[1] >= 222 ? Math.sign(T[0] - Hh[0]) || 1 : 0; };
+
 /** 负荷是否跟着上半身走：挂在肩上或手里的跟，压在腿上的（腿屈伸的垫、腿举的踏板）不跟。 */
 const fltLoadUpper = (p) => p.load && (p.loadAnchor === 'shoulder' || p.loadAnchor === 'wrist');
 
@@ -128,6 +149,15 @@ export function faultPose2D(p, fault, u, half) {
         const T = [H0[0] + op.dx * w, H0[1] + op.dy * w];
         const v = [T[0] - S[0], T[1] - S[1]], vl = Math.hypot(v[0], v[1]) || 1;
         let H = [S[0] + v[0] * tl / vl, S[1] + v[1] * tl / vl];
+        // root 'knee'：跪撑（跪姿俯卧撑）膝不离地，髋落在「离肩一个躯干长」与「离膝一条大腿长」两圆的交点上
+        if (op.root === 'knee') {
+          const K = q.knee, thigh = Math.hypot(K[0] - H0[0], K[1] - H0[1]);
+          H = fltIk(S, K, tl, thigh, H);
+          const a0 = Math.atan2(S[1] - H0[1], S[0] - H0[0]), a1 = Math.atan2(S[1] - H[1], S[0] - H[0]);
+          if (q.head) q.head = fltRot(q.head, S, (a1 - a0) / FLT_RAD);
+          q.hip = H;
+          break;
+        }
         // 腿够不到（髋挪得太远、膝已伸直）：髋停在「离肩一个躯干长」与「离踝一条伸直的腿长」两圆的交点上
         const A0 = q.ankle, K0 = q.knee;
         if (A0 && K0) {
@@ -138,7 +168,7 @@ export function faultPose2D(p, fault, u, half) {
           const K = q['knee' + s], A = q['ankle' + s];
           if (!K || !A) continue;
           const l1 = Math.hypot(K[0] - H0[0], K[1] - H0[1]), l2 = Math.hypot(A[0] - K[0], A[1] - K[1]);
-          q['knee' + s] = fltIk(H, A, l1, l2, K);
+          q['knee' + s] = fltLegIk(H, A, K, l1, l2, fltFwd(q, s), w);
         }
         // 头随躯干一起转（绕肩），否则多出一个没人要的仰头 / 低头
         const a0 = Math.atan2(S[1] - H0[1], S[0] - H0[0]), a1 = Math.atan2(S[1] - H[1], S[0] - H[0]);
@@ -154,7 +184,7 @@ export function faultPose2D(p, fault, u, half) {
           if (!K || !A) continue;
           const l1 = Math.hypot(K[0] - H0[0], K[1] - H0[1]), l2 = Math.hypot(A[0] - K[0], A[1] - K[1]);
           if (Math.hypot(H[0] - A[0], H[1] - A[1]) > l1 + l2 - 0.01) q._faultClamped = true;
-          q['knee' + s] = fltIk(H, A, l1, l2, K);
+          q['knee' + s] = fltLegIk(H, A, K, l1, l2, fltFwd(q, s), w);
         }
         q.hip = H;
         for (const k of FLT_UPPER) if (q[k]) q[k] = fltAdd(q[k], d);
@@ -170,7 +200,7 @@ export function faultPose2D(p, fault, u, half) {
         const l1 = Math.hypot(K[0] - q.hip[0], K[1] - q.hip[1]), l2 = Math.hypot(A0[0] - K[0], A0[1] - K[1]);
         for (const k of ['ankle', 'heel', 'toe']) if (q[k + s]) q[k + s] = fltAdd(q[k + s], d);
         if (Math.hypot(q.hip[0] - q['ankle' + s][0], q.hip[1] - q['ankle' + s][1]) > l1 + l2 - 0.01) q._faultClamped = true;
-        q['knee' + s] = fltIk(q.hip, q['ankle' + s], l1, l2, K);
+        q['knee' + s] = fltLegIk(q.hip, q['ankle' + s], K, l1, l2, fltFwd(q, s), w);
         break;
       }
       case 'heel': {
@@ -213,26 +243,80 @@ export function faultPose2D(p, fault, u, half) {
         if (op.load !== false && fltLoadUpper(q)) fltMoveLoad(q, f);
         break;
       }
+      case 'plankPike': {
+        // 俯撑里髋往上翘（平板臀抬太高、跪姿俯卧撑髋先折）：撑地的那一端（pivot：平板是肘、俯卧撑是手腕）不动，
+        // 肩绕它往脚的方向倒，髋落在「离肩一个躯干长」与「离 root 一条伸直的腿（root 'ankle'）或一条大腿（root 'knee'）」
+        // 两圆的上方交点——髋角闭合、腿保持原样。肩不动的话两圆相切，髋根本抬不起来
+        const P0 = q[op.pivot ?? 'elbow'], R = q[op.root ?? 'ankle'], H0 = q.hip, S0 = q.shoulder, K0 = q.knee;
+        const tl = Math.hypot(H0[0] - S0[0], H0[1] - S0[1]), leg = Math.hypot(R[0] - H0[0], R[1] - H0[1]);
+        const t0 = Math.hypot(K0[0] - H0[0], K0[1] - H0[1]) / leg;
+        // 髋的抬高约与转角的平方根成正比（两圆从相切开始分开）：按 w² 转，抬高才随 w 线性渐入，不在第一帧跳
+        const S = fltRot(S0, P0, op.deg * w * w);
+        const H = fltIk(S, R, tl, leg - 0.01, [H0[0], H0[1] - 50]);
+        const a0 = Math.atan2(S0[1] - H0[1], S0[0] - H0[0]), a1 = Math.atan2(S[1] - H[1], S[0] - H[0]);
+        const dS = [S[0] - S0[0], S[1] - S0[1]];
+        if (q.head) q.head = fltRot(fltAdd(q.head, dS), S, (a1 - a0) / FLT_RAD);
+        if (q.shoulderMid) q.shoulderMid = fltAdd(q.shoulderMid, dS);
+        q.shoulder = S; q.hip = H;
+        if ((op.root ?? 'ankle') === 'ankle') q.knee = [H[0] + (R[0] - H[0]) * t0, H[1] + (R[1] - H[1]) * t0];
+        break;
+      }
+      case 'legs': {
+        // 两腿绕髋前后摆（引体摆腿借力）：膝、踝、脚整体绕髋转，大小腿长不变
+        const c = q.hip, f = (x) => fltRot(x, c, op.deg * w);
+        for (const k of ['knee', 'ankle', 'heel', 'toe', 'knee2', 'ankle2', 'heel2', 'toe2']) if (q[k]) q[k] = f(q[k]);
+        break;
+      }
       case 'regrip': {
         // 手回到负荷上：躯干带着肩挪了而杠留在原地（load: false）时，手按原来的握点偏移放回杠上，肘按两骨长重解
         if (!q.load || !p.load) break;
         for (const s of ['', '2']) {
           const W0 = p['wrist' + s], E0 = p['elbow' + s], S = q['shoulder' + s] ?? q.shoulder, S0 = p['shoulder' + s] ?? p.shoulder;
           if (!W0 || !E0) continue;
-          const at = s && q.load.at2 ? q.load.at2 : q.load.at, at0 = s && p.load.at2 ? p.load.at2 : p.load.at;
-          const W = [at[0] + W0[0] - at0[0], at[1] + W0[1] - at0[1]];
+          let at = s && q.load.at2 ? q.load.at2 : q.load.at;
+          const at0 = s && p.load.at2 ? p.load.at2 : p.load.at;
           const l1 = Math.hypot(E0[0] - S0[0], E0[1] - S0[1]), l2 = Math.hypot(W0[0] - E0[0], W0[1] - E0[1]);
+          let W = [at[0] + W0[0] - at0[0], at[1] + W0[1] - at0[1]];
+          // slide：轮 / 杠在地上滚，手够不着时它就沿地面往人这边滚到刚好够得着（手臂伸直），不算钳制
+          if (op.slide && !s) {
+            const dy = W[1] - S[1], reach = l1 + l2 - 0.05;
+            // slide: 'straight' 时两个方向都滚：轮停在手臂刚好伸直的位置（直臂下压，手臂不弯）
+            if ((op.slide === 'straight' || Math.hypot(W[0] - S[0], dy) > reach) && Math.abs(dy) < reach) {
+              const nx = S[0] + Math.sign(W[0] - S[0]) * Math.sqrt(reach * reach - dy * dy), ddx = nx - W[0];
+              const nx2 = W[0] + ddx;
+              W = [nx2, W[1]]; at = [at[0] + ddx, at[1]];
+              q.load = { ...q.load, at };
+            } else if (Math.abs(dy) >= reach) {
+              // 手臂竖直也只差一点点（跪姿起点手臂本来就垂直伸直）：轮就在肩的正下方
+              const ddx = S[0] - W[0];
+              W = [S[0], W[1]]; at = [at[0] + ddx, at[1]];
+              q.load = { ...q.load, at };
+            }
+          }
           // 原本就伸直的手臂（推到顶）放回去也是伸直的：只有真够不着（差半个像素以上）才算钳制
           if (Math.hypot(W[0] - S[0], W[1] - S[1]) > l1 + l2 + 0.5) q._faultClamped = true;
+          // 选支：肘在「肩—手」连线的哪一侧、离多远，照原姿态（手臂几乎伸直时拿当前肘当提示会换支）
+          const side0 = ((E0[0] - S0[0]) * (W0[1] - S0[1]) - (E0[1] - S0[1]) * (W0[0] - S0[0])) / (Math.hypot(W0[0] - S0[0], W0[1] - S0[1]) || 1);
+          const vx = W[0] - S[0], vy = W[1] - S[1], vl = Math.hypot(vx, vy) || 1;
+          const hint = [S[0] + vx * l1 / (l1 + l2) + vy / vl * side0 * 3, S[1] + vy * l1 / (l1 + l2) - vx / vl * side0 * 3];
+          // 原手臂是直的（肘离连线不到半个像素）：放回去也画成直的，肘就在连线上——两支解几乎重合，选哪支全凭噪声，会来回换
+          // 两者之间按肘离连线的距离平滑过渡（0.2–1.2px），不设硬阈值——硬阈值本身就是一处跳变
+          const El = [S[0] + vx / vl * l1, S[1] + vy / vl * l1], Ei = fltIk(S, W, l1, l2, hint);
+          const tt = Math.min(Math.max((Math.abs(side0) - 0.2) / 1.0, 0), 1);
+          const Er = [El[0] + (Ei[0] - El[0]) * tt, El[1] + (Ei[1] - El[1]) * tt];
+          // 手始终放回杠 / 轮上（强度只管 slide 滚多远）：按强度混合手位的话，强度不满时手就离开了杠
           q['wrist' + s] = W;
-          q['elbow' + s] = fltIk(S, W, l1, l2, q['elbow' + s] ?? E0);
+          q['elbow' + s] = Er;
         }
         break;
       }
       case 'load': {
         // side 'near'：只挪近侧手和它的负荷（单臂划船：远侧手撑在凳上不能跟着走）
         const d = [op.dx * w, op.dy * w];
-        if (op.side === 'near') {
+        if (op.hands === false) {
+          // 只挪器械（腿屈伸的垫压错了位置），手不动
+          if (q.load) q.load = { ...q.load, at: fltAdd(q.load.at, d) };
+        } else if (op.side === 'near') {
           if (q.load) q.load = { ...q.load, at: fltAdd(q.load.at, d) };
           q.wrist = fltAdd(q.wrist, d);
         } else {
@@ -263,7 +347,7 @@ function fltRot3(q, c, k, deg) {
 /**
  * 3D 变换（作用在 orbitLift 的关节表上，就地修改）。
  *   valgus {px}        膝内扣：膝绕「髋—踝」轴往中线转，膝的 z 往中线收 px（骨长不变）
- *   lateral {deg}      上半身绕骨盆侧倾（绕前后轴转）。正值倒向近侧（+z）
+ *   lateral {deg}      上半身绕骨盆侧倾（绕前后轴 +x 转）。负值倒向近侧（+z），正值倒向远侧
  *   pitch {deg}        上半身绕骨盆前后摆（绕左右轴 +z 转）。正值往 +x 倒：人朝 +x 时是前屈，朝 −x 时符号相反
  *   twist {deg}        上半身绕竖直轴旋转
  *   arm3 {deg, side, axis}  一侧（或 both）手臂绕肩转：axis 'z'（默认）在矢状面内、'x' 在冠状面内（两侧镜像）
@@ -403,6 +487,11 @@ export function faultPhase(tempo, ph) {
     if (ph < 0.82) { const t = (ph - 0.6) / 0.22; return { u: 1 - 0.15 * ease(t), half: 1 }; }
     const t = (ph - 0.82) / 0.18;
     return { u: 0.85 * (1 - t * t), half: 1 };
+  }
+  if (tempo === 'fast') {
+    // 做得过快：同样的起落，用一半时间做完两次（灰影只做一次）
+    const q = (ph * 2) % 1;
+    return q < 0.5 ? { u: ease(q * 2), half: 0 } : { u: ease((1 - q) * 2), half: 1 };
   }
   if (tempo === 'drop') {
     if (ph < 0.75) return { u: ease(ph / 0.75), half: 0 };
