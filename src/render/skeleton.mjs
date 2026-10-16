@@ -1,5 +1,6 @@
 // 出平面手臂的重建与主动肌标注。两者都只影响画法，不改姿态数据本身。
 import { ORBIT_FIGS, orbitFrame, renderOrbit, ORBIT_STATIC } from './orbit.mjs';
+import { opWeight, faultU } from './faults.mjs';
 import { rebuildArmFor, OUT_OF_PLANE_ARM, ARM_OVERRIDES } from './arm.mjs';
 import { MUSCLE_SEG } from './muscle-segments.mjs';
 import { renderFace, facing, PRONE_POSES, FACE_GEOMETRY } from './facing.mjs';
@@ -314,18 +315,22 @@ export const POSES = {
   }),
 
   // ── 水平拉 ─────────────────────────────────────────
-  // 俯身划船的膝是「微屈」：原来髋被摆到脚跟后 39px，膝角只有 97.6°，
-  // 画的是硬拉起始的下肢，而 cue 写「屈髋到躯干与地面 15–45 度，膝微屈」。
-  // 现在膝角 ~150°、大腿与水平 ~70°、躯干 39°。
+  // 俯身划船：cue「屈髋到躯干与地面 15–45 度，膝微屈」。
+  // 原来躯干 39°、膝角 ~150°，但肩在脚尖前 24px、杠垂在足中线前 42px——站不住：
+  // 杠铃取 0.3 倍体重时全身重心就落到脚尖前（错误示范的重心断言在灰影上抓到的）。
+  // 现在按「杠垂在前脚掌上方（x=100，足中线 90、脚尖 108）、小腿竖直、躯干 45°（cue 的上限）」反解：
+  // 髋在脚跟后 29px，膝角 142°。躯干取 42° 时髋要再退 3px，重身体重心压到脚跟上（评审量到离脚跟 0.6px）。
+  // 小腿必须竖直：前倾 5° 时膝在 x=85，拉起早段杠（u≈0.25）正好扫过膝。
+  // 拉起终点：杠在躯干线前 14.6px、沿躯干从髋起 35%（肚脐与肋下之间；review-round2 的下限是 30%）。
   row_start: P({
-    head: [144.9, 39.6], shoulder: [131.7, 50.3], elbow: [131.7, 100.3], wrist: [131.7, 139.3],
-    hip: [69.5, 100.6], knee: [90, 158], ankle: [80, 216], heel: [72, 225], toe: [108, 225],
-    load: { type: 'bar', at: [131.7, 147.3] },
+    head: [114.2, 42.6], shoulder: [100, 51.9], elbow: [100, 101.9], wrist: [100, 140.9],
+    hip: [43.4, 108.4], knee: [80, 156], ankle: [80, 216], heel: [72, 225], toe: [108, 225],
+    load: { type: 'bar', at: [100, 148.9] },
   }),
   row_end: P({
-    head: [144.9, 39.6], shoulder: [131.7, 50.3], elbow: [82.4, 58.4], wrist: [103.2, 91.4],
-    hip: [69.5, 100.6], knee: [90, 158], ankle: [80, 216], heel: [72, 225], toe: [108, 225],
-    load: { type: 'bar', at: [103.2, 99.4] },
+    head: [114.2, 42.6], shoulder: [100, 51.9], elbow: [50.6, 59.7], wrist: [74, 91],
+    hip: [43.4, 108.4], knee: [80, 156], ankle: [80, 216], heel: [72, 225], toe: [108, 225],
+    load: { type: 'bar', at: [73.6, 99] },
   }),
   // 坐姿 / 器械划船：躯干近直立
   seated_row_start: P({
@@ -1448,5 +1453,63 @@ export function renderSkeleton(fig, nameZh, prime = [], slug = '') {
     + frame(a, fig.cap_start ?? '起始', fig.start)
     + (two ? frame(b, fig.cap_end ?? '结束', fig.end) : '')
     + `<figcaption>${fig.note ?? '示意图：关节位置按本卡自检判据摆放，非写实插画。'}</figcaption>`
+    + '</figure>';
+}
+
+/**
+ * 错误示范的静止帧取在哪：变换最明显的那一刻（各变换强度之和最大）。
+ * 只有幅度 / 节奏类错误（没有变换）时取结束帧——只做半程的人停在半路，灰影在终点。
+ */
+export function mistakeStill(mf) {
+  if (mf.still) return mf.still;
+  let best = { u: 1, half: 0 }, bw = 0;
+  for (const half of [0, 1]) for (let i = 0; i <= 24; i++) {
+    const u = i / 24;
+    const w = (mf.ops ?? []).reduce((s, op) => s + opWeight(op, u, half), 0) + (mf.pprof ? opWeight({ prof: mf.pprof }, u, half) : 0);
+    if (w > bw + 1e-9) { bw = w; best = { u, half }; }
+  }
+  return best;
+}
+
+/** 错误示范的全部输入：错误动作的两端、正确动作（灰影）的两端、变换。渲染、预览、断言共用这一份。 */
+export function mistakeSetup(fig, mf) {
+  const strip = (p) => (fig.no_load && p ? { ...p, load: undefined } : p);
+  const ga = fig.start, gb = fig.end ?? fig.start;
+  const wa = mf.start ?? ga, wb = mf.end ?? (mf.start ? mf.start : gb);
+  const fault = { ops: mf.ops ?? [], hl: mf.hl ?? [], ...(mf.params ? { params: mf.params } : {}),
+    ...(mf.rom ? { rom: mf.rom } : {}), ...(mf.yaw !== undefined ? { yaw: mf.yaw } : {}), ...(mf.pprof ? { pprof: mf.pprof } : {}) };
+  return { wa, wb, ga, gb, A: strip(POSES[wa]), B: strip(POSES[wb]), GA: strip(POSES[ga]), GB: strip(POSES[gb]),
+    // 换了基准视角（正面看膝内扣）时不画杠线：足中线是侧视的判据，正面看它只是一条横在脚下的线
+    plumb: fig.plumb !== false && !fig.no_load && mf.yaw === undefined, iopts: { plumb: fig.plumb, handPath: !!fig.hand_path }, fault,
+    ghost: mf.ghost !== false };
+}
+
+/**
+ * 一张错误示范图：环绕视角，错误动作实画、出错部位标红，正确动作画成灰影叠在同一格里。
+ * fig 是该动作的正确图（figures.json），mf 是 mistake-figures.json 里的一条。
+ */
+export function renderMistakeFigure(fig, mf, nameZh, slug, error) {
+  const { wa, wb, ga, gb, A, B, GA, GB, plumb, iopts, fault, ghost: hasGhost } = mistakeSetup(fig, mf);
+  const ghost = hasGhost ? { A: GA, B: GB, names: { a: ga, b: gb } } : null;
+  const ro = { plumb, lt: fig.load_type, names: { a: wa, b: wb }, fault, ghost };
+  const of = orbitFrame(slug, A, B, interpolate, iopts, ro);
+  const [ox, oy, ow, oh] = of.box;
+  // plumb 是「画不画杠线」，ip 是补间要不要反解躯干（fig.plumb）：两件事，换了视角只关前者
+  const cfg = { slug, a: wa, b: wb, plumb, ip: fig.plumb ?? null, no_load: !!fig.no_load, handPath: !!fig.hand_path, prime: [],
+    load_type: fig.load_type ?? null, orbit: of, mistake: mf.mistake, fault, tempo: mf.tempo ?? null,
+    ...(ghost ? { ga, gb } : {}) };
+  const st = mistakeStill(mf);
+  cfg.still = st;
+  const uw = faultU(fault, st.u);
+  const p = interpolate(A, B, uw, iopts);
+  const gp = ghost ? { p: interpolate(GA, GB, st.u, iopts), names: ghost.names, u: st.u } : undefined;
+  const tempoNote = mf.tempo ? '这是节奏上的错误：看动图里错误动作与灰影的快慢差别。' : '';
+  return `<figure class="skeleton sk-mistake" data-exercise="${nameZh}" data-anim="${escapeAttr(JSON.stringify(cfg))}">`
+    + `<svg viewBox="${ox} ${oy} ${ow} ${oh}" class="sk-frame sk-orbit" data-pose="orbit"`
+    + ` preserveAspectRatio="xMidYMid meet" role="img" aria-label="${nameZh}·错误示范：${escapeAttr(error)}">`
+    + renderOrbit(p, { slug, names: ro.names, lt: fig.load_type, plumb, u: uw, half: st.half, yaw: st.yaw ?? ORBIT_STATIC.yaw,
+      frame: of, caption: '错误示范', fault, ghost: gp })
+    + '</svg>'
+    + `<figcaption>${ghost ? '红色＝出错的部位；灰影＝同一时刻的正确动作。' : '红色＝出错的部位。'}${tempoNote}</figcaption>`
     + '</figure>';
 }

@@ -24,7 +24,7 @@ async function readJson(root, rel) {
 }
 
 export async function loadData(root) {
-  const [claims, exercises, plans, demos, quiz, chapters, poseFigures, anatomy] = await Promise.all([
+  const [claims, exercises, plans, demos, quiz, chapters, poseFigures, anatomy, mistakeFigures] = await Promise.all([
     readJson(root, 'data/claims.json'),
     readJson(root, 'data/exercises.json'),
     readJson(root, 'data/plans.json'),
@@ -33,6 +33,7 @@ export async function loadData(root) {
     readJson(root, 'content/chapters.json'),
     readJson(root, 'data/figures.json'),
     readJson(root, 'data/anatomy.json'),
+    readJson(root, 'data/mistake-figures.json'),
   ]);
   const errs = [...validateClaims(claims)];
   const ctx = {
@@ -54,5 +55,5 @@ export async function loadData(root) {
     safetyCanon,
   }));
   if (errs.length) throw new Error(`数据校验失败:\n- ${errs.join('\n- ')}`);
-  return { claims, exercises, plans, demos, quiz, chapters, safetyCanon, poseFigures, anatomy };
+  return { claims, exercises, plans, demos, quiz, chapters, safetyCanon, poseFigures, anatomy, mistakeFigures };
 }

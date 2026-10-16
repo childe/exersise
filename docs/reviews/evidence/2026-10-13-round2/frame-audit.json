@@ -1,0 +1,296 @@
+[
+  {
+    "slug": "back-squat-high-bar",
+    "equipmentMissingFrames": 0,
+    "secondLegMissingFrames": 0,
+    "nonFiniteSVGFrames": 0
+  },
+  {
+    "slug": "back-squat-low-bar",
+    "equipmentMissingFrames": 0,
+    "secondLegMissingFrames": 0,
+    "nonFiniteSVGFrames": 0
+  },
+  {
+    "slug": "bodyweight-squat",
+    "equipmentMissingFrames": 0,
+    "secondLegMissingFrames": 0,
+    "nonFiniteSVGFrames": 0
+  },
+  {
+    "slug": "db-front-squat",
+    "equipmentMissingFrames": 0,
+    "secondLegMissingFrames": 0,
+    "nonFiniteSVGFrames": 0
+  },
+  {
+    "slug": "goblet-squat",
+    "equipmentMissingFrames": 0,
+    "secondLegMissingFrames": 0,
+    "nonFiniteSVGFrames": 0
+  },
+  {
+    "slug": "db-bulgarian-split-squat",
+    "equipmentMissingFrames": 0,
+    "secondLegMissingFrames": 0,
+    "nonFiniteSVGFrames": 0
+  },
+  {
+    "slug": "leg-press",
+    "equipmentMissingFrames": 0,
+    "secondLegMissingFrames": 0,
+    "nonFiniteSVGFrames": 0
+  },
+  {
+    "slug": "seated-leg-extension",
+    "equipmentMissingFrames": 0,
+    "secondLegMissingFrames": 0,
+    "nonFiniteSVGFrames": 0
+  },
+  {
+    "slug": "seated-calf-raise",
+    "equipmentMissingFrames": 0,
+    "secondLegMissingFrames": 0,
+    "nonFiniteSVGFrames": 0
+  },
+  {
+    "slug": "standing-calf-raise-bodyweight",
+    "equipmentMissingFrames": 0,
+    "secondLegMissingFrames": 0,
+    "nonFiniteSVGFrames": 0
+  },
+  {
+    "slug": "conventional-deadlift",
+    "equipmentMissingFrames": 0,
+    "secondLegMissingFrames": 0,
+    "nonFiniteSVGFrames": 0
+  },
+  {
+    "slug": "romanian-deadlift",
+    "equipmentMissingFrames": 0,
+    "secondLegMissingFrames": 0,
+    "nonFiniteSVGFrames": 0
+  },
+  {
+    "slug": "db-romanian-deadlift",
+    "equipmentMissingFrames": 0,
+    "secondLegMissingFrames": 0,
+    "nonFiniteSVGFrames": 0
+  },
+  {
+    "slug": "band-good-morning",
+    "equipmentMissingFrames": 0,
+    "secondLegMissingFrames": 0,
+    "nonFiniteSVGFrames": 0
+  },
+  {
+    "slug": "db-hip-thrust",
+    "equipmentMissingFrames": 0,
+    "secondLegMissingFrames": 0,
+    "nonFiniteSVGFrames": 0
+  },
+  {
+    "slug": "glute-bridge-bodyweight",
+    "equipmentMissingFrames": 0,
+    "secondLegMissingFrames": 0,
+    "nonFiniteSVGFrames": 0
+  },
+  {
+    "slug": "back-extension",
+    "equipmentMissingFrames": 0,
+    "secondLegMissingFrames": 0,
+    "nonFiniteSVGFrames": 0
+  },
+  {
+    "slug": "lying-leg-curl",
+    "equipmentMissingFrames": 0,
+    "secondLegMissingFrames": 0,
+    "nonFiniteSVGFrames": 0
+  },
+  {
+    "slug": "barbell-bench-press",
+    "equipmentMissingFrames": 0,
+    "secondLegMissingFrames": 0,
+    "nonFiniteSVGFrames": 0
+  },
+  {
+    "slug": "close-grip-bench-press",
+    "equipmentMissingFrames": 0,
+    "secondLegMissingFrames": 0,
+    "nonFiniteSVGFrames": 0
+  },
+  {
+    "slug": "db-bench-press",
+    "equipmentMissingFrames": 0,
+    "secondLegMissingFrames": 0,
+    "nonFiniteSVGFrames": 0
+  },
+  {
+    "slug": "db-incline-bench-press",
+    "equipmentMissingFrames": 0,
+    "secondLegMissingFrames": 0,
+    "nonFiniteSVGFrames": 0
+  },
+  {
+    "slug": "machine-chest-press",
+    "equipmentMissingFrames": 0,
+    "secondLegMissingFrames": 0,
+    "nonFiniteSVGFrames": 0
+  },
+  {
+    "slug": "push-up",
+    "equipmentMissingFrames": 0,
+    "secondLegMissingFrames": 0,
+    "nonFiniteSVGFrames": 0
+  },
+  {
+    "slug": "knee-push-up",
+    "equipmentMissingFrames": 0,
+    "secondLegMissingFrames": 0,
+    "nonFiniteSVGFrames": 0
+  },
+  {
+    "slug": "overhead-press",
+    "equipmentMissingFrames": 0,
+    "secondLegMissingFrames": 0,
+    "nonFiniteSVGFrames": 0
+  },
+  {
+    "slug": "band-overhead-press",
+    "equipmentMissingFrames": 0,
+    "secondLegMissingFrames": 0,
+    "nonFiniteSVGFrames": 0
+  },
+  {
+    "slug": "db-shoulder-press",
+    "equipmentMissingFrames": 0,
+    "secondLegMissingFrames": 0,
+    "nonFiniteSVGFrames": 0
+  },
+  {
+    "slug": "machine-shoulder-press",
+    "equipmentMissingFrames": 0,
+    "secondLegMissingFrames": 0,
+    "nonFiniteSVGFrames": 0
+  },
+  {
+    "slug": "db-lateral-raise",
+    "equipmentMissingFrames": 0,
+    "secondLegMissingFrames": 0,
+    "nonFiniteSVGFrames": 0
+  },
+  {
+    "slug": "cable-lateral-raise",
+    "equipmentMissingFrames": 0,
+    "secondLegMissingFrames": 0,
+    "nonFiniteSVGFrames": 0
+  },
+  {
+    "slug": "cable-pushdown",
+    "equipmentMissingFrames": 0,
+    "secondLegMissingFrames": 0,
+    "nonFiniteSVGFrames": 0
+  },
+  {
+    "slug": "barbell-row",
+    "equipmentMissingFrames": 0,
+    "secondLegMissingFrames": 0,
+    "nonFiniteSVGFrames": 0
+  },
+  {
+    "slug": "db-one-arm-row",
+    "equipmentMissingFrames": 0,
+    "secondLegMissingFrames": 0,
+    "nonFiniteSVGFrames": 0
+  },
+  {
+    "slug": "inverted-row",
+    "equipmentMissingFrames": 0,
+    "secondLegMissingFrames": 0,
+    "nonFiniteSVGFrames": 0
+  },
+  {
+    "slug": "band-row",
+    "equipmentMissingFrames": 0,
+    "secondLegMissingFrames": 0,
+    "nonFiniteSVGFrames": 0
+  },
+  {
+    "slug": "seated-cable-row",
+    "equipmentMissingFrames": 0,
+    "secondLegMissingFrames": 0,
+    "nonFiniteSVGFrames": 0
+  },
+  {
+    "slug": "lat-pulldown",
+    "equipmentMissingFrames": 0,
+    "secondLegMissingFrames": 0,
+    "nonFiniteSVGFrames": 0
+  },
+  {
+    "slug": "pull-up",
+    "equipmentMissingFrames": 0,
+    "secondLegMissingFrames": 0,
+    "nonFiniteSVGFrames": 0
+  },
+  {
+    "slug": "cable-face-pull",
+    "equipmentMissingFrames": 0,
+    "secondLegMissingFrames": 0,
+    "nonFiniteSVGFrames": 0
+  },
+  {
+    "slug": "db-reverse-fly",
+    "equipmentMissingFrames": 0,
+    "secondLegMissingFrames": 0,
+    "nonFiniteSVGFrames": 0
+  },
+  {
+    "slug": "barbell-curl",
+    "equipmentMissingFrames": 0,
+    "secondLegMissingFrames": 0,
+    "nonFiniteSVGFrames": 0
+  },
+  {
+    "slug": "db-curl",
+    "equipmentMissingFrames": 0,
+    "secondLegMissingFrames": 0,
+    "nonFiniteSVGFrames": 0
+  },
+  {
+    "slug": "cable-curl",
+    "equipmentMissingFrames": 0,
+    "secondLegMissingFrames": 0,
+    "nonFiniteSVGFrames": 0
+  },
+  {
+    "slug": "ab-wheel-rollout",
+    "equipmentMissingFrames": 0,
+    "secondLegMissingFrames": 0,
+    "nonFiniteSVGFrames": 0
+  },
+  {
+    "slug": "barbell-rollout",
+    "equipmentMissingFrames": 0,
+    "secondLegMissingFrames": 0,
+    "nonFiniteSVGFrames": 0
+  },
+  {
+    "slug": "db-dead-bug",
+    "equipmentMissingFrames": 0,
+    "secondLegMissingFrames": 0,
+    "nonFiniteSVGFrames": 0
+  },
+  {
+    "slug": "band-pallof-press",
+    "equipmentMissingFrames": 0,
+    "secondLegMissingFrames": 0,
+    "nonFiniteSVGFrames": 0
+  },
+  {
+    "slug": "cable-pallof-press",
+    "equipmentMissingFrames": 0,
+    "secondLegMissingFrames": 0,
+    "nonFiniteSVGFrames": 0
+  }
+]

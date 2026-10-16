@@ -22,6 +22,7 @@
 import { GROUND, MIDFOOT, POSES, drawnArm, BENCH_GAP } from './skeleton.mjs';
 import { MUSCLE_SEG } from './muscle-segments.mjs';
 import { facing, FACE_GEOMETRY } from './facing.mjs';
+import { faultPose2D, faultJoints3D, faultU, opWeight } from './faults.mjs';
 
 export const ORBIT_YAW = 30;                 // 度：摆幅
 export const ORBIT_PERIOD = 8.4;             // 秒：一次完整摆动 = 两次起落
@@ -154,7 +155,24 @@ export const ORBIT_FIGS = new Set(Object.keys(ORBIT_PARAMS));
 // 反向飞鸟取 60°（从近侧的斜后方）：取 120° 时相机在 −z 一侧，远侧反而离读者更近，
 // 近实远灰的主次就画反了。
 const ORB_BASE_YAW = { side: 0, front: -90, 'reverse-fly': 60 };
-export const orbitBaseYaw = (slug) => ORB_BASE_YAW[ORBIT_PARAMS[slug]?.view ?? 'side'];
+// 错误示范可以换基准视角（fault.yaw）：膝内扣、躯干侧倾这类冠状面的错误，侧视两边摆 30° 看不出来。
+export const orbitBaseYaw = (slug, fault) => fault?.yaw ?? ORB_BASE_YAW[ORBIT_PARAMS[slug]?.view ?? 'side'];
+/** 本帧用的 3D 参数：错误示范可以覆盖其中几项（例如卧推肘全外展：out、grip）。 */
+// fault.pprof：参数也可以随动作进程渐变（肘在下蹲过程中慢慢掉下来），数值与数组按强度在正确值与错误值之间插值
+const orbParams = (slug, fault, u = 0) => {
+  const base = ORBIT_PARAMS[slug] ?? {};
+  if (!fault?.params) return base;
+  if (!fault.pprof) return { ...base, ...fault.params };
+  const w = opWeight({ prof: fault.pprof }, u, fault._half ?? 0), P = { ...base };
+  for (const [k, v] of Object.entries(fault.params)) {
+    const b = base[k];
+    // pole 没有登记默认值时，默认去向由 liftSide 按 2D 肘算出来——这里只记下强度，到那里再混合
+    if (k === 'pole' && b === undefined) { P.pole = v; P._poleW = w; continue; }
+    P[k] = typeof v === 'number' && (typeof b === 'number' || b === undefined) ? (b ?? 0) + (v - (b ?? 0)) * w
+      : Array.isArray(v) && Array.isArray(b) ? v.map((x, i) => b[i] + (x - b[i]) * w) : (w >= 0.5 ? v : b);
+  }
+  return P;
+};
 
 // ── 向量 ──────────────────────────────────────────────
 const o3sub = (a, b) => [a[0] - b[0], a[1] - b[1], a[2] - b[2]];
@@ -236,7 +254,8 @@ const foreOffset = (P, E, H, f = [1, 0]) => {
     fz: ORB_FORE * Math.cos(b) * Math.sin(t) };
 };
 function foreVerticalGrip(slug, names, P, lt) {
-  if (orbGripCache.has(slug)) return orbGripCache.get(slug);
+  const key = `${slug}|${names.a}|${names.b}|${P.foreTilt ?? ''}|${P.foreBack ?? ''}`;
+  if (orbGripCache.has(key)) return orbGripCache.get(key);
   let best = null;
   for (const n of [names.a, names.b]) {
     const q = POSES[n];
@@ -247,7 +266,7 @@ function foreVerticalGrip(slug, names, P, lt) {
     if (zz > 0 && (!best || d < best.d)) best = { d, grip: ORB_SHOULDER + Math.sqrt(zz) - fz };
   }
   const g = best?.grip ?? P.grip ?? ORB_SHOULDER;
-  orbGripCache.set(slug, g);
+  orbGripCache.set(key, g);
   return g;
 }
 
@@ -305,8 +324,10 @@ function liftSide(slug, names, p, u, P, lt) {
       H = [hxy[0], hxy[1], s * grip];
       const ed = [exy[0] - S[0], exy[1] - S[1]], el = Math.hypot(ed[0], ed[1]) || 1;
       const o = P.out ?? 0.2;
-      pole = P.pole ? [P.pole[0], P.pole[1], s * P.pole[2]]
-        : [ed[0] / el * (1 - o), ed[1] / el * (1 - o), s * (o + 0.05)];
+      const def = [ed[0] / el * (1 - o), ed[1] / el * (1 - o), s * (o + 0.05)];
+      pole = P.pole && P._poleW !== undefined
+        ? def.map((x, i) => x + ([P.pole[0], P.pole[1], s * P.pole[2]][i] - x) * P._poleW)
+        : P.pole ? [P.pole[0], P.pole[1], s * P.pole[2]] : def;
       // 前臂竖直：pole 直接指向「手正下方一个前臂长」的那一点。底部时它恰好在 IK 的圆上，
       // 解出来就是它；其余帧连续过渡。只给一个「朝下」的 pole 时，圆上离它最近的点不是正下方
       // （卧推底部前臂曾偏 35°）。
@@ -392,8 +413,8 @@ function liftReverseFly(u, P) {
   return J;
 }
 
-export function orbitLift(slug, names, p, u = 0, lt) {
-  const P = ORBIT_PARAMS[slug] ?? {};
+export function orbitLift(slug, names, p, u = 0, lt, fault) {
+  const P = orbParams(slug, fault, u);
   const nm = orbNames(names);
   if (P.view === 'front') return liftFront(slug, nm, p, u, P);
   if (P.view === 'reverse-fly') return liftReverseFly(u, P);
@@ -471,8 +492,7 @@ function neutralGripAxis(E, H) {
 }
 
 /** 器械。lt 是 figures.json 的 load_type 覆盖：画出来的是它，不是姿态模板里的那件。 */
-function equipment(S, slug, p, J, lt) {
-  const P = ORBIT_PARAMS[slug] ?? {};
+function equipment(S, slug, p, J, lt, P = ORBIT_PARAMS[slug] ?? {}, restPose = null) {
   if (p.bench) {
     const [x, y, w, h] = p.bench;
     // 凳心默认在中线；单侧支撑的动作（单臂划船、保加利亚）挪到支撑那一侧
@@ -483,17 +503,18 @@ function equipment(S, slug, p, J, lt) {
     }
   }
   if (P.backrest && p.hip && p.shoulder && p.knee) {
+    const pr = restPose ?? p;
     // 靠背：一块贴在躯干背侧的板（间隙 BENCH_GAP，同凳面）。原来坐姿器械只画了座面，
     // 而五张卡的 cue / 自检都点名「背贴靠背」「看腰与靠背之间有没有空隙」——图上没有对照物。
     // 坐姿动作躯干不动，板按当前帧的躯干放即两帧同位。板只到肩高：这些坐姿的头心在躯干线后约 6px，
     // 板再往上就从头里穿过去（推胸 cue「头贴住靠背」因此没有画出来）。
-    const tv = [p.shoulder[0] - p.hip[0], p.shoulder[1] - p.hip[1]], tl = Math.hypot(tv[0], tv[1]) || 1;
+    const tv = [pr.shoulder[0] - pr.hip[0], pr.shoulder[1] - pr.hip[1]], tl = Math.hypot(tv[0], tv[1]) || 1;
     const u = [tv[0] / tl, tv[1] / tl];
     let n = [-u[1], u[0]];
-    if (n[0] * (p.knee[0] - p.hip[0]) + n[1] * (p.knee[1] - p.hip[1]) > 0) n = [-n[0], -n[1]];   // 指向身后
+    if (n[0] * (pr.knee[0] - pr.hip[0]) + n[1] * (pr.knee[1] - pr.hip[1]) > 0) n = [-n[0], -n[1]];   // 指向身后
     const top = 0, h = 8, half = 18;
-    const from = [p.hip[0] - u[0] * 6 + n[0] * BENCH_GAP, p.hip[1] - u[1] * 6 + n[1] * BENCH_GAP];
-    const to = [p.shoulder[0] + u[0] * top + n[0] * BENCH_GAP, p.shoulder[1] + u[1] * top + n[1] * BENCH_GAP];
+    const from = [pr.hip[0] - u[0] * 6 + n[0] * BENCH_GAP, pr.hip[1] - u[1] * 6 + n[1] * BENCH_GAP];
+    const to = [pr.shoulder[0] + u[0] * top + n[0] * BENCH_GAP, pr.shoulder[1] + u[1] * top + n[1] * BENCH_GAP];
     const f2 = [from[0] + n[0] * h, from[1] + n[1] * h], t2 = [to[0] + n[0] * h, to[1] + n[1] * h];
     const q = (a, z) => [a[0], a[1], z];
     // 竖直的板不像座面那样「从上往下看总在身体后面」：相机转到身后（yaw>0）时板挡在躯干前。
@@ -539,8 +560,18 @@ function equipment(S, slug, p, J, lt) {
     }
     // 手握在哑铃把手中间，所以哑铃心就在手上（2D 里偏开 8px 只是为了不盖住手）
     for (const tag of hands) {
-      const axis = P.db === 'fore' ? neutralGripAxis(J['elbow' + tag], J['wrist' + tag]) : P.db ?? 'x';
+      let axis = P.db === 'fore' ? neutralGripAxis(J['elbow' + tag], J['wrist' + tag]) : P.db ?? 'x';
+      // dbTwist：哑铃长轴绕前臂转（锤式弯举举起时手腕翻成掌心朝上：中立握 → 正握，转 90°）
+      if (P.dbTwist && Array.isArray(axis)) {
+        const f3 = o3sub(J['wrist' + tag], J['elbow' + tag]), fl = o3len(f3) || 1, k = f3.map((x) => x / fl);
+        // 符号：近侧（+z）是右手，外旋（掌心转向上）时拇指端往 +z（往外）转；远侧镜像
+        const a = (tag === 'N' ? -1 : 1) * P.dbTwist * Math.PI / 180, c = Math.cos(a), s = Math.sin(a);
+        const kx = [k[1] * axis[2] - k[2] * axis[1], k[2] * axis[0] - k[0] * axis[2], k[0] * axis[1] - k[1] * axis[0]], kd = o3dot(k, axis);
+        axis = axis.map((x, i) => x * c + kx[i] * s + k[i] * kd * (1 - c));
+      }
+      const n0 = S.length;
       dumbbell(S, J['wrist' + tag], axis);
+      for (let i = n0; i < S.length; i++) S[i].side = tag;   // 错误示范可以只标一侧的哑铃（load.F）
     }
     return;
   }
@@ -597,12 +628,18 @@ function equipment(S, slug, p, J, lt) {
 }
 
 /** 一帧的完整 3D 场景。under 永远在最底层、over 永远在最上层，其余按深度排序。 */
-export function orbitScene(slug, names, p, { u = 0, prime = [], plumb = false, floor, lt } = {}) {
+export function orbitScene(slug, names, p0, { u = 0, prime = [], plumb = false, floor, lt, fault, half = 0 } = {}) {
   const nm = orbNames(names), name = nm.a;
-  const J = orbitLift(slug, nm, p, u, lt);
+  // 错误示范：2D 变换先作用在姿态上（器械跟着身体走），抬成 3D 后再做只有 3D 里才有的变换
+  const p = fault ? faultPose2D(p0, fault, u, half) : p0;
+  const J = orbitLift(slug, nm, p, u, lt, fault && { ...fault, _half: half });
+  if (fault) faultJoints3D(J, fault, u, half);
   const S = [], under = [], over = [];
-  const P = ORBIT_PARAMS[slug] ?? {};
+  const P = orbParams(slug, fault && { ...fault, _half: half }, u);
   const front = P.view === 'front';
+  let f;
+  if (front || P.view === 'reverse-fly') f = [1, 0];
+  else f = facing(name, p);
 
   if (floor) {
     const [x0, x1, zh] = floor;
@@ -619,23 +656,48 @@ export function orbitScene(slug, names, p, { u = 0, prime = [], plumb = false, f
     over.push({ t: 'line', a: [p.load.at[0], p.load.at[1], 0], b: [p.load.at[0], GROUND, 0], cls: 'sk-plumb' });
   }
 
-  // 躯干：一块半透明的面（肩、髋四点）给出体积，中线仍是粗躯干线
-  S.push({ t: 'poly', pts: [J.shoulderN, J.shoulderF, J.hipF, J.hipN], cls: 'sk-torso-plane', bias: -4 });
-  S.push({ t: 'line', a: J.pelvis, b: J.neck, cls: 'sk-trunk' });
-  S.push({ t: 'line', a: J.shoulderN, b: J.shoulderF, cls: 'sk-limb sk-girdle' });
-  S.push({ t: 'line', a: J.hipN, b: J.hipF, cls: 'sk-limb sk-girdle' });
-  S.push({ t: 'line', a: J.neck, b: o3mix(J.neck, J.head, 0.6), cls: 'sk-neck' });
+  // 躯干：一块半透明的面（肩、髋四点）给出体积，中线仍是粗躯干线。
+  // 错误示范的脊柱弯曲（圆背、塌腰）把中线画成一条弧，面也跟着分段。
+  const bend = J.spine?.bend ?? 0;
+  if (Math.abs(bend) > 0.05) {
+    const tv = o3sub(J.neck, J.pelvis), tl = o3len(tv) || 1;
+    let n = [-tv[1] / tl, tv[0] / tl, 0];
+    const ff = f ?? [1, 0];
+    if (n[0] * ff[0] + n[1] * ff[1] > 0) n = n.map((x) => -x);      // n 指向背侧
+    const at = Math.min(Math.max(J.spine.at, 0.15), 0.85), k = Math.log(0.5) / Math.log(at);
+    const N = 8, sp = [], wN = [], wF = [];
+    for (let i = 0; i <= N; i++) {
+      const t = i / N, b = Math.sin(Math.PI * t ** k) * bend;
+      const c = o3add(o3mix(J.pelvis, J.neck, t), n.map((x) => x * b));
+      sp.push(c);
+      const zN = J.hipN[2] + (J.shoulderN[2] - J.hipN[2]) * t, zF = J.hipF[2] + (J.shoulderF[2] - J.hipF[2]) * t;
+      wN.push([c[0], c[1], zN]); wF.push([c[0], c[1], zF]);
+    }
+    // 两端仍对齐真实的肩、髋（近侧肩可能被侧倾 / 耸肩挪过）
+    wN[0] = J.hipN; wF[0] = J.hipF; wN[N] = J.shoulderN; wF[N] = J.shoulderF;
+    for (let i = 0; i < N; i++) {
+      S.push({ t: 'poly', pts: [wN[i + 1], wF[i + 1], wF[i], wN[i]], cls: 'sk-torso-plane', bias: -4, part: 'trunk' });
+      S.push({ t: 'line', a: sp[i], b: sp[i + 1], cls: 'sk-trunk', part: 'trunk' });
+    }
+    J.spinePts = sp;
+  } else {
+    S.push({ t: 'poly', pts: [J.shoulderN, J.shoulderF, J.hipF, J.hipN], cls: 'sk-torso-plane', bias: -4, part: 'trunk' });
+    S.push({ t: 'line', a: J.pelvis, b: J.neck, cls: 'sk-trunk', part: 'trunk' });
+  }
+  S.push({ t: 'line', a: J.shoulderN, b: J.shoulderF, cls: 'sk-limb sk-girdle', part: 'shoulders' });
+  S.push({ t: 'line', a: J.hipN, b: J.hipF, cls: 'sk-limb sk-girdle', part: 'pelvis' });
+  S.push({ t: 'line', a: J.neck, b: o3mix(J.neck, J.head, 0.6), cls: 'sk-neck', part: 'head' });
 
   // 近侧实色、远侧 sk-far——沿用侧视的约定，±30° 内近侧始终离读者更近，不会翻转。
   // 正视动作两侧与读者等距，不分主次。
   for (const tag of ['N', 'F']) {
     const far = tag === 'F' && !front ? ' sk-far' : '';
-    S.push({ t: 'line', a: J['hip' + tag], b: J['knee' + tag], cls: 'sk-limb' + far });
-    S.push({ t: 'line', a: J['knee' + tag], b: J['ankle' + tag], cls: 'sk-limb' + far });
-    S.push({ t: 'line', a: J['heel' + tag], b: J['toe' + tag], cls: 'sk-foot' + far });
-    S.push({ t: 'line', a: J['shoulder' + tag], b: J['elbow' + tag], cls: 'sk-limb' + far });
-    S.push({ t: 'line', a: J['elbow' + tag], b: J['wrist' + tag], cls: 'sk-limb' + far });
-    S.push({ t: 'ball', c: J['wrist' + tag], r: 4, cls: 'sk-hand' + far, bias: 0.5 });
+    S.push({ t: 'line', a: J['hip' + tag], b: J['knee' + tag], cls: 'sk-limb' + far, part: 'thigh', side: tag });
+    S.push({ t: 'line', a: J['knee' + tag], b: J['ankle' + tag], cls: 'sk-limb' + far, part: 'shin', side: tag });
+    S.push({ t: 'line', a: J['heel' + tag], b: J['toe' + tag], cls: 'sk-foot' + far, part: 'foot', side: tag });
+    S.push({ t: 'line', a: J['shoulder' + tag], b: J['elbow' + tag], cls: 'sk-limb' + far, part: 'upperarm', side: tag });
+    S.push({ t: 'line', a: J['elbow' + tag], b: J['wrist' + tag], cls: 'sk-limb' + far, part: 'forearm', side: tag });
+    S.push({ t: 'ball', c: J['wrist' + tag], r: 4, cls: 'sk-hand' + far, bias: 0.5, part: 'forearm', side: tag });
     if (!far) for (const k of ['shoulder', 'hip', 'knee', 'ankle', 'elbow']) S.push({ t: 'ball', c: J[k + tag], r: 3.2, cls: 'sk-joint', bias: 0.5 });
   }
 
@@ -651,10 +713,7 @@ export function orbitScene(slug, names, p, { u = 0, prime = [], plumb = false, f
   }
 
   // 头：球。眼睛贴在球面上朝脸的方向，背向镜头的那只在渲染时剔除。
-  S.push({ t: 'ball', c: J.head, r: FACE_GEOMETRY.HEAD_R, cls: 'sk-head' });
-  let f;
-  if (front || P.view === 'reverse-fly') f = [1, 0];
-  else f = facing(name, p);
+  S.push({ t: 'ball', c: J.head, r: FACE_GEOMETRY.HEAD_R, cls: 'sk-head', part: 'head' });
   if (f) {
     for (const s of [1, -1]) {
       const n = [f[0] * 0.78, f[1] * 0.78, s * 0.62];
@@ -662,8 +721,24 @@ export function orbitScene(slug, names, p, { u = 0, prime = [], plumb = false, f
     }
   }
 
-  equipment(S, slug, p, J, lt);
-  return { J, S, under, over };
+  const n0 = S.length;
+  // 坐姿靠背是机器的一部分：错误动作躯干后仰时它不该跟着倒（腿屈伸借力），只有「靠背角度调错」（trunk 带 bench）才跟着转
+  const tiltRest = (fault?.ops ?? []).some((op) => op.op === 'trunk' && op.bench);
+  equipment(S, slug, p, J, lt, P, fault && !tiltRest ? p0 : null);
+  // 哑铃把手不标红：它握在手里，红把手和红前臂叠成一条，反而认不出哑铃；标两端的片就够了
+  for (let i = n0; i < S.length; i++) if (!/sk-bench|sk-rig\b|sk-db-handle/.test(S[i].cls)) S[i].part = 'load';
+  // 出错部位标红：只给错误示范用（它不标主动肌，红色在这里只有「错在这」一个意思）
+  // 变换还没起作用的那几帧（「起身时」的错误在下蹲段）不标：红色只出现在真的错了的时候
+  // 参数覆盖、换姿态、半程这类错误全程都在，全程标红
+  const on = (!fault?.ops?.length && !fault?.pprof) || (fault.params && !fault.pprof) || fault.rom
+    || (fault.ops ?? []).some((op) => op.op !== 'regrip' && opWeight(op, u, half) >= 0.2) || (fault.pprof && opWeight({ prof: fault.pprof }, u, half) >= 0.2);
+  // hl 里的「shin」两侧都标，「shin.N」只标近侧（分腿蹲只错前腿）
+  // 「trunk@0」：这一部位只跟第 0 个变换的强度标红（参数类错误全程在，而躯干前倾是随下蹲才出现的）
+  const hit = (it, h) => { const [ps] = h.split('@'); return it.part && (ps === it.part || ps === `${it.part}.${it.side}`); };
+  // 「@数字」跟第几个变换的强度；「@曲线名」（如 @late）直接按该曲线（参数类错误只在行程某一段才看得出来时用）
+  const lit = (h) => { const m = h.split('@')[1]; return m === undefined ? on : opWeight(/^\d+$/.test(m) ? fault.ops[+m] : { prof: m }, u, half) >= 0.2; };
+  if (fault?.hl?.length) for (const it of S) if (fault.hl.some((h) => lit(h) && hit(it, h))) it.cls += ' sk-fault';
+  return { J, S, under, over, p };
 }
 
 // ── 投影与渲染 ────────────────────────────────────────
@@ -729,17 +804,23 @@ export function orbitPoints(scene, yaw, pivot) {
  * 整段动画的固定参数：旋转中心、地面范围、画框。
  * 框必须固定，否则人会在格子里缩放跳动；所以取若干补间帧 × 若干偏航角的并集。
  */
-export function orbitFrame(slug, A, B, interp, opts, { prime = [], plumb = false, lt, names } = {}) {
-  const base = orbitBaseYaw(slug);
+export function orbitFrame(slug, A, B, interp, opts, { prime = [], plumb = false, lt, names, fault, ghost } = {}) {
+  const base = orbitBaseYaw(slug, fault);
+  // 每一帧：[姿态, u, 场景选项]。错误示范要把两个半程（变换可能只在回程出现）和灰色的正确动作都算进框里。
   const frames = [];
-  for (let i = 0; i <= 12; i++) frames.push([interp(A, B, i / 12, opts), i / 12]);
+  for (let i = 0; i <= 12; i++) {
+    if (!fault) { frames.push([interp(A, B, i / 12, opts), i / 12, {}]); continue; }
+    const uw = faultU(fault, i / 12);
+    for (const half of [0, 1]) frames.push([interp(A, B, uw, opts), uw, { fault, half }]);
+    if (ghost) frames.push([interp(ghost.A, ghost.B, i / 12, opts), i / 12, { names: ghost.names }]);
+  }
   // 旋转中心与地面：取全部帧在 3D 里的范围
   // 地面只按「落在地面附近的东西」定范围：按全部图元算的话，反向飞鸟展开的双臂
   // 把地面撑到 ±120，人反而缩在地面一角。
   let x0 = Infinity, x1 = -Infinity, y0 = Infinity, y1 = -Infinity;
   let gx0 = Infinity, gx1 = -Infinity, gz = 0;
-  for (const [p, u] of frames) {
-    const sc = orbitScene(slug, names, p, { u, prime, plumb, lt });
+  for (const [p, u, o] of frames) {
+    const sc = orbitScene(slug, o.names ?? names, p, { u, prime, plumb, lt, fault: o.fault, half: o.half });
     for (const it of sc.S) for (const q of it.t === 'line' ? [it.a, it.b] : it.t === 'poly' ? it.pts : [it.c]) {
       x0 = Math.min(x0, q[0]); x1 = Math.max(x1, q[0]); y0 = Math.min(y0, q[1]); y1 = Math.max(y1, q[1]);
       if (q[1] >= GROUND - 40) { gx0 = Math.min(gx0, q[0]); gx1 = Math.max(gx1, q[0]); gz = Math.max(gz, Math.abs(q[2])); }
@@ -749,8 +830,8 @@ export function orbitFrame(slug, A, B, interp, opts, { prime = [], plumb = false
   const pivot = [(x0 + x1) / 2, (y0 + Math.min(y1, GROUND)) / 2];
   const floor = [Math.min(gx0, (x0 + x1) / 2 - 40) - 14, Math.max(gx1, (x0 + x1) / 2 + 40) + 14, Math.max(48, gz + 16)];
   let bx0 = Infinity, by0 = Infinity, bx1 = -Infinity, by1 = -Infinity;
-  for (const [p, u] of frames) {
-    const sc = orbitScene(slug, names, p, { u, prime, plumb, floor, lt });
+  for (const [p, u, o] of frames) {
+    const sc = orbitScene(slug, o.names ?? names, p, { u, prime, plumb, floor, lt, fault: o.fault, half: o.half });
     for (const dy of [-ORBIT_YAW, -ORBIT_YAW / 2, 0, ORBIT_YAW / 2, ORBIT_YAW]) {
       for (const q of orbitPoints(sc, base + dy, pivot)) {
         bx0 = Math.min(bx0, q[0]); bx1 = Math.max(bx1, q[0]); by0 = Math.min(by0, q[1]); by1 = Math.max(by1, q[1]);
@@ -764,12 +845,18 @@ export function orbitFrame(slug, A, B, interp, opts, { prime = [], plumb = false
 }
 
 /** 画一帧。遮挡用画家算法：每个图元按深度从远到近画。yaw 是相对基准视角的偏转。 */
-export function renderOrbit(p, { slug, names, u = 0, yaw = 0, frame, prime = [], caption = '', plumb = false, lt } = {}) {
+export function renderOrbit(p, { slug, names, u = 0, yaw = 0, frame, prime = [], caption = '', plumb = false, lt, fault, half = 0, ghost } = {}) {
   const [bx, by, bw] = frame.box;
-  const Y = orbitBaseYaw(slug) + yaw, V = viewDir(Y);
-  const sc = orbitScene(slug, names, p, { u, prime, plumb, floor: frame.floor, lt });
+  const Y = orbitBaseYaw(slug, fault) + yaw, V = viewDir(Y);
+  const sc = orbitScene(slug, names, p, { u, prime, plumb, floor: frame.floor, lt, fault, half });
   const proj = (list) => list.map((it) => projectItem(it, Y, frame.pivot, V)).filter(Boolean);
   const mid = proj(sc.S).sort((a, b) => a.depth - b.depth);
   const cap = caption ? `<text class="sk-caption" x="${f1(bx + bw / 2)}" y="${f1(by + 15)}">${caption}</text>` : '';
-  return cap + [...proj(sc.under), ...mid, ...proj(sc.over)].map((q) => q.svg).join('');
+  // 错误示范：正确动作画成一层灰影，压在地面之上、错误动作之下——差多少一眼可量
+  let shade = '';
+  if (ghost) {
+    const g = orbitScene(slug, ghost.names, ghost.p, { u: ghost.u, plumb, lt });
+    shade = '<g class="sk-ghost">' + proj(g.S).sort((a, b) => a.depth - b.depth).map((q) => q.svg).join('') + '</g>';
+  }
+  return cap + proj(sc.under).map((q) => q.svg).join('') + shade + [...mid, ...proj(sc.over)].map((q) => q.svg).join('');
 }

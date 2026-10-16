@@ -234,3 +234,22 @@ figure.anat.tall { max-width: 720px; margin-left: auto; margin-right: auto; }
 
 /* 循环演示格：与两帧静态图同宽，排在它们之后。JS 关掉时它根本不存在。 */
 .sk-anim { outline: 1px solid var(--accent); outline-offset: -1px; }
+
+/* ─── 错误示范 ─────────────────────────────────────────
+   每条常见错误下面一张环绕视角：错误动作实画、出错部位用 --danger 标红，
+   正确动作画成一层灰影叠在同一格里。错误示范不标主动肌，红色在这里只表示「错在这」。 */
+.mistakes { padding-left: 1.2em; }
+.mistake-fig { margin-bottom: 12px; }
+.mistake-fig .mistake-text { margin: 0 0 6px; }
+.mistake-fig .skeleton { margin: 0 0 6px; }
+.mistake-why { margin: 0; font-size: .9rem; line-height: 1.6; }
+.sk-mistake .sk-frame { border-color: var(--danger); border-style: dashed; }
+.sk-fault.sk-limb, .sk-fault.sk-trunk, .sk-fault.sk-foot, .sk-fault.sk-neck, .sk-fault.sk-bar, .sk-fault.sk-band, .sk-fault.sk-pad-3d { stroke: var(--danger); }
+.sk-fault.sk-head, .sk-fault.sk-hand, .sk-fault.sk-plate { fill: var(--danger); }
+.sk-fault.sk-torso-plane { fill: var(--danger); fill-opacity: .22; }
+.sk-ghost line, .sk-ghost polygon, .sk-ghost circle { stroke: var(--muted) !important; fill: none !important; opacity: .45; }
+.sk-ghost .sk-trunk { stroke-width: 7; }
+.sk-ghost .sk-limb { stroke-width: 4; }
+.sk-ghost .sk-torso-plane, .sk-ghost .sk-bench, .sk-ghost .sk-eye { display: none; }
+/* 远侧肢体本来半透明（sk-far），标红后提一点不透明度：「后腿蹬凳」这类错误就错在远侧 */
+.sk-far.sk-fault { opacity: .7; }

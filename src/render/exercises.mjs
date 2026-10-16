@@ -1,6 +1,6 @@
 import { escapeHtml } from './claims.mjs';
 import { expandTokens } from './tokens.mjs';
-import { renderSkeleton } from './skeleton.mjs';
+import { renderSkeleton, renderMistakeFigure } from './skeleton.mjs';
 import { renderCardMuscleMap, renderFullMuscleMap } from './muscles.mjs';
 
 // 示范的成色必须写在读者眼前：「逐条核验」「部分覆盖」「形态参考」是三件不同的事，
@@ -31,6 +31,17 @@ export function renderDemo(demo) {
     + '</p>';
 }
 
+// 常见错误：能在骨架上画出形状差别的，配一张错误示范图（环绕视角，灰影是正确动作）和「为什么错」。
+function mistakeItem(e, m, i, ctx) {
+  const text = `${escapeHtml(m.error)} → ${escapeHtml(m.consequence)}`;
+  const mf = (ctx.mistakeFigures?.[e.slug] ?? []).find((x) => x.mistake === i);
+  const fig = ctx.poseFigures?.[e.slug];
+  if (!mf || mf.none !== undefined || !fig) return `<li>${text}</li>`;
+  return `<li class="mistake-fig"><p class="mistake-text">${text}</p>`
+    + renderMistakeFigure(fig, mf, e.name_zh, e.slug, m.error)
+    + `<p class="mistake-why"><b>为什么错</b>：${escapeHtml(mf.why)}</p></li>`;
+}
+
 function card(e, ctx) {
   const demo = e.demo_id ? ctx.demos.get(e.demo_id) : null;
   const demoHtml = !demo
@@ -50,7 +61,7 @@ function card(e, ctx) {
   </div>
   <p class="muscles">主动肌 ${escapeHtml(e.muscles.prime.join('、'))}；协同肌 ${escapeHtml(e.muscles.synergist.join('、'))}；稳定肌 ${escapeHtml(e.muscles.stabilizer.join('、'))}</p>
   <h4>执行要点</h4><ol>${e.cues.map((c) => `<li><b>${escapeHtml(c.phase)}</b>：${escapeHtml(c.text)}</li>`).join('')}</ol>
-  <h4>常见错误 → 它导致什么</h4><ul>${e.mistakes.map((m) => `<li>${escapeHtml(m.error)} → ${escapeHtml(m.consequence)}</li>`).join('')}</ul>
+  <h4>常见错误 → 它导致什么</h4><ul class="mistakes">${e.mistakes.map((m, i) => mistakeItem(e, m, i, ctx)).join('')}</ul>
   <h4>可自检判据</h4><ol>${e.self_checks.map((c) => `<li><b>${escapeHtml(c.criterion)}</b><br><i>怎么自检</i>：${escapeHtml(c.how)}<br><i>判不了</i>：${escapeHtml(c.cannot)}</li>`).join('')}</ol>
   <h4>安全设置与失败退出</h4>
   <ul class="safety">
