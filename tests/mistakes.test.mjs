@@ -522,6 +522,11 @@ const CLAIMS = {
     near(pw.hip[0] - pg.hip[0], 10, 0.6, '髋前顶'); near(sg(Jw), -7, 0.6, '错误后仰'); near(sg(Jg), 2, 0.6, '灰影前倾');
     near(Jg.wristN[1] - Jw.wristN[1], 5, 0.6, '哑铃更高'); near(w.elbowAngle, r.elbowAngle, 0.5, '肘角一样');
   },
+  'barbell-reverse-curl#1': ({ wrong: w, right: r, Jw, Jg, pw, pg }) => {
+    const sg = (J) => Math.atan2(J.neck[0] - J.pelvis[0], J.pelvis[1] - J.neck[1]) * 180 / Math.PI;
+    near(pw.hip[0] - pg.hip[0], 10, 0.6, '髋前顶'); near(sg(Jw), -7, 0.6, '错误后仰'); near(sg(Jg), 2, 0.6, '灰影前倾');
+    near(pg.load.at[1] - pw.load.at[1], 5, 0.6, '杠更高'); near(w.elbowAngle, r.elbowAngle, 0.5, '肘角一样');
+  },
 };
 
 test('错误只错在那一处：不许顺带画出别的错误', () => {
