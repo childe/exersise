@@ -718,7 +718,8 @@ export function orbitScene(slug, names, p0, { u = 0, prime = [], plumb = false, 
   // hl 里的「shin」两侧都标，「shin.N」只标近侧（分腿蹲只错前腿）
   // 「trunk@0」：这一部位只跟第 0 个变换的强度标红（参数类错误全程在，而躯干前倾是随下蹲才出现的）
   const hit = (it, h) => { const [ps] = h.split('@'); return it.part && (ps === it.part || ps === `${it.part}.${it.side}`); };
-  const lit = (h) => { const m = h.split('@')[1]; return m === undefined ? on : opWeight(fault.ops[+m], u, half) >= 0.2; };
+  // 「@数字」跟第几个变换的强度；「@曲线名」（如 @late）直接按该曲线（参数类错误只在行程某一段才看得出来时用）
+  const lit = (h) => { const m = h.split('@')[1]; return m === undefined ? on : opWeight(/^\d+$/.test(m) ? fault.ops[+m] : { prof: m }, u, half) >= 0.2; };
   if (fault?.hl?.length) for (const it of S) if (fault.hl.some((h) => lit(h) && hit(it, h))) it.cls += ' sk-fault';
   return { J, S, under, over, p };
 }

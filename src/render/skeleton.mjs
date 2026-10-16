@@ -1503,7 +1503,7 @@ export function renderMistakeFigure(fig, mf, nameZh, slug, error) {
   return `<figure class="skeleton sk-mistake" data-exercise="${nameZh}" data-anim="${escapeAttr(JSON.stringify(cfg))}">`
     + `<svg viewBox="${ox} ${oy} ${ow} ${oh}" class="sk-frame sk-orbit" data-pose="orbit"`
     + ` preserveAspectRatio="xMidYMid meet" role="img" aria-label="${nameZh}·错误示范：${escapeAttr(error)}">`
-    + renderOrbit(p, { slug, names: ro.names, lt: fig.load_type, plumb, u: uw, half: st.half, yaw: ORBIT_STATIC.yaw,
+    + renderOrbit(p, { slug, names: ro.names, lt: fig.load_type, plumb, u: uw, half: st.half, yaw: st.yaw ?? ORBIT_STATIC.yaw,
       frame: of, caption: '错误示范', fault, ghost: gp })
     + '</svg>'
     + `<figcaption>${ghost ? '红色＝出错的部位；灰影＝同一时刻的正确动作。' : '红色＝出错的部位。'}${tempoNote}</figcaption>`

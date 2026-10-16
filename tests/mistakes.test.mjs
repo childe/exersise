@@ -137,7 +137,7 @@ test('标红的部位包含差别最大的那个关节所在的骨段', () => {
 test('变换没有被钳住：要多少给多少', () => {
   // 挪髋挪到腿够不到时会被钳到两圆交点上——画出来的是「腿锁直、小腿后仰」，不是数据写的那个错误
   for (const d of drawn) for (const { W, u, half } of framesOf(d))
-    assert.ok(!W.p._faultClamped, `${d.slug}#${d.mf.mistake} u=${u} half=${half}: 变换被钳住，调小幅度`);
+    assert.ok(!W.p._faultClamped && !W.J._faultClamped, `${d.slug}#${d.mf.mistake} u=${u} half=${half}: 变换被钳住，调小幅度`);
 });
 
 test('只在一个半程出现的错误，另一个半程与灰影完全相同', () => {
@@ -204,7 +204,7 @@ test('出错部位只在真的错了的帧标红', () => {
     if (!d.mf.ops?.length || (d.mf.params && !d.mf.pprof) || d.mf.rom) {
       // 参数类错误：带 @ 的部位跟它引用的变换走
       for (const h of d.mf.hl ?? []) { const m = h.split('@')[1]; if (m === undefined) continue;
-        for (const { W, u, half } of framesOf(d)) { const want = opWeight(d.mf.ops[+m], u, half) >= 0.2, part = h.split('@')[0];
+        for (const { W, u, half } of framesOf(d)) { const want = opWeight(/^\d+$/.test(m) ? d.mf.ops[+m] : { prof: m }, u, half) >= 0.2, part = h.split('@')[0];
           assert.equal(W.S.some((it) => it.part === part && it.cls.includes('sk-fault')), want, `${d.slug}#${d.mf.mistake} u=${u}: ${h} 标红时机`); } }
       continue;
     }
@@ -365,7 +365,7 @@ const CLAIMS = {
   'barbell-bench-press#1': ({ pw, pg }) => {
     near(pg.shoulder[1] - pw.shoulder[1], 8, 0.2, '肩被顶起');
     near(pg.bench[1] - pg.shoulder[1], 6, 0.5, '正确肩离凳面'); near(pw.bench[1] - pw.shoulder[1], 14, 0.5, '错误肩离凳面');
-    near(pg.load.at[1] - pw.load.at[1], 8, 0.2, '杠停得更高');
+    near(pg.load.at[1] - pw.load.at[1], 0, 0.5, '杠照样落到胸上');
   },
   'overhead-press#0': ({ pw, pg, Jw, Jg }) => {
     const sg = (J) => Math.atan2(J.neck[0] - J.pelvis[0], J.pelvis[1] - J.neck[1]) * 180 / Math.PI;
@@ -390,6 +390,15 @@ const CLAIMS = {
     near(ab(Jg), 37, 1, '正确上臂与躯干'); near(ab(Jw), 50, 1, '错误上臂与躯干');
     near(tilt(Jw), 63, 1.5, '错误前臂外倾');
     near(Jw.wristN[2], Jg.wristN[2], 0.5, '握距不变');
+  },
+  'db-bench-press#0': ({ Jw, Jg, pw }) => {
+    const ua = (J) => Math.asin((J.elbowN[1] - J.shoulderN[1]) / 50) * 180 / Math.PI;
+    near(Jw.wristN[1] - Jg.wristN[1], 14, 0.3, '哑铃多下放');
+    near(ua(Jg), 36, 1, '正确上臂低于肩'); near(ua(Jw), 55, 1, '错误上臂低于肩');
+    assert.ok(pw.bench[1] - Jw.wristN[1] < 3, '几乎落到凳面高度');
+  },
+  'db-bench-press#1': ({ Jw, Jg }) => {
+    near(Jw.wristF[1] - Jw.wristN[1], 20, 0.3, '远侧落后'); near(Jg.wristF[1] - Jg.wristN[1], 0, 0.1, '灰影同高');
   },
 };
 
@@ -418,6 +427,9 @@ test('错误只错在那一处：不许顺带画出别的错误', () => {
         const ea = (J) => { const S = J.shoulderN, E = J.elbowN, H = J.wristN; return Math.acos(((S[0] - E[0]) * (H[0] - E[0]) + (S[1] - E[1]) * (H[1] - E[1]) + (S[2] - E[2]) * (H[2] - E[2])) / (L3(S, E) * L3(H, E))) * 180 / Math.PI; };
         assert.ok(Math.abs(ea(W.J) - ea(G.J)) <= 5, `${at}: 肘角 ${ea(W.J).toFixed(0)}° 对灰影 ${ea(G.J).toFixed(0)}°`);
       }
+      // 卧推类：底部杠的高度不许变（「没触胸」是另一条错误）
+      if (g.bench && w.load?.type === 'bar' && g.load && !allow.has('barDepth') && !(d.mf.ops ?? []).some((op) => op.op === 'load') && u === 1)
+        assert.ok(Math.abs(w.load.at[1] - g.load.at[1]) <= 1, `${at}: 底部杠高差 ${(w.load.at[1] - g.load.at[1]).toFixed(1)}px`);
       if (standing && !allow.has('depth') && g.hip[1] > g.knee[1] + 3)
         assert.ok(w.hip[1] > w.knee[1], `${at}: 正确动作蹲到髋低于膝，错误动作没有（${(w.hip[1] - w.knee[1]).toFixed(1)}）`);
       // 垂在身前的杠（硬拉、RDL、划船）：杠必须始终在大腿 / 小腿的前侧，且不贴进骨头里
@@ -444,8 +456,10 @@ test('站姿错误示范站得住：全身重心落在支撑面上', () => {
 test('与灰影重合的帧不标红', () => {
   // 不依赖强度曲线的公式：曾经一个辅助变换（regrip，常量强度）让硬拉锁定帧全程标红，而那一帧人与灰影完全重合
   for (const d of drawn) for (const { W, G, u, half } of framesOf(d)) {
-    if (d.mf.params || d.mf.rom || d.mf.start || d.mf.end) continue;
-    const same = Object.keys(G.J).every((k) => !Array.isArray(G.J[k]) || !W.J[k] || L3(W.J[k], G.J[k]) < 0.5) && Math.abs(W.J.spine?.bend ?? 0) < 0.5;
+    if (d.mf.rom || d.mf.start || d.mf.end) continue;
+    // 参数类错误（握距、肘的去向）在行程两端本来就和灰影差一两像素：放宽到 3px
+    const tol = d.mf.params ? 3 : 0.5;
+    const same = Object.keys(G.J).every((k) => !Array.isArray(G.J[k]) || !W.J[k] || L3(W.J[k], G.J[k]) < tol) && Math.abs(W.J.spine?.bend ?? 0) < 0.5;
     if (same) assert.ok(!W.S.some((it) => it.cls.includes('sk-fault')), `${d.slug}#${d.mf.mistake} u=${u} half=${half}: 与灰影重合却标红`);
   }
 });

@@ -174,7 +174,7 @@ export function faultPose2D(p, fault, u, half) {
         const d = [0, -op.px * w];
         if (!q.shoulderMid) q.shoulderMid = q.shoulder;
         for (const k of ['shoulder', 'shoulder2', ...FLT_ARM]) if (q[k]) q[k] = fltAdd(q[k], d);
-        if (fltLoadUpper(q)) fltMoveLoad(q, (x) => fltAdd(x, d));
+        if (op.load !== false && fltLoadUpper(q)) fltMoveLoad(q, (x) => fltAdd(x, d));
         break;
       }
       case 'chain': {
@@ -201,7 +201,8 @@ export function faultPose2D(p, fault, u, half) {
           const at = s && q.load.at2 ? q.load.at2 : q.load.at, at0 = s && p.load.at2 ? p.load.at2 : p.load.at;
           const W = [at[0] + W0[0] - at0[0], at[1] + W0[1] - at0[1]];
           const l1 = Math.hypot(E0[0] - S0[0], E0[1] - S0[1]), l2 = Math.hypot(W0[0] - E0[0], W0[1] - E0[1]);
-          if (Math.hypot(W[0] - S[0], W[1] - S[1]) > l1 + l2 - 0.01) q._faultClamped = true;
+          // 原本就伸直的手臂（推到顶）放回去也是伸直的：只有真够不着（差半个像素以上）才算钳制
+          if (Math.hypot(W[0] - S[0], W[1] - S[1]) > l1 + l2 + 0.5) q._faultClamped = true;
           q['wrist' + s] = W;
           q['elbow' + s] = fltIk(S, W, l1, l2, q['elbow' + s] ?? E0);
         }
@@ -220,7 +221,7 @@ export function faultPose2D(p, fault, u, half) {
   return q;
 }
 
-const FLT_3D = new Set(['valgus', 'lateral', 'twist', 'arm3', 'spine']);
+const FLT_3D = new Set(['valgus', 'lateral', 'twist', 'arm3', 'spine', 'hand3']);
 const FLT_UPPER3 = ['head', 'neck', 'back', 'shoulderN', 'shoulderF', 'elbowN', 'elbowF', 'wristN', 'wristF'];
 
 /** 绕过 c 的轴（单位向量 k）转 deg°：Rodrigues。 */
@@ -263,6 +264,20 @@ export function faultJoints3D(J, fault, u, half) {
     } else if (op.op === 'lateral' || op.op === 'twist') {
       const c = J.pelvis, k = op.op === 'lateral' ? [1, 0, 0] : [0, 1, 0];
       for (const key of FLT_UPPER3) if (J[key]) J[key] = fltRot3(J[key], c, k, op.deg * w);
+    } else if (op.op === 'hand3') {
+      // 一只手在 3D 里挪开（两手不同步：远侧哑铃落在后面）；肘按真骨长重解，pole 取原来的肘方向
+      for (const t of op.side === 'near' ? ['N'] : ['F']) {
+        const S = J['shoulder' + t], E0 = J['elbow' + t], H0 = J['wrist' + t];
+        const H = [H0[0] + (op.dx ?? 0) * w, H0[1] + (op.dy ?? 0) * w, H0[2] + (op.dz ?? 0) * w];
+        const l1 = Math.hypot(E0[0] - S[0], E0[1] - S[1], E0[2] - S[2]), l2 = Math.hypot(H0[0] - E0[0], H0[1] - E0[1], H0[2] - E0[2]);
+        const v = [H[0] - S[0], H[1] - S[1], H[2] - S[2]], d = Math.hypot(...v);
+        if (d > l1 + l2 - 0.01) { J._faultClamped = true; continue; }
+        const u3 = v.map((x) => x / d), a = (l1 * l1 - l2 * l2 + d * d) / (2 * d), h = Math.sqrt(Math.max(0, l1 * l1 - a * a));
+        const pv = [E0[0] - S[0], E0[1] - S[1], E0[2] - S[2]], k = pv[0] * u3[0] + pv[1] * u3[1] + pv[2] * u3[2];
+        let n = pv.map((x, i) => x - u3[i] * k); const nl = Math.hypot(...n) || 1; n = n.map((x) => x / nl);
+        J['wrist' + t] = H;
+        J['elbow' + t] = S.map((x, i) => x + u3[i] * a + n[i] * h);
+      }
     } else if (op.op === 'arm3') {
       for (const t of op.side === 'near' ? ['N'] : op.side === 'both' ? ['N', 'F'] : ['F']) {
         const S = J['shoulder' + t];

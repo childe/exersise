@@ -185,7 +185,7 @@ export function initSkeletonAnimation({ POSES, interpolate, renderPose, drawnArm
     const t0 = cfg.fault && cfg.still ? faultPhaseOf(cfg.tempo, cfg.still) * REP : 0;
     items.push({ svg, cfg, box: { x, y, w, h }, A, B, GA, GB, visible: false, t: t0, armA, armB,
       // 错误示范的视角也从静止帧的偏角起步（sin 相位取 asin(静止偏角 / 摆幅)），否则加载时一下跳 20°
-      orbit, orbT: cfg.fault ? (((Math.asin(ORBIT_STATIC.yaw / ORBIT_YAW) / (2 * Math.PI)) % 1 + 1) % 1) * ORBIT_PERIOD : 0,
+      orbit, orbT: cfg.fault ? (((Math.asin((cfg.still?.yaw ?? ORBIT_STATIC.yaw) / ORBIT_YAW) / (2 * Math.PI)) % 1 + 1) % 1) * ORBIT_PERIOD : 0,
       plan: armSidePlan(armA, armB, A, B, dA, dB, interpolate, opts) });
   }
   if (!items.length) return null;

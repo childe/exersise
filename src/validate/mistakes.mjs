@@ -6,12 +6,12 @@
 import { POSES } from '../render/skeleton.mjs';
 
 const OPS = {
-  trunk: ['deg'], arm: ['deg'], hip: ['dx', 'dy'], heel: ['deg'], shrug: ['px'], load: ['dx', 'dy'], shift: ['dx', 'dy'], foot: ['dx'], regrip: [], chain: ['deg'],
+  trunk: ['deg'], arm: ['deg'], hip: ['dx', 'dy'], heel: ['deg'], shrug: ['px'], load: ['dx', 'dy'], shift: ['dx', 'dy'], foot: ['dx'], regrip: [], chain: ['deg'], hand3: [],
   valgus: ['px'], lateral: ['deg'], twist: ['deg'], arm3: ['deg'], spine: ['bend'],
 };
 const PROFS = new Set(['u', 'u2', 'late', 'early', '1-u', 'mid', 'up', 'down', 'const']);
 // allow：这条错误示范允许出现的「副作用」（断言默认禁止）。depth 蹲浅、kneeBack 膝到踝后、shin 小腿前倾超过 45°
-const ALLOW = new Set(['depth', 'kneeBack', 'shin', 'elbow']);
+const ALLOW = new Set(['depth', 'kneeBack', 'shin', 'elbow', 'barDepth']);
 export const MISTAKE_PARTS = new Set(['trunk', 'shoulders', 'pelvis', 'head', 'thigh', 'shin', 'foot', 'upperarm', 'forearm', 'load']);
 const TEMPOS = new Set(['bounce', 'drop']);
 
@@ -41,12 +41,12 @@ export function validateMistakeFigures(mf, exercises, poseFigures, { requireAll 
         const [ps, oi] = h.split('@'), [part, sd] = ps.split('.');
         if (sd !== undefined && !['N', 'F'].includes(sd)) errs.push(`${where}：部位侧别只能是 .N / .F，见到 ${h}`);
         if (sd !== undefined && !['thigh', 'shin', 'foot', 'upperarm', 'forearm'].includes(part)) errs.push(`${where}：${part} 没有左右之分，不能写 ${h}`);
-        if (oi !== undefined && !(m.ops?.[+oi])) errs.push(`${where}：${h} 引用的变换不存在`);
+        if (oi !== undefined && (/^\d+$/.test(oi) ? !m.ops?.[+oi] : !PROFS.has(oi))) errs.push(`${where}：${h} 引用的变换 / 曲线不存在`);
       }
       for (const h of m.hl ?? []) if (!MISTAKE_PARTS.has(h.split('@')[0].replace(/\.[NF]$/, ''))) errs.push(`${where}：未知部位 ${h}`);
       for (const k of ['start', 'end']) if (m[k] && !POSES[m[k]]) errs.push(`${where}：姿态 ${m[k]} 不存在`);
       if (m.yaw !== undefined && !(typeof m.yaw === 'number' && Math.abs(m.yaw) <= 120)) errs.push(`${where}：yaw 必须是 ±120 内的角度`);
-      if (m.still && !(m.still.u >= 0 && m.still.u <= 1 && [0, 1].includes(m.still.half))) errs.push(`${where}：still 必须是 {u: 0..1, half: 0|1}`);
+      if (m.still && !(m.still.u >= 0 && m.still.u <= 1 && [0, 1].includes(m.still.half) && (m.still.yaw === undefined || Math.abs(m.still.yaw) <= 30))) errs.push(`${where}：still 必须是 {u: 0..1, half: 0|1}`);
       for (const a of m.allow ?? []) if (!ALLOW.has(a)) errs.push(`${where}：未知的 allow ${a}`);
       if (m.pprof && !PROFS.has(m.pprof)) errs.push(`${where}：未知 pprof ${m.pprof}`);
       if (m.tempo && !TEMPOS.has(m.tempo)) errs.push(`${where}：未知节奏 ${m.tempo}`);
