@@ -324,6 +324,18 @@ const CLAIMS = {
     near(Jw.spine.bend, 11, 0.1, '背拱起');
     near(w.trunkFromVertical - r.trunkFromVertical, 6, 0.5, '躯干多倾');
   },
+  'db-hip-thrust#0': ({ Jw }) => {
+    near(Jw.spine.bend, -11, 0.1, '腰拱起');
+    // 往前（天花板方向）拱：弧的中段比躯干直线高
+    const mid = Jw.spinePts[Math.floor(Jw.spinePts.length / 2)], line = (Jw.pelvis[1] + Jw.neck[1]) / 2;
+    assert.ok(mid[1] < line - 5, `腰往上拱：弧中段 y=${mid[1].toFixed(1)}，直线 ${line.toFixed(1)}`);
+  },
+  'db-hip-thrust#1': ({ wrong: w, right: r, pw, pg }) => {
+    const sh = (p) => Math.atan2(p.ankle[0] - p.knee[0], p.ankle[1] - p.knee[1]) * 180 / Math.PI;
+    near(pw.ankle[0] - pg.ankle[0], 20, 0.1, '脚挪远');
+    near(sh(pg), 0, 1, '正确小腿竖直'); near(sh(pw), 20, 1, '错误小腿前斜');
+    near(r.kneeAngle, 91, 1, '正确膝角'); near(w.kneeAngle, 114, 1, '错误膝角');
+  },
 };
 
 test('站姿错误示范站得住：全身重心落在支撑面上', () => {
