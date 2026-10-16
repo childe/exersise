@@ -414,7 +414,9 @@ const CLAIMS = {
     near(ang(m.Jg), 62, 1, '正确手臂与躯干'); near(ang(m.Jw), 30, 1, '错误手臂与躯干');
     const along = (J) => { const S = J.neck, H = J.pelvis, v = [H[0] - S[0], H[1] - S[1]], l = Math.hypot(...v); return ((J.wristN[0] - S[0]) * v[0] + (J.wristN[1] - S[1]) * v[1]) / l; };
     const b = mistakeMetrics(d.slug, d.fig, d.mf, 1, 0);
-    near(along(b.Jw), along(b.Jg), 0.5, '到底时哑铃仍落在胸上段');
+    near(along(b.Jw), 6, 1, '到底时哑铃沿躯干离肩'); near(along(b.Jg), 14, 1, '灰影沿躯干离肩');
+    const fv = (J) => Math.atan2(Math.hypot(J.elbowN[0] - J.wristN[0], J.elbowN[2] - J.wristN[2]), J.elbowN[1] - J.wristN[1]) * 180 / Math.PI;
+    assert.ok(fv(b.Jw) < 3, '到底前臂仍竖直');
   },
   'db-incline-bench-press#1': ({ Jw, Jg }) => {
     const along = (J) => { const S = J.neck, H = J.pelvis, v = [H[0] - S[0], H[1] - S[1]], l = Math.hypot(...v); return ((J.wristN[0] - S[0]) * v[0] + (J.wristN[1] - S[1]) * v[1]) / l; };
@@ -526,6 +528,16 @@ const CLAIMS = {
     const sg = (J) => Math.atan2(J.neck[0] - J.pelvis[0], J.pelvis[1] - J.neck[1]) * 180 / Math.PI;
     near(pw.hip[0] - pg.hip[0], 10, 0.6, '髋前顶'); near(sg(Jw), -7, 0.6, '错误后仰'); near(sg(Jg), 2, 0.6, '灰影前倾');
     near(pg.load.at[1] - pw.load.at[1], 5, 0.6, '杠更高'); near(w.elbowAngle, r.elbowAngle, 0.5, '肘角一样');
+  },
+  'barbell-front-rack-carry#0': ({ Jw, Jg, pw, pg }) => {
+    const ua = (J) => Math.atan2(J.elbowN[1] - J.shoulderN[1], Math.hypot(J.elbowN[0] - J.shoulderN[0], J.elbowN[2] - J.shoulderN[2])) * 180 / Math.PI;
+    near(ua(Jg), 18, 1, '正确上臂低于水平'); near(ua(Jw), 63, 1, '错误上臂低于水平');
+    near(Math.hypot(pw.load.at[0] - pg.load.at[0], pw.load.at[1] - pg.load.at[1]), 5, 0.3, '杠往前下滚');
+  },
+  'barbell-front-rack-carry#1': ({ Jw, Jg, pw, pg }) => {
+    const sg = (J) => Math.atan2(J.neck[0] - J.pelvis[0], J.pelvis[1] - J.neck[1]) * 180 / Math.PI;
+    near(pw.hip[0] - pg.hip[0], 8, 0.6, '髋前顶'); near(sg(Jw), -9, 0.6, '错误后仰'); near(sg(Jg), -1, 0.6, '灰影');
+    near(Jw.spine.bend, -7, 0.1, '腰前塌');
   },
 };
 

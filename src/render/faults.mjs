@@ -388,10 +388,9 @@ export function faultPhase(tempo, ph) {
     return { u: 1 - ease((ph - 0.4) / 0.6), half: 1 };
   }
   if (tempo === 'bounceA') {
-    // 弹震发生在起始帧那一端（坐姿推举的底部就是起始帧）：一开始就借着上一次砸到底的反弹弹起、直接推上去，
-    // 到顶后先慢慢放、再一下掉到底——掉到底（ph→1）接上下一次的弹起（ph=0），中间不停
-    if (ph < 0.12) return { u: 0.18 * Math.sin(Math.PI * ph / 0.12), half: 0 };
-    if (ph < 0.6) { const t = (ph - 0.12) / 0.48; return { u: ease(t), half: 0 }; }
+    // 弹震发生在起始帧那一端（坐姿推举的底部就是起始帧）：借着上一次砸到底的反弹直接推上去——
+    // 推起段起始速度最大、往上越推越慢（ease-out），到顶后先慢慢放、再一下掉到底，掉到底（ph→1）接上下一次推起（ph=0）
+    if (ph < 0.6) { const t = ph / 0.6; return { u: 1 - (1 - t) ** 2, half: 0 }; }
     if (ph < 0.82) { const t = (ph - 0.6) / 0.22; return { u: 1 - 0.15 * ease(t), half: 1 }; }
     const t = (ph - 0.82) / 0.18;
     return { u: 0.85 * (1 - t * t), half: 1 };
