@@ -449,6 +449,15 @@ const CLAIMS = {
     near(a.right.hipToLoadX, 60, 1, '起始正确力臂'); near(a.wrong.hipToLoadX, 42, 1, '起始错误力臂');
     near(b.right.hipToLoadX, 29, 1, '顶点正确力臂'); near(b.wrong.hipToLoadX, 11, 1, '顶点错误力臂');
   },
+  'barbell-curl#0': ({ wrong: w, right: r, Jw, Jg, pw, pg }) => {
+    const sg = (J) => Math.atan2(J.neck[0] - J.pelvis[0], J.pelvis[1] - J.neck[1]) * 180 / Math.PI;
+    near(pw.hip[0] - pg.hip[0], 10, 0.6, '髋前顶'); near(sg(Jw), -7, 0.6, '错误后仰'); near(sg(Jg), 2, 0.6, '灰影前倾');
+    near(pg.load.at[1] - pw.load.at[1], 5, 0.6, '杠更高'); near(w.elbowAngle, r.elbowAngle, 0.5, '肘角一样');
+  },
+  'barbell-curl#1': ({ Jw, Jg }) => {
+    const ua = (J) => Math.atan2(J.elbowN[0] - J.shoulderN[0], J.elbowN[1] - J.shoulderN[1]) * 180 / Math.PI;
+    near(ua(Jw), 26, 1, '上臂前抬'); assert.ok(Math.abs(ua(Jg)) < 4, '灰影上臂竖直');
+  },
 };
 
 test('错误只错在那一处：不许顺带画出别的错误', () => {

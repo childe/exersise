@@ -86,6 +86,8 @@ export function hipMoment(J, loads, frac) {
 
 /** 负荷占体重比例的检查区间：两端都要站得住（杠铃 0.3–0.8 倍体重，哑铃 / 把手 0.1–0.3）。 */
 const LOAD_FRAC = { bar: [0.3, 0.8], front: [0.3, 0.8], hands: [0.1, 0.3], hands2: [0.1, 0.3] };
+// 弯举类杠铃远轻于蹲 / 拉（常见 0.15–0.35 倍体重）：按 0.8 倍查等于要求人用硬拉的重量做弯举
+const LOAD_FRAC_BY_SLUG = { 'barbell-curl': [0.15, 0.35], 'barbell-reverse-curl': [0.15, 0.35] };
 
 /**
  * 站姿（两脚踩地、没有凳和杠托着、手不撑地）的错误示范：每一帧的全身重心都要落在支撑面上。
@@ -104,7 +106,7 @@ export function mistakeBalance(slug, fig, mf) {
     const u = i / 16, m = mistakeMetrics(slug, fig, mf, u, half);
     for (const [who, J, p] of [['错误', m.Jw, m.pw], ['灰影', m.Jg, m.pg]]) {
       const lt = fig.load_type ?? p.load?.type;
-      const fr = fig.no_load ? [0] : LOAD_FRAC[lt] ?? [0];
+      const fr = fig.no_load ? [0] : LOAD_FRAC_BY_SLUG[slug] ?? LOAD_FRAC[lt] ?? [0];
       const len = Math.abs(p.toe[0] - p.heel[0]);
       const lift = Math.min(Math.max((225 - p.heel[1]) / 3, 0), 1);
       const fore = p.toe[0] - len * 0.35;
