@@ -33,7 +33,8 @@ export function faultWeight(prof, u, half) {
 /** 一个变换在 (u, half) 的强度：op.from 让它晚一点开始（进度过 from 才从 0 爬起）。 */
 export function opWeight(op, u, half) {
   const v = op.from ? Math.max(0, (u - op.from) / (1 - op.from)) : u;
-  return faultWeight(op.prof, v, half);
+  const w = faultWeight(op.prof, v, half);
+  return w < 1e-9 ? 0 : w;   // sin(π) 不是精确的 0：不截断的话「强度为 0」的帧照样跑一遍 regrip 之类的修正
 }
 
 const fltRot = (q, c, deg) => {
@@ -487,6 +488,12 @@ export function faultPhase(tempo, ph) {
     if (ph < 0.82) { const t = (ph - 0.6) / 0.22; return { u: 1 - 0.15 * ease(t), half: 1 }; }
     const t = (ph - 0.82) / 0.18;
     return { u: 0.85 * (1 - t * t), half: 1 };
+  }
+  if (tempo === 'hold') {
+    // 在结束帧那一端锁死后停一下：去程走完停住约四分之一个周期，再放回
+    if (ph < 0.4) return { u: ease(ph / 0.4), half: 0 };
+    if (ph < 0.65) return { u: 1, half: 0 };
+    return { u: ease((1 - ph) / 0.35), half: 1 };
   }
   if (tempo === 'fast') {
     // 做得过快：同样的起落，用一半时间做完两次（灰影只做一次）

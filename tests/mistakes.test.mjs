@@ -547,6 +547,9 @@ const CLAIMS = {
   },
   'barbell-reverse-curl#1': ({ wrong: w, right: r, Jw, Jg, pw, pg }) => {
     const sg = (J) => Math.atan2(J.neck[0] - J.pelvis[0], J.pelvis[1] - J.neck[1]) * 180 / Math.PI;
+    // 上臂相对躯干的前屈（上臂离竖直 − 躯干离竖直，正 = 往前）：错误比灰影多约 18°
+    const ua = (J) => Math.atan2(J.elbowN[0] - J.shoulderN[0], J.elbowN[1] - J.shoulderN[1]) * 180 / Math.PI;
+    near((ua(Jw) - sg(Jw)) - (ua(Jg) - sg(Jg)), 18, 1, '上臂随身体前送');
     near(pw.hip[0] - pg.hip[0], 10, 0.6, '髋前顶'); near(sg(Jw), -7, 0.6, '错误后仰'); near(sg(Jg), 2, 0.6, '灰影前倾');
     near(pg.load.at[1] - pw.load.at[1], 5, 0.6, '杠更高'); near(w.elbowAngle, r.elbowAngle, 0.5, '肘角一样');
   },
@@ -631,6 +634,38 @@ const CLAIMS = {
     near(Jw.spine.bend, -10, 0.1, '腰拱');
     const mid = Jw.spinePts[Math.floor(Jw.spinePts.length / 2)], line = (Jw.pelvis[1] + Jw.neck[1]) / 2;
     near(line - mid[1], 10, 0.6, '往天花板方向拱离地面');
+  },
+  'leg-press#0': ({ wrong: w, right: r, pw, pg }) => {
+    near(pg.hip[1] - pw.hip[1], 9, 0.5, '髋抬起'); near(r.kneeAngle, 96, 1, '正确膝角'); near(w.kneeAngle, 87, 1, '错误膝角');
+  },
+  'seated-leg-extension#0': ({ Jw, Jg, pw, pg }) => {
+    const tv = (J) => Math.atan2(J.neck[0] - J.pelvis[0], J.pelvis[1] - J.neck[1]) * 180 / Math.PI;
+    const ang = (a, b, c) => { const u = [a[0] - b[0], a[1] - b[1]], v = [c[0] - b[0], c[1] - b[1]]; return Math.acos((u[0] * v[0] + u[1] * v[1]) / Math.hypot(...u) / Math.hypot(...v)) * 180 / Math.PI; };
+    near(tv(Jw), -12, 0.6, '错误后仰'); near(tv(Jg), 2, 0.6, '灰影前倾');
+    near(ang(pw.shoulder, pw.hip, pw.knee), 110, 1, '错误髋角'); near(ang(pg.shoulder, pg.hip, pg.knee), 96, 1, '正确髋角');
+  },
+  'seated-leg-extension#1': ({ pw, pg }) => { near(Math.hypot(pw.load.at[0] - pg.load.at[0], pw.load.at[1] - pg.load.at[1]), 15, 0.5, '垫滑到脚背'); },
+  'seated-calf-raise#1': ({ pw, pg }) => { near(pg.heel[1] - pw.heel[1], 9, 0.5, '脚跟始终离最低点'); },
+  'back-extension#0': ({ Jw, Jg }) => {
+    const th = (J) => Math.atan2(J.pelvis[1] - J.neck[1], J.neck[0] - J.pelvis[0]) * 180 / Math.PI;
+    near(th(Jw) - th(Jg), 14, 0.5, '仰过一线'); near(Jw.spine.bend, -8, 0.1, '腰前塌');
+  },
+  'back-extension#1': ({ Jw }) => { near(Jw.spine.bend, 12, 0.1, '背拱起'); },
+  'lying-leg-curl#0': ({ pw, pg }) => {
+    const ang = (a, b, c) => { const u = [a[0] - b[0], a[1] - b[1]], v = [c[0] - b[0], c[1] - b[1]]; return Math.acos((u[0] * v[0] + u[1] * v[1]) / Math.hypot(...u) / Math.hypot(...v)) * 180 / Math.PI; };
+    near(pg.hip[1] - pw.hip[1], 10, 0.5, '髋抬起'); near(ang(pw.shoulder, pw.hip, pw.knee), 164, 1, '错误髋角'); near(ang(pg.shoulder, pg.hip, pg.knee), 180, 1, '正确髋伸直');
+  },
+  'band-good-morning#0': ({ Jw, Jg, pw, pg }) => {
+    const th = (J) => Math.atan2(J.pelvis[1] - J.neck[1], J.neck[0] - J.pelvis[0]) * 180 / Math.PI;
+    const ang = (a, b, c) => { const u = [a[0] - b[0], a[1] - b[1]], v = [c[0] - b[0], c[1] - b[1]]; return Math.acos((u[0] * v[0] + u[1] * v[1]) / Math.hypot(...u) / Math.hypot(...v)) * 180 / Math.PI; };
+    near(ang(pw.shoulder, pw.hip, pw.knee), 97, 1, '错误髋角'); near(ang(pg.shoulder, pg.hip, pg.knee), 85, 1, '正确髋角');
+    near(th(Jw), 37, 1, '错误躯干离水平'); near(th(Jg), 25, 1, '正确躯干离水平'); near(Jw.spine.bend, 12, 0.1, '背拱');
+  },
+  'band-good-morning#1': ({ Jw, Jg, pw, pg }) => {
+    const tv = (J) => Math.atan2(J.neck[0] - J.pelvis[0], J.pelvis[1] - J.neck[1]) * 180 / Math.PI;
+    const ang = (a, b, c) => { const u = [a[0] - b[0], a[1] - b[1]], v = [c[0] - b[0], c[1] - b[1]]; return Math.acos((u[0] * v[0] + u[1] * v[1]) / Math.hypot(...u) / Math.hypot(...v)) * 180 / Math.PI; };
+    near(tv(Jw), 25, 1, '顶端仍前倾'); near(tv(Jg), 8, 1, '灰影');
+    near(ang(pw.shoulder, pw.hip, pw.knee), 144, 1, '错误髋角'); near(ang(pg.shoulder, pg.hip, pg.knee), 169, 1, '正确髋角');
   },
 };
 
