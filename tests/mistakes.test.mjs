@@ -83,6 +83,7 @@ const PART_OF = {
 function maxShift(d, yaws) {
   const cfg = cfgOf(d), base = orbitBaseYaw(d.slug, cfg.fault);
   let best = [0, ''];
+  const per = {};
   for (const { W, G } of framesOf(d)) {
     const pts = (J) => {
       const o = Object.fromEntries(Object.entries(J).filter(([, v]) => Array.isArray(v) && typeof v[0] === 'number'));
@@ -97,9 +98,11 @@ function maxShift(d, yaws) {
         const a = orbitProject(w[k], yaw, cfg.orbit.pivot), b = orbitProject(g[k], yaw, cfg.orbit.pivot);
         const dd = Math.hypot(a[0] - b[0], a[1] - b[1]);
         if (dd > best[0]) best = [dd, k.replace(/[NF]$/, ''), /[NF]$/.test(k) ? k.slice(-1) : null];
+        per[k] = Math.max(per[k] ?? 0, dd);
       }
     }
   }
+  best.per = per;
   return best;
 }
 
@@ -117,13 +120,17 @@ test('错误示范与灰影看得出差别（投影到屏幕上量）', () => {
 });
 
 test('标红的部位包含差别最大的那个关节所在的骨段', () => {
+  // 「差别最大」取位移达到最大值 70% 的那几个关节：躯干后仰时手里的杠跟着走得最远，
+  // 但错在躯干——只要标红覆盖了其中一个就算对。写了侧别的（shin.F）必须与该关节的侧别一致。
   for (const d of drawn) {
     if (!d.mf.hl?.length) continue;
-    const [, k, sd] = maxShift(d);
-    const parts = PART_OF[k] ?? [];
-    // 写了侧别的（shin.F）必须与差别最大的那一侧一致：标了远侧、实际错在近侧的不算
-    const hl = d.mf.hl.map((h) => h.split('@')[0]).filter((h) => { const s = h.split('.')[1]; return !s || !sd || s === sd; }).map((h) => h.replace(/\.[NF]$/, ''));
-    assert.ok(parts.some((x) => hl.includes(x)), `${d.slug}#${d.mf.mistake}: 差别最大的是 ${k}，可标红的是 ${d.mf.hl.join('、')}`);
+    const best = maxShift(d), top = Object.entries(best.per).filter(([, v]) => v >= best[0] * 0.7);
+    const ok = top.some(([k]) => {
+      const j = k.replace(/[NF]$/, ''), sd = /[NF]$/.test(k) ? k.slice(-1) : null;
+      const hl = d.mf.hl.map((h) => h.split('@')[0]).filter((h) => { const s = h.split('.')[1]; return !s || !sd || s === sd; }).map((h) => h.replace(/\.[NF]$/, ''));
+      return (PART_OF[j] ?? []).some((x) => hl.includes(x));
+    });
+    assert.ok(ok, `${d.slug}#${d.mf.mistake}: 差别最大的是 ${top.map(([k, v]) => `${k} ${v.toFixed(0)}`).join('、')}，可标红的是 ${d.mf.hl.join('、')}`);
   }
 });
 
@@ -359,6 +366,18 @@ const CLAIMS = {
     near(pg.shoulder[1] - pw.shoulder[1], 8, 0.2, '肩被顶起');
     near(pg.bench[1] - pg.shoulder[1], 6, 0.5, '正确肩离凳面'); near(pw.bench[1] - pw.shoulder[1], 14, 0.5, '错误肩离凳面');
     near(pg.load.at[1] - pw.load.at[1], 8, 0.2, '杠停得更高');
+  },
+  'overhead-press#0': ({ pw, pg, Jw, Jg }) => {
+    const sg = (J) => Math.atan2(J.neck[0] - J.pelvis[0], J.pelvis[1] - J.neck[1]) * 180 / Math.PI;
+    near(pw.hip[0] - pg.hip[0], 15, 0.6, '髋前顶');
+    near(sg(Jw), -5, 0.6, '错误躯干后仰'); near(sg(Jg), 2, 0.6, '灰影略前倾');
+    near(Jw.spine.bend, -8, 0.1, '腰往前塌');
+    near(pw.load.at[0], 90, 1.5, '杠仍在足中线上方');
+  },
+  'overhead-press#1': ({ pw, pg, Jw, Jg }) => {
+    near(pw.load.at[0] - pg.load.at[0], 14, 0.2, '杠前移');
+    near(pg.load.at[0] - Jg.shoulderN[0], 3, 1, '正确杠到肩'); near(pw.load.at[0] - Jw.shoulderN[0], 17, 1, '错误杠到肩');
+    assert.ok(pw.load.at[0] > 96, '杠在足中线前方');
   },
 };
 
