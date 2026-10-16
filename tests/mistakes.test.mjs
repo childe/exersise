@@ -121,7 +121,8 @@ test('标红的部位包含差别最大的那个关节所在的骨段', () => {
     if (!d.mf.hl?.length) continue;
     const [, k] = maxShift(d);
     const parts = PART_OF[k] ?? [];
-    assert.ok(parts.some((x) => d.mf.hl.includes(x)), `${d.slug}#${d.mf.mistake}: 差别最大的是 ${k}，可标红的是 ${d.mf.hl.join('、')}`);
+    const hl = d.mf.hl.map((h) => h.replace(/\.[NF]$/, ''));
+    assert.ok(parts.some((x) => hl.includes(x)), `${d.slug}#${d.mf.mistake}: 差别最大的是 ${k}，可标红的是 ${d.mf.hl.join('、')}`);
   }
 });
 
@@ -263,6 +264,22 @@ const CLAIMS = {
     near(Jg.shoulderN[1] - Jw.shoulderN[1], 8, 0.3, '耸肩');
     near(Jg.shoulderN[1] - Jg.head[1], 14, 0.5, '正确头心到肩');
     near(Jw.shoulderN[1] - Jw.head[1], 6, 0.5, '错误头心到肩');
+  },
+  'db-bulgarian-split-squat#0': ({ pw, pg }) => {
+    const shin = (p) => Math.atan2(p.knee[0] - p.ankle[0], p.ankle[1] - p.knee[1]) * 180 / Math.PI;
+    near(pw.ankle[0] - pw.ankle2[0], 64, 1, '错误两脚间距');
+    near(pg.ankle[0] - pg.ankle2[0], 90, 1, '正确两脚间距');
+    near(shin(pw), 37, 1, '错误小腿前倾');
+    near(shin(pg), 15, 1, '正确小腿前倾');
+    near(pw.knee[0] - pw.toe[0], 6, 1, '膝越过脚尖');
+    near(pg.toe[0] - pg.knee[0], 15, 1, '灰影膝在脚尖后');
+  },
+  'db-bulgarian-split-squat#1': ({ wrong: w, right: r, Jw, Jg, pw, pg }) => {
+    const ang = (a, b, c) => { const u = a.map((x, i) => x - b[i]), v = c.map((x, i) => x - b[i]); return Math.acos(u.reduce((s, x, i) => s + x * v[i], 0) / Math.hypot(...u) / Math.hypot(...v)) * 180 / Math.PI; };
+    near(ang(Jg.hipF, Jg.kneeF, Jg.ankleF), 82, 1, '正确后膝');
+    near(ang(Jw.hipF, Jw.kneeF, Jw.ankleF), 93, 1, '错误后膝');
+    near(pw.hip[0] - pg.hip[0], 12, 0.5, '骨盆前移');
+    near(r.kneeAngle, 139, 1, '正确前膝'); near(w.kneeAngle, 132, 1, '错误前膝');
   },
 };
 

@@ -35,9 +35,10 @@ export function validateMistakeFigures(mf, exercises, poseFigures, { requireAll 
       if (!m.why || m.why.length < 20) errs.push(`${where}：缺少「为什么错」的说明（why）`);
       if (!(m.ops?.length || m.rom || m.tempo || m.start || m.end || m.params)) errs.push(`${where}：没有任何错误变换，画出来与正确动作一样`);
       if (!m.hl?.length && !m.rom && !m.tempo) errs.push(`${where}：没有标出出错部位（hl）`);
-      for (const h of m.hl ?? []) if (!MISTAKE_PARTS.has(h)) errs.push(`${where}：未知部位 ${h}`);
+      for (const h of m.hl ?? []) if (!MISTAKE_PARTS.has(h.replace(/\.[NF]$/, ''))) errs.push(`${where}：未知部位 ${h}`);
       for (const k of ['start', 'end']) if (m[k] && !POSES[m[k]]) errs.push(`${where}：姿态 ${m[k]} 不存在`);
       if (m.yaw !== undefined && !(typeof m.yaw === 'number' && Math.abs(m.yaw) <= 120)) errs.push(`${where}：yaw 必须是 ±120 内的角度`);
+      if (m.still && !(m.still.u >= 0 && m.still.u <= 1 && [0, 1].includes(m.still.half))) errs.push(`${where}：still 必须是 {u: 0..1, half: 0|1}`);
       if (m.tempo && !TEMPOS.has(m.tempo)) errs.push(`${where}：未知节奏 ${m.tempo}`);
       if (m.rom && !(m.rom.length === 2 && m.rom.every((x) => x >= 0 && x <= 1))) errs.push(`${where}：rom 必须是 [0..1, 0..1]`);
       // 侧倾 / 旋转只转身体；横在两手之间的杠铃不会跟着转，手会离杠

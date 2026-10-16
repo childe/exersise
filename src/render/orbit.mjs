@@ -665,12 +665,12 @@ export function orbitScene(slug, names, p0, { u = 0, prime = [], plumb = false, 
   // 正视动作两侧与读者等距，不分主次。
   for (const tag of ['N', 'F']) {
     const far = tag === 'F' && !front ? ' sk-far' : '';
-    S.push({ t: 'line', a: J['hip' + tag], b: J['knee' + tag], cls: 'sk-limb' + far, part: 'thigh' });
-    S.push({ t: 'line', a: J['knee' + tag], b: J['ankle' + tag], cls: 'sk-limb' + far, part: 'shin' });
-    S.push({ t: 'line', a: J['heel' + tag], b: J['toe' + tag], cls: 'sk-foot' + far, part: 'foot' });
-    S.push({ t: 'line', a: J['shoulder' + tag], b: J['elbow' + tag], cls: 'sk-limb' + far, part: 'upperarm' });
-    S.push({ t: 'line', a: J['elbow' + tag], b: J['wrist' + tag], cls: 'sk-limb' + far, part: 'forearm' });
-    S.push({ t: 'ball', c: J['wrist' + tag], r: 4, cls: 'sk-hand' + far, bias: 0.5, part: 'forearm' });
+    S.push({ t: 'line', a: J['hip' + tag], b: J['knee' + tag], cls: 'sk-limb' + far, part: 'thigh', side: tag });
+    S.push({ t: 'line', a: J['knee' + tag], b: J['ankle' + tag], cls: 'sk-limb' + far, part: 'shin', side: tag });
+    S.push({ t: 'line', a: J['heel' + tag], b: J['toe' + tag], cls: 'sk-foot' + far, part: 'foot', side: tag });
+    S.push({ t: 'line', a: J['shoulder' + tag], b: J['elbow' + tag], cls: 'sk-limb' + far, part: 'upperarm', side: tag });
+    S.push({ t: 'line', a: J['elbow' + tag], b: J['wrist' + tag], cls: 'sk-limb' + far, part: 'forearm', side: tag });
+    S.push({ t: 'ball', c: J['wrist' + tag], r: 4, cls: 'sk-hand' + far, bias: 0.5, part: 'forearm', side: tag });
     if (!far) for (const k of ['shoulder', 'hip', 'knee', 'ankle', 'elbow']) S.push({ t: 'ball', c: J[k + tag], r: 3.2, cls: 'sk-joint', bias: 0.5 });
   }
 
@@ -701,7 +701,9 @@ export function orbitScene(slug, names, p0, { u = 0, prime = [], plumb = false, 
   // 变换还没起作用的那几帧（「起身时」的错误在下蹲段）不标：红色只出现在真的错了的时候
   // 参数覆盖、换姿态、半程这类错误全程都在，全程标红
   const on = !fault?.ops?.length || fault.params || fault.rom || fault.ops.some((op) => faultWeight(op.prof, u, half) >= 0.2);
-  if (on && fault?.hl?.length) for (const it of S) if (it.part && fault.hl.includes(it.part)) it.cls += ' sk-fault';
+  // hl 里的「shin」两侧都标，「shin.N」只标近侧（分腿蹲只错前腿）
+  const hit = (it) => it.part && fault.hl.some((h) => h === it.part || h === `${it.part}.${it.side}`);
+  if (on && fault?.hl?.length) for (const it of S) if (hit(it)) it.cls += ' sk-fault';
   return { J, S, under, over, p };
 }
 
