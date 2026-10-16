@@ -714,7 +714,7 @@ export function orbitScene(slug, names, p0, { u = 0, prime = [], plumb = false, 
   // 变换还没起作用的那几帧（「起身时」的错误在下蹲段）不标：红色只出现在真的错了的时候
   // 参数覆盖、换姿态、半程这类错误全程都在，全程标红
   const on = (!fault?.ops?.length && !fault?.pprof) || (fault.params && !fault.pprof) || fault.rom
-    || (fault.ops ?? []).some((op) => opWeight(op, u, half) >= 0.2) || (fault.pprof && opWeight({ prof: fault.pprof }, u, half) >= 0.2);
+    || (fault.ops ?? []).some((op) => op.op !== 'regrip' && opWeight(op, u, half) >= 0.2) || (fault.pprof && opWeight({ prof: fault.pprof }, u, half) >= 0.2);
   // hl 里的「shin」两侧都标，「shin.N」只标近侧（分腿蹲只错前腿）
   // 「trunk@0」：这一部位只跟第 0 个变换的强度标红（参数类错误全程在，而躯干前倾是随下蹲才出现的）
   const hit = (it, h) => { const [ps] = h.split('@'); return it.part && (ps === it.part || ps === `${it.part}.${it.side}`); };

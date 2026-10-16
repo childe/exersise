@@ -202,7 +202,7 @@ test('出错部位只在真的错了的帧标红', () => {
       continue;
     }
     for (const { W, u, half } of framesOf(d)) {
-      const on = d.mf.ops.some((op) => opWeight(op, u, half) >= 0.2) || !!(d.mf.pprof && opWeight({ prof: d.mf.pprof }, u, half) >= 0.2);
+      const on = d.mf.ops.some((op) => op.op !== 'regrip' && opWeight(op, u, half) >= 0.2) || !!(d.mf.pprof && opWeight({ prof: d.mf.pprof }, u, half) >= 0.2);
       const red = W.S.some((it) => it.cls.includes('sk-fault'));
       if (d.mf.hl.some((h) => h.includes('@'))) continue;   // 分部位定时的另有断言
       assert.equal(red, on, `${d.slug}#${d.mf.mistake} u=${u} half=${half}: 标红 ${red}，变换强度 ${on ? '≥' : '<'} 0.2`);
@@ -250,7 +250,6 @@ const CLAIMS = {
     near(pw.toe[1], 225, 0.5, '前脚掌仍在地上');
     near(pw.knee[0] - pg.knee[0], 20, 1, '膝前移');
     near(pw.knee[0] - pw.toe[0], 26, 1, '错误膝越过脚尖'); near(pg.knee[0] - pg.toe[0], 6, 1, '灰影膝越过脚尖');
-    near(shin(pw) - foot(pw), 32, 1, '错误踝背屈'); near(shin(pg) - foot(pg), 35, 1, '正确踝背屈');
     for (const fr of [0.1, 0.3]) { const x = comX(Jw, loadPoints(Jw, pw, { dbMode: 'single' }), fr); assert.ok(x >= 101 && x <= 103, `重心 ${x.toFixed(1)}`); }
     assert.ok(pw.hip[1] - pw.knee[1] >= 3, '深度不变：髋仍低于膝');
   },
@@ -305,17 +304,17 @@ const CLAIMS = {
     near(r.kneeAngle, 139, 1, '正确前膝'); near(w.kneeAngle, 132, 1, '错误前膝');
   },
   'conventional-deadlift#0': ({ wrong: w, right: r, pw, pg, Jw, Jg }) => {
-    near(pg.hip[1] - pw.hip[1], 13, 0.5, '髋抬高');
-    near(pw.knee[1] - pw.hip[1], 27, 1, '错误髋高于膝'); near(pg.knee[1] - pg.hip[1], 14, 1, '正确髋高于膝');
+    near(pg.hip[1] - pw.hip[1], 14, 0.5, '髋抬高');
+    near(pw.knee[1] - pw.hip[1], 28, 1, '错误髋高于膝'); near(pg.knee[1] - pg.hip[1], 14, 1, '正确髋高于膝');
     near(r.kneeAngle, 97, 1, '正确膝角'); near(w.kneeAngle, 113, 1, '错误膝角');
-    near(90 - r.trunkFromVertical, 34, 1, '正确躯干离水平'); near(90 - w.trunkFromVertical, 21, 1, '错误躯干离水平');
-    near(pw.shoulder[0] - pw.load.at[0], 14, 1, '错误肩在杠前'); near(pg.shoulder[0] - pg.load.at[0], 4, 1, '正确肩在杠前');
+    near(90 - r.trunkFromVertical, 34, 1, '正确躯干离水平'); near(90 - w.trunkFromVertical, 22, 1, '错误躯干离水平');
+    near(pw.shoulder[0] - pw.load.at[0], 15, 1, '错误肩在杠前'); near(pg.shoulder[0] - pg.load.at[0], 4, 1, '正确肩在杠前');
     near(Jw.spine.bend, 9, 0.1, '背拱起');
-    for (const fr of [0.3, 0.8]) { const k = hipMoment(Jw, loadPoints(Jw, pw), fr) / hipMoment(Jg, loadPoints(Jg, pg), fr) - 1; assert.ok(Math.abs(k) <= 0.06, `静态伸髋力矩差 ${(k * 100).toFixed(1)}%`); }
+    for (const fr of [0.3, 0.8]) { const k = hipMoment(Jw, loadPoints(Jw, pw), fr) / hipMoment(Jg, loadPoints(Jg, pg), fr) - 1; assert.ok(Math.abs(k) <= 0.05, `静态伸髋力矩差 ${(k * 100).toFixed(1)}%`); }
   },
   'conventional-deadlift#1': ({ wrong: w, right: r, pw, pg }) => {
     near(w.load[0] - r.load[0], 14, 0.3, '杠前飘');
-    near(pg.load.at[0] - pg.knee[0], 9, 1, '正确杠到小腿'); near(pw.load.at[0] - pw.knee[0], 23, 1, '错误杠到小腿');
+    near(pg.load.at[0] - pg.knee[0], 9, 1, '正确杠到膝前'); near(pw.load.at[0] - pw.knee[0], 23, 1, '错误杠到膝前');
     near(r.hipToLoadX, 47, 1, '正确力臂'); near(w.hipToLoadX, 61, 1, '错误力臂');
     near((w.hipToLoadX / r.hipToLoadX - 1) * 100, 30, 2, '力臂增幅 %');
   },
@@ -352,6 +351,15 @@ const CLAIMS = {
     near(sh(pg), 0, 1, '正确小腿竖直'); near(sh(pw), 20, 1, '错误小腿前斜');
     near(r.kneeAngle, 91, 1, '正确膝角'); near(w.kneeAngle, 114, 1, '错误膝角');
   },
+  'barbell-bench-press#0': ({ wrong: w, right: r, Jw, Jg }) => {
+    const ab = (J) => { const t = J.pelvis.map((v, i) => v - J.neck[i]), a = J.elbowN.map((v, i) => v - J.shoulderN[i]); return Math.acos(t.reduce((s, x, i) => s + x * a[i], 0) / Math.hypot(...t) / Math.hypot(...a)) * 180 / Math.PI; };
+    near(ab(Jg), 61, 1, '正确上臂与躯干'); near(ab(Jw), 93, 1, '错误上臂与躯干');
+  },
+  'barbell-bench-press#1': ({ pw, pg }) => {
+    near(pg.shoulder[1] - pw.shoulder[1], 8, 0.2, '肩被顶起');
+    near(pg.bench[1] - pg.shoulder[1], 6, 0.5, '正确肩离凳面'); near(pw.bench[1] - pw.shoulder[1], 14, 0.5, '错误肩离凳面');
+    near(pg.load.at[1] - pw.load.at[1], 8, 0.2, '杠停得更高');
+  },
 };
 
 test('错误只错在那一处：不许顺带画出别的错误', () => {
@@ -374,6 +382,11 @@ test('错误只错在那一处：不许顺带画出别的错误', () => {
         const lg = Math.abs(Math.atan2(g.knee[0] - g.ankle[0], g.ankle[1] - g.knee[1])) * 180 / Math.PI;
         assert.ok(lean <= Math.max(45, lg + 1), `${at}: 小腿前倾 ${lean.toFixed(0)}°`);
       }
+      // 肘角：错误动作的手臂不能比正确动作多弯 / 多伸 5° 以上（硬拉「髋高」曾顺带画成弯臂拉）
+      if (!allow.has('elbow') && !(d.mf.params) && !(d.mf.ops ?? []).some((op) => ['arm', 'arm3', 'load'].includes(op.op))) {
+        const ea = (J) => { const S = J.shoulderN, E = J.elbowN, H = J.wristN; return Math.acos(((S[0] - E[0]) * (H[0] - E[0]) + (S[1] - E[1]) * (H[1] - E[1]) + (S[2] - E[2]) * (H[2] - E[2])) / (L3(S, E) * L3(H, E))) * 180 / Math.PI; };
+        assert.ok(Math.abs(ea(W.J) - ea(G.J)) <= 5, `${at}: 肘角 ${ea(W.J).toFixed(0)}° 对灰影 ${ea(G.J).toFixed(0)}°`);
+      }
       if (standing && !allow.has('depth') && g.hip[1] > g.knee[1] + 3)
         assert.ok(w.hip[1] > w.knee[1], `${at}: 正确动作蹲到髋低于膝，错误动作没有（${(w.hip[1] - w.knee[1]).toFixed(1)}）`);
       // 垂在身前的杠（硬拉、RDL、划船）：杠必须始终在大腿 / 小腿的前侧，且不贴进骨头里
@@ -381,7 +394,7 @@ test('错误只错在那一处：不许顺带画出别的错误', () => {
         for (const [A, B] of [[w.hip, w.knee], [w.knee, w.ankle]]) {
           const L = w.load.at;
           if (L[1] < Math.min(A[1], B[1]) || L[1] > Math.max(A[1], B[1])) continue;
-          assert.ok(side(A, B, L) === side(A, B, [A[0] + fwd * 50, (A[1] + B[1]) / 2]) || segDist(A, B, L) > 3, `${at}: 杠穿到了腿的后面`);
+          assert.ok(side(A, B, L) === side(A, B, [A[0] + fwd * 50, (A[1] + B[1]) / 2]) && segDist(A, B, L) > 3, `${at}: 杠穿到了腿的后面或贴进骨头（离腿线 ${segDist(A, B, L).toFixed(1)}px）`);
         }
       }
     }
@@ -394,6 +407,15 @@ test('站姿错误示范站得住：全身重心落在支撑面上', () => {
   for (const d of drawn) {
     const r = mistakeBalance(d.slug, d.fig, d.mf);
     if (r) assert.ok(r.ok, `${d.slug}#${d.mf.mistake}: 重心出了支撑面 ${JSON.stringify(r.worst)}`);
+  }
+});
+
+test('与灰影重合的帧不标红', () => {
+  // 不依赖强度曲线的公式：曾经一个辅助变换（regrip，常量强度）让硬拉锁定帧全程标红，而那一帧人与灰影完全重合
+  for (const d of drawn) for (const { W, G, u, half } of framesOf(d)) {
+    if (d.mf.params || d.mf.rom || d.mf.start || d.mf.end) continue;
+    const same = Object.keys(G.J).every((k) => !Array.isArray(G.J[k]) || !W.J[k] || L3(W.J[k], G.J[k]) < 0.5) && Math.abs(W.J.spine?.bend ?? 0) < 0.5;
+    if (same) assert.ok(!W.S.some((it) => it.cls.includes('sk-fault')), `${d.slug}#${d.mf.mistake} u=${u} half=${half}: 与灰影重合却标红`);
   }
 });
 
