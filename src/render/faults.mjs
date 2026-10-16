@@ -94,6 +94,10 @@ function fltMoveLoad(q, f) {
  *   heel   {deg}      脚跟离地：脚绕脚尖转，踝以上整体随踝平移
  *   shrug  {px}       耸肩：肩（连同手臂和手里的负荷）上提，颈与躯干线不动
  *   load   {dx, dy}   只挪负荷与握着它的手（杠离开腿往前飘）
+ *   chain  {at, deg}  绕踝 / 膝 / 髋转动以上整段身体
+ *   regrip {slide}    手按原握点放回负荷上，肘重解；slide 让地上的轮 / 杠滚到够得着处
+ *   plankPike {deg, pivot, root, down}  俯撑里髋离开「肩—脚」一线（翘起或下掉），肩绕撑地点转
+ *   legs   {deg}      两腿绕髋前后摆
  */
 export function faultPose2D(p, fault, u, half) {
   if (!fault?.ops?.length) return p;
@@ -122,7 +126,7 @@ export function faultPose2D(p, fault, u, half) {
           }
         }
         // bench: true —— 上斜凳的靠背跟着躯干一起转（凳面角度调错这类错误）
-        if (op.bench && !q.benchIncline) throw new Error('trunk 的 bench 选项只适用于上斜凳（benchIncline）；平凳与坐姿靠背不随躯干转 / 已由 orbit 按躯干生成');
+        // bench：上斜凳跟着躯干转；坐姿靠背由 orbit 按躯干生成，带 bench 时跟着转，不带时留在原位（见 orbitScene）
         if (op.bench && q.benchIncline) {
           const B = q.benchIncline, a = op.deg * w * FLT_RAD;
           q.benchIncline = { ...B, from: f(B.from), to: f(B.to), n: [B.n[0] * Math.cos(a) - B.n[1] * Math.sin(a), B.n[0] * Math.sin(a) + B.n[1] * Math.cos(a)] };
@@ -189,7 +193,9 @@ export function faultPose2D(p, fault, u, half) {
         }
         q.hip = H;
         for (const k of FLT_UPPER) if (q[k]) q[k] = fltAdd(q[k], d);
-        if (fltLoadUpper(q)) fltMoveLoad(q, (x) => fltAdd(x, d));
+        if (op.load !== false && fltLoadUpper(q)) fltMoveLoad(q, (x) => fltAdd(x, d));
+        // bench: true —— 座椅跟着人一起升降（座椅调高 / 调低），握把这类固定在机器上的负荷用 load: false 留在原处
+        if (op.bench && q.bench) q.bench = [q.bench[0] + d[0], q.bench[1] + d[1], q.bench[2], q.bench[3]];
         break;
       }
       case 'foot': {
@@ -245,21 +251,35 @@ export function faultPose2D(p, fault, u, half) {
         break;
       }
       case 'plankPike': {
-        // 俯撑里髋往上翘（平板臀抬太高、跪姿俯卧撑髋先折）：撑地的那一端（pivot：平板是肘、俯卧撑是手腕）不动，
-        // 肩绕它往脚的方向倒，髋落在「离肩一个躯干长」与「离 root 一条伸直的腿（root 'ankle'）或一条大腿（root 'knee'）」
-        // 两圆的上方交点——髋角闭合、腿保持原样。肩不动的话两圆相切，髋根本抬不起来
+        // 俯撑里髋离开「肩—脚」一线：撑地的那一端（pivot：平板是肘、俯卧撑是手腕）不动，肩绕它转 deg°（屏幕顺时针为正；
+        // 目前的俯撑姿态都是头朝左，正值让肩往脚的方向倒），髋落在「离肩一个躯干长」与「离 root 一条伸直的腿（root 'ankle'）
+        // 或一条大腿（root 'knee'）」两圆的交点上：默认取上方交点（臀翘、髋先折），down: true 取下方交点（髋往下掉）。
+        // 肩不动的话两圆相切，髋既抬不起也掉不下去
         const P0 = q[op.pivot ?? 'elbow'], R = q[op.root ?? 'ankle'], H0 = q.hip, S0 = q.shoulder, K0 = q.knee;
         const tl = Math.hypot(H0[0] - S0[0], H0[1] - S0[1]), leg = Math.hypot(R[0] - H0[0], R[1] - H0[1]);
-        const t0 = Math.hypot(K0[0] - H0[0], K0[1] - H0[1]) / leg;
-        // 髋的抬高约与转角的平方根成正比（两圆从相切开始分开）：按 w² 转，抬高才随 w 线性渐入，不在第一帧跳
+        // 髋离开一线的量约与转角的平方根成正比（两圆从相切开始分开）：按 w² 转，离开量才随 w 线性渐入
         const S = fltRot(S0, P0, op.deg * w * w);
-        const H = fltIk(S, R, tl, leg - 0.01, [H0[0], H0[1] - 50]);
+        const H = fltIk(S, R, tl, leg, [H0[0], H0[1] + (op.down ? 50 : -50)]);
         const a0 = Math.atan2(S0[1] - H0[1], S0[0] - H0[0]), a1 = Math.atan2(S[1] - H[1], S[0] - H[0]);
         const dS = [S[0] - S0[0], S[1] - S0[1]];
         if (q.head) q.head = fltRot(fltAdd(q.head, dS), S, (a1 - a0) / FLT_RAD);
         if (q.shoulderMid) q.shoulderMid = fltAdd(q.shoulderMid, dS);
         q.shoulder = S; q.hip = H;
-        if ((op.root ?? 'ankle') === 'ankle') q.knee = [H[0] + (R[0] - H[0]) * t0, H[1] + (R[1] - H[1]) * t0];
+        if ((op.root ?? 'ankle') === 'ankle') {
+          const t0 = Math.hypot(K0[0] - H0[0], K0[1] - H0[1]) / leg;
+          q.knee = [H[0] + (R[0] - H[0]) * t0, H[1] + (R[1] - H[1]) * t0];
+        }
+        break;
+      }
+      case 'pad': {
+        // 腿屈伸的垫放错位置：按小腿的局部坐标放（沿「膝→踝」往远端 along、往脚尖那一侧 off），
+        // 不用世界坐标常量——那样到顶点垫会跑到腿的下面
+        if (!q.load) break;
+        const K = q.knee, A = q.ankle, T = q.toe, v = [A[0] - K[0], A[1] - K[1]], l = Math.hypot(...v) || 1, t = [v[0] / l, v[1] / l];
+        let n = [-t[1], t[0]];
+        if ((T[0] - A[0]) * n[0] + (T[1] - A[1]) * n[1] < 0) n = [-n[0], -n[1]];
+        const base = p.load.at, P0 = [A[0] + t[0] * op.along + n[0] * op.off, A[1] + t[1] * op.along + n[1] * op.off];
+        q.load = { ...q.load, at: [base[0] + (P0[0] - base[0]) * w, base[1] + (P0[1] - base[1]) * w] };
         break;
       }
       case 'legs': {
@@ -496,7 +516,7 @@ export function faultPhase(tempo, ph) {
     return { u: ease((1 - ph) / 0.35), half: 1 };
   }
   if (tempo === 'fast') {
-    // 做得过快：同样的起落，用一半时间做完两次（灰影只做一次）
+    // 做得过快：每次起落只用一半时间（灰影做一次的工夫，错误动作做两次）
     const q = (ph * 2) % 1;
     return q < 0.5 ? { u: ease(q * 2), half: 0 } : { u: ease((1 - q) * 2), half: 1 };
   }

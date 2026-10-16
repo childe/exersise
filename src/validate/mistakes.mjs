@@ -6,7 +6,7 @@
 import { POSES } from '../render/skeleton.mjs';
 
 const OPS = {
-  trunk: ['deg'], arm: ['deg'], hip: ['dx', 'dy'], heel: ['deg'], shrug: ['px'], load: ['dx', 'dy'], shift: ['dx', 'dy'], foot: ['dx'], regrip: [], chain: ['deg'], legs: ['deg'], plankPike: ['deg'], hand3: [],
+  trunk: ['deg'], arm: ['deg'], hip: ['dx', 'dy'], heel: ['deg'], shrug: ['px'], load: ['dx', 'dy'], shift: ['dx', 'dy'], foot: ['dx'], regrip: [], chain: ['deg'], legs: ['deg'], plankPike: ['deg'], pad: ['along', 'off'], hand3: [],
   valgus: ['px'], lateral: ['deg'], twist: ['deg'], pitch: ['deg'], roll: ['deg'], shrug3: ['px'], arm3: ['deg'], spine: ['bend'],
 };
 const PROFS = new Set(['u', 'u2', 'late', 'early', '1-u', 'mid', 'up', 'down', 'const']);
@@ -49,6 +49,7 @@ export function validateMistakeFigures(mf, exercises, poseFigures, { requireAll 
       if (m.still && !(m.still.u >= 0 && m.still.u <= 1 && [0, 1].includes(m.still.half) && (m.still.yaw === undefined || Math.abs(m.still.yaw) <= 30))) errs.push(`${where}：still 必须是 {u: 0..1, half: 0|1}`);
       for (const a of m.allow ?? []) if (!ALLOW.has(a)) errs.push(`${where}：未知的 allow ${a}`);
       if (m.pprof && !PROFS.has(m.pprof)) errs.push(`${where}：未知 pprof ${m.pprof}`);
+      if (m.minShift !== undefined && !(m.minShift >= 4 && m.minShift < 8)) errs.push(`${where}：minShift 只能在 4–8 之间`);
       if (m.tempo && !TEMPOS.has(m.tempo)) errs.push(`${where}：未知节奏 ${m.tempo}`);
       if (m.rom && !(m.rom.length === 2 && m.rom.every((x) => x >= 0 && x <= 1))) errs.push(`${where}：rom 必须是 [0..1, 0..1]`);
       // 侧倾 / 旋转只转身体；横在两手之间的杠铃不会跟着转，手会离杠
@@ -62,6 +63,8 @@ export function validateMistakeFigures(mf, exercises, poseFigures, { requireAll 
         const need = OPS[op.op];
         if (!need) { errs.push(`${where}：未知变换 ${op.op}`); continue; }
         for (const k of need) if (typeof op[k] !== 'number') errs.push(`${where}：变换 ${op.op} 缺数值 ${k}`);
+        if (op.op === 'plankPike' && (!['elbow', 'wrist', undefined].includes(op.pivot) || !['ankle', 'knee', undefined].includes(op.root))) errs.push(`${where}：plankPike 的 pivot 只能是 elbow / wrist，root 只能是 ankle / knee`);
+        if (op.op === 'chain' && !['ankle', 'knee', 'hip'].includes(op.at)) errs.push(`${where}：chain 的 at 只能是 ankle / knee / hip`);
         if (op.op === 'foot' && !['near', 'far'].includes(op.side)) errs.push(`${where}：foot 必须写明 side（near / far）`);
         if (op.from !== undefined && !(op.from > 0 && op.from < 1)) errs.push(`${where}：from 必须在 (0, 1) 之间`);
         if (op.keepArms !== undefined && op.keepArms !== true && !PROFS.has(op.keepArms)) errs.push(`${where}：keepArms 只能是 true 或曲线名`);

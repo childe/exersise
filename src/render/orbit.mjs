@@ -492,7 +492,7 @@ function neutralGripAxis(E, H) {
 }
 
 /** 器械。lt 是 figures.json 的 load_type 覆盖：画出来的是它，不是姿态模板里的那件。 */
-function equipment(S, slug, p, J, lt, P = ORBIT_PARAMS[slug] ?? {}) {
+function equipment(S, slug, p, J, lt, P = ORBIT_PARAMS[slug] ?? {}, restPose = null) {
   if (p.bench) {
     const [x, y, w, h] = p.bench;
     // 凳心默认在中线；单侧支撑的动作（单臂划船、保加利亚）挪到支撑那一侧
@@ -503,17 +503,18 @@ function equipment(S, slug, p, J, lt, P = ORBIT_PARAMS[slug] ?? {}) {
     }
   }
   if (P.backrest && p.hip && p.shoulder && p.knee) {
+    const pr = restPose ?? p;
     // 靠背：一块贴在躯干背侧的板（间隙 BENCH_GAP，同凳面）。原来坐姿器械只画了座面，
     // 而五张卡的 cue / 自检都点名「背贴靠背」「看腰与靠背之间有没有空隙」——图上没有对照物。
     // 坐姿动作躯干不动，板按当前帧的躯干放即两帧同位。板只到肩高：这些坐姿的头心在躯干线后约 6px，
     // 板再往上就从头里穿过去（推胸 cue「头贴住靠背」因此没有画出来）。
-    const tv = [p.shoulder[0] - p.hip[0], p.shoulder[1] - p.hip[1]], tl = Math.hypot(tv[0], tv[1]) || 1;
+    const tv = [pr.shoulder[0] - pr.hip[0], pr.shoulder[1] - pr.hip[1]], tl = Math.hypot(tv[0], tv[1]) || 1;
     const u = [tv[0] / tl, tv[1] / tl];
     let n = [-u[1], u[0]];
-    if (n[0] * (p.knee[0] - p.hip[0]) + n[1] * (p.knee[1] - p.hip[1]) > 0) n = [-n[0], -n[1]];   // 指向身后
+    if (n[0] * (pr.knee[0] - pr.hip[0]) + n[1] * (pr.knee[1] - pr.hip[1]) > 0) n = [-n[0], -n[1]];   // 指向身后
     const top = 0, h = 8, half = 18;
-    const from = [p.hip[0] - u[0] * 6 + n[0] * BENCH_GAP, p.hip[1] - u[1] * 6 + n[1] * BENCH_GAP];
-    const to = [p.shoulder[0] + u[0] * top + n[0] * BENCH_GAP, p.shoulder[1] + u[1] * top + n[1] * BENCH_GAP];
+    const from = [pr.hip[0] - u[0] * 6 + n[0] * BENCH_GAP, pr.hip[1] - u[1] * 6 + n[1] * BENCH_GAP];
+    const to = [pr.shoulder[0] + u[0] * top + n[0] * BENCH_GAP, pr.shoulder[1] + u[1] * top + n[1] * BENCH_GAP];
     const f2 = [from[0] + n[0] * h, from[1] + n[1] * h], t2 = [to[0] + n[0] * h, to[1] + n[1] * h];
     const q = (a, z) => [a[0], a[1], z];
     // 竖直的板不像座面那样「从上往下看总在身体后面」：相机转到身后（yaw>0）时板挡在躯干前。
@@ -721,7 +722,9 @@ export function orbitScene(slug, names, p0, { u = 0, prime = [], plumb = false, 
   }
 
   const n0 = S.length;
-  equipment(S, slug, p, J, lt, P);
+  // 坐姿靠背是机器的一部分：错误动作躯干后仰时它不该跟着倒（腿屈伸借力），只有「靠背角度调错」（trunk 带 bench）才跟着转
+  const tiltRest = (fault?.ops ?? []).some((op) => op.op === 'trunk' && op.bench);
+  equipment(S, slug, p, J, lt, P, fault && !tiltRest ? p0 : null);
   // 哑铃把手不标红：它握在手里，红把手和红前臂叠成一条，反而认不出哑铃；标两端的片就够了
   for (let i = n0; i < S.length; i++) if (!/sk-bench|sk-rig\b|sk-db-handle/.test(S[i].cls)) S[i].part = 'load';
   // 出错部位标红：只给错误示范用（它不标主动肌，红色在这里只有「错在这」一个意思）
