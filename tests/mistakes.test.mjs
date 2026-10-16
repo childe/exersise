@@ -488,6 +488,14 @@ const CLAIMS = {
     near(L3(Jw.shoulderN, Jg.shoulderN), 8, 0.1, '耸肩');
     assert.ok(L3(Jw.neck, Jg.neck) < 0.01, '颈不动');
   },
+  'db-curl#0': ({ wrong: w, right: r, Jw, Jg, pw, pg }) => {
+    const sg = (J) => Math.atan2(J.neck[0] - J.pelvis[0], J.pelvis[1] - J.neck[1]) * 180 / Math.PI;
+    near(pw.hip[0] - pg.hip[0], 10, 0.6, '髋前顶'); near(sg(Jw), -7, 0.6, '错误后仰'); near(sg(Jg), 2, 0.6, '灰影前倾');
+    near(Jg.wristN[1] - Jw.wristN[1], 5, 0.6, '哑铃更高'); near(w.elbowAngle, r.elbowAngle, 0.5, '肘角一样');
+  },
+  'db-curl#1': ({ wrong: w, right: r }) => {
+    near(w.elbowAngle, 107, 1, '错误只放到一半'); near(r.elbowAngle, 168, 1, '灰影放到接近伸直');
+  },
 };
 
 test('错误只错在那一处：不许顺带画出别的错误', () => {
@@ -511,7 +519,7 @@ test('错误只错在那一处：不许顺带画出别的错误', () => {
         assert.ok(lean <= Math.max(45, lg + 1), `${at}: 小腿前倾 ${lean.toFixed(0)}°`);
       }
       // 肘角：错误动作的手臂不能比正确动作多弯 / 多伸 5° 以上（硬拉「髋高」曾顺带画成弯臂拉）
-      if (!allow.has('elbow') && !(d.mf.params) && !(d.mf.ops ?? []).some((op) => ['arm', 'arm3', 'load', 'hand3'].includes(op.op))) {
+      if (!allow.has('elbow') && !(d.mf.params) && !d.mf.rom && !(d.mf.ops ?? []).some((op) => ['arm', 'arm3', 'load', 'hand3'].includes(op.op))) {
         const ea = (J) => { const S = J.shoulderN, E = J.elbowN, H = J.wristN; return Math.acos(((S[0] - E[0]) * (H[0] - E[0]) + (S[1] - E[1]) * (H[1] - E[1]) + (S[2] - E[2]) * (H[2] - E[2])) / (L3(S, E) * L3(H, E))) * 180 / Math.PI; };
         assert.ok(Math.abs(ea(W.J) - ea(G.J)) <= 5, `${at}: 肘角 ${ea(W.J).toFixed(0)}° 对灰影 ${ea(G.J).toFixed(0)}°`);
       }
