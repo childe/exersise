@@ -230,9 +230,15 @@ export function faultPose2D(p, fault, u, half) {
         break;
       }
       case 'load': {
+        // side 'near'：只挪近侧手和它的负荷（单臂划船：远侧手撑在凳上不能跟着走）
         const d = [op.dx * w, op.dy * w];
-        fltMoveLoad(q, (x) => fltAdd(x, d));
-        for (const k of ['wrist', 'wrist2']) if (q[k]) q[k] = fltAdd(q[k], d);
+        if (op.side === 'near') {
+          if (q.load) q.load = { ...q.load, at: fltAdd(q.load.at, d) };
+          q.wrist = fltAdd(q.wrist, d);
+        } else {
+          fltMoveLoad(q, (x) => fltAdd(x, d));
+          for (const k of ['wrist', 'wrist2']) if (q[k]) q[k] = fltAdd(q[k], d);
+        }
         break;
       }
       default:
@@ -289,17 +295,18 @@ export function faultJoints3D(J, fault, u, half) {
       const c = J.pelvis, k = op.op === 'lateral' ? [1, 0, 0] : op.op === 'twist' ? [0, 1, 0] : [0, 0, 1];
       for (const key of FLT_UPPER3) if (J[key]) J[key] = fltRot3(J[key], c, k, op.deg * w);
     } else if (op.op === 'shrug3') {
-      // 3D 耸肩：两肩连同手臂沿脊柱往头的方向提（单独搭 3D 的动作——反向飞鸟——2D 变换够不着它）
-      const ax = [J.neck[0] - J.pelvis[0], J.neck[1] - J.pelvis[1], J.neck[2] - J.pelvis[2]], al = Math.hypot(...ax) || 1;
-      const d3 = ax.map((x) => x / al * op.px * w);
+      // 3D 耸肩：两肩连同手臂往上提（单独搭 3D 的动作——反向飞鸟——2D 变换够不着它）。
+      // 沿世界竖直提，不沿脊柱：躯干前倾 45° 时沿脊柱提会把肩线推到颈的前上方、压进头里
+      const d3 = [0, -op.px * w, 0];
       for (const key of ['shoulderN', 'shoulderF', 'elbowN', 'elbowF', 'wristN', 'wristF']) J[key] = J[key].map((x, i) => x + d3[i]);
     } else if (op.op === 'roll') {
       // 躯干绕自身长轴（骨盆→颈）转：单臂划船用转身把哑铃带上来。keep 那一侧的手按在凳上不动，
       // 那一侧的肘按真骨长重解（pole 取原来的肘）
-      const c = J.pelvis, ax = [J.neck[0] - c[0], J.neck[1] - c[1], J.neck[2] - c[2]], al = Math.hypot(...ax) || 1;
-      const k = ax.map((x) => x / al), keep = op.keep;
+      // 转轴平行于脊柱、过撑住那一侧的肩：撑凳臂像支柱一样不动，只有另一侧肩被转起来
+      const keep = op.keep, ax = [J.neck[0] - J.pelvis[0], J.neck[1] - J.pelvis[1], J.neck[2] - J.pelvis[2]], al = Math.hypot(...ax) || 1;
+      const k = ax.map((x) => x / al), c = keep ? J['shoulder' + keep] : J.pelvis;
       const fixedW = keep ? J['wrist' + keep] : null, E0 = keep ? J['elbow' + keep] : null, S0 = keep ? J['shoulder' + keep] : null;
-      for (const key of ['head', 'back', 'shoulderN', 'shoulderF', 'elbowN', 'elbowF', 'wristN', 'wristF']) if (J[key]) J[key] = fltRot3(J[key], c, k, op.deg * w);
+      for (const key of ['head', 'neck', 'back', 'shoulderN', 'shoulderF', 'elbowN', 'elbowF', 'wristN', 'wristF']) if (J[key]) J[key] = fltRot3(J[key], c, k, op.deg * w);
       if (keep) {
         const S = J['shoulder' + keep], l1 = Math.hypot(E0[0] - S0[0], E0[1] - S0[1], E0[2] - S0[2]), l2 = Math.hypot(fixedW[0] - E0[0], fixedW[1] - E0[1], fixedW[2] - E0[2]);
         const v = [fixedW[0] - S[0], fixedW[1] - S[1], fixedW[2] - S[2]], dd = Math.hypot(...v);
@@ -338,7 +345,9 @@ export function faultJoints3D(J, fault, u, half) {
         const v = [H[0] - S[0], H[1] - S[1], H[2] - S[2]], d = Math.hypot(...v);
         if (d > l1 + l2 - 0.01) { J._faultClamped = true; continue; }
         const u3 = v.map((x) => x / d), a = (l1 * l1 - l2 * l2 + d * d) / (2 * d), h = Math.sqrt(Math.max(0, l1 * l1 - a * a));
-        const pv = [E0[0] - S[0], E0[1] - S[1], E0[2] - S[2]], k = pv[0] * u3[0] + pv[1] * u3[1] + pv[2] * u3[2];
+        // pole：给肘一个额外的去向（拉到肩时肘往外张），近侧 +z 为外，远侧镜像
+        const pp = op.pole ? [op.pole[0] * 40 * w, op.pole[1] * 40 * w, (t === 'F' ? -1 : 1) * op.pole[2] * 40 * w] : [0, 0, 0];
+        const pv = [E0[0] - S[0] + pp[0], E0[1] - S[1] + pp[1], E0[2] - S[2] + pp[2]], k = pv[0] * u3[0] + pv[1] * u3[1] + pv[2] * u3[2];
         let n = pv.map((x, i) => x - u3[i] * k); const nl = Math.hypot(...n) || 1; n = n.map((x) => x / nl);
         J['wrist' + t] = H;
         J['elbow' + t] = S.map((x, i) => x + u3[i] * a + n[i] * h);

@@ -480,13 +480,17 @@ const CLAIMS = {
   },
   'db-one-arm-row#0': ({ Jw, Jg }) => {
     const sl = (J) => Math.atan2(J.shoulderN[1] - J.shoulderF[1], J.shoulderN[2] - J.shoulderF[2]) * 180 / Math.PI;
-    near(Math.abs(sl(Jw)), 24, 1, '肩线转'); near(sl(Jg), 0, 0.5, '灰影两肩水平');
-    near(Jg.wristN[1] - Jw.wristN[1], 16, 0.6, '哑铃被抬高');
-    near(L3(Jw.wristF, Jg.wristF), 0, 0.05, '撑凳的手不动');
+    const ea = (J) => { const S = J.shoulderF, E = J.elbowF, H = J.wristF; return Math.acos(((S[0] - E[0]) * (H[0] - E[0]) + (S[1] - E[1]) * (H[1] - E[1]) + (S[2] - E[2]) * (H[2] - E[2])) / (L3(S, E) * L3(H, E))) * 180 / Math.PI; };
+    near(Math.abs(sl(Jw)), 15, 1, '肩线转'); near(sl(Jg), 0, 0.5, '灰影两肩水平');
+    near(Jg.wristN[1] - Jw.wristN[1], 15, 0.6, '哑铃被抬高'); near(Jw.wristN[2] - Jg.wristN[2], 13, 0.6, '哑铃往外甩');
+    near(L3(Jw.wristF, Jg.wristF), 0, 0.05, '撑凳的手不动'); near(ea(Jw), ea(Jg), 0.5, '撑凳臂肘角不变');
   },
   'db-one-arm-row#1': ({ Jw, Jg }) => {
     const along = (J) => { const S = J.neck, H = J.pelvis, v = [H[0] - S[0], H[1] - S[1]], l = Math.hypot(...v); return ((J.wristN[0] - S[0]) * v[0] + (J.wristN[1] - S[1]) * v[1]) / l; };
-    near(along(Jw), 24, 1, '错误拉到离肩'); near(along(Jg), 52, 1, '正确拉到离肩');
+    const ua = (J) => { const t = J.pelvis.map((v, i) => v - J.neck[i]), a = J.elbowN.map((v, i) => v - J.shoulderN[i]); return Math.acos(t.reduce((s, x, i) => s + x * a[i], 0) / Math.hypot(...t) / Math.hypot(...a)) * 180 / Math.PI; };
+    near(along(Jw), 28, 1, '错误拉到离肩'); near(along(Jg), 52, 1, '正确拉到离肩');
+    near(ua(Jg), 32, 1, '正确上臂与躯干'); near(ua(Jw), 63, 1, '错误上臂与躯干');
+    near(L3(Jw.wristF, Jg.wristF), 0, 0.05, '撑凳的手不动');
   },
   'db-reverse-fly#0': ({ Jw, Jg }) => {
     const th = (J) => Math.atan2(J.pelvis[1] - J.neck[1], Math.abs(J.neck[0] - J.pelvis[0])) * 180 / Math.PI;
@@ -518,6 +522,14 @@ const CLAIMS = {
     const ang = (a, b) => Math.acos(Math.min(1, Math.abs(a[0] * b[0] + a[1] * b[1] + a[2] * b[2]))) * 180 / Math.PI;
     near(ang(axis(1, true), axis(1, false)), 90, 1, '到顶翻转 90°');
     near(ang(axis(0, true), axis(0, false)), 0, 1, '起始中立握');
+    // 方向：近侧是右手，外旋（掌心转向上）时拇指端往 +z（往外）转。终点对称看不出方向，查中间帧
+    const thumb = (u) => { const p = interpolate(s.A, s.B, u, s.iopts), sc = orbitScene(d.slug, { a: s.wa, b: s.wb }, p, { u, lt: d.fig.load_type, fault: s.fault });
+      const h = sc.S.find((it) => it.cls.includes('sk-db-handle') && it.side === 'N'); const J = sc.J;
+      const f = [J.wristN[0] - J.elbowN[0], J.wristN[1] - J.elbowN[1]];
+      const pick = (q) => q[0] * f[1] - q[1] * f[0] > 0 ? q : null;   // 拇指端：中立握时在前臂的「上 / 前」侧
+      const e = [h.a, h.b].map((q) => [q[0] - J.wristN[0], q[1] - J.wristN[1], q[2] - J.wristN[2]]);
+      return (e[0][0] * f[1] - e[0][1] * f[0]) > (e[1][0] * f[1] - e[1][1] * f[0]) ? e[0] : e[1]; };
+    assert.ok(thumb(0.5)[2] > 0, `中段拇指端 z=${thumb(0.5)[2].toFixed(2)}，应往外（外旋）`);
   },
   'db-hammer-curl#1': ({ wrong: w, right: r, Jw, Jg, pw, pg }) => {
     const sg = (J) => Math.atan2(J.neck[0] - J.pelvis[0], J.pelvis[1] - J.neck[1]) * 180 / Math.PI;
@@ -552,6 +564,14 @@ const CLAIMS = {
     const a = mistakeMetrics(d.slug, d.fig, d.mf, 0.5, 0), b = mistakeMetrics(d.slug, d.fig, d.mf, 0.5, 1);
     near(a.wrong.trunkLateral, 8, 0.3, '一侧摆'); near(b.wrong.trunkLateral, 8, 0.3, '另一侧摆');
     assert.ok(a.Jw.neck[2] * b.Jw.neck[2] < 0, '左右两边各摆一次'); near(a.right.trunkLateral, 0, 0.1, '灰影竖直');
+  },
+  'barbell-rollout#0': ({ Jw }) => {
+    const mid = Jw.spinePts[Math.floor(Jw.spinePts.length / 2)], line = Jw.pelvis.map((v, i) => (v + Jw.neck[i]) / 2);
+    near(mid[1] - line[1], 9, 0.5, '躯干中段往地面塌');
+  },
+  'ab-wheel-rollout#0': ({ Jw }) => {
+    const mid = Jw.spinePts[Math.floor(Jw.spinePts.length / 2)], line = Jw.pelvis.map((v, i) => (v + Jw.neck[i]) / 2);
+    near(mid[1] - line[1], 9, 0.5, '躯干中段往地面塌');
   },
 };
 

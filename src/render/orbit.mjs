@@ -559,7 +559,8 @@ function equipment(S, slug, p, J, lt, P = ORBIT_PARAMS[slug] ?? {}) {
       // dbTwist：哑铃长轴绕前臂转（锤式弯举举起时手腕翻成掌心朝上：中立握 → 正握，转 90°）
       if (P.dbTwist && Array.isArray(axis)) {
         const f3 = o3sub(J['wrist' + tag], J['elbow' + tag]), fl = o3len(f3) || 1, k = f3.map((x) => x / fl);
-        const a = (tag === 'N' ? 1 : -1) * P.dbTwist * Math.PI / 180, c = Math.cos(a), s = Math.sin(a);
+        // 符号：近侧（+z）是右手，外旋（掌心转向上）时拇指端往 +z（往外）转；远侧镜像
+        const a = (tag === 'N' ? -1 : 1) * P.dbTwist * Math.PI / 180, c = Math.cos(a), s = Math.sin(a);
         const kx = [k[1] * axis[2] - k[2] * axis[1], k[2] * axis[0] - k[0] * axis[2], k[0] * axis[1] - k[1] * axis[0]], kd = o3dot(k, axis);
         axis = axis.map((x, i) => x * c + kx[i] * s + k[i] * kd * (1 - c));
       }
