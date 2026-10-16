@@ -97,8 +97,8 @@ const LOAD_FRAC_BY_SLUG = { 'barbell-curl': [0.15, 0.35], 'barbell-reverse-curl'
 export function mistakeBalance(slug, fig, mf) {
   const s = mistakeSetup(fig, mf);
   if (s.GA.bench || s.GA.benchIncline || s.GA.fixed || s.GA.view === 'front') return null;
-  // 推雪橇：人压在推把上、推把给水平方向的支撑，静态重心判据不适用（步子迈太大，本身就是前脚落到重心前面）
-  if (s.GA.load?.type === 'sled') return null;
+  // 推雪橇的错误动作：人压在推把上、推把给向后向上的反力，静态重心判据不适用（步子迈太大，本身就是前脚落到重心前面）；灰影照查
+  const sled = s.GA.load?.type === 'sled';
   const flat = (p) => p.heel[1] >= 222 && p.toe[1] >= 222 && p.wrist[1] < 215;
   if (!flat(s.GA) || !flat(s.GB)) return null;
   // 返回最小余量那一帧（余量 < 0 即出界）。支撑面：后沿脚跟（容差 2，脚跟着地时重心可以压在跟上），
@@ -107,6 +107,7 @@ export function mistakeBalance(slug, fig, mf) {
   for (const half of [0, 1]) for (let i = 0; i <= 16; i++) {
     const u = i / 16, m = mistakeMetrics(slug, fig, mf, u, half);
     for (const [who, J, p] of [['错误', m.Jw, m.pw], ['灰影', m.Jg, m.pg]]) {
+      if (sled && who === '错误') continue;
       const lt = fig.load_type ?? p.load?.type;
       const fr = fig.no_load ? [0] : LOAD_FRAC_BY_SLUG[slug] ?? LOAD_FRAC[lt] ?? [0];
       const len = Math.abs(p.toe[0] - p.heel[0]);

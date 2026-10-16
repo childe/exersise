@@ -792,7 +792,7 @@ const CLAIMS = {
     near(ua(Jw), 30, 1, '上臂前抬'); assert.ok(Math.abs(ua(Jg)) < 4, '灰影上臂竖直');
   },
   'pull-up#0': ({ wrong: w, right: r, pw, pg }) => {
-    near(pw.ankle[0] - pg.ankle[0], 58, 1, '脚往前荡出'); near(r.hipAngle, 169, 1, '灰影髋角'); near(w.hipAngle, 145, 1, '错误髋角');
+    near(pg.hip[0] - pw.hip[0], 23, 0.6, '髋往后摆'); near(pg.hip[0], pg.wrist[0] - 3.6, 0.6, '灰影髋在握点下'); near(r.hipAngle, 169, 1, '灰影髋角'); near(w.hipAngle, 145, 1, '错误髋角');
   },
   'pull-up#1': (_, d) => slackHang(d),
   'dead-hang#1': (_, d) => slackHang(d),

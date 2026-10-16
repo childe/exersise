@@ -6,7 +6,7 @@
 import { POSES } from '../render/skeleton.mjs';
 
 const OPS = {
-  trunk: ['deg'], arm: ['deg'], hip: ['dx', 'dy'], heel: ['deg'], shrug: ['px'], load: ['dx', 'dy'], shift: ['dx', 'dy'], foot: ['dx'], regrip: [], chain: ['deg'], legs: ['deg'], plankPike: ['deg'], pad: ['along', 'off'], hand3: [],
+  trunk: ['deg'], arm: ['deg'], hip: ['dx', 'dy'], heel: ['deg'], shrug: ['px'], load: ['dx', 'dy'], shift: ['dx', 'dy'], foot: ['dx'], regrip: [], chain: ['deg'], legs: ['deg'], swing: ['deg'], plankPike: ['deg'], pad: ['along', 'off'], hand3: [],
   valgus: ['px'], lateral: ['deg'], twist: ['deg'], pitch: ['deg'], roll: ['deg'], shrug3: ['px'], arm3: ['deg'], spine: ['bend'],
 };
 const PROFS = new Set(['u', 'u2', 'late', 'early', '1-u', 'mid', 'up', 'down', 'const']);

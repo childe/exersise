@@ -101,6 +101,7 @@ function fltMoveLoad(q, f) {
  *   regrip {slide}    手按原握点放回负荷上，肘重解；slide 让地上的轮 / 杠滚到够得着处
  *   plankPike {deg, pivot, root, down}  俯撑里髋离开「肩—脚」一线（翘起或下掉），肩绕撑地点转
  *   legs   {deg}      两腿绕髋前后摆
+ *   swing  {deg}      悬垂时整个人绕握点（手腕）摆，手不离杠
  */
 export function faultPose2D(p, fault, u, half) {
   if (!fault?.ops?.length) return p;
@@ -286,6 +287,12 @@ export function faultPose2D(p, fault, u, half) {
         if ((T[0] - A[0]) * n[0] + (T[1] - A[1]) * n[1] < 0) n = [-n[0], -n[1]];
         const base = p.load.at, P0 = [A[0] + t[0] * op.along + n[0] * op.off, A[1] + t[1] * op.along + n[1] * op.off];
         q.load = { ...q.load, at: [base[0] + (P0[0] - base[0]) * w, base[1] + (P0[1] - base[1]) * w] };
+        break;
+      }
+      case 'swing': {
+        // 悬垂时整个人绕握点摆（引体借力荡）：除手腕与杠以外的全部关节绕近侧手腕转，骨长不变、手不离杠
+        const c = q.wrist, f = (x) => fltRot(x, c, op.deg * w);
+        for (const k of Object.keys(q)) if (!/^wrist/.test(k) && Array.isArray(q[k]) && typeof q[k][0] === 'number') q[k] = f(q[k]);
         break;
       }
       case 'legs': {
