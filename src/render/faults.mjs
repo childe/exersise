@@ -94,6 +94,9 @@ function fltMoveLoad(q, f) {
  *   heel   {deg}      脚跟离地：脚绕脚尖转，踝以上整体随踝平移
  *   shrug  {px}       耸肩：肩（连同手臂和手里的负荷）上提，颈与躯干线不动
  *   load   {dx, dy}   只挪负荷与握着它的手（杠离开腿往前飘）
+ *   foot   {dx, side}  一只脚整体前后挪（踩的位置不对），髋不动、膝重解
+ *   pad    {along, off} 腿屈伸的垫按小腿局部坐标放（沿膝→踝 along、往脚尖一侧 off）
+ *   shift  {dx, dy, legs}  髋连同上半身平移、踝不动膝重解；legs: true 时连腿整个人平移（悬垂）
  *   chain  {at, deg}  绕踝 / 膝 / 髋转动以上整段身体
  *   regrip {slide}    手按原握点放回负荷上，肘重解；slide 让地上的轮 / 杠滚到够得着处
  *   plankPike {deg, pivot, root, down}  俯撑里髋离开「肩—脚」一线（翘起或下掉），肩绕撑地点转
@@ -184,7 +187,10 @@ export function faultPose2D(p, fault, u, half) {
       case 'shift': {
         // 髋连同整个上半身（和肩上 / 手里的负荷）平移，踝不动、膝按大小腿长重解
         const d = [op.dx * w, op.dy * w], H0 = q.hip, H = fltAdd(H0, d);
-        for (const s of ['', '2']) {
+        // legs: true —— 悬垂（脚不着地）时整个人连腿一起平移，不按踝固定重解膝
+        if (op.legs) {
+          for (const k of ['knee', 'ankle', 'heel', 'toe', 'knee2', 'ankle2', 'heel2', 'toe2']) if (q[k]) q[k] = fltAdd(q[k], d);
+        } else for (const s of ['', '2']) {
           const K = q['knee' + s], A = q['ankle' + s];
           if (!K || !A) continue;
           const l1 = Math.hypot(K[0] - H0[0], K[1] - H0[1]), l2 = Math.hypot(A[0] - K[0], A[1] - K[1]);

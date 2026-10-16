@@ -7,13 +7,14 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';
-import { GROUND, mistakeSetup, mistakeStill, renderMistakeFigure } from '../src/render/skeleton.mjs';
+import { GROUND, BENCH_GAP, mistakeSetup, mistakeStill, renderMistakeFigure } from '../src/render/skeleton.mjs';
 import { interpolate } from '../src/render/interp.mjs';
 import { orbitScene, orbitFrame, orbitPoints, orbitBaseYaw, orbitProject, ORBIT_YAW } from '../src/render/orbit.mjs';
 import { faultU, opWeight, mistakeInterpOpts } from '../src/render/faults.mjs';
-import { ORBIT_STATIC } from '../src/render/orbit.mjs';
+import { ORBIT_STATIC, ORBIT_PARAMS } from '../src/render/orbit.mjs';
 import { mistakeMetrics, mistakeBalance, comX, hipMoment, loadPoints } from '../src/render/mistake-metrics.mjs';
 import { validateMistakeFigures } from '../src/validate/mistakes.mjs';
+import { FACE_GEOMETRY } from '../src/render/facing.mjs';
 
 const root = path.resolve(import.meta.dirname, '..');
 const read = async (f) => JSON.parse(await readFile(path.join(root, f), 'utf8'));
@@ -41,7 +42,7 @@ function* framesOf({ slug, mf, fig }) {
 }
 
 test('错误示范数据：字段合法、引用存在', () => {
-  assert.deepEqual(validateMistakeFigures(MF, exercises, figures, { requireAll: false }), []);
+  assert.deepEqual(validateMistakeFigures(MF, exercises, figures), []);
 });
 
 test('错误示范里的人仍然成立：骨长不变、不穿地', () => {
@@ -241,6 +242,13 @@ function hipDropsFirst(d) {
   const a = mistakeMetrics(d.slug, d.fig, d.mf, 0.25, 0), b = mistakeMetrics(d.slug, d.fig, d.mf, 0.5, 0);
   near(off(a.pw), 9, 0.6, '下到四分之一髋已低于一线'); near(off(b.pw), 14, 0.6, '中段髋低于一线');
   near(off(a.pg), 0, 0.3, '灰影在线上'); near(off(b.pg), 0, 0.3, '灰影在线上');
+}
+
+/** 悬垂松垮：肩与手不动，躯干和头往下坠 8px，头离肩线更近（引体起拉前、悬垂中段共用） */
+function slackHang(d) {
+  const m = mistakeMetrics(d.slug, d.fig, d.mf, 0, 0), Jw = m.Jw, Jg = m.Jg;
+  near(Jw.head[1] - Jg.head[1], 8, 0.1, '头往下坠'); near(Jw.pelvis[1] - Jg.pelvis[1], 8, 0.1, '躯干往下坠');
+  for (const k of ['shoulderN', 'wristN']) near(Math.hypot(Jw[k][0] - Jg[k][0], Jw[k][1] - Jg[k][1], Jw[k][2] - Jg[k][2]), 0, 0.1, `${k} 不动`);
 }
 
 /** 前滚回程「手臂先拉」：两个前滚动作共用同一组读数。 */
@@ -654,25 +662,35 @@ const CLAIMS = {
     near(off(pw.hip) - off(pg.hip), 11, 0.6, '髋离开靠背'); near(off(pw.shoulder), off(pg.shoulder), 0.5, '上背仍贴靠背');
     near(r.kneeAngle, 96, 1, '正确膝角'); near(w.kneeAngle, 86, 1, '错误膝角'); assert.ok(Jw.spine.bend > 0, '腰段屈曲（往背侧弓）');
   },
-  'seated-leg-extension#0': ({ Jw, Jg, pw, pg }) => {
-    const tv = (J) => Math.atan2(J.neck[0] - J.pelvis[0], J.pelvis[1] - J.neck[1]) * 180 / Math.PI;
+  'seated-leg-extension#0': (_, d) => {
     const ang = (a, b, c) => { const u = [a[0] - b[0], a[1] - b[1]], v = [c[0] - b[0], c[1] - b[1]]; return Math.acos((u[0] * v[0] + u[1] * v[1]) / Math.hypot(...u) / Math.hypot(...v)) * 180 / Math.PI; };
-    near(tv(Jw), -12, 0.6, '错误后仰'); near(tv(Jg), 2, 0.6, '灰影前倾');
-    near(ang(pw.shoulder, pw.hip, pw.knee), 110, 1, '错误髋角'); near(ang(pg.shoulder, pg.hip, pg.knee), 96, 1, '正确髋角');
+    const m = mistakeMetrics(d.slug, d.fig, d.mf, 0, 0), e = mistakeMetrics(d.slug, d.fig, d.mf, 1, 0);
+    near(m.wrong.trunkFromVertical, 18, 0.6, '起始前探'); near(m.right.trunkFromVertical, 2, 0.6, '灰影贴靠背');
+    near(ang(m.pw.shoulder, m.pw.hip, m.pw.knee), 80, 1, '错误髋角'); near(ang(m.pg.shoulder, m.pg.hip, m.pg.knee), 96, 1, '正确髋角');
+    near(m.pw.shoulder[0] - m.pg.shoulder[0], 22, 1, '肩离开靠背');
+    near(e.wrong.trunkFromVertical, e.right.trunkFromVertical, 0.1, '到顶砸回靠背');
   },
+
   'seated-leg-extension#1': (_, d) => {
-    // 全程（起始、中段、顶点）垫都压在腿的前侧：沿「膝→踝」量，正确在踝上方 11、错误在踝下方 12
+    // 全程（起始、中段、顶点）：灰影的垫在踝上方 11px 的小腿前侧；错误的垫在踝前、压在脚背上——
+    // 在脚底线（跟→尖）靠身体的一侧（不在脚底外），离脚背线约一个垫的半径，垫边不进地面
     for (const u of [0, 0.5, 1]) {
       const m = mistakeMetrics(d.slug, d.fig, d.mf, u, 0);
-      for (const [p, along] of [[m.pw, 12], [m.pg, -11]]) {
+      for (const [p, along, side] of [[m.pw, -2, 9], [m.pg, -11, null]]) {
         const K = p.knee, A = p.ankle, T = p.toe, v = [A[0] - K[0], A[1] - K[1]], l = Math.hypot(...v), t = [v[0] / l, v[1] / l];
         let n = [-t[1], t[0]]; if ((T[0] - A[0]) * n[0] + (T[1] - A[1]) * n[1] < 0) n = [-n[0], -n[1]];
         const dA = [p.load.at[0] - A[0], p.load.at[1] - A[1]];
         near(dA[0] * t[0] + dA[1] * t[1], along, 0.6, `u=${u} 垫沿小腿的位置`); assert.ok(dA[0] * n[0] + dA[1] * n[1] > 2, `u=${u} 垫在腿前侧`);
+        if (side !== null) near(dA[0] * n[0] + dA[1] * n[1], side, 0.6, `u=${u} 垫在踝前`);
       }
-      near(Math.hypot(m.pw.load.at[0] - m.pg.load.at[0], m.pw.load.at[1] - m.pg.load.at[1]), 23, 0.6, '前后差');
+      const p = m.pw, H = p.heel, T = p.toe, L = p.load.at;
+      const sd = (X) => ((X[0] - H[0]) * (T[1] - H[1]) - (X[1] - H[1]) * (T[0] - H[0])) / Math.hypot(T[0] - H[0], T[1] - H[1]);
+      assert.ok(Math.sign(sd(L)) === Math.sign(sd(p.ankle)) && Math.abs(sd(L)) > Math.abs(sd(p.ankle)), `u=${u} 垫在脚背一侧（不在脚底外）`);
+      assert.ok(L[1] + 3 <= GROUND, `u=${u} 垫边不进地面`);
+      near(Math.hypot(m.pw.load.at[0] - m.pg.load.at[0], m.pw.load.at[1] - m.pg.load.at[1]), 10, 0.6, '前后差');
     }
   },
+
   'seated-calf-raise#1': ({ pw, pg }) => { near(pg.heel[1] - pw.heel[1], 5, 0.5, '脚跟还离最低点'); },
   'back-extension#0': ({ Jw, Jg }) => {
     const th = (J) => Math.atan2(J.pelvis[1] - J.neck[1], J.neck[0] - J.pelvis[0]) * 180 / Math.PI;
@@ -706,24 +724,26 @@ const CLAIMS = {
   },
   'machine-chest-press#1': (_, d) => { assert.equal(d.mf.tempo, 'drop'); },
   'machine-shoulder-press#0': ({ Jw, Jg }) => {
-    const ua = (J) => Math.atan2(J.elbowN[0] - J.shoulderN[0], J.elbowN[1] - J.shoulderN[1]) * 180 / Math.PI;
-    near(Jw.wristN[1] - Jg.wristN[1], 16, 0.3, '手更低'); near(ua(Jw), 21, 1, '错误上臂与竖直'); near(ua(Jg), 43, 1, '正确上臂与竖直');
-    assert.ok(Jw.wristN[1] > Jw.shoulderN[1] - 1, '握把落到肩的高度以下');
+    near(Jw.wristN[1] - Jg.wristN[1], 24, 0.3, '手更低'); near(Jw.wristN[1] - Jw.shoulderN[1], 8, 0.6, '握把落到肩下'); near(Jg.shoulderN[1] - Jg.wristN[1], 17, 0.6, '灰影握把在肩上');
+    near(Jw.elbowN[1] - Jw.shoulderN[1], 42, 1, '错误肘在肩下'); near(Jg.elbowN[1] - Jg.shoulderN[1], 23, 1, '灰影肘在肩下');
+    for (const i of [0, 2]) near(Jw.wristN[i], Jg.wristN[i], 0.1, '握把只在竖直方向不同（握距、前后不变）');
   },
-  'machine-shoulder-press#1': ({ Jw, Jg }) => {
-    const tv = (J) => Math.atan2(J.neck[0] - J.pelvis[0], J.pelvis[1] - J.neck[1]) * 180 / Math.PI;
-    near(tv(Jw), -23, 1, '错误后仰'); near(tv(Jg), -7, 1, '靠背角度');
+  'machine-shoulder-press#1': ({ wrong: w, right: r, Jw, Jg, pw, pg }) => {
+    near(Math.abs(w.trunkFromVertical), 14, 0.6, '错误后仰'); near(Math.abs(r.trunkFromVertical), 7, 0.6, '靠背角度');
+    near(pw.hip[0] - pg.hip[0], 10, 0.6, '髋往前滑'); near(L3(Jw.neck, Jg.neck), 0, 0.1, '上背仍贴靠背');
+    near(Jw.spine.bend, -8, 0.1, '腰往前塌');
   },
-  'cable-pushdown#0': ({ Jw, Jg }) => {
+  'cable-pushdown#0': ({ wrong: w, right: r, Jw, Jg }) => {
     const tv = (J) => Math.atan2(J.neck[0] - J.pelvis[0], J.pelvis[1] - J.neck[1]) * 180 / Math.PI;
     near(tv(Jw), 26, 1, '错误前倾'); near(tv(Jg), 12, 1, '正确前倾');
+    near(w.elbowAngle, r.elbowAngle, 0.5, '肘角两边一样');
   },
   'cable-pushdown#1': ({ Jw, Jg }) => {
     const ua = (J) => Math.atan2(J.elbowN[0] - J.shoulderN[0], J.elbowN[1] - J.shoulderN[1]) * 180 / Math.PI;
     near(ua(Jw) - ua(Jg), 18, 1, '上臂前跑');
   },
   'cable-lateral-raise#0': ({ wrong: w, Jw, Jg }) => {
-    near(w.trunkLateral, 12, 0.3, '侧倒'); assert.ok(Jw.neck[2] < 0, '倒向远离绳子（工作手在近侧）的一侧');
+    near(w.trunkLateral, 12, 0.3, '侧倒'); assert.ok(Jw.neck[2] < 0, '倒向不工作那只手（远侧、靠器械）的一侧');
     near(Jg.wristN[1] - Jw.wristN[1], 17, 0.6, '手被甩高');
   },
   'cable-lateral-raise#1': ({ Jw, Jg }) => {
@@ -734,13 +754,13 @@ const CLAIMS = {
     const sg = (J) => Math.atan2(J.neck[0] - J.pelvis[0], J.pelvis[1] - J.neck[1]) * 180 / Math.PI;
     near(pw.hip[0] - pg.hip[0], 15, 0.6, '髋前顶'); near(sg(Jw), -5, 0.6, '错误后仰'); near(sg(Jg), 2, 0.6, '灰影前倾'); near(Jw.spine.bend, -8, 0.1, '腰前塌');
   },
-  'lat-pulldown#0': ({ Jw, Jg, pw, pg }) => {
+  'lat-pulldown#0': ({ wrong: w, right: r, Jw, Jg, pw, pg }) => {
     const tv = (J) => Math.atan2(J.neck[0] - J.pelvis[0], J.pelvis[1] - J.neck[1]) * 180 / Math.PI;
-    near(tv(Jw), -24, 1, '错误后仰'); near(tv(Jg), -6, 1, '正确'); near(pg.load.at[0] - pw.load.at[0], 38, 1, '横杆被带后');
+    near(tv(Jw), -24, 1, '错误后仰'); near(tv(Jg), -6, 1, '正确'); near(pg.load.at[0] - pw.load.at[0], 38, 1, '横杆被带后'); near(w.elbowAngle, r.elbowAngle, 0.5, '肘角两边一样');
   },
   'lat-pulldown#1': ({ Jw, Jg, pw, pg }) => {
     const tv = (J) => Math.atan2(J.neck[0] - J.pelvis[0], J.pelvis[1] - J.neck[1]) * 180 / Math.PI;
-    near(Jw.neck[0] - pw.load.at[0], 28, 1, '杆在颈后'); near(pg.load.at[0] - Jg.neck[0], 19, 1, '灰影杆在颈前');
+    near(Jw.neck[0] - pw.load.at[0], 9, 0.6, '杆在颈后'); near(pw.load.at[1] - Jw.neck[1], 4, 0.6, '杆在肩线下'); near(pg.load.at[0] - Jg.neck[0], 19, 1, '灰影杆在颈前');
     near(tv(Jw), 14, 1, '错误前倾'); near(tv(Jg), -6, 1, '正确后仰');
   },
   'seated-cable-row#0': (_, d) => {
@@ -758,7 +778,9 @@ const CLAIMS = {
     near(tv(Jw), -12, 1, '错误后仰'); near(tv(Jg), 2, 1, '正确');
   },
   'cable-face-pull#1': ({ Jw, Jg }) => {
-    near(Jw.elbowN[1] - Jw.wristN[1], 36, 1, '肘在手下'); near(Jg.wristN[1] - Jg.elbowN[1], 21, 1, '灰影肘在手上');
+    near(Jw.elbowN[1] - Jw.wristN[1], 15, 0.6, '肘在手下'); near(Jg.wristN[1] - Jg.elbowN[1], 21, 1, '灰影肘在手上');
+    near(Jw.shoulderN[0] - Jw.elbowN[0], 22, 0.6, '肘退到肩后（划船）'); near(Jw.wristN[1] - Jw.shoulderN[1], 30, 0.6, '手落到胸前');
+    near(Jg.wristN[1], Jg.head[1], 3, '灰影手与脸齐平'); assert.ok(Jw.elbowN[2] < Jw.shoulderN[2] + 2, '肘贴着体侧，不往外打开');
   },
   'cable-curl#0': ({ wrong: w, right: r, Jw, Jg, pw, pg }) => {
     const sg = (J) => Math.atan2(J.neck[0] - J.pelvis[0], J.pelvis[1] - J.neck[1]) * 180 / Math.PI;
@@ -768,6 +790,43 @@ const CLAIMS = {
   'cable-curl#1': ({ Jw, Jg }) => {
     const ua = (J) => Math.atan2(J.elbowN[0] - J.shoulderN[0], J.elbowN[1] - J.shoulderN[1]) * 180 / Math.PI;
     near(ua(Jw), 30, 1, '上臂前抬'); assert.ok(Math.abs(ua(Jg)) < 4, '灰影上臂竖直');
+  },
+  'pull-up#0': ({ wrong: w, right: r, pw, pg }) => {
+    near(pw.ankle[0] - pg.ankle[0], 58, 1, '脚往前荡出'); near(r.hipAngle, 169, 1, '灰影髋角'); near(w.hipAngle, 145, 1, '错误髋角');
+  },
+  'pull-up#1': (_, d) => slackHang(d),
+  'dead-hang#1': (_, d) => slackHang(d),
+  'inverted-row#0': (_, d) => {
+    const off = (p) => { const A = p.shoulder, B = p.ankle, v = [B[0] - A[0], B[1] - A[1]], l = Math.hypot(...v); return -((p.hip[0] - A[0]) * v[1] - (p.hip[1] - A[1]) * v[0]) / l; };
+    const a = mistakeMetrics(d.slug, d.fig, d.mf, 0.5, 0), b = mistakeMetrics(d.slug, d.fig, d.mf, 1, 0);
+    near(off(a.pw), 14, 0.6, '中段髋低于一线'); near(off(b.pw), 10, 0.6, '到顶髋低于一线');
+    near(off(a.pg), 0, 0.3, '灰影在线上'); near(off(b.pg), 0, 0.3, '灰影在线上');
+    near(b.pw.shoulder[1] - b.pg.shoulder[1], 4, 0.5, '到顶胸离杆更远');
+  },
+  'inverted-row#1': (_, d) => {
+    const m = mistakeMetrics(d.slug, d.fig, d.mf, 0, 0);
+    near(m.wrong.elbowAngle, 65, 1, '错误最低点肘角'); near(m.right.elbowAngle, 140, 1, '灰影最低点肘角');
+    near(m.pg.shoulder[1] - m.pw.shoulder[1], 39, 1, '胸离杆更近');
+  },
+  'sled-push#0': ({ Jw }) => {
+    const A = Jw.pelvis, B = Jw.neck, v = [B[0] - A[0], B[1] - A[1]], l = Math.hypot(...v);
+    const offs = Jw.spinePts.map((q) => ((q[0] - A[0]) * v[1] - (q[1] - A[1]) * v[0]) / l), mx = Math.max(...offs), k = offs.indexOf(mx);
+    near(mx, 10, 0.5, '背往上弓起（正值 = 背侧）'); const t = k / (offs.length - 1); assert.ok(t >= 0.4 && t <= 0.6, `弓得最高处 t=${t} 应在背中段`);
+  },
+  'sled-push#1': ({ wrong: w, right: r, pw, pg }) => {
+    near(pw.ankle[0] - pw.hip[0], 35, 1, '错误前脚在髋前'); near(pg.ankle[0] - pg.hip[0], 13, 1, '灰影前脚在髋前');
+    near(pw.ankle[0] - pg.ankle[0], 22, 0.1, '多迈出'); near(r.kneeAngle, 109, 1, '灰影膝角'); near(w.kneeAngle, 118, 1, '错误膝角');
+  },
+  'cable-pallof-press#0': ({ Jw, Jg }) => {
+    // 帕洛夫的固定点在 z = −70 一侧（orbit.mjs 的 band 分支）
+    const ang = (J) => Math.atan2(J.shoulderN[0] - J.shoulderF[0], J.shoulderN[2] - J.shoulderF[2]) * 180 / Math.PI;
+    near(Math.abs(ang(Jw) - ang(Jg)), 20, 0.5, '肩线转');
+    near(Jg.wristN[2] - Jw.wristN[2], 28, 0.6, '手往固定点一侧偏'); assert.ok(Jw.wristN[2] < Jg.wristN[2], '朝固定点（−z）');
+  },
+  'band-pallof-press#1': ({ wrong: w, Jw }) => {
+    near(w.trunkLateral, 10, 0.3, '侧倒'); assert.ok(Jw.neck[2] > 0, '倒向远离固定点（固定点在 −z）');
+    const tilt = Math.atan2(Math.abs(Jw.shoulderN[1] - Jw.shoulderF[1]), Math.abs(Jw.shoulderN[2] - Jw.shoulderF[2])) * 180 / Math.PI;
+    near(tilt, 10, 0.5, '肩线歪');
   },
 };
 
@@ -866,6 +925,39 @@ test('错误动作连续：相邻帧任何关节不跳', () => {
         assert.ok(st <= lim, `${d.slug}#${d.mf.mistake} half=${half} u=${(i / 64).toFixed(3)}: ${k} 一步跳 ${st.toFixed(1)}px（上限 ${lim.toFixed(1)}）`);
       }
     }
+  }
+});
+
+test('坐姿靠背挡得住：错误动作的躯干不穿到固定靠背后面', () => {
+  // 靠背是机器的一部分，按未出错的躯干放在背后 BENCH_GAP 处（见 orbitScene）。曾经腿屈伸、器械推举的
+  // 「后仰借力」把躯干绕髋往后转 14–16°，肩直接从板里穿过去——有靠背时人仰不过它
+  for (const d of drawn) {
+    if (!ORBIT_PARAMS[d.slug]?.backrest || (d.mf.ops ?? []).some((op) => op.op === 'trunk' && op.bench)) continue;
+    for (const { s, uw, u, half, W } of framesOf(d)) {
+      const p0 = interpolate(s.A, s.B, uw, s.iopts), pw = W.p;
+      const tv = [p0.shoulder[0] - p0.hip[0], p0.shoulder[1] - p0.hip[1]], tl = Math.hypot(...tv);
+      let n = [-tv[1] / tl, tv[0] / tl];
+      if (n[0] * (p0.knee[0] - p0.hip[0]) + n[1] * (p0.knee[1] - p0.hip[1]) > 0) n = [-n[0], -n[1]];
+      for (const k of ['shoulder', 'hip']) {
+        const back = (pw[k][0] - p0.hip[0]) * n[0] + (pw[k][1] - p0.hip[1]) * n[1];
+        // 躯干线粗 11（半宽 5.5）：线心退到 BENCH_GAP − 5.5 以后，背面就压进板里了
+        assert.ok(back <= BENCH_GAP - 5.5 + 0.5, `${d.slug}#${d.mf.mistake} u=${u} half=${half}: ${k} 退到靠背前沿以后 ${back.toFixed(1)}px`);
+      }
+    }
+  }
+});
+
+test('负荷不穿头：错误动作里横杆 / 把手离头心至少一个头半径加 4px（杆粗约 2，再留 2px）', () => {
+  // 曾经「拉到颈后」的横杆被前倾的躯干带着往前，在 u≈0.6 时离头心只有 14px，杆贴着头皮擦过去
+  for (const d of drawn) for (const { W, G, u, half } of framesOf(d)) {
+    // 量头心到负荷每根线段（杆身、把手）的最短距离；端点量不到杆的中段
+    const seg = (a, b, h) => { const v = [b[0] - a[0], b[1] - a[1], b[2] - a[2]], vv = v[0] * v[0] + v[1] * v[1] + v[2] * v[2] || 1;
+      const t = Math.max(0, Math.min(1, ((h[0] - a[0]) * v[0] + (h[1] - a[1]) * v[1] + (h[2] - a[2]) * v[2]) / vv)); return L3([a[0] + v[0] * t, a[1] + v[1] * t, a[2] + v[2] * t], h); };
+    const mn = (S, h) => Math.min(Infinity, ...S.filter((it) => it.part === 'load').map((it) => (it.t === 'line' ? seg(it.a, it.b, h) : it.t === 'ball' ? L3(it.c, h) - (it.r ?? 0) : Infinity)));
+    // 灰影本来就贴着头的负荷（前架位）不算：只拦错误动作比灰影更近、且进到头里的
+    const w = mn(W.S, W.J.head), g = mn(G.S, G.J.head);
+    if (w >= g - 0.5) continue;
+    assert.ok(w >= FACE_GEOMETRY.HEAD_R + 4, `${d.slug}#${d.mf.mistake} u=${u} half=${half}: 负荷离头心 ${w.toFixed(1)}px`);
   }
 });
 

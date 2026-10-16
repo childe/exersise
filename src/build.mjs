@@ -114,7 +114,7 @@ export async function build(root = defaultRoot, { outDir } = {}) {
   if (endErrs.length) throw new Error(`动画端点校验失败:\n- ${endErrs.join('\n- ')}`);
   const drawnErrs = validateDrawnAnimation(data.poseFigures);
   if (drawnErrs.length) throw new Error(`动画手臂校验失败:\n- ${drawnErrs.join('\n- ')}`);
-  const mistakeErrs = validateMistakeFigures(data.mistakeFigures, data.exercises, data.poseFigures, { requireAll: false });
+  const mistakeErrs = validateMistakeFigures(data.mistakeFigures, data.exercises, data.poseFigures);
   if (mistakeErrs.length) throw new Error(`错误示范图校验失败:\n- ${mistakeErrs.join('\n- ')}`);
   const renderCtx = {
     claims: new Map(data.claims.map((c) => [c.id, c])),
