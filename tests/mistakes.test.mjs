@@ -12,7 +12,7 @@ import { interpolate } from '../src/render/interp.mjs';
 import { orbitScene, orbitFrame, orbitPoints, orbitBaseYaw, orbitProject, ORBIT_YAW } from '../src/render/orbit.mjs';
 import { faultU, faultWeight, mistakeInterpOpts } from '../src/render/faults.mjs';
 import { ORBIT_STATIC } from '../src/render/orbit.mjs';
-import { mistakeMetrics } from '../src/render/mistake-metrics.mjs';
+import { mistakeMetrics, mistakeBalance, comX, hipMoment, loadPoints } from '../src/render/mistake-metrics.mjs';
 import { validateMistakeFigures } from '../src/validate/mistakes.mjs';
 
 const root = path.resolve(import.meta.dirname, '..');
@@ -222,17 +222,24 @@ const CLAIMS = {
     assert.ok(w.kneeZ < w.ankleZ, '错误动作的膝落在踝的内侧');
     assert.ok(r.kneeZ >= r.ankleZ, '正确动作的膝在踝的正上方或外侧');
   },
-  'goblet-squat#0': ({ wrong: w, right: r }) => {
+  'goblet-squat#0': ({ wrong: w, right: r, Jw, Jg, pw, pg }) => {
     near(w.load[0] - r.load[0], 16, 0.5, '哑铃前移');
-    near(r.hipToLoadX, 36, 1, '正确力臂');
-    near(w.hipToLoadX, 52, 1, '错误力臂');
+    near(r.hipToLoadX, 36, 1, '正确力臂'); near(w.hipToLoadX, 52, 1, '错误力臂');
     near((w.hipToLoadX / r.hipToLoadX - 1) * 100, 45, 2, '力臂增幅 %');
     assert.ok(w.load[0] > 90 + 6, '哑铃铅垂线落在足中线前方');
+    const P = { dbMode: 'single' };
+    for (const [fr, pct] of [[0.15, 18], [0.3, 23]]) {
+      const a = hipMoment(Jw, loadPoints(Jw, pw, P), fr), b = hipMoment(Jg, loadPoints(Jg, pg, P), fr);
+      near((a / b - 1) * 100, pct, 1, `哑铃 ${fr} 倍体重时伸髋力矩增幅 %`);
+      const dc = comX(Jw, loadPoints(Jw, pw, P), fr) - comX(Jg, loadPoints(Jg, pg, P), fr);
+      assert.ok(dc >= 3 && dc <= 5.5, `重心前移 ${dc.toFixed(1)}`);
+    }
   },
-  'goblet-squat#1': ({ pw, pg }) => {
+  'goblet-squat#1': ({ pw, pg, Jw }) => {
     near(225 - pw.heel[1], 9, 0.5, '脚跟离地');
     near(pw.toe[1], 225, 0.5, '前脚掌仍在地上');
-    assert.ok(pw.knee[0] - pg.knee[0] > 1, '膝更往前');
+    near(pw.knee[0] - pg.knee[0], 22, 1, '膝前移');
+    near(pw.knee[0] - pw.toe[0], 29, 1, '错误膝越过脚尖'); near(pg.knee[0] - pg.toe[0], 6, 1, '灰影膝越过脚尖');
   },
   'back-squat-low-bar#0': ({ wrong: w, right: r, pw, pg }) => {
     near(w.trunkFromVertical, 35, 1, '错误躯干角');
@@ -295,7 +302,29 @@ const CLAIMS = {
     near(r.hipToLoadX, 47, 1, '正确力臂'); near(w.hipToLoadX, 61, 1, '错误力臂');
     near((w.hipToLoadX / r.hipToLoadX - 1) * 100, 30, 2, '力臂增幅 %');
   },
+  'romanian-deadlift#0': ({ wrong: w, right: r }) => {
+    near(r.kneeAngle, 158, 1, '正确膝角'); near(w.kneeAngle, 107, 1, '错误膝角');
+    near(w.hipY - r.hipY, 18, 0.5, '髋下沉');
+    near(r.trunkFromVertical, 56, 1, '正确躯干'); near(w.trunkFromVertical, 38, 1, '错误躯干');
+    near(w.hipAngle, 91, 1, '错误髋角'); near(r.hipAngle, 94, 1, '正确髋角');
+    near(w.load[1], r.load[1], 1, '杠下到同一高度');
+  },
+  'romanian-deadlift#1': ({ wrong: w, right: r, Jw }) => {
+    near(Jw.spine.bend, 10, 0.1, '背拱起');
+    near(r.trunkFromVertical, 56, 1, '正确躯干'); near(w.trunkFromVertical, 66, 1, '错误躯干');
+    near(w.load[1] - r.load[1], 12, 0.5, '杠更低');
+    near(r.hipToLoadX, 48, 1, '正确力臂'); near(w.hipToLoadX, 55, 1, '错误力臂');
+  },
 };
+
+test('站姿错误示范站得住：全身重心落在支撑面上', () => {
+  // 画出来的错误动作也得是人能做出来的样子：踮脚跟却把重心留在脚跟上方的人会往后倒，
+  // 那张图教的就不是「踮脚跟」而是一个不存在的姿势。负荷按体重比例的两端各查一次，灰影同样要过。
+  for (const d of drawn) {
+    const r = mistakeBalance(d.slug, d.fig, d.mf);
+    if (r) assert.ok(r.ok, `${d.slug}#${d.mf.mistake}: 重心出了支撑面 ${JSON.stringify(r.worst)}`);
+  }
+});
 
 test('「为什么错」里的数字是图上量得到的', () => {
   for (const d of drawn) {

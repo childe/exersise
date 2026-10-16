@@ -9,7 +9,7 @@ const OPS = {
   trunk: ['deg'], arm: ['deg'], hip: ['dx', 'dy'], heel: ['deg'], shrug: ['px'], load: ['dx', 'dy'], shift: ['dx', 'dy'], foot: ['dx'],
   valgus: ['px'], lateral: ['deg'], twist: ['deg'], arm3: ['deg'], spine: ['bend'],
 };
-const PROFS = new Set(['u', '1-u', 'mid', 'up', 'down', 'const']);
+const PROFS = new Set(['u', 'u2', '1-u', 'mid', 'up', 'down', 'const']);
 export const MISTAKE_PARTS = new Set(['trunk', 'shoulders', 'pelvis', 'head', 'thigh', 'shin', 'foot', 'upperarm', 'forearm', 'load']);
 const TEMPOS = new Set(['bounce', 'drop']);
 
@@ -52,6 +52,7 @@ export function validateMistakeFigures(mf, exercises, poseFigures, { requireAll 
         const need = OPS[op.op];
         if (!need) { errs.push(`${where}：未知变换 ${op.op}`); continue; }
         for (const k of need) if (typeof op[k] !== 'number') errs.push(`${where}：变换 ${op.op} 缺数值 ${k}`);
+        if (op.op === 'foot' && !['near', 'far'].includes(op.side)) errs.push(`${where}：foot 必须写明 side（near / far）`);
         if (op.prof && !PROFS.has(op.prof)) errs.push(`${where}：未知强度曲线 ${op.prof}`);
       }
     }

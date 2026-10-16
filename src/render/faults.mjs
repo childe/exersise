@@ -18,6 +18,7 @@ const FLT_RAD = Math.PI / 180;
 export function faultWeight(prof, u, half) {
   switch (prof ?? 'u') {
     case 'u': return u;                                  // 越接近结束帧越明显
+    case 'u2': return u * u;                             // 前半程几乎没有、到底才明显（踮脚跟只在蹲深时出现）
     case '1-u': return 1 - u;                            // 越接近起始帧越明显
     case 'mid': return Math.sin(Math.PI * u);            // 行程中段最明显
     case 'up': return half === 1 ? Math.sin(Math.PI * u) : 0;      // 只在返回的那一半
@@ -133,6 +134,8 @@ export function faultPose2D(p, fault, u, half) {
       }
       case 'foot': {
         // 一只脚整体前后挪（脚踩的位置不对），髋不动、膝按大小腿长重解
+        // 没有第二套腿的姿态（3D 里远侧腿是近侧的镜像）：先把近侧抄一份给远侧，只挪要挪的那只
+        if (!q.knee2) for (const k of ['knee', 'ankle', 'heel', 'toe']) q[k + '2'] = q[k];
         const s = op.side === 'far' ? '2' : '';
         const d = [op.dx * w, (op.dy ?? 0) * w], K = q['knee' + s], A0 = q['ankle' + s];
         const l1 = Math.hypot(K[0] - q.hip[0], K[1] - q.hip[1]), l2 = Math.hypot(A0[0] - K[0], A0[1] - K[1]);

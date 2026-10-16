@@ -137,6 +137,8 @@ import('./src/render/skeleton.mjs').then(async (m) => {
 | E5 | 标红的部位就是出错的部位，且只在错了的帧标红 | 对照 `hl` 与变换作用的关节 |
 | E6 | 视角能看出这个错误 | 冠状面的错误（膝内扣、侧倾、耸肩）在侧视两边摆 30° 看不出来，应设 `yaw` 换基准视角；侧视能看的不要换 |
 
+站姿错误示范还要站得住：`node tools/mistake-balance.mjs <slug>` 估算全身（含负荷）重心是否落在支撑面上（Winter 分段质量；`tests/mistakes.test.mjs` 有同样的断言）。
+
 另查 `none` 条目：理由是否成立（真的没有几何差别，而不是「难画」）。
 
 **你能看图**：`node tools/preview-mistake.mjs <slug> <序号> <输出.png>` 把一张错误示范按 6 个相位 × 3 个视角铺成拼图，

@@ -9,7 +9,7 @@
 
 const REP = 4.2;                       // 一次完整起落的秒数
 import { ik2 } from '../render/interp.mjs';
-import { renderOrbit, ORBIT_YAW, ORBIT_PERIOD } from '../render/orbit.mjs';
+import { renderOrbit, ORBIT_YAW, ORBIT_PERIOD, ORBIT_STATIC } from '../render/orbit.mjs';
 import { faultPhase, faultU, mistakeInterpOpts, faultPhaseOf } from '../render/faults.mjs';
 const ARM_TAU = Math.PI * 2;
 const ARM_TRUE_UPPER = 50, ARM_TRUE_FORE = 39;   // 与 BONE 一致：投影不可能超过真骨
@@ -184,7 +184,8 @@ export function initSkeletonAnimation({ POSES, interpolate, renderPose, drawnArm
     // 错误示范从静止帧那一刻开始播：从 t=0 起的话，第一眼看到的是还没出错的那一帧
     const t0 = cfg.fault && cfg.still ? faultPhaseOf(cfg.tempo, cfg.still) * REP : 0;
     items.push({ svg, cfg, box: { x, y, w, h }, A, B, GA, GB, visible: false, t: t0, armA, armB,
-      orbit, orbT: 0,
+      // 错误示范的视角也从静止帧的偏角起步（sin 相位取 asin(静止偏角 / 摆幅)），否则加载时一下跳 20°
+      orbit, orbT: cfg.fault ? (((Math.asin(ORBIT_STATIC.yaw / ORBIT_YAW) / (2 * Math.PI)) % 1 + 1) % 1) * ORBIT_PERIOD : 0,
       plan: armSidePlan(armA, armB, A, B, dA, dB, interpolate, opts) });
   }
   if (!items.length) return null;

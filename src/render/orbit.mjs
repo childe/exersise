@@ -696,7 +696,8 @@ export function orbitScene(slug, names, p0, { u = 0, prime = [], plumb = false, 
 
   const n0 = S.length;
   equipment(S, slug, p, J, lt, P);
-  for (let i = n0; i < S.length; i++) if (!/sk-bench|sk-rig\b/.test(S[i].cls)) S[i].part = 'load';
+  // 哑铃把手不标红：它握在手里，红把手和红前臂叠成一条，反而认不出哑铃；标两端的片就够了
+  for (let i = n0; i < S.length; i++) if (!/sk-bench|sk-rig\b|sk-db-handle/.test(S[i].cls)) S[i].part = 'load';
   // 出错部位标红：只给错误示范用（它不标主动肌，红色在这里只有「错在这」一个意思）
   // 变换还没起作用的那几帧（「起身时」的错误在下蹲段）不标：红色只出现在真的错了的时候
   // 参数覆盖、换姿态、半程这类错误全程都在，全程标红
