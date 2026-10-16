@@ -332,6 +332,13 @@ export function faultPhase(tempo, ph) {
     if (ph < 0.4) { const t = (ph - 0.25) / 0.15; return { u: 1 - 0.18 * Math.sin(Math.PI * t), half: 1 }; }  // 弹起
     return { u: 1 - ease((ph - 0.4) / 0.6), half: 1 };
   }
+  if (tempo === 'bounceA') {
+    // 弹震发生在起始帧那一端（坐姿推举的底部就是起始帧）：推起正常，下放时一下掉到底、弹一下
+    if (ph < 0.5) return { u: ease(ph * 2), half: 0 };
+    if (ph < 0.72) { const t = (ph - 0.5) / 0.22; return { u: 1 - t * t, half: 1 }; }
+    if (ph < 0.84) { const t = (ph - 0.72) / 0.12; return { u: 0.2 * Math.sin(Math.PI * t), half: 1 }; }
+    return { u: 0, half: 1 };
+  }
   if (tempo === 'drop') {
     if (ph < 0.75) return { u: ease(ph / 0.75), half: 0 };
     const t = (ph - 0.75) / 0.25;

@@ -413,6 +413,19 @@ const CLAIMS = {
     near(along(Jw), 31, 1, '错误落点'); near(along(Jg), 14, 1, '正确落点');
     near(ua(Jg), 47, 1, '正确上臂与躯干'); near(ua(Jw), 40, 1, '错误上臂与躯干');
   },
+  'db-shoulder-press#0': ({ Jw, Jg }) => {
+    const rec = (J) => Math.atan2(J.pelvis[0] - J.neck[0], J.pelvis[1] - J.neck[1]) * 180 / Math.PI;
+    const ang = (J) => { const t = J.neck.map((v, i) => v - J.pelvis[i]), a = J.wristN.map((v, i) => v - J.shoulderN[i]); return Math.acos(t.reduce((s, x, i) => s + x * a[i], 0) / Math.hypot(...t) / Math.hypot(...a)) * 180 / Math.PI; };
+    near(rec(Jg), 7, 1, '正确后仰'); near(rec(Jw), 35, 1, '错误后仰');
+    near(ang(Jg), 26, 1, '正确手臂与躯干'); near(ang(Jw), 43, 1, '错误手臂与躯干');
+  },
+  'db-shoulder-press#1': ({ Jw, Jg }, d) => {
+    const ua = (J) => Math.asin((J.elbowN[1] - J.shoulderN[1]) / 50) * 180 / Math.PI;
+    near(Jw.wristN[1] - Jg.wristN[1], 12, 0.3, '多下放');
+    assert.ok(Math.abs(Jw.wristN[1] - Jw.shoulderN[1]) < 6, '几乎落到肩的高度');
+    near(ua(Jw), 42, 1, '错误上臂低于水平'); near(ua(Jg), 27, 1, '正确上臂低于水平');
+    assert.equal(d.mf.tempo, 'bounceA');
+  },
 };
 
 test('错误只错在那一处：不许顺带画出别的错误', () => {
