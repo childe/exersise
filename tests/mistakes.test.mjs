@@ -479,6 +479,15 @@ const CLAIMS = {
     const along = (J) => { const S = J.neck, H = J.pelvis, v = [H[0] - S[0], H[1] - S[1]], l = Math.hypot(...v); return ((J.wristN[0] - S[0]) * v[0] + (J.wristN[1] - S[1]) * v[1]) / l; };
     near(along(Jw), 24, 1, '错误拉到离肩'); near(along(Jg), 52, 1, '正确拉到离肩');
   },
+  'db-reverse-fly#0': ({ Jw, Jg }) => {
+    const th = (J) => Math.atan2(J.pelvis[1] - J.neck[1], Math.abs(J.neck[0] - J.pelvis[0])) * 180 / Math.PI;
+    near(th(Jg), 42, 0.5, '正确躯干离水平'); near(th(Jw), 60, 0.5, '错误躯干离水平');
+    near(Jg.wristN[1] - Jw.wristN[1], 20, 0.6, '哑铃被掀高');
+  },
+  'db-reverse-fly#1': ({ Jw, Jg }) => {
+    near(L3(Jw.shoulderN, Jg.shoulderN), 8, 0.1, '耸肩');
+    assert.ok(L3(Jw.neck, Jg.neck) < 0.01, '颈不动');
+  },
 };
 
 test('错误只错在那一处：不许顺带画出别的错误', () => {

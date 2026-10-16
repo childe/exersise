@@ -242,7 +242,7 @@ export function faultPose2D(p, fault, u, half) {
   return q;
 }
 
-const FLT_3D = new Set(['valgus', 'lateral', 'twist', 'pitch', 'roll', 'arm3', 'spine', 'hand3']);
+const FLT_3D = new Set(['valgus', 'lateral', 'twist', 'pitch', 'roll', 'arm3', 'spine', 'hand3', 'shrug3']);
 const FLT_UPPER3 = ['head', 'neck', 'back', 'shoulderN', 'shoulderF', 'elbowN', 'elbowF', 'wristN', 'wristF'];
 
 /** 绕过 c 的轴（单位向量 k）转 deg°：Rodrigues。 */
@@ -288,6 +288,11 @@ export function faultJoints3D(J, fault, u, half) {
       // lateral 绕前后轴（侧倾）、twist 绕竖直轴（旋转）、pitch 绕左右轴（前后摆：正视动作的躯干借力）
       const c = J.pelvis, k = op.op === 'lateral' ? [1, 0, 0] : op.op === 'twist' ? [0, 1, 0] : [0, 0, 1];
       for (const key of FLT_UPPER3) if (J[key]) J[key] = fltRot3(J[key], c, k, op.deg * w);
+    } else if (op.op === 'shrug3') {
+      // 3D 耸肩：两肩连同手臂沿脊柱往头的方向提（单独搭 3D 的动作——反向飞鸟——2D 变换够不着它）
+      const ax = [J.neck[0] - J.pelvis[0], J.neck[1] - J.pelvis[1], J.neck[2] - J.pelvis[2]], al = Math.hypot(...ax) || 1;
+      const d3 = ax.map((x) => x / al * op.px * w);
+      for (const key of ['shoulderN', 'shoulderF', 'elbowN', 'elbowF', 'wristN', 'wristF']) J[key] = J[key].map((x, i) => x + d3[i]);
     } else if (op.op === 'roll') {
       // 躯干绕自身长轴（骨盆→颈）转：单臂划船用转身把哑铃带上来。keep 那一侧的手按在凳上不动，
       // 那一侧的肘按真骨长重解（pole 取原来的肘）
