@@ -64,6 +64,7 @@ export function validateMistakeFigures(mf, exercises, poseFigures, { requireAll 
         for (const k of need) if (typeof op[k] !== 'number') errs.push(`${where}：变换 ${op.op} 缺数值 ${k}`);
         if (op.op === 'foot' && !['near', 'far'].includes(op.side)) errs.push(`${where}：foot 必须写明 side（near / far）`);
         if (op.from !== undefined && !(op.from > 0 && op.from < 1)) errs.push(`${where}：from 必须在 (0, 1) 之间`);
+        if (op.keepArms !== undefined && op.keepArms !== true && !PROFS.has(op.keepArms)) errs.push(`${where}：keepArms 只能是 true 或曲线名`);
         if (op.prof && !PROFS.has(op.prof)) errs.push(`${where}：未知强度曲线 ${op.prof}`);
       }
     }

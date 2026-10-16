@@ -406,32 +406,41 @@ const CLAIMS = {
     const inc = (J) => Math.atan2(J.pelvis[1] - J.neck[1], J.pelvis[0] - J.neck[0]) * 180 / Math.PI;
     const ang = (J) => { const t = J.neck.map((v, i) => v - J.pelvis[i]), a = J.wristN.map((v, i) => v - J.shoulderN[i]); return Math.acos(t.reduce((s, x, i) => s + x * a[i], 0) / Math.hypot(...t) / Math.hypot(...a)) * 180 / Math.PI; };
     const m = mistakeMetrics(d.slug, d.fig, d.mf, 0, 0);
-    near(inc(m.Jg), 30, 1, '正确凳角'); near(inc(m.Jw), 55, 1, '错误凳角');
-    near(ang(m.Jg), 62, 1, '正确手臂与躯干'); near(ang(m.Jw), 39, 1, '错误手臂与躯干');
+    near(inc(m.Jg), 30, 1, '正确凳角'); near(inc(m.Jw), 65, 1, '错误凳角');
+    near(ang(m.Jg), 62, 1, '正确手臂与躯干'); near(ang(m.Jw), 30, 1, '错误手臂与躯干');
+    const along = (J) => { const S = J.neck, H = J.pelvis, v = [H[0] - S[0], H[1] - S[1]], l = Math.hypot(...v); return ((J.wristN[0] - S[0]) * v[0] + (J.wristN[1] - S[1]) * v[1]) / l; };
+    const b = mistakeMetrics(d.slug, d.fig, d.mf, 1, 0);
+    near(along(b.Jw), along(b.Jg), 0.5, '到底时哑铃仍落在胸上段');
   },
   'db-incline-bench-press#1': ({ Jw, Jg }) => {
     const along = (J) => { const S = J.neck, H = J.pelvis, v = [H[0] - S[0], H[1] - S[1]], l = Math.hypot(...v); return ((J.wristN[0] - S[0]) * v[0] + (J.wristN[1] - S[1]) * v[1]) / l; };
     const ua = (J) => { const t = J.pelvis.map((v, i) => v - J.neck[i]), a = J.elbowN.map((v, i) => v - J.shoulderN[i]); return Math.acos(t.reduce((s, x, i) => s + x * a[i], 0) / Math.hypot(...t) / Math.hypot(...a)) * 180 / Math.PI; };
     near(along(Jw), 31, 1, '错误落点'); near(along(Jg), 14, 1, '正确落点');
     near(ua(Jg), 47, 1, '正确上臂与躯干'); near(ua(Jw), 40, 1, '错误上臂与躯干');
+    const fv = (J) => Math.atan2(Math.hypot(J.elbowN[0] - J.wristN[0], J.elbowN[2] - J.wristN[2]), J.elbowN[1] - J.wristN[1]) * 180 / Math.PI;
+    near(fv(Jw), 23, 1, '前臂斜向脚侧');
   },
   'db-shoulder-press#0': ({ Jw, Jg }) => {
     const rec = (J) => Math.atan2(J.pelvis[0] - J.neck[0], J.pelvis[1] - J.neck[1]) * 180 / Math.PI;
     const ang = (J) => { const t = J.neck.map((v, i) => v - J.pelvis[i]), a = J.wristN.map((v, i) => v - J.shoulderN[i]); return Math.acos(t.reduce((s, x, i) => s + x * a[i], 0) / Math.hypot(...t) / Math.hypot(...a)) * 180 / Math.PI; };
-    near(rec(Jg), 7, 1, '正确后仰'); near(rec(Jw), 35, 1, '错误后仰');
-    near(ang(Jg), 26, 1, '正确手臂与躯干'); near(ang(Jw), 43, 1, '错误手臂与躯干');
+    near(rec(Jg), 7, 1, '正确后仰'); near(rec(Jw), 45, 1, '错误后仰');
+    near(ang(Jg), 26, 1, '正确手臂与躯干'); near(ang(Jw), 52, 1, '错误手臂与躯干');
   },
   'db-shoulder-press#1': ({ Jw, Jg }, d) => {
     const ua = (J) => Math.asin((J.elbowN[1] - J.shoulderN[1]) / 50) * 180 / Math.PI;
-    near(Jw.wristN[1] - Jg.wristN[1], 12, 0.3, '多下放');
-    assert.ok(Math.abs(Jw.wristN[1] - Jw.shoulderN[1]) < 6, '几乎落到肩的高度');
-    near(ua(Jw), 42, 1, '错误上臂低于水平'); near(ua(Jg), 27, 1, '正确上臂低于水平');
+    near(Jw.wristN[1] - Jg.wristN[1], 22, 0.3, '多下放');
+    assert.ok(Jw.wristN[1] > Jw.shoulderN[1] + 3, '落到肩以下');
+    assert.ok(Jg.wristN[1] < Jg.shoulderN[1], '灰影停在比肩高一点');
+    near(ua(Jw), 63, 1, '错误上臂低于水平'); near(ua(Jg), 27, 1, '正确上臂低于水平');
+    const fv = (J) => Math.atan2(Math.hypot(J.elbowN[0] - J.wristN[0], J.elbowN[2] - J.wristN[2]), J.elbowN[1] - J.wristN[1]) * 180 / Math.PI;
+    assert.ok(fv(Jw) < 3, '前臂仍竖直');
     assert.equal(d.mf.tempo, 'bounceA');
   },
   'db-lateral-raise#0': (_, d) => {
     const tp = (J) => Math.atan2(J.neck[0] - J.pelvis[0], J.pelvis[1] - J.neck[1]) * 180 / Math.PI;
-    const a = mistakeMetrics(d.slug, d.fig, d.mf, 0, 0), b = mistakeMetrics(d.slug, d.fig, d.mf, 0.5, 0);
+    const a = mistakeMetrics(d.slug, d.fig, d.mf, 0, 0), b = mistakeMetrics(d.slug, d.fig, d.mf, 0.56, 0), c = mistakeMetrics(d.slug, d.fig, d.mf, 0.56, 1);
     near(tp(a.Jw), 10, 0.5, '起始前弯'); near(tp(b.Jw), -11, 0.5, '起铃后甩'); near(tp(b.Jg), 0, 0.3, '灰影不动');
+    assert.ok(tp(c.Jw) > 0, '下放时不后仰（后甩只在起铃）');
   },
   'db-lateral-raise#1': ({ Jw, Jg }) => {
     const el = (J) => Math.atan2(J.shoulderN[1] - J.wristN[1], Math.abs(J.wristN[2] - J.shoulderN[2])) * 180 / Math.PI;

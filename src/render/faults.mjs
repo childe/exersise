@@ -82,15 +82,25 @@ export function faultPose2D(p, fault, u, half) {
     switch (op.op) {
       case 'trunk': {
         const c = q.hip, f = (x) => fltRot(x, c, op.deg * w);
-        const S0 = q.shoulder;
+        const S0 = q.shoulder, pre = { ...q, load: q.load && { ...q.load } };
         for (const k of FLT_UPPER) if (q[k]) q[k] = f(q[k]);
-        // keepArms：手臂保持世界方向（仍朝正上方推），负荷只随肩平移，不跟着躯干转
+        const moveLoad = op.load !== false && fltLoadUpper(q);
+        if (moveLoad) fltMoveLoad(q, f);
+        // keepArms：手臂保持世界方向（仍朝正上方推），负荷只随肩平移，不跟着躯干转。
+        // 写曲线名（如 '1-u'）时按强度在「跟着躯干转」与「保持世界方向」之间混合：
+        // 上斜凳调陡后，底部哑铃仍落在胸上段（跟躯干走），只有推到顶的方向是竖直的（世界方向）
         if (op.keepArms) {
+          const k = op.keepArms === true ? 1 : faultWeight(op.keepArms, u, half);
           const dS = [q.shoulder[0] - S0[0], q.shoulder[1] - S0[1]];
-          for (const k of FLT_ARM) if (p[k]) q[k] = fltAdd(p[k], dS);
-          if (q.load) fltMoveLoad(q, (x) => fltAdd(x, dS));
-        } else if (op.load !== false && fltLoadUpper(q)) fltMoveLoad(q, f);
+          const mix = (a, b) => [a[0] + (b[0] - a[0]) * k, a[1] + (b[1] - a[1]) * k];
+          for (const kk of FLT_ARM) if (pre[kk]) q[kk] = mix(q[kk], fltAdd(pre[kk], dS));
+          if (moveLoad && pre.load) {
+            q.load = { ...q.load, at: mix(q.load.at, fltAdd(pre.load.at, dS)) };
+            if (pre.load.at2) q.load.at2 = mix(q.load.at2, fltAdd(pre.load.at2, dS));
+          }
+        }
         // bench: true —— 上斜凳的靠背跟着躯干一起转（凳面角度调错这类错误）
+        if (op.bench && !q.benchIncline) throw new Error('trunk 的 bench 选项只适用于上斜凳（benchIncline）；平凳与坐姿靠背不随躯干转 / 已由 orbit 按躯干生成');
         if (op.bench && q.benchIncline) {
           const B = q.benchIncline, a = op.deg * w * FLT_RAD;
           q.benchIncline = { ...B, from: f(B.from), to: f(B.to), n: [B.n[0] * Math.cos(a) - B.n[1] * Math.sin(a), B.n[0] * Math.sin(a) + B.n[1] * Math.cos(a)] };
@@ -248,9 +258,10 @@ function fltRot3(q, c, k, deg) {
  * 3D 变换（作用在 orbitLift 的关节表上，就地修改）。
  *   valgus {px}        膝内扣：膝绕「髋—踝」轴往中线转，膝的 z 往中线收 px（骨长不变）
  *   lateral {deg}      上半身绕骨盆侧倾（绕前后轴转）。正值倒向近侧（+z）
- *   pitch {deg}        上半身绕骨盆前后摆（绕左右轴转）
+ *   pitch {deg}        上半身绕骨盆前后摆（绕左右轴 +z 转）。正值往 +x 倒：人朝 +x 时是前屈，朝 −x 时符号相反
  *   twist {deg}        上半身绕竖直轴旋转
- *   arm3 {deg, side}   一侧手臂绕该侧肩在矢状面内转（两手不同步）
+ *   arm3 {deg, side, axis}  一侧（或 both）手臂绕肩转：axis 'z'（默认）在矢状面内、'x' 在冠状面内（两侧镜像）
+ *   hand3 {dx, dy, dz, side, foreVertical}  手在 3D 里挪开，肘按真骨长重解；foreVertical 时肘在手正下方
  *   spine {bend, at}   脊柱弯曲：只记下来，由 orbitScene 把躯干线画成弧。正值 = 屈（往背侧拱），负值 = 伸（往前塌）
  */
 export function faultJoints3D(J, fault, u, half) {
@@ -347,11 +358,13 @@ export function faultPhase(tempo, ph) {
     return { u: 1 - ease((ph - 0.4) / 0.6), half: 1 };
   }
   if (tempo === 'bounceA') {
-    // 弹震发生在起始帧那一端（坐姿推举的底部就是起始帧）：推起正常，下放时一下掉到底、弹一下
-    if (ph < 0.5) return { u: ease(ph * 2), half: 0 };
-    if (ph < 0.72) { const t = (ph - 0.5) / 0.22; return { u: 1 - t * t, half: 1 }; }
-    if (ph < 0.84) { const t = (ph - 0.72) / 0.12; return { u: 0.2 * Math.sin(Math.PI * t), half: 1 }; }
-    return { u: 0, half: 1 };
+    // 弹震发生在起始帧那一端（坐姿推举的底部就是起始帧）：一开始就借着上一次砸到底的反弹弹起、直接推上去，
+    // 到顶后先慢慢放、再一下掉到底——掉到底（ph→1）接上下一次的弹起（ph=0），中间不停
+    if (ph < 0.12) return { u: 0.18 * Math.sin(Math.PI * ph / 0.12), half: 0 };
+    if (ph < 0.6) { const t = (ph - 0.12) / 0.48; return { u: ease(t), half: 0 }; }
+    if (ph < 0.82) { const t = (ph - 0.6) / 0.22; return { u: 1 - 0.15 * ease(t), half: 1 }; }
+    const t = (ph - 0.82) / 0.18;
+    return { u: 0.85 * (1 - t * t), half: 1 };
   }
   if (tempo === 'drop') {
     if (ph < 0.75) return { u: ease(ph / 0.75), half: 0 };
