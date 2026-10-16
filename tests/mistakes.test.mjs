@@ -437,6 +437,18 @@ const CLAIMS = {
     near(el(Jw), 15, 1, '错误高于水平'); near(el(Jg), -15, 1, '灰影低于水平');
     near(Jg.shoulderN[1] - Jw.shoulderN[1], 6, 0.2, '耸肩');
   },
+  'barbell-row#0': ({ Jw, Jg, pw, pg }) => {
+    const tf = (J) => Math.atan2(J.pelvis[1] - J.neck[1], J.neck[0] - J.pelvis[0]) * 180 / Math.PI;
+    near(tf(Jg), 42, 0.5, '正确躯干离水平'); near(tf(Jw), 56, 0.5, '错误躯干离水平');
+    near(pg.load.at[1] - pw.load.at[1], 10, 0.5, '杠被荡高');
+  },
+  'barbell-row#1': ({ Jw, Jg }, d) => {
+    const tf = (J) => Math.atan2(J.pelvis[1] - J.neck[1], J.neck[0] - J.pelvis[0]) * 180 / Math.PI;
+    near(tf(Jg), 42, 0.5, '正确躯干'); near(tf(Jw), 58, 0.5, '错误躯干');
+    const a = mistakeMetrics(d.slug, d.fig, d.mf, 0, 0), b = mistakeMetrics(d.slug, d.fig, d.mf, 1, 0);
+    near(a.right.hipToLoadX, 60, 1, '起始正确力臂'); near(a.wrong.hipToLoadX, 42, 1, '起始错误力臂');
+    near(b.right.hipToLoadX, 29, 1, '顶点正确力臂'); near(b.wrong.hipToLoadX, 11, 1, '顶点错误力臂');
+  },
 };
 
 test('错误只错在那一处：不许顺带画出别的错误', () => {
