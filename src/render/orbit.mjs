@@ -556,7 +556,9 @@ function equipment(S, slug, p, J, lt, P = ORBIT_PARAMS[slug] ?? {}) {
     // 手握在哑铃把手中间，所以哑铃心就在手上（2D 里偏开 8px 只是为了不盖住手）
     for (const tag of hands) {
       const axis = P.db === 'fore' ? neutralGripAxis(J['elbow' + tag], J['wrist' + tag]) : P.db ?? 'x';
+      const n0 = S.length;
       dumbbell(S, J['wrist' + tag], axis);
+      for (let i = n0; i < S.length; i++) S[i].side = tag;   // 错误示范可以只标一侧的哑铃（load.F）
     }
     return;
   }

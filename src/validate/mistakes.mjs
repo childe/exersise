@@ -40,7 +40,7 @@ export function validateMistakeFigures(mf, exercises, poseFigures, { requireAll 
       for (const h of m.hl ?? []) {
         const [ps, oi] = h.split('@'), [part, sd] = ps.split('.');
         if (sd !== undefined && !['N', 'F'].includes(sd)) errs.push(`${where}：部位侧别只能是 .N / .F，见到 ${h}`);
-        if (sd !== undefined && !['thigh', 'shin', 'foot', 'upperarm', 'forearm'].includes(part)) errs.push(`${where}：${part} 没有左右之分，不能写 ${h}`);
+        if (sd !== undefined && !['thigh', 'shin', 'foot', 'upperarm', 'forearm', 'load'].includes(part)) errs.push(`${where}：${part} 没有左右之分，不能写 ${h}`);
         if (oi !== undefined && (/^\d+$/.test(oi) ? !m.ops?.[+oi] : !PROFS.has(oi))) errs.push(`${where}：${h} 引用的变换 / 曲线不存在`);
       }
       for (const h of m.hl ?? []) if (!MISTAKE_PARTS.has(h.split('@')[0].replace(/\.[NF]$/, ''))) errs.push(`${where}：未知部位 ${h}`);

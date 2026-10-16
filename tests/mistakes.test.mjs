@@ -394,7 +394,9 @@ const CLAIMS = {
   'db-bench-press#0': ({ Jw, Jg, pw }) => {
     const ua = (J) => Math.asin((J.elbowN[1] - J.shoulderN[1]) / 50) * 180 / Math.PI;
     near(Jw.wristN[1] - Jg.wristN[1], 14, 0.3, '哑铃多下放');
-    near(ua(Jg), 36, 1, '正确上臂低于肩'); near(ua(Jw), 55, 1, '错误上臂低于肩');
+    near(ua(Jg), 36, 1, '正确上臂低于肩'); near(ua(Jw), 59, 1, '错误上臂低于肩');
+    const fv = (J) => Math.atan2(Math.hypot(J.elbowN[0] - J.wristN[0], J.elbowN[2] - J.wristN[2]), J.elbowN[1] - J.wristN[1]) * 180 / Math.PI;
+    assert.ok(fv(Jw) < 3, `前臂仍竖直 ${fv(Jw).toFixed(1)}°`);
     assert.ok(pw.bench[1] - Jw.wristN[1] < 3, '几乎落到凳面高度');
   },
   'db-bench-press#1': ({ Jw, Jg }) => {
@@ -481,7 +483,7 @@ test('错误只错在那一处：不许顺带画出别的错误', () => {
         assert.ok(lean <= Math.max(45, lg + 1), `${at}: 小腿前倾 ${lean.toFixed(0)}°`);
       }
       // 肘角：错误动作的手臂不能比正确动作多弯 / 多伸 5° 以上（硬拉「髋高」曾顺带画成弯臂拉）
-      if (!allow.has('elbow') && !(d.mf.params) && !(d.mf.ops ?? []).some((op) => ['arm', 'arm3', 'load'].includes(op.op))) {
+      if (!allow.has('elbow') && !(d.mf.params) && !(d.mf.ops ?? []).some((op) => ['arm', 'arm3', 'load', 'hand3'].includes(op.op))) {
         const ea = (J) => { const S = J.shoulderN, E = J.elbowN, H = J.wristN; return Math.acos(((S[0] - E[0]) * (H[0] - E[0]) + (S[1] - E[1]) * (H[1] - E[1]) + (S[2] - E[2]) * (H[2] - E[2])) / (L3(S, E) * L3(H, E))) * 180 / Math.PI; };
         assert.ok(Math.abs(ea(W.J) - ea(G.J)) <= 5, `${at}: 肘角 ${ea(W.J).toFixed(0)}° 对灰影 ${ea(G.J).toFixed(0)}°`);
       }
@@ -508,6 +510,16 @@ test('站姿错误示范站得住：全身重心落在支撑面上', () => {
   for (const d of drawn) {
     const r = mistakeBalance(d.slug, d.fig, d.mf);
     if (r) assert.ok(r.ok, `${d.slug}#${d.mf.mistake}: 重心出了支撑面 ${JSON.stringify(r.worst)}`);
+  }
+});
+
+test('只动一侧时，另一侧不标红', () => {
+  // 两手不同步：近侧那只是对的，标红了读者就分不出哪只落后
+  for (const d of drawn) {
+    const sides = new Set((d.mf.hl ?? []).map((h) => h.split('@')[0].split('.')[1]).filter(Boolean));
+    if (sides.size !== 1) continue;
+    const other = sides.has('F') ? 'N' : 'F';
+    for (const { W } of framesOf(d)) assert.ok(!W.S.some((it) => it.side === other && it.cls.includes('sk-fault')), `${d.slug}#${d.mf.mistake}: ${other} 侧被标红`);
   }
 });
 

@@ -279,9 +279,20 @@ export function faultJoints3D(J, fault, u, half) {
       for (const key of FLT_UPPER3) if (J[key]) J[key] = fltRot3(J[key], c, k, op.deg * w);
     } else if (op.op === 'hand3') {
       // 一只手在 3D 里挪开（两手不同步：远侧哑铃落在后面）；肘按真骨长重解，pole 取原来的肘方向
-      for (const t of op.side === 'near' ? ['N'] : ['F']) {
-        const S = J['shoulder' + t], E0 = J['elbow' + t], H0 = J['wrist' + t];
-        const H = [H0[0] + (op.dx ?? 0) * w, H0[1] + (op.dy ?? 0) * w, H0[2] + (op.dz ?? 0) * w];
+      // side 'both'：两只手一起挪，dz 按侧镜像（正值 = 往外）
+      for (const t of op.side === 'near' ? ['N'] : op.side === 'both' ? ['N', 'F'] : ['F']) {
+        const S = J['shoulder' + t], E0 = J['elbow' + t], H0 = J['wrist' + t], zs = op.side === 'both' && t === 'F' ? -1 : 1;
+        const H = [H0[0] + (op.dx ?? 0) * w, H0[1] + (op.dy ?? 0) * w, H0[2] + zs * (op.dz ?? 0) * w];
+        if (op.foreVertical) {
+          // 前臂保持竖直（卧推类到底的判据）：肘就在手正下方一个前臂长，手沿水平方向挪到上臂够得着的位置
+          const l1 = Math.hypot(E0[0] - S[0], E0[1] - S[1], E0[2] - S[2]), l2 = Math.hypot(H0[0] - E0[0], H0[1] - E0[1], H0[2] - E0[2]);
+          const ey = H[1] + l2, r2 = l1 * l1 - (ey - S[1]) ** 2;
+          if (r2 < 0) { J._faultClamped = true; continue; }
+          const hx = H[0] - S[0], hz = H[2] - S[2], hl = Math.hypot(hx, hz) || 1, r = Math.sqrt(r2);
+          H[0] = S[0] + hx / hl * r; H[2] = S[2] + hz / hl * r;
+          J['wrist' + t] = H; J['elbow' + t] = [H[0], ey, H[2]];
+          continue;
+        }
         const l1 = Math.hypot(E0[0] - S[0], E0[1] - S[1], E0[2] - S[2]), l2 = Math.hypot(H0[0] - E0[0], H0[1] - E0[1], H0[2] - E0[2]);
         const v = [H[0] - S[0], H[1] - S[1], H[2] - S[2]], d = Math.hypot(...v);
         if (d > l1 + l2 - 0.01) { J._faultClamped = true; continue; }
