@@ -281,6 +281,20 @@ const CLAIMS = {
     near(pw.hip[0] - pg.hip[0], 12, 0.5, '骨盆前移');
     near(r.kneeAngle, 139, 1, '正确前膝'); near(w.kneeAngle, 132, 1, '错误前膝');
   },
+  'conventional-deadlift#0': ({ wrong: w, right: r, pw, pg, Jw }) => {
+    near(pg.hip[1] - pw.hip[1], 13, 0.5, '髋抬高');
+    near(pw.knee[1] - pw.hip[1], 27, 1, '错误髋高于膝'); near(pg.knee[1] - pg.hip[1], 14, 1, '正确髋高于膝');
+    near(r.kneeAngle, 98, 1, '正确膝角'); near(w.kneeAngle, 122, 1, '错误膝角');
+    near(90 - r.trunkFromVertical, 34, 1, '正确躯干离水平'); near(90 - w.trunkFromVertical, 24, 1, '错误躯干离水平');
+    near(Jw.spine.bend, 9, 0.1, '背拱起');
+    near(r.hipToLoadX, 62, 1, '正确力臂'); near(w.hipToLoadX, 69, 1, '错误力臂');
+  },
+  'conventional-deadlift#1': ({ wrong: w, right: r, pw, pg }) => {
+    near(w.load[0] - r.load[0], 14, 0.3, '杠前飘');
+    near(pg.load.at[0] - pg.knee[0], 9, 1, '正确杠到小腿'); near(pw.load.at[0] - pw.knee[0], 23, 1, '错误杠到小腿');
+    near(r.hipToLoadX, 47, 1, '正确力臂'); near(w.hipToLoadX, 61, 1, '错误力臂');
+    near((w.hipToLoadX / r.hipToLoadX - 1) * 100, 30, 2, '力臂增幅 %');
+  },
 };
 
 test('「为什么错」里的数字是图上量得到的', () => {
