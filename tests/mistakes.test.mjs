@@ -426,6 +426,17 @@ const CLAIMS = {
     near(ua(Jw), 42, 1, '错误上臂低于水平'); near(ua(Jg), 27, 1, '正确上臂低于水平');
     assert.equal(d.mf.tempo, 'bounceA');
   },
+  'db-lateral-raise#0': (_, d) => {
+    const tp = (J) => Math.atan2(J.neck[0] - J.pelvis[0], J.pelvis[1] - J.neck[1]) * 180 / Math.PI;
+    const a = mistakeMetrics(d.slug, d.fig, d.mf, 0, 0), b = mistakeMetrics(d.slug, d.fig, d.mf, 0.5, 0);
+    near(tp(a.Jw), 10, 0.5, '起始前弯'); near(tp(b.Jw), -11, 0.5, '起铃后甩'); near(tp(b.Jg), 0, 0.3, '灰影不动');
+  },
+  'db-lateral-raise#1': ({ Jw, Jg }) => {
+    const el = (J) => Math.atan2(J.shoulderN[1] - J.wristN[1], Math.abs(J.wristN[2] - J.shoulderN[2])) * 180 / Math.PI;
+    near(Jw.shoulderN[1] - Jw.wristN[1], 22, 1, '手高于肩');
+    near(el(Jw), 15, 1, '错误高于水平'); near(el(Jg), -15, 1, '灰影低于水平');
+    near(Jg.shoulderN[1] - Jw.shoulderN[1], 6, 0.2, '耸肩');
+  },
 };
 
 test('错误只错在那一处：不许顺带画出别的错误', () => {

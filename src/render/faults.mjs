@@ -232,7 +232,7 @@ export function faultPose2D(p, fault, u, half) {
   return q;
 }
 
-const FLT_3D = new Set(['valgus', 'lateral', 'twist', 'arm3', 'spine', 'hand3']);
+const FLT_3D = new Set(['valgus', 'lateral', 'twist', 'pitch', 'arm3', 'spine', 'hand3']);
 const FLT_UPPER3 = ['head', 'neck', 'back', 'shoulderN', 'shoulderF', 'elbowN', 'elbowF', 'wristN', 'wristF'];
 
 /** 绕过 c 的轴（单位向量 k）转 deg°：Rodrigues。 */
@@ -248,6 +248,7 @@ function fltRot3(q, c, k, deg) {
  * 3D 变换（作用在 orbitLift 的关节表上，就地修改）。
  *   valgus {px}        膝内扣：膝绕「髋—踝」轴往中线转，膝的 z 往中线收 px（骨长不变）
  *   lateral {deg}      上半身绕骨盆侧倾（绕前后轴转）。正值倒向近侧（+z）
+ *   pitch {deg}        上半身绕骨盆前后摆（绕左右轴转）
  *   twist {deg}        上半身绕竖直轴旋转
  *   arm3 {deg, side}   一侧手臂绕该侧肩在矢状面内转（两手不同步）
  *   spine {bend, at}   脊柱弯曲：只记下来，由 orbitScene 把躯干线画成弧。正值 = 屈（往背侧拱），负值 = 伸（往前塌）
@@ -272,8 +273,9 @@ export function faultJoints3D(J, fault, u, half) {
         for (let i = 0; i < 40; i++) { const m = (lo + hi) / 2; if (zAt(sgn * m) > target) lo = m; else hi = m; }
         J['knee' + t] = fltRot3(K, H, k, sgn * lo);
       }
-    } else if (op.op === 'lateral' || op.op === 'twist') {
-      const c = J.pelvis, k = op.op === 'lateral' ? [1, 0, 0] : [0, 1, 0];
+    } else if (op.op === 'lateral' || op.op === 'twist' || op.op === 'pitch') {
+      // lateral 绕前后轴（侧倾）、twist 绕竖直轴（旋转）、pitch 绕左右轴（前后摆：正视动作的躯干借力）
+      const c = J.pelvis, k = op.op === 'lateral' ? [1, 0, 0] : op.op === 'twist' ? [0, 1, 0] : [0, 0, 1];
       for (const key of FLT_UPPER3) if (J[key]) J[key] = fltRot3(J[key], c, k, op.deg * w);
     } else if (op.op === 'hand3') {
       // 一只手在 3D 里挪开（两手不同步：远侧哑铃落在后面）；肘按真骨长重解，pole 取原来的肘方向
@@ -290,9 +292,10 @@ export function faultJoints3D(J, fault, u, half) {
         J['elbow' + t] = S.map((x, i) => x + u3[i] * a + n[i] * h);
       }
     } else if (op.op === 'arm3') {
+      // axis 'z'（默认）：在矢状面内转；'x'：在冠状面内转（侧平举抬得更高），两侧镜像
       for (const t of op.side === 'near' ? ['N'] : op.side === 'both' ? ['N', 'F'] : ['F']) {
-        const S = J['shoulder' + t];
-        for (const key of ['elbow' + t, 'wrist' + t]) J[key] = fltRot3(J[key], S, [0, 0, 1], op.deg * w);
+        const S = J['shoulder' + t], k = op.axis === 'x' ? [1, 0, 0] : [0, 0, 1], sg = op.axis === 'x' && t === 'F' ? -1 : 1;
+        for (const key of ['elbow' + t, 'wrist' + t]) J[key] = fltRot3(J[key], S, k, sg * op.deg * w);
       }
     }
   }
