@@ -139,6 +139,8 @@ import('./src/render/skeleton.mjs').then(async (m) => {
 
 站姿错误示范还要站得住：`node tools/mistake-balance.mjs <slug>` 估算全身（含负荷）重心是否落在支撑面上（Winter 分段质量；`tests/mistakes.test.mjs` 有同样的断言）。
 
+「只错在那一处」有通用断言（`tests/mistakes.test.mjs`「错误只错在那一处」）：膝不许跑到踝后、小腿前倾不超过 45°、蹲类不许丢深度、垂在身前的杠不许穿到腿后——属于这条错误本身的副作用写在 `allow` 里。断言之外的副作用仍要你找。
+
 另查 `none` 条目：理由是否成立（真的没有几何差别，而不是「难画」）。
 
 **你能看图**：`node tools/preview-mistake.mjs <slug> <序号> <输出.png>` 把一张错误示范按 6 个相位 × 3 个视角铺成拼图，

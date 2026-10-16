@@ -22,7 +22,7 @@
 import { GROUND, MIDFOOT, POSES, drawnArm, BENCH_GAP } from './skeleton.mjs';
 import { MUSCLE_SEG } from './muscle-segments.mjs';
 import { facing, FACE_GEOMETRY } from './facing.mjs';
-import { faultPose2D, faultJoints3D, faultU, faultWeight } from './faults.mjs';
+import { faultPose2D, faultJoints3D, faultU, opWeight } from './faults.mjs';
 
 export const ORBIT_YAW = 30;                 // 度：摆幅
 export const ORBIT_PERIOD = 8.4;             // 秒：一次完整摆动 = 两次起落
@@ -158,7 +158,19 @@ const ORB_BASE_YAW = { side: 0, front: -90, 'reverse-fly': 60 };
 // 错误示范可以换基准视角（fault.yaw）：膝内扣、躯干侧倾这类冠状面的错误，侧视两边摆 30° 看不出来。
 export const orbitBaseYaw = (slug, fault) => fault?.yaw ?? ORB_BASE_YAW[ORBIT_PARAMS[slug]?.view ?? 'side'];
 /** 本帧用的 3D 参数：错误示范可以覆盖其中几项（例如卧推肘全外展：out、grip）。 */
-const orbParams = (slug, fault) => (fault?.params ? { ...(ORBIT_PARAMS[slug] ?? {}), ...fault.params } : ORBIT_PARAMS[slug] ?? {});
+// fault.pprof：参数也可以随动作进程渐变（肘在下蹲过程中慢慢掉下来），数值与数组按强度在正确值与错误值之间插值
+const orbParams = (slug, fault, u = 0) => {
+  const base = ORBIT_PARAMS[slug] ?? {};
+  if (!fault?.params) return base;
+  if (!fault.pprof) return { ...base, ...fault.params };
+  const w = opWeight({ prof: fault.pprof }, u, fault._half ?? 0), P = { ...base };
+  for (const [k, v] of Object.entries(fault.params)) {
+    const b = base[k];
+    P[k] = typeof v === 'number' && typeof b === 'number' ? b + (v - b) * w
+      : Array.isArray(v) && Array.isArray(b) ? v.map((x, i) => b[i] + (x - b[i]) * w) : (w >= 0.5 ? v : b);
+  }
+  return P;
+};
 
 // ── 向量 ──────────────────────────────────────────────
 const o3sub = (a, b) => [a[0] - b[0], a[1] - b[1], a[2] - b[2]];
@@ -398,7 +410,7 @@ function liftReverseFly(u, P) {
 }
 
 export function orbitLift(slug, names, p, u = 0, lt, fault) {
-  const P = orbParams(slug, fault);
+  const P = orbParams(slug, fault, u);
   const nm = orbNames(names);
   if (P.view === 'front') return liftFront(slug, nm, p, u, P);
   if (P.view === 'reverse-fly') return liftReverseFly(u, P);
@@ -605,10 +617,10 @@ export function orbitScene(slug, names, p0, { u = 0, prime = [], plumb = false, 
   const nm = orbNames(names), name = nm.a;
   // 错误示范：2D 变换先作用在姿态上（器械跟着身体走），抬成 3D 后再做只有 3D 里才有的变换
   const p = fault ? faultPose2D(p0, fault, u, half) : p0;
-  const J = orbitLift(slug, nm, p, u, lt, fault);
+  const J = orbitLift(slug, nm, p, u, lt, fault && { ...fault, _half: half });
   if (fault) faultJoints3D(J, fault, u, half);
   const S = [], under = [], over = [];
-  const P = orbParams(slug, fault);
+  const P = orbParams(slug, fault && { ...fault, _half: half }, u);
   const front = P.view === 'front';
   let f;
   if (front || P.view === 'reverse-fly') f = [1, 0];
@@ -701,10 +713,13 @@ export function orbitScene(slug, names, p0, { u = 0, prime = [], plumb = false, 
   // 出错部位标红：只给错误示范用（它不标主动肌，红色在这里只有「错在这」一个意思）
   // 变换还没起作用的那几帧（「起身时」的错误在下蹲段）不标：红色只出现在真的错了的时候
   // 参数覆盖、换姿态、半程这类错误全程都在，全程标红
-  const on = !fault?.ops?.length || fault.params || fault.rom || fault.ops.some((op) => faultWeight(op.prof, u, half) >= 0.2);
+  const on = (!fault?.ops?.length && !fault?.pprof) || (fault.params && !fault.pprof) || fault.rom
+    || (fault.ops ?? []).some((op) => opWeight(op, u, half) >= 0.2) || (fault.pprof && opWeight({ prof: fault.pprof }, u, half) >= 0.2);
   // hl 里的「shin」两侧都标，「shin.N」只标近侧（分腿蹲只错前腿）
-  const hit = (it) => it.part && fault.hl.some((h) => h === it.part || h === `${it.part}.${it.side}`);
-  if (on && fault?.hl?.length) for (const it of S) if (hit(it)) it.cls += ' sk-fault';
+  // 「trunk@0」：这一部位只跟第 0 个变换的强度标红（参数类错误全程在，而躯干前倾是随下蹲才出现的）
+  const hit = (it, h) => { const [ps] = h.split('@'); return it.part && (ps === it.part || ps === `${it.part}.${it.side}`); };
+  const lit = (h) => { const m = h.split('@')[1]; return m === undefined ? on : opWeight(fault.ops[+m], u, half) >= 0.2; };
+  if (fault?.hl?.length) for (const it of S) if (fault.hl.some((h) => lit(h) && hit(it, h))) it.cls += ' sk-fault';
   return { J, S, under, over, p };
 }
 

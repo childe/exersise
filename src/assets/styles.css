@@ -251,3 +251,5 @@ figure.anat.tall { max-width: 720px; margin-left: auto; margin-right: auto; }
 .sk-ghost .sk-trunk { stroke-width: 7; }
 .sk-ghost .sk-limb { stroke-width: 4; }
 .sk-ghost .sk-torso-plane, .sk-ghost .sk-bench, .sk-ghost .sk-eye { display: none; }
+/* 远侧肢体本来半透明（sk-far），标红后提一点不透明度：「后腿蹬凳」这类错误就错在远侧 */
+.sk-far.sk-fault { opacity: .7; }

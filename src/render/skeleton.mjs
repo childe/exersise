@@ -1,6 +1,6 @@
 // 出平面手臂的重建与主动肌标注。两者都只影响画法，不改姿态数据本身。
 import { ORBIT_FIGS, orbitFrame, renderOrbit, ORBIT_STATIC } from './orbit.mjs';
-import { faultWeight, faultU } from './faults.mjs';
+import { opWeight, faultU } from './faults.mjs';
 import { rebuildArmFor, OUT_OF_PLANE_ARM, ARM_OVERRIDES } from './arm.mjs';
 import { MUSCLE_SEG } from './muscle-segments.mjs';
 import { renderFace, facing, PRONE_POSES, FACE_GEOMETRY } from './facing.mjs';
@@ -1461,7 +1461,7 @@ export function mistakeStill(mf) {
   let best = { u: 1, half: 0 }, bw = 0;
   for (const half of [0, 1]) for (let i = 0; i <= 24; i++) {
     const u = i / 24;
-    const w = (mf.ops ?? []).reduce((s, op) => s + faultWeight(op.prof, u, half), 0);
+    const w = (mf.ops ?? []).reduce((s, op) => s + opWeight(op, u, half), 0) + (mf.pprof ? opWeight({ prof: mf.pprof }, u, half) : 0);
     if (w > bw + 1e-9) { bw = w; best = { u, half }; }
   }
   return best;
@@ -1473,7 +1473,7 @@ export function mistakeSetup(fig, mf) {
   const ga = fig.start, gb = fig.end ?? fig.start;
   const wa = mf.start ?? ga, wb = mf.end ?? (mf.start ? mf.start : gb);
   const fault = { ops: mf.ops ?? [], hl: mf.hl ?? [], ...(mf.params ? { params: mf.params } : {}),
-    ...(mf.rom ? { rom: mf.rom } : {}), ...(mf.yaw !== undefined ? { yaw: mf.yaw } : {}) };
+    ...(mf.rom ? { rom: mf.rom } : {}), ...(mf.yaw !== undefined ? { yaw: mf.yaw } : {}), ...(mf.pprof ? { pprof: mf.pprof } : {}) };
   return { wa, wb, ga, gb, A: strip(POSES[wa]), B: strip(POSES[wb]), GA: strip(POSES[ga]), GB: strip(POSES[gb]),
     // 换了基准视角（正面看膝内扣）时不画杠线：足中线是侧视的判据，正面看它只是一条横在脚下的线
     plumb: fig.plumb !== false && !fig.no_load && mf.yaw === undefined, iopts: { plumb: fig.plumb, handPath: !!fig.hand_path }, fault,

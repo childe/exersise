@@ -6,10 +6,12 @@
 import { POSES } from '../render/skeleton.mjs';
 
 const OPS = {
-  trunk: ['deg'], arm: ['deg'], hip: ['dx', 'dy'], heel: ['deg'], shrug: ['px'], load: ['dx', 'dy'], shift: ['dx', 'dy'], foot: ['dx'],
+  trunk: ['deg'], arm: ['deg'], hip: ['dx', 'dy'], heel: ['deg'], shrug: ['px'], load: ['dx', 'dy'], shift: ['dx', 'dy'], foot: ['dx'], regrip: [], chain: ['deg'],
   valgus: ['px'], lateral: ['deg'], twist: ['deg'], arm3: ['deg'], spine: ['bend'],
 };
-const PROFS = new Set(['u', 'u2', '1-u', 'mid', 'up', 'down', 'const']);
+const PROFS = new Set(['u', 'u2', 'late', 'early', '1-u', 'mid', 'up', 'down', 'const']);
+// allow：这条错误示范允许出现的「副作用」（断言默认禁止）。depth 蹲浅、kneeBack 膝到踝后、shin 小腿前倾超过 45°
+const ALLOW = new Set(['depth', 'kneeBack', 'shin']);
 export const MISTAKE_PARTS = new Set(['trunk', 'shoulders', 'pelvis', 'head', 'thigh', 'shin', 'foot', 'upperarm', 'forearm', 'load']);
 const TEMPOS = new Set(['bounce', 'drop']);
 
@@ -35,10 +37,18 @@ export function validateMistakeFigures(mf, exercises, poseFigures, { requireAll 
       if (!m.why || m.why.length < 20) errs.push(`${where}：缺少「为什么错」的说明（why）`);
       if (!(m.ops?.length || m.rom || m.tempo || m.start || m.end || m.params)) errs.push(`${where}：没有任何错误变换，画出来与正确动作一样`);
       if (!m.hl?.length && !m.rom && !m.tempo) errs.push(`${where}：没有标出出错部位（hl）`);
-      for (const h of m.hl ?? []) if (!MISTAKE_PARTS.has(h.replace(/\.[NF]$/, ''))) errs.push(`${where}：未知部位 ${h}`);
+      for (const h of m.hl ?? []) {
+        const [ps, oi] = h.split('@'), [part, sd] = ps.split('.');
+        if (sd !== undefined && !['N', 'F'].includes(sd)) errs.push(`${where}：部位侧别只能是 .N / .F，见到 ${h}`);
+        if (sd !== undefined && !['thigh', 'shin', 'foot', 'upperarm', 'forearm'].includes(part)) errs.push(`${where}：${part} 没有左右之分，不能写 ${h}`);
+        if (oi !== undefined && !(m.ops?.[+oi])) errs.push(`${where}：${h} 引用的变换不存在`);
+      }
+      for (const h of m.hl ?? []) if (!MISTAKE_PARTS.has(h.split('@')[0].replace(/\.[NF]$/, ''))) errs.push(`${where}：未知部位 ${h}`);
       for (const k of ['start', 'end']) if (m[k] && !POSES[m[k]]) errs.push(`${where}：姿态 ${m[k]} 不存在`);
       if (m.yaw !== undefined && !(typeof m.yaw === 'number' && Math.abs(m.yaw) <= 120)) errs.push(`${where}：yaw 必须是 ±120 内的角度`);
       if (m.still && !(m.still.u >= 0 && m.still.u <= 1 && [0, 1].includes(m.still.half))) errs.push(`${where}：still 必须是 {u: 0..1, half: 0|1}`);
+      for (const a of m.allow ?? []) if (!ALLOW.has(a)) errs.push(`${where}：未知的 allow ${a}`);
+      if (m.pprof && !PROFS.has(m.pprof)) errs.push(`${where}：未知 pprof ${m.pprof}`);
       if (m.tempo && !TEMPOS.has(m.tempo)) errs.push(`${where}：未知节奏 ${m.tempo}`);
       if (m.rom && !(m.rom.length === 2 && m.rom.every((x) => x >= 0 && x <= 1))) errs.push(`${where}：rom 必须是 [0..1, 0..1]`);
       // 侧倾 / 旋转只转身体；横在两手之间的杠铃不会跟着转，手会离杠
@@ -53,6 +63,7 @@ export function validateMistakeFigures(mf, exercises, poseFigures, { requireAll 
         if (!need) { errs.push(`${where}：未知变换 ${op.op}`); continue; }
         for (const k of need) if (typeof op[k] !== 'number') errs.push(`${where}：变换 ${op.op} 缺数值 ${k}`);
         if (op.op === 'foot' && !['near', 'far'].includes(op.side)) errs.push(`${where}：foot 必须写明 side（near / far）`);
+        if (op.from !== undefined && !(op.from > 0 && op.from < 1)) errs.push(`${where}：from 必须在 (0, 1) 之间`);
         if (op.prof && !PROFS.has(op.prof)) errs.push(`${where}：未知强度曲线 ${op.prof}`);
       }
     }

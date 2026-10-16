@@ -19,6 +19,8 @@ export function faultWeight(prof, u, half) {
   switch (prof ?? 'u') {
     case 'u': return u;                                  // 越接近结束帧越明显
     case 'u2': return u * u;                             // 前半程几乎没有、到底才明显（踮脚跟只在蹲深时出现）
+    case 'late': return u < 0.6 ? 0 : (u - 0.6) / 0.4;         // 进度过六成才开始（先挪重心、再踮脚跟）
+    case 'early': return 1 - (1 - u) ** 2;               // 前半程就基本到位（先把重心送过去）
     case '1-u': return 1 - u;                            // 越接近起始帧越明显
     case 'mid': return Math.sin(Math.PI * u);            // 行程中段最明显
     case 'up': return half === 1 ? Math.sin(Math.PI * u) : 0;      // 只在返回的那一半
@@ -26,6 +28,12 @@ export function faultWeight(prof, u, half) {
     case 'const': return 1;
     default: throw new Error(`未知的强度曲线 ${prof}`);
   }
+}
+
+/** 一个变换在 (u, half) 的强度：op.from 让它晚一点开始（进度过 from 才从 0 爬起）。 */
+export function opWeight(op, u, half) {
+  const v = op.from ? Math.max(0, (u - op.from) / (1 - op.from)) : u;
+  return faultWeight(op.prof, v, half);
 }
 
 const fltRot = (q, c, deg) => {
@@ -69,7 +77,7 @@ export function faultPose2D(p, fault, u, half) {
   if (!fault?.ops?.length) return p;
   let q = { ...p };
   for (const op of fault.ops) {
-    const w = faultWeight(op.prof, u, half);
+    const w = opWeight(op, u, half);
     if (!w) continue;
     switch (op.op) {
       case 'trunk': {
@@ -169,6 +177,36 @@ export function faultPose2D(p, fault, u, half) {
         if (fltLoadUpper(q)) fltMoveLoad(q, (x) => fltAdd(x, d));
         break;
       }
+      case 'chain': {
+        // 绕某个关节转动它以上的整段身体（at: ankle / knee / hip）：小腿立直、髋抬高、肩压到杠前，
+        // 骨长自动保住。负荷默认跟着身体走；load: false 时留在原地（地上的杠），再用 regrip 把手放回去
+        const above = { ankle: ['knee', 'hip', ...FLT_UPPER], knee: ['hip', ...FLT_UPPER], hip: FLT_UPPER }[op.at];
+        if (!above) throw new Error(`chain 的 at 只能是 ankle / knee / hip，见到 ${op.at}`);
+        const c = q[op.at], f = (x) => fltRot(x, c, op.deg * w);
+        for (const k of above) if (q[k]) q[k] = f(q[k]);
+        if (op.at === 'ankle' && q.knee2 && q.ankle2) q.knee2 = fltRot(q.knee2, q.ankle2, op.deg * w);
+        if (op.at === 'knee' && q.knee2) { /* 远侧腿：髋跟着近侧走，远侧膝按骨长重解 */
+          const K = q.knee2, A = q.ankle2, l1 = Math.hypot(K[0] - p.hip[0], K[1] - p.hip[1]), l2 = Math.hypot(A[0] - K[0], A[1] - K[1]);
+          q.knee2 = fltIk(q.hip, A, l1, l2, K);
+        }
+        if (op.load !== false && fltLoadUpper(q)) fltMoveLoad(q, f);
+        break;
+      }
+      case 'regrip': {
+        // 手回到负荷上：躯干带着肩挪了而杠留在原地（load: false）时，手按原来的握点偏移放回杠上，肘按两骨长重解
+        if (!q.load || !p.load) break;
+        for (const s of ['', '2']) {
+          const W0 = p['wrist' + s], E0 = p['elbow' + s], S = q['shoulder' + s] ?? q.shoulder, S0 = p['shoulder' + s] ?? p.shoulder;
+          if (!W0 || !E0) continue;
+          const at = s && q.load.at2 ? q.load.at2 : q.load.at, at0 = s && p.load.at2 ? p.load.at2 : p.load.at;
+          const W = [at[0] + W0[0] - at0[0], at[1] + W0[1] - at0[1]];
+          const l1 = Math.hypot(E0[0] - S0[0], E0[1] - S0[1]), l2 = Math.hypot(W0[0] - E0[0], W0[1] - E0[1]);
+          if (Math.hypot(W[0] - S[0], W[1] - S[1]) > l1 + l2 - 0.01) q._faultClamped = true;
+          q['wrist' + s] = W;
+          q['elbow' + s] = fltIk(S, W, l1, l2, q['elbow' + s] ?? E0);
+        }
+        break;
+      }
       case 'load': {
         const d = [op.dx * w, op.dy * w];
         fltMoveLoad(q, (x) => fltAdd(x, d));
@@ -206,7 +244,7 @@ export function faultJoints3D(J, fault, u, half) {
   if (!fault?.ops?.length) return J;
   for (const op of fault.ops) {
     if (!FLT_3D.has(op.op)) continue;
-    const w = faultWeight(op.prof, u, half);
+    const w = opWeight(op, u, half);
     if (op.op === 'spine') { J.spine = { bend: (J.spine?.bend ?? 0) + op.bend * w, at: op.at ?? 0.5 }; continue; }
     if (!w) continue;
     if (op.op === 'valgus') {

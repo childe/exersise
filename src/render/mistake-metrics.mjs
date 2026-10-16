@@ -97,23 +97,26 @@ export function mistakeBalance(slug, fig, mf) {
   if (s.GA.bench || s.GA.fixed || s.GA.view === 'front') return null;
   const flat = (p) => p.heel[1] >= 222 && p.toe[1] >= 222 && p.wrist[1] < 215;
   if (!flat(s.GA) || !flat(s.GB)) return null;
-  let worst = null, ok = true;
+  // 返回最小余量那一帧（余量 < 0 即出界）。支撑面：后沿脚跟（容差 2，脚跟着地时重心可以压在跟上），
+  // 前沿脚尖往回 3px（重心不可能落在趾尖上）；脚跟离地 0–3px 之间，后沿从脚跟连续退到前脚掌（脚尖往后 35% 脚长）。
+  let worst = null;
   for (const half of [0, 1]) for (let i = 0; i <= 16; i++) {
     const u = i / 16, m = mistakeMetrics(slug, fig, mf, u, half);
     for (const [who, J, p] of [['错误', m.Jw, m.pw], ['灰影', m.Jg, m.pg]]) {
       const lt = fig.load_type ?? p.load?.type;
       const fr = fig.no_load ? [0] : LOAD_FRAC[lt] ?? [0];
-      const len = p.toe[0] - p.heel[0];
-      const lo = p.heel[1] < 222 ? p.toe[0] - Math.abs(len) * 0.35 : Math.min(p.heel[0], p.toe[0]);
-      const hi = Math.max(p.heel[0], p.toe[0]);
-      const P = { dbMode: (s.fault.params ?? {}).dbMode };
+      const len = Math.abs(p.toe[0] - p.heel[0]);
+      const lift = Math.min(Math.max((225 - p.heel[1]) / 3, 0), 1);
+      const fore = p.toe[0] - len * 0.35;
+      const lo = p.heel[0] - 2 * (1 - lift) + (fore - p.heel[0]) * lift;
+      const hi = p.toe[0] - 3;
+      const P = { ...ORBIT_P(slug), ...(s.fault.params ?? {}) };
       for (const f of fr) {
-        const x = comX(J, loadPoints(J, p, { ...ORBIT_P(slug), ...P }), f);
-        const out = Math.max(lo - 2 - x, x - hi - 2, 0);
-        if (out > 0) ok = false;
-        if (!worst || out > worst.out) worst = { out: +out.toFixed(1), who, u, half, frac: f, com: +x.toFixed(1), support: [+lo.toFixed(1), +hi.toFixed(1)] };
+        const x = comX(J, loadPoints(J, p, P), f);
+        const margin = Math.min(x - lo, hi - x);
+        if (!worst || margin < worst.margin) worst = { margin: +margin.toFixed(1), who, u, half, frac: f, com: +x.toFixed(1), support: [+lo.toFixed(1), +hi.toFixed(1)] };
       }
     }
   }
-  return { ok, worst };
+  return { ok: worst.margin >= 0, worst };
 }
