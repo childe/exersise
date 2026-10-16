@@ -590,6 +590,18 @@ test('只动一侧时，另一侧不标红', () => {
   }
 });
 
+test('变换几乎没起作用的帧与灰影几乎重合（不许跳变）', () => {
+  // hand3 foreVertical 曾经强度刚过 0 就把前臂直接设成竖直，手一下跳 7px
+  for (const d of drawn) {
+    if (d.mf.params || d.mf.rom || d.mf.start || d.mf.end || d.mf.tempo) continue;
+    for (const { W, G, u, half } of framesOf(d)) {
+      if (!(d.mf.ops ?? []).every((op) => opWeight(op, u, half) < 0.05)) continue;
+      for (const k of Object.keys(G.J)) if (Array.isArray(G.J[k]) && W.J[k])
+        assert.ok(L3(W.J[k], G.J[k]) < 3, `${d.slug}#${d.mf.mistake} u=${u} half=${half}: 强度 <0.05 时 ${k} 差 ${L3(W.J[k], G.J[k]).toFixed(1)}`);
+    }
+  }
+});
+
 test('与灰影重合的帧不标红', () => {
   // 不依赖强度曲线的公式：曾经一个辅助变换（regrip，常量强度）让硬拉锁定帧全程标红，而那一帧人与灰影完全重合
   for (const d of drawn) for (const { W, G, u, half } of framesOf(d)) {

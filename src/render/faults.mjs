@@ -317,13 +317,21 @@ export function faultJoints3D(J, fault, u, half) {
         const S = J['shoulder' + t], E0 = J['elbow' + t], H0 = J['wrist' + t], zs = op.side === 'both' && t === 'F' ? -1 : 1;
         const H = [H0[0] + (op.dx ?? 0) * w, H0[1] + (op.dy ?? 0) * w, H0[2] + zs * (op.dz ?? 0) * w];
         if (op.foreVertical) {
-          // 前臂保持竖直（卧推类到底的判据）：肘就在手正下方一个前臂长，手沿水平方向挪到上臂够得着的位置
+          // 前臂保持竖直（卧推类到底的判据）：先按满强度解出目标——肘在手正下方一个前臂长、手沿水平挪到上臂够得着处，
+          // 再按强度 w 在原位与目标之间插值并按真骨长重解肘。直接用目标解的话强度刚过 0 手就跳 7px。
           const l1 = Math.hypot(E0[0] - S[0], E0[1] - S[1], E0[2] - S[2]), l2 = Math.hypot(H0[0] - E0[0], H0[1] - E0[1], H0[2] - E0[2]);
-          const ey = H[1] + l2, r2 = l1 * l1 - (ey - S[1]) ** 2;
+          const HT = [H0[0] + (op.dx ?? 0), H0[1] + (op.dy ?? 0), H0[2] + zs * (op.dz ?? 0)];
+          const ey = HT[1] + l2, r2 = l1 * l1 - (ey - S[1]) ** 2;
           if (r2 < 0) { J._faultClamped = true; continue; }
-          const hx = H[0] - S[0], hz = H[2] - S[2], hl = Math.hypot(hx, hz) || 1, r = Math.sqrt(r2);
-          H[0] = S[0] + hx / hl * r; H[2] = S[2] + hz / hl * r;
-          J['wrist' + t] = H; J['elbow' + t] = [H[0], ey, H[2]];
+          const hx = HT[0] - S[0], hz = HT[2] - S[2], hl = Math.hypot(hx, hz) || 1, r = Math.sqrt(r2);
+          HT[0] = S[0] + hx / hl * r; HT[2] = S[2] + hz / hl * r;
+          const ET = [HT[0], ey, HT[2]];
+          const Hm = H0.map((x, i) => x + (HT[i] - x) * w), Em = E0.map((x, i) => x + (ET[i] - x) * w);
+          const v = [Hm[0] - S[0], Hm[1] - S[1], Hm[2] - S[2]], dd = Math.hypot(...v);
+          const u3 = v.map((x) => x / dd), a = (l1 * l1 - l2 * l2 + dd * dd) / (2 * dd), h = Math.sqrt(Math.max(0, l1 * l1 - a * a));
+          const pv = [Em[0] - S[0], Em[1] - S[1], Em[2] - S[2]], kk = pv[0] * u3[0] + pv[1] * u3[1] + pv[2] * u3[2];
+          let n = pv.map((x, i) => x - u3[i] * kk); const nl = Math.hypot(...n) || 1; n = n.map((x) => x / nl);
+          J['wrist' + t] = Hm; J['elbow' + t] = S.map((x, i) => x + u3[i] * a + n[i] * h);
           continue;
         }
         const l1 = Math.hypot(E0[0] - S[0], E0[1] - S[1], E0[2] - S[2]), l2 = Math.hypot(H0[0] - E0[0], H0[1] - E0[1], H0[2] - E0[2]);
