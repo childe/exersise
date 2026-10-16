@@ -49,6 +49,10 @@ test('错误示范里的人仍然成立：骨长不变、不穿地', () => {
       for (const t of ['N', 'F']) {
         assert.ok(Math.abs(L3(J['shoulder' + t], J['elbow' + t]) - 50) < 0.05, `${at}: 上臂`);
         assert.ok(Math.abs(L3(J['elbow' + t], J['wrist' + t]) - 39) < 0.05, `${at}: 前臂`);
+        // 肘角下限与正确动作同口径（orbit.test 断言 6）：错误动作也不能把前臂折进上臂里
+        const S = J['shoulder' + t], E = J['elbow' + t], H = J['wrist' + t];
+        const ea = Math.acos(((S[0] - E[0]) * (H[0] - E[0]) + (S[1] - E[1]) * (H[1] - E[1]) + (S[2] - E[2]) * (H[2] - E[2])) / (L3(S, E) * L3(H, E))) * 180 / Math.PI;
+        assert.ok(ea >= 25, `${at}: ${t} 肘角 ${ea.toFixed(1)}°`);
       }
       // 腿骨：变换（挪髋、膝内扣、抬脚跟）都必须保骨长。比的是同一动作的灰影，不是写死的 60
       const G = [...framesOf(d)][0].G.J;
@@ -188,7 +192,7 @@ test('错误示范的每一帧、每个角度都在画框内', () => {
 
 test('出错部位只在真的错了的帧标红', () => {
   for (const d of drawn) {
-    if (!d.mf.ops?.length) continue;
+    if (!d.mf.ops?.length || d.mf.params || d.mf.rom) continue;
     for (const { W, u, half } of framesOf(d)) {
       const on = d.mf.ops.some((op) => faultWeight(op.prof, u, half) >= 0.2);
       const red = W.S.some((it) => it.cls.includes('sk-fault'));
@@ -244,6 +248,22 @@ const CLAIMS = {
     near(w.trunkFromVertical, 57, 1, '错误躯干角');
     near(w.load[0], 90, 1, '杠仍在足中线上');
   },
+  'db-front-squat#0': ({ wrong: w, right: r, Jw, Jg }, d) => {
+    const ua = (J) => Math.atan2(J.elbowN[1] - J.shoulderN[1], Math.hypot(J.elbowN[0] - J.shoulderN[0], J.elbowN[2] - J.shoulderN[2])) * 180 / Math.PI;
+    for (const u of [0, 1]) {
+      const m = mistakeMetrics(d.slug, d.fig, d.mf, u, 0);
+      assert.ok(ua(m.Jw) >= 50 && ua(m.Jw) <= 71, `u=${u} 错误上臂低于水平 ${ua(m.Jw).toFixed(1)}°`);
+      assert.ok(Math.abs(ua(m.Jg)) <= 13, `u=${u} 正确上臂离水平 ${ua(m.Jg).toFixed(1)}°`);
+    }
+    near((Jw.wristN[1] - Jw.shoulderN[1]) - (Jg.wristN[1] - Jg.shoulderN[1]), 39, 1.5, '手比正确位置低');
+    near(r.trunkFromVertical, 22, 1, '正确躯干角');
+    near(w.trunkFromVertical, 32, 1, '错误躯干角');
+  },
+  'db-front-squat#1': ({ Jw, Jg }) => {
+    near(Jg.shoulderN[1] - Jw.shoulderN[1], 8, 0.3, '耸肩');
+    near(Jg.shoulderN[1] - Jg.head[1], 14, 0.5, '正确头心到肩');
+    near(Jw.shoulderN[1] - Jw.head[1], 6, 0.5, '错误头心到肩');
+  },
 };
 
 test('「为什么错」里的数字是图上量得到的', () => {
@@ -254,6 +274,6 @@ test('「为什么错」里的数字是图上量得到的', () => {
     if (/\d/.test(d.mf.why.replace(/[0-9]+\s*章/g, ''))) assert.ok(claim, `${key}：why 里有数字，但没有登记核对`);
     if (!claim) continue;
     const { u, half } = mistakeStill(d.mf);
-    claim(mistakeMetrics(d.slug, d.fig, d.mf, u, half));
+    claim(mistakeMetrics(d.slug, d.fig, d.mf, u, half), d);
   }
 });

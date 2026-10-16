@@ -699,7 +699,8 @@ export function orbitScene(slug, names, p0, { u = 0, prime = [], plumb = false, 
   for (let i = n0; i < S.length; i++) if (!/sk-bench|sk-rig\b/.test(S[i].cls)) S[i].part = 'load';
   // 出错部位标红：只给错误示范用（它不标主动肌，红色在这里只有「错在这」一个意思）
   // 变换还没起作用的那几帧（「起身时」的错误在下蹲段）不标：红色只出现在真的错了的时候
-  const on = !fault?.ops?.length || fault.ops.some((op) => faultWeight(op.prof, u, half) >= 0.2);
+  // 参数覆盖、换姿态、半程这类错误全程都在，全程标红
+  const on = !fault?.ops?.length || fault.params || fault.rom || fault.ops.some((op) => faultWeight(op.prof, u, half) >= 0.2);
   if (on && fault?.hl?.length) for (const it of S) if (it.part && fault.hl.includes(it.part)) it.cls += ' sk-fault';
   return { J, S, under, over, p };
 }
