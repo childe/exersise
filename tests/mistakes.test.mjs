@@ -539,6 +539,20 @@ const CLAIMS = {
     near(pw.hip[0] - pg.hip[0], 8, 0.6, '髋前顶'); near(sg(Jw), -9, 0.6, '错误后仰'); near(sg(Jg), -1, 0.6, '灰影');
     near(Jw.spine.bend, -7, 0.1, '腰前塌');
   },
+  'db-farmer-carry#0': ({ Jw, Jg }) => {
+    near(Jg.shoulderN[1] - Jw.shoulderN[1], 8, 0.2, '耸肩');
+    near(Jg.shoulderN[1] - Jg.head[1], 14, 0.5, '正确头心到肩'); near(Jw.shoulderN[1] - Jw.head[1], 6, 0.5, '错误头心到肩');
+  },
+  'db-suitcase-carry#0': ({ wrong: w, Jw, Jg }) => {
+    near(w.trunkLateral, 10, 0.3, '侧倾'); near(Jw.neck[2], 14, 0.5, '颈偏向持铃侧');
+    assert.ok(Jw.wristN[2] > 0 && Jw.neck[2] > 0, '倒向持铃（近）侧');
+    near(Jw.wristN[1] - Jg.wristN[1], 6, 0.5, '哑铃落低');
+  },
+  'loaded-carry-household#1': (_, d) => {
+    const a = mistakeMetrics(d.slug, d.fig, d.mf, 0.5, 0), b = mistakeMetrics(d.slug, d.fig, d.mf, 0.5, 1);
+    near(a.wrong.trunkLateral, 8, 0.3, '一侧摆'); near(b.wrong.trunkLateral, 8, 0.3, '另一侧摆');
+    assert.ok(a.Jw.neck[2] * b.Jw.neck[2] < 0, '左右两边各摆一次'); near(a.right.trunkLateral, 0, 0.1, '灰影竖直');
+  },
 };
 
 test('错误只错在那一处：不许顺带画出别的错误', () => {
