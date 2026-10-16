@@ -469,6 +469,16 @@ const CLAIMS = {
     const ua = (J) => Math.atan2(J.elbowN[0] - J.shoulderN[0], J.elbowN[1] - J.shoulderN[1]) * 180 / Math.PI;
     near(ua(Jw), 26, 1, '上臂前抬'); assert.ok(Math.abs(ua(Jg)) < 4, '灰影上臂竖直');
   },
+  'db-one-arm-row#0': ({ Jw, Jg }) => {
+    const sl = (J) => Math.atan2(J.shoulderN[1] - J.shoulderF[1], J.shoulderN[2] - J.shoulderF[2]) * 180 / Math.PI;
+    near(Math.abs(sl(Jw)), 24, 1, '肩线转'); near(sl(Jg), 0, 0.5, '灰影两肩水平');
+    near(Jg.wristN[1] - Jw.wristN[1], 16, 0.6, '哑铃被抬高');
+    near(L3(Jw.wristF, Jg.wristF), 0, 0.05, '撑凳的手不动');
+  },
+  'db-one-arm-row#1': ({ Jw, Jg }) => {
+    const along = (J) => { const S = J.neck, H = J.pelvis, v = [H[0] - S[0], H[1] - S[1]], l = Math.hypot(...v); return ((J.wristN[0] - S[0]) * v[0] + (J.wristN[1] - S[1]) * v[1]) / l; };
+    near(along(Jw), 24, 1, '错误拉到离肩'); near(along(Jg), 52, 1, '正确拉到离肩');
+  },
 };
 
 test('错误只错在那一处：不许顺带画出别的错误', () => {

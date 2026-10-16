@@ -242,7 +242,7 @@ export function faultPose2D(p, fault, u, half) {
   return q;
 }
 
-const FLT_3D = new Set(['valgus', 'lateral', 'twist', 'pitch', 'arm3', 'spine', 'hand3']);
+const FLT_3D = new Set(['valgus', 'lateral', 'twist', 'pitch', 'roll', 'arm3', 'spine', 'hand3']);
 const FLT_UPPER3 = ['head', 'neck', 'back', 'shoulderN', 'shoulderF', 'elbowN', 'elbowF', 'wristN', 'wristF'];
 
 /** 绕过 c 的轴（单位向量 k）转 deg°：Rodrigues。 */
@@ -288,6 +288,23 @@ export function faultJoints3D(J, fault, u, half) {
       // lateral 绕前后轴（侧倾）、twist 绕竖直轴（旋转）、pitch 绕左右轴（前后摆：正视动作的躯干借力）
       const c = J.pelvis, k = op.op === 'lateral' ? [1, 0, 0] : op.op === 'twist' ? [0, 1, 0] : [0, 0, 1];
       for (const key of FLT_UPPER3) if (J[key]) J[key] = fltRot3(J[key], c, k, op.deg * w);
+    } else if (op.op === 'roll') {
+      // 躯干绕自身长轴（骨盆→颈）转：单臂划船用转身把哑铃带上来。keep 那一侧的手按在凳上不动，
+      // 那一侧的肘按真骨长重解（pole 取原来的肘）
+      const c = J.pelvis, ax = [J.neck[0] - c[0], J.neck[1] - c[1], J.neck[2] - c[2]], al = Math.hypot(...ax) || 1;
+      const k = ax.map((x) => x / al), keep = op.keep;
+      const fixedW = keep ? J['wrist' + keep] : null, E0 = keep ? J['elbow' + keep] : null, S0 = keep ? J['shoulder' + keep] : null;
+      for (const key of ['head', 'back', 'shoulderN', 'shoulderF', 'elbowN', 'elbowF', 'wristN', 'wristF']) if (J[key]) J[key] = fltRot3(J[key], c, k, op.deg * w);
+      if (keep) {
+        const S = J['shoulder' + keep], l1 = Math.hypot(E0[0] - S0[0], E0[1] - S0[1], E0[2] - S0[2]), l2 = Math.hypot(fixedW[0] - E0[0], fixedW[1] - E0[1], fixedW[2] - E0[2]);
+        const v = [fixedW[0] - S[0], fixedW[1] - S[1], fixedW[2] - S[2]], dd = Math.hypot(...v);
+        if (dd > l1 + l2 - 0.01 || dd < Math.abs(l1 - l2)) J._faultClamped = true;
+        const u3 = v.map((x) => x / dd), a = (l1 * l1 - l2 * l2 + dd * dd) / (2 * dd), h = Math.sqrt(Math.max(0, l1 * l1 - a * a));
+        const pv = [E0[0] - S[0], E0[1] - S[1], E0[2] - S[2]], kk = pv[0] * u3[0] + pv[1] * u3[1] + pv[2] * u3[2];
+        let n = pv.map((x, i) => x - u3[i] * kk); const nl = Math.hypot(...n) || 1; n = n.map((x) => x / nl);
+        J['wrist' + keep] = fixedW;
+        J['elbow' + keep] = S.map((x, i) => x + u3[i] * a + n[i] * h);
+      }
     } else if (op.op === 'hand3') {
       // 一只手在 3D 里挪开（两手不同步：远侧哑铃落在后面）；肘按真骨长重解，pole 取原来的肘方向
       // side 'both'：两只手一起挪，dz 按侧镜像（正值 = 往外）
