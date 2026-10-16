@@ -97,7 +97,7 @@ const LOAD_FRAC_BY_SLUG = { 'barbell-curl': [0.15, 0.35], 'barbell-reverse-curl'
 export function mistakeBalance(slug, fig, mf) {
   const s = mistakeSetup(fig, mf);
   if (s.GA.bench || s.GA.benchIncline || s.GA.fixed || s.GA.view === 'front') return null;
-  // 推雪橇的错误动作：人压在推把上、推把给向后向上的反力，静态重心判据不适用（步子迈太大，本身就是前脚落到重心前面）；灰影照查
+  // 推雪橇的错误动作：人压在推把上、推把给向后向上的反力，静态重心判据不适用（步子迈太大，本身就是前脚落到重心前面）；灰影照查。按动作类型判断，弓背（#0）的错误一侧也一并不查——它的重心与灰影相同，查了也能过
   const sled = s.GA.load?.type === 'sled';
   const flat = (p) => p.heel[1] >= 222 && p.toe[1] >= 222 && p.wrist[1] < 215;
   if (!flat(s.GA) || !flat(s.GB)) return null;
